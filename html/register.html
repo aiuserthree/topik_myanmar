@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>시험 접수 — TOPIK Myanmar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+Myanmar:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--red:#CD2E3A;--navy:#003478;--gold:#C8963E;--gray-bg:#f4f6f9;--gray-light:#e8ecf0;--gray-text:#6b7280;--shadow:0 2px 12px rgba(0,0,0,0.08);}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--gray-bg);color:#1a1a2e;}
+    svg.icon{display:inline-block;vertical-align:middle;flex-shrink:0;}
+    header{background:var(--navy);position:sticky;top:0;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+    .header-main{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;max-width:1200px;margin:0 auto;}
+    .logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
+    .logo-text .main{font-size:18px;font-weight:700;color:white;}
+    .logo-text .sub{font-size:11px;color:#aab8cc;}
+    nav{display:flex;gap:2px;}
+    nav a{color:#dce8f5;text-decoration:none;padding:8px 13px;border-radius:6px;font-size:13.5px;font-weight:500;transition:all .2s;display:flex;align-items:center;gap:6px;}
+    nav a:hover,nav a.active{background:rgba(255,255,255,0.12);color:white;}
+    .header-actions{display:flex;gap:8px;}
+    .btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .btn-outline{border:1.5px solid #aab8cc;color:#dce8f5;background:transparent;}
+    .page-hero{background:linear-gradient(135deg,var(--navy),#002060);color:white;padding:40px 24px;}
+    .page-hero-inner{max-width:960px;margin:0 auto;}
+    .breadcrumb{font-size:12px;color:#aab8cc;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+    .breadcrumb a{color:#aab8cc;text-decoration:none;}
+    .page-hero h1{font-size:clamp(20px,3.5vw,30px);font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+    /* Step Container */
+    .step-container{background:white;border-bottom:1px solid var(--gray-light);padding:14px 24px;position:sticky;top:64px;z-index:100;}
+    .step-bar{display:flex;align-items:center;justify-content:center;gap:0;max-width:640px;margin:0 auto;}
+    .step{display:flex;align-items:center;gap:8px;}
+    .step-num{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--gray-light);color:var(--gray-text);transition:all .3s;border:2px solid transparent;}
+    .step-num.active{background:var(--navy);color:white;border-color:var(--navy);}
+    .step-num.done{background:white;color:var(--red);border-color:var(--red);}
+    .step-label{font-size:12px;color:var(--gray-text);font-weight:500;white-space:nowrap;}
+    .step-label.active{color:var(--navy);font-weight:700;}
+    .step-line{flex:1;max-width:56px;height:2px;background:var(--gray-light);margin:0 4px;transition:background .3s;}
+    .step-line.done{background:var(--red);}
+    /* Content */
+    .content{max-width:960px;margin:0 auto;padding:28px 24px;}
+    .reg-card{background:white;border-radius:12px;box-shadow:var(--shadow);padding:28px;margin-bottom:20px;}
+    .reg-card h2{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid var(--gray-light);display:flex;align-items:center;gap:8px;}
+    /* Round Cards */
+    .round-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;}
+    .round-card{border:2px solid var(--gray-light);border-radius:10px;padding:18px;cursor:pointer;transition:all .2s;position:relative;}
+    .round-card:hover{border-color:var(--navy);}
+    .round-card.selected{border-color:var(--red);background:#fff5f5;}
+    .rc-check{position:absolute;top:12px;right:12px;display:none;background:var(--red);border-radius:50%;width:22px;height:22px;align-items:center;justify-content:center;}
+    .round-card.selected .rc-check{display:flex;}
+    .rc-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 10px;border-radius:4px;margin-bottom:8px;font-weight:600;}
+    .rc-badge.open{background:#d1fae5;color:#065f46;}
+    .rc-badge.soon{background:var(--gray-light);color:var(--gray-text);}
+    .rc-name{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+    .rc-date{font-size:12px;color:var(--gray-text);display:flex;flex-direction:column;gap:3px;}
+    .rc-date span{display:flex;align-items:center;gap:4px;}
+    /* Form */
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+    .form-group{margin-bottom:14px;}
+    .form-group label{display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+    .req{color:var(--red);}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 14px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:14px;font-family:inherit;color:#1a1a2e;transition:border .2s;background:white;}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(0,52,120,0.08);}
+    .radio-group{display:flex;gap:12px;margin-top:6px;}
+    .radio-label{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:14px;padding:8px 16px;border:1.5px solid var(--gray-light);border-radius:8px;transition:all .2s;flex:1;justify-content:center;}
+    .radio-label:hover{border-color:var(--navy);}
+    .radio-label input{accent-color:var(--navy);width:auto;}
+    /* Photo Upload */
+    .photo-upload{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;}
+    .photo-preview{width:100px;height:130px;border:2px dashed var(--gray-light);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;overflow:hidden;background:#fafbfc;cursor:pointer;transition:all .2s;}
+    .photo-preview:hover{border-color:var(--navy);background:#f0f4ff;}
+    .photo-preview img{width:100%;height:100%;object-fit:cover;display:none;}
+    .photo-info{flex:1;min-width:200px;}
+    .photo-info h4{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+    .photo-checklist{list-style:none;display:flex;flex-direction:column;gap:5px;}
+    .photo-checklist li{font-size:12px;color:#555;display:flex;align-items:center;gap:6px;}
+    .upload-btn{margin-top:12px;padding:8px 18px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;}
+    /* Level Buttons */
+    .level-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    @media(max-width:600px){.level-grid{grid-template-columns:1fr;}}
+    .level-btn{border:2px solid var(--gray-light);border-radius:10px;padding:22px;cursor:pointer;transition:all .2s;text-align:center;position:relative;}
+    .level-btn:hover{border-color:var(--navy);}
+    .level-btn.selected{border-color:var(--red);background:#fff5f5;}
+    .level-btn .lb-check{position:absolute;top:12px;right:12px;display:none;background:var(--red);border-radius:50%;width:22px;height:22px;align-items:center;justify-content:center;}
+    .level-btn.selected .lb-check{display:flex;}
+    .lb-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;margin-bottom:10px;}
+    .lb-t1{background:#4a9ed4;color:white;}
+    .lb-t2{background:var(--red);color:white;}
+    .level-btn h3{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+    .level-btn p{font-size:12px;color:var(--gray-text);}
+    /* Confirm Table */
+    .confirm-table{width:100%;border-collapse:collapse;font-size:14px;}
+    .confirm-table th{background:#f0f4ff;color:var(--navy);padding:10px 16px;text-align:left;font-weight:600;width:35%;border-bottom:1px solid var(--gray-light);}
+    .confirm-table td{padding:10px 16px;border-bottom:1px solid var(--gray-light);}
+    /* Action */
+    .form-actions{display:flex;gap:12px;margin-top:8px;}
+    .btn-prev{flex:1;padding:13px;background:var(--gray-text);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;}
+    .btn-next{flex:2;padding:13px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;}
+    .btn-final{width:100%;padding:16px;background:var(--red);color:white;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;}
+    @media(max-width:640px){.form-row{grid-template-columns:1fr;}}
+  </style>
+  <!-- ════ SVG ICON SPRITE (공통 적용) ════ -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></symbol>
+    <symbol id="ic-guide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></symbol>
+    <symbol id="ic-rules" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></symbol>
+    <symbol id="ic-register" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+    <symbol id="ic-mypage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="ic-notice" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></symbol>
+    <symbol id="ic-login" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></symbol>
+    <symbol id="ic-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+    <symbol id="ic-signup" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></symbol>
+    <symbol id="ic-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+    <symbol id="ic-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+    <symbol id="ic-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 11 12 15 16 11"/><path d="M5 3h14v6a7 7 0 01-14 0V3z"/><path d="M8 19v2m8-2v2m-7 0h6"/><path d="M5 3H2v3a3 3 0 003 3m14-6h3v3a3 3 0 01-3 3"/></symbol>
+    <symbol id="ic-cert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></symbol>
+    <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></symbol>
+    <symbol id="ic-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+    <symbol id="ic-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></symbol>
+    <symbol id="ic-email" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></symbol>
+    <symbol id="ic-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></symbol>
+    <symbol id="ic-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="ic-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></symbol>
+    <symbol id="ic-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></symbol>
+    <symbol id="ic-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="ic-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></symbol>
+    <symbol id="ic-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></symbol>
+    <symbol id="ic-print" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
+    <symbol id="ic-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+    <symbol id="ic-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></symbol>
+    <symbol id="ic-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+    <symbol id="ic-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></symbol>
+    <symbol id="ic-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></symbol>
+    <symbol id="ic-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></symbol>
+    <symbol id="ic-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></symbol>
+    <symbol id="ic-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></symbol>
+    <symbol id="ic-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+    <symbol id="ic-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></symbol>
+    <symbol id="ic-ticket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 010 6v2a2 2 0 002 2h16a2 2 0 002-2v-2a3 3 0 010-6V7a2 2 0 00-2-2H4a2 2 0 00-2 2v2z"/><line x1="9" y1="3" x2="9" y2="21"/></symbol>
+    <symbol id="ic-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="ic-arrow-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+    <symbol id="ic-chev-d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></symbol>
+    <symbol id="ic-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+    <symbol id="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+    <symbol id="ic-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+    <symbol id="ic-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></symbol>
+    <symbol id="ic-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+    <symbol id="ic-topik-logo" viewBox="0 0 44 44"><rect width="44" height="44" rx="8" fill="#CD2E3A"/><text x="22" y="17" text-anchor="middle" fill="white" font-size="9" font-weight="700" font-family="sans-serif">TOPIK</text><line x1="8" y1="21" x2="36" y2="21" stroke="white" stroke-width="1.2" opacity="0.5"/><text x="22" y="33" text-anchor="middle" fill="white" font-size="8" font-weight="600" font-family="sans-serif">MYANMAR</text><circle cx="22" cy="27" r="0" fill="none"/></symbol>
+  </svg>
+</head>
+<body>
+
+<header>
+  <div class="header-main">
+    <a href="index.html" class="logo">
+      <svg width="44" height="44"><use href="#ic-topik-logo"/></svg>
+      <div class="logo-text"><div class="main">TOPIK Myanmar</div><div class="sub">တိုပစ် မြန်မာ</div></div>
+    </a>
+    <nav>
+      <a href="guide.html"><svg class="icon" width="15" height="15"><use href="#ic-guide"/></svg>TOPIK 안내</a>
+      <a href="rules.html"><svg class="icon" width="15" height="15"><use href="#ic-rules"/></svg>시험 규정</a>
+      <a href="register.html" class="active"><svg class="icon" width="15" height="15"><use href="#ic-register"/></svg>시험 접수</a>
+      <a href="mypage.html"><svg class="icon" width="15" height="15"><use href="#ic-mypage"/></svg>접수 확인</a>
+      <a href="notice.html"><svg class="icon" width="15" height="15"><use href="#ic-notice"/></svg>공지사항</a>
+    </nav>
+    <div class="header-actions">
+      <a href="login.html" class="btn btn-outline"><svg class="icon" width="14" height="14"><use href="#ic-login"/></svg>로그인</a>
+    </div>
+  </div>
+</header>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="breadcrumb"><svg class="icon" width="12" height="12"><use href="#ic-register"/></svg><a href="index.html">홈</a> › 시험 접수</div>
+    <h1><svg class="icon" width="26" height="26" color="#fff"><use href="#ic-register"/></svg>시험 접수</h1>
+    <p style="font-size:13px;color:#aab8cc;margin-top:4px;">제98회 TOPIK — 접수기간: 2025.04.01 ~ 2025.04.14</p>
+  </div>
+</div>
+
+<div class="step-container">
+  <div class="step-bar">
+    <div class="step"><div class="step-num active" id="s1">1</div><div class="step-label active" id="sl1">회차 선택</div></div>
+    <div class="step-line" id="ln1"></div>
+    <div class="step"><div class="step-num" id="s2">2</div><div class="step-label" id="sl2">정보 입력</div></div>
+    <div class="step-line" id="ln2"></div>
+    <div class="step"><div class="step-num" id="s3">3</div><div class="step-label" id="sl3">사진·급수</div></div>
+    <div class="step-line" id="ln3"></div>
+    <div class="step"><div class="step-num" id="s4">4</div><div class="step-label" id="sl4">최종 확인</div></div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- STEP 1 -->
+  <div id="regStep1">
+    <div class="reg-card">
+      <h2><svg class="icon" width="18" height="18" color="var(--red)"><use href="#ic-calendar"/></svg>접수 회차 선택</h2>
+      <div class="round-grid">
+        <div class="round-card selected" onclick="selectRound(this)">
+          <div class="rc-check"><svg class="icon" width="13" height="13" color="white"><use href="#ic-check"/></svg></div>
+          <span class="rc-badge open"><svg class="icon" width="10" height="10"><use href="#ic-check"/></svg>접수중</span>
+          <div class="rc-name">제98회 TOPIK</div>
+          <div class="rc-date">
+            <span><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>시험일: 2025.05.17</span>
+            <span><svg class="icon" width="11" height="11"><use href="#ic-register"/></svg>접수: 04.01~04.14</span>
+          </div>
+        </div>
+        <div class="round-card" onclick="selectRound(this)">
+          <div class="rc-check"><svg class="icon" width="13" height="13" color="white"><use href="#ic-check"/></svg></div>
+          <span class="rc-badge soon"><svg class="icon" width="10" height="10"><use href="#ic-calendar"/></svg>예정</span>
+          <div class="rc-name">제99회 TOPIK</div>
+          <div class="rc-date">
+            <span><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>시험일: 2025.08.17</span>
+            <span><svg class="icon" width="11" height="11"><use href="#ic-register"/></svg>접수: 07.07~07.21</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:right;">
+      <button class="btn-next" style="max-width:200px;" onclick="goRegStep(2)">
+        다음 <svg class="icon" width="15" height="15"><use href="#ic-arrow-r"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div id="regStep2" style="display:none;">
+    <div class="reg-card">
+      <h2><svg class="icon" width="18" height="18" color="var(--red)"><use href="#ic-user"/></svg>응시자 정보 입력</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label><svg class="icon" width="12" height="12" color="var(--gray-text)"><use href="#ic-user"/></svg>한글 성명 <span class="req">*</span></label>
+          <input type="text" placeholder="홍길동" id="r-nameKr"/>
+        </div>
+        <div class="form-group">
+          <label><svg class="icon" width="12" height="12" color="var(--gray-text)"><use href="#ic-user"/></svg>영문 성명 <span class="req">*</span></label>
+          <input type="text" placeholder="HONG GILDONG" id="r-nameEn"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label><svg class="icon" width="12" height="12" color="var(--gray-text)"><use href="#ic-calendar"/></svg>생년월일 <span class="req">*</span></label>
+          <input type="text" placeholder="19900101" maxlength="8" id="r-birth"/>
+        </div>
+        <div class="form-group">
+          <label><svg class="icon" width="12" height="12" color="var(--gray-text)"><use href="#ic-user"/></svg>성별 <span class="req">*</span></label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="r-gender" value="M"/> 남성</label>
+            <label class="radio-label"><input type="radio" name="r-gender" value="F"/> 여성</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label><svg class="icon" width="12" height="12" color="var(--gray-text)"><use href="#ic-globe"/></svg>국적 <span class="req">*</span></label>
+          <select id="r-nationality"><option value="MM" selected>미얀마 (Myanmar)</option><option value="KR">대한민국</option><option value="OTHER">기타</option></select>
+        </div>
+        <div class="form-group">
+          <label><svg class="icon" width="12" height="12" color="var(--gray-text)"><use href="#ic-phone"/></svg>연락처 <span class="req">*</span></label>
+          <input type="tel" placeholder="+95-9-xxxxxxx" id="r-phone"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label><svg class="icon" width="12" height="12" color="var(--gray-text)"><use href="#ic-email"/></svg>이메일 <span class="req">*</span></label>
+          <input type="email" placeholder="example@email.com" id="r-email"/>
+        </div>
+        <div class="form-group">
+          <label><svg class="icon" width="12" height="12" color="var(--gray-text)"><use href="#ic-rules"/></svg>여권번호</label>
+          <input type="text" placeholder="MA123456" id="r-passport"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label><svg class="icon" width="12" height="12" color="var(--gray-text)"><use href="#ic-pin"/></svg>거주 도시 <span class="req">*</span></label>
+          <select id="r-city"><option>양곤 (Yangon)</option><option>만달레이 (Mandalay)</option><option>네피도 (Naypyidaw)</option><option>기타</option></select>
+        </div>
+        <div class="form-group">
+          <label><svg class="icon" width="12" height="12" color="var(--gray-text)"><use href="#ic-calendar"/></svg>한국어 학습 기간</label>
+          <select id="r-period"><option>6개월 미만</option><option>6개월~1년</option><option>1년~2년</option><option>2년 이상</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-prev" onclick="goRegStep(1)">← 이전</button>
+      <button class="btn-next" onclick="goRegStep(3)">다음 <svg class="icon" width="15" height="15"><use href="#ic-arrow-r"/></svg></button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div id="regStep3" style="display:none;">
+    <div class="reg-card">
+      <h2><svg class="icon" width="18" height="18" color="var(--red)"><use href="#ic-camera"/></svg>증명사진 업로드</h2>
+      <div class="photo-upload">
+        <div class="photo-preview" onclick="document.getElementById('photoInput').click()" id="photoBox">
+          <img id="previewImg" src="" alt="미리보기"/>
+          <svg class="icon" width="28" height="28" color="var(--gray-text)" id="phIcon"><use href="#ic-camera"/></svg>
+          <span style="font-size:11px;color:var(--gray-text);" id="phText">클릭하여 업로드</span>
+        </div>
+        <div class="photo-info">
+          <h4><svg class="icon" width="14" height="14" color="var(--navy)"><use href="#ic-camera"/></svg>증명사진 규격 안내</h4>
+          <ul class="photo-checklist">
+            <li><svg class="icon" width="12" height="12" color="var(--gold)"><use href="#ic-check"/></svg>규격: 3cm × 4cm (여권용)</li>
+            <li><svg class="icon" width="12" height="12" color="var(--gold)"><use href="#ic-check"/></svg>3개월 이내 촬영한 컬러 사진</li>
+            <li><svg class="icon" width="12" height="12" color="var(--gold)"><use href="#ic-check"/></svg>흰색 배경, 정면 응시 상반신</li>
+            <li><svg class="icon" width="12" height="12" color="var(--gold)"><use href="#ic-check"/></svg>모자·선글라스 착용 금지</li>
+            <li><svg class="icon" width="12" height="12" color="var(--gold)"><use href="#ic-check"/></svg>JPG, PNG / 200KB~2MB</li>
+          </ul>
+          <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="previewPhoto(event)"/>
+          <button class="upload-btn" onclick="document.getElementById('photoInput').click()">
+            <svg class="icon" width="14" height="14"><use href="#ic-upload"/></svg>파일 선택
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="reg-card">
+      <h2><svg class="icon" width="18" height="18" color="var(--red)"><use href="#ic-trophy"/></svg>응시 급수 선택</h2>
+      <div class="level-grid">
+        <div class="level-btn" onclick="selectLevel(this,'I')">
+          <div class="lb-check"><svg class="icon" width="13" height="13" color="white"><use href="#ic-check"/></svg></div>
+          <span class="lb-badge lb-t1"><svg class="icon" width="11" height="11"><use href="#ic-star"/></svg>TOPIK I</span>
+          <h3>초급 (1~2급)</h3>
+          <p>듣기 + 읽기<br/>100분, 200점 만점</p>
+        </div>
+        <div class="level-btn" onclick="selectLevel(this,'II')">
+          <div class="lb-check"><svg class="icon" width="13" height="13" color="white"><use href="#ic-check"/></svg></div>
+          <span class="lb-badge lb-t2"><svg class="icon" width="11" height="11"><use href="#ic-trophy"/></svg>TOPIK II</span>
+          <h3>중·고급 (3~6급)</h3>
+          <p>듣기 + 쓰기 + 읽기<br/>180분, 300점 만점</p>
+        </div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-prev" onclick="goRegStep(2)">← 이전</button>
+      <button class="btn-next" onclick="goRegStep(4)">다음 <svg class="icon" width="15" height="15"><use href="#ic-arrow-r"/></svg></button>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div id="regStep4" style="display:none;">
+    <div class="reg-card">
+      <h2><svg class="icon" width="18" height="18" color="var(--red)"><use href="#ic-check"/></svg>접수 내용 최종 확인</h2>
+      <p style="font-size:13px;color:var(--gray-text);margin-bottom:16px;">아래 내용을 확인하신 후 접수 완료 버튼을 눌러주세요.</p>
+      <table class="confirm-table">
+        <tr><th>회차</th><td>제98회 TOPIK (2025.05.17)</td></tr>
+        <tr><th>응시 급수</th><td id="confirm-level">—</td></tr>
+        <tr><th>한글 성명</th><td id="confirm-nameKr">—</td></tr>
+        <tr><th>영문 성명</th><td id="confirm-nameEn">—</td></tr>
+        <tr><th>생년월일</th><td id="confirm-birth">—</td></tr>
+        <tr><th>성별</th><td id="confirm-gender">—</td></tr>
+        <tr><th>국적</th><td id="confirm-nation">—</td></tr>
+        <tr><th>연락처</th><td id="confirm-phone">—</td></tr>
+        <tr><th>이메일</th><td id="confirm-email">—</td></tr>
+        <tr><th>시험장</th><td>양곤 시험장 (추후 확정)</td></tr>
+      </table>
+      <div style="background:#fff8e1;border:1px solid var(--gold);border-radius:8px;padding:14px 16px;margin-top:16px;font-size:13px;color:#7a5800;display:flex;align-items:flex-start;gap:8px;">
+        <svg class="icon" width="16" height="16" color="var(--gold)" style="margin-top:1px;flex-shrink:0;"><use href="#ic-alert"/></svg>
+        <span>접수 완료 후 취소는 접수 기간(~2025.04.14) 내에만 가능합니다.</span>
+      </div>
+    </div>
+    <div class="form-actions"><button class="btn-prev" onclick="goRegStep(3)">← 이전</button></div>
+    <button class="btn-final" onclick="submitReg()">
+      <svg class="icon" width="18" height="18"><use href="#ic-check"/></svg>접수 완료하기
+    </button>
+  </div>
+
+</div>
+
+<script>
+  let selLevel='I';
+  function selectRound(el){document.querySelectorAll('.round-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');}
+  function selectLevel(el,lv){document.querySelectorAll('.level-btn').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');selLevel=lv;}
+  function goRegStep(n){
+    for(let i=1;i<=4;i++)document.getElementById('regStep'+i).style.display='none';
+    document.getElementById('regStep'+n).style.display='block';
+    updateRBar(n); if(n===4)fillConfirm();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function updateRBar(n){
+    for(let i=1;i<=4;i++){
+      const num=document.getElementById('s'+i),lbl=document.getElementById('sl'+i);
+      if(i<n){num.classList.add('done');num.classList.remove('active');num.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';}
+      else if(i===n){num.classList.add('active');num.classList.remove('done');num.textContent=i;}
+      else{num.classList.remove('active','done');num.textContent=i;}
+      lbl.classList.toggle('active',i===n);
+      if(i<4)document.getElementById('ln'+i).classList.toggle('done',i<n);
+    }
+  }
+  function fillConfirm(){
+    document.getElementById('confirm-nameKr').textContent=document.getElementById('r-nameKr').value||'—';
+    document.getElementById('confirm-nameEn').textContent=document.getElementById('r-nameEn').value||'—';
+    document.getElementById('confirm-birth').textContent=document.getElementById('r-birth').value||'—';
+    const g=document.querySelector('input[name="r-gender"]:checked');
+    document.getElementById('confirm-gender').textContent=g?(g.value==='M'?'남성':'여성'):'—';
+    document.getElementById('confirm-nation').textContent=document.getElementById('r-nationality').value||'—';
+    document.getElementById('confirm-phone').textContent=document.getElementById('r-phone').value||'—';
+    document.getElementById('confirm-email').textContent=document.getElementById('r-email').value||'—';
+    document.getElementById('confirm-level').textContent='TOPIK '+selLevel+(selLevel==='I'?' (초급 1~2급)':' (중고급 3~6급)');
+  }
+  function previewPhoto(e){
+    const file=e.target.files[0]; if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const img=document.getElementById('previewImg');
+      img.src=ev.target.result; img.style.display='block';
+      document.getElementById('phIcon').style.display='none';
+      document.getElementById('phText').style.display='none';
+    };
+    reader.readAsDataURL(file);
+  }
+  function submitReg(){
+    if(confirm('접수를 완료하시겠습니까?')){
+      alert('✅ 접수가 완료되었습니다!\n접수 확인 페이지에서 상태를 확인하세요.');
+      window.location.href='mypage.html';
+    }
+  }
+</script>
+</body>
+</html>
