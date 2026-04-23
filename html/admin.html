@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>관리자 대시보드 — TOPIK Myanmar</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+Myanmar:wght@400;700&display=swap" rel="stylesheet"/>
   <style>
@@ -149,13 +149,8 @@
     .notice-form-wrap textarea{height:140px;resize:vertical;}
     .notice-form-btns{display:flex;gap:8px;}
 
-    @media(max-width:900px){
-      .sidebar{transform:translateX(-100%);}
-      .sidebar.open{transform:translateX(0);}
-      .main-wrap{margin-left:0;}
-      .data-table th:nth-child(n+5),.data-table td:nth-child(n+5){display:none;}
-    }
   </style>
+  <link rel="stylesheet" href="css/mobile.css"/>
   <!-- ════ SVG ICON SPRITE (공통 적용) ════ -->
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
     <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></symbol>
@@ -206,6 +201,8 @@
   </svg>
 </head>
 <body>
+
+<div class="sb-overlay" id="sbOverlay" onclick="closeAdminSidebar()" aria-hidden="true"></div>
 
 <!-- ── SIDEBAR ── -->
 <div class="sidebar" id="sidebar">
@@ -259,6 +256,9 @@
 <div class="main-wrap">
   <div class="topbar">
     <div class="topbar-left">
+      <button type="button" class="sb-menu-btn" onclick="toggleAdminSidebar()" aria-label="메뉴 열기">
+        <svg class="icon" width="22" height="22"><use href="#ic-menu"/></svg>
+      </button>
       <h1 id="page-title">
         <svg class="icon" width="18" height="18" color="var(--navy)"><use href="#ic-chart"/></svg>
         대시보드
@@ -352,6 +352,9 @@
         <div class="panel-header">
           <h2><svg class="icon" width="16" height="16" color="var(--red)"><use href="#ic-users"/></svg>접수자 목록 (제98회)</h2>
           <div class="panel-actions">
+            <button class="btn btn-gold" onclick="batchAssignExamNumbers()">
+              <svg class="icon" width="13" height="13"><use href="#ic-ticket"/></svg>수험번호 일괄 부여
+            </button>
             <button class="btn btn-green" onclick="downloadExcel()">
               <svg class="icon" width="13" height="13"><use href="#ic-download"/></svg>엑셀 다운로드
             </button>
@@ -359,6 +362,9 @@
               <svg class="icon" width="13" height="13"><use href="#ic-print"/></svg>인쇄
             </button>
           </div>
+        </div>
+        <div class="admin-callout" style="padding:12px 20px;background:#eff6ff;font-size:12px;color:#1e40af;border-bottom:1px solid #bfdbfe;line-height:1.55;">
+          <strong>자동화:</strong> 응시자 목록에서 <strong>오프라인 수납 완료</strong> 처리 후 「수험번호 일괄 부여」를 실행하면, 수납 완료 건에 순차적으로 수험번호가 부여되고 증명사진과 매핑됩니다(연동 데모). 엑셀 다운로드로 전체 목록·수납·수험번호를보낼 수 있습니다.
         </div>
         <div class="filter-bar">
           <button class="filter-chip active" onclick="filterStatus(this,'all')">전체 142</button>
@@ -375,6 +381,7 @@
             <svg class="icon" width="10" height="10"><use href="#ic-x"/></svg>반려 3
           </button>
           <button class="filter-chip" onclick="filterStatus(this,'cancelled')">취소 5</button>
+          <button class="filter-chip" onclick="filterPaidOnly(this)">수납 미완료</button>
           <div class="search-mini">
             <input type="text" placeholder="이름 / 수험번호 검색" id="tableSearch" oninput="searchTable()"/>
             <button><svg class="icon" width="13" height="13"><use href="#ic-search"/></svg></button>
@@ -389,25 +396,30 @@
               <th>이름(영문)</th>
               <th>급수</th>
               <th>접수일</th>
+              <th>수납</th>
+              <th>수험번호</th>
               <th>상태</th>
               <th>관리</th>
             </tr></thead>
             <tbody id="applicantBody">
-              <tr data-status="pending">
+              <tr data-status="pending" data-paid="0">
                 <td>142</td>
                 <td><div class="photo-thumb"><svg class="icon" width="18" height="18" color="#aab8cc"><use href="#ic-user"/></svg></div></td>
                 <td>이지민</td><td>LEE JIMIN</td><td>TOPIK I</td><td>04.02</td>
+                <td>미수납</td><td>—</td>
                 <td><span class="sb sb-pending"><svg class="icon" width="10" height="10"><use href="#ic-ticket"/></svg>접수완료</span></td>
                 <td><div class="action-btns">
+                  <button class="ab-approve" style="background:#fef3c7;color:#92400e;" onclick="markOfflinePaid(this)"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>오프라인 수납</button>
                   <button class="ab-approve" onclick="approveRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>승인</button>
                   <button class="ab-reject" onclick="rejectRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-x"/></svg>반려</button>
                   <button class="ab-view"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button>
                 </div></td>
               </tr>
-              <tr data-status="review">
+              <tr data-status="review" data-paid="1">
                 <td>141</td>
                 <td><div class="photo-thumb"><svg class="icon" width="18" height="18" color="#aab8cc"><use href="#ic-user"/></svg></div></td>
                 <td>아웅산우</td><td>AUNG SAN OO</td><td>TOPIK II</td><td>04.02</td>
+                <td>수납완료</td><td>—</td>
                 <td><span class="sb sb-review"><svg class="icon" width="10" height="10"><use href="#ic-image"/></svg>검토중</span></td>
                 <td><div class="action-btns">
                   <button class="ab-approve" onclick="approveRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>승인</button>
@@ -415,29 +427,32 @@
                   <button class="ab-view"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button>
                 </div></td>
               </tr>
-              <tr data-status="approved">
+              <tr data-status="approved" data-paid="1">
                 <td>140</td>
                 <td><div class="photo-thumb" style="color:#10b981;"><svg class="icon" width="18" height="18"><use href="#ic-check"/></svg></div></td>
                 <td>마띠다</td><td>MA THIDA</td><td>TOPIK I</td><td>04.01</td>
+                <td>수납완료</td><td>MM-98-0140</td>
                 <td><span class="sb sb-approved"><svg class="icon" width="10" height="10"><use href="#ic-check"/></svg>승인완료</span></td>
                 <td><div class="action-btns">
                   <button class="ab-view"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button>
                 </div></td>
               </tr>
-              <tr data-status="rejected">
+              <tr data-status="rejected" data-paid="1">
                 <td>138</td>
                 <td><div class="photo-thumb" style="color:var(--red);"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></div></td>
                 <td>윈나잉</td><td>WIN NAING</td><td>TOPIK I</td><td>04.01</td>
+                <td>수납완료</td><td>—</td>
                 <td><span class="sb sb-rejected"><svg class="icon" width="10" height="10"><use href="#ic-x"/></svg>반려</span></td>
                 <td><div class="action-btns">
                   <button class="ab-approve" onclick="approveRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>재승인</button>
                   <button class="ab-view"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button>
                 </div></td>
               </tr>
-              <tr data-status="cancelled">
+              <tr data-status="cancelled" data-paid="0">
                 <td>137</td>
                 <td><div class="photo-thumb"><svg class="icon" width="18" height="18" color="#aab8cc"><use href="#ic-x"/></svg></div></td>
                 <td>조민</td><td>CHO MIN</td><td>TOPIK II</td><td>03.31</td>
+                <td>—</td><td>—</td>
                 <td><span class="sb sb-cancelled">취소</span></td>
                 <td><div class="action-btns">
                   <button class="ab-view"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button>
@@ -674,6 +689,26 @@
 </div><!-- /main-wrap -->
 
 <script>
+  function toggleAdminSidebar(){
+    var s=document.getElementById('sidebar');
+    var o=document.getElementById('sbOverlay');
+    if(!s)return;
+    var on=!s.classList.contains('open');
+    s.classList.toggle('open',on);
+    if(o){
+      o.classList.toggle('is-visible',on);
+      o.setAttribute('aria-hidden',on?'false':'true');
+    }
+  }
+  function closeAdminSidebar(){
+    var s=document.getElementById('sidebar');
+    var o=document.getElementById('sbOverlay');
+    if(s)s.classList.remove('open');
+    if(o){
+      o.classList.remove('is-visible');
+      o.setAttribute('aria-hidden','true');
+    }
+  }
   function showPanel(name, clickedBtn){
     document.querySelectorAll('[id^="panel-"]').forEach(p=>p.style.display='none');
     document.getElementById('panel-'+name).style.display='block';
@@ -689,13 +724,45 @@
     };
     document.getElementById('page-title').innerHTML =
       `<svg class="icon" width="18" height="18" color="var(--navy)"><use href="#${icons[name]}"/></svg>${labels[name]}`;
+    closeAdminSidebar();
   }
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAdminSidebar();});
   function filterStatus(btn, status){
     document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
     btn.classList.add('active');
     document.querySelectorAll('#applicantBody tr').forEach(row=>{
       row.style.display=(status==='all'||row.dataset.status===status)?'':'none';
     });
+  }
+  function filterPaidOnly(btn){
+    document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#applicantBody tr').forEach(row=>{
+      row.style.display=row.dataset.paid==='0'?'':'none';
+    });
+  }
+  var nextExamSeq=9150;
+  function markOfflinePaid(btn){
+    const row=btn.closest('tr');
+    row.dataset.paid='1';
+    row.cells[6].textContent='수납완료';
+    btn.remove();
+    alert('오프라인 수납이 완료 처리되었습니다. 이후 「수험번호 일괄 부여」로 순차 발급할 수 있습니다.');
+  }
+  function batchAssignExamNumbers(){
+    let n=0;
+    document.querySelectorAll('#applicantBody tr').forEach(row=>{
+      if(row.dataset.paid!=='1')return;
+      const st=row.dataset.status;
+      if(st==='cancelled'||st==='rejected')return;
+      const cell=row.cells[7];
+      if(!cell)return;
+      const cur=(cell.textContent||'').trim();
+      if(cur&&cur!=='—')return;
+      cell.textContent='MM-98-'+String(nextExamSeq++).slice(-4);
+      n++;
+    });
+    alert(n?('수험번호 '+n+'건이 부여되었습니다. (데모: 수납 완료 건·사진 매핑 워크플로)'):'부여 대상이 없습니다. 수납 완료이고 수험번호가 비어 있으며 반려·취소가 아닌 접수만 부여됩니다.');
   }
   function approveRow(btn){
     const row=btn.closest('tr');
@@ -714,11 +781,12 @@
   }
   function downloadExcel(){
     const rows=document.querySelectorAll('#applicantBody tr');
-    let csv='\uFEFF번호,이름(한글),이름(영문),급수,접수일,상태\n';
+    let csv='\uFEFF번호,이름(한글),이름(영문),급수,접수일,수납,수험번호,상태\n';
     rows.forEach(row=>{
       const cells=row.querySelectorAll('td');
-      if(cells.length>0){
-        csv+=`${cells[0].textContent.trim()},${cells[2].textContent.trim()},${cells[3].textContent.trim()},${cells[4].textContent.trim()},${cells[5].textContent.trim()},${cells[6].textContent.trim()}\n`;
+      if(cells.length>=10){
+        const statusTxt=(cells[8].innerText||cells[8].textContent||'').replace(/\s+/g,' ').trim();
+        csv+=`${cells[0].textContent.trim()},${cells[2].textContent.trim()},${cells[3].textContent.trim()},${cells[4].textContent.trim()},${cells[5].textContent.trim()},${cells[6].textContent.trim()},${cells[7].textContent.trim()},${statusTxt}\n`;
       }
     });
     const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
@@ -742,5 +810,6 @@
     el.style.display=el.style.display==='none'?'block':'none';
   }
 </script>
+<script src="js/admin-mobile.js"></script>
 </body>
 </html>

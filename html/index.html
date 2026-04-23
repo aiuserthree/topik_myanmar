@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>TOPIK Myanmar — 한국어능력시험</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+Myanmar:wght@400;700&display=swap" rel="stylesheet"/>
   <style>
@@ -35,8 +35,6 @@
     .btn-primary:hover{background:#b02530;}
     .btn-gold{background:var(--gold);color:white;}
     .btn-gold:hover{background:#b07830;}
-    .hamburger{display:none;cursor:pointer;padding:4px;background:none;border:none;color:white;}
-
     /* ── HERO ── */
     .hero{background:linear-gradient(135deg,var(--navy) 0%,#002060 60%,#1a3a6e 100%);color:white;padding:56px 24px;position:relative;overflow:hidden;}
     .hero::before{content:'';position:absolute;top:-80px;right:-80px;width:360px;height:360px;background:radial-gradient(circle,rgba(205,46,58,0.15) 0%,transparent 70%);border-radius:50%;}
@@ -103,6 +101,13 @@
     .ql-icon-wrap.teal{background:linear-gradient(135deg,#ccfbf1,#99f6e4);}
     .ql-label{font-size:13px;font-weight:700;color:var(--navy);}
     .ql-sub{font-size:11px;color:var(--gray-text);}
+    .faq-home{display:flex;flex-direction:column;gap:10px;}
+    .faq-home .faq-item{background:white;border-radius:12px;overflow:hidden;border:1px solid var(--gray-light);box-shadow:var(--shadow);}
+    .faq-home .faq-q{width:100%;text-align:left;padding:14px 18px;font-size:14px;font-weight:600;color:var(--navy);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;font-family:inherit;background:white;border:none;}
+    .faq-home .faq-q svg{transition:transform .2s;flex-shrink:0;}
+    .faq-home .faq-item.open .faq-q svg{transform:rotate(180deg);}
+    .faq-home .faq-a{display:none;padding:0 18px 14px;font-size:13px;line-height:1.7;color:#444;}
+    .faq-home .faq-item.open .faq-a{display:block;}
 
     /* FOOTER */
     footer{background:#1a2a4a;color:#aab8cc;padding:40px 24px 20px;}
@@ -119,12 +124,11 @@
     .footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:12px;}
 
     @media(max-width:768px){
-      nav{display:none;}
-      .hamburger{display:flex;}
       .hero-inner{flex-direction:column;}
       .footer-top{flex-direction:column;gap:24px;}
     }
   </style>
+  <link rel="stylesheet" href="css/mobile.css"/>
   <!-- ════ SVG ICON SPRITE (공통 적용) ════ -->
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
     <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></symbol>
@@ -181,8 +185,9 @@
   <div class="header-top">
     <div class="lang-switch">
       <svg class="icon" width="13" height="13"><use href="#ic-globe"/></svg>
-      <button class="active">한국어</button>
-      <button>မြန်မာဘာသာ</button>
+      <button type="button" data-lang="ko" class="active">한국어</button>
+      <button type="button" data-lang="my">မြန်မာ</button>
+      <button type="button" data-lang="en">English</button>
     </div>
   </div>
   <div class="header-main">
@@ -194,17 +199,19 @@
       </div>
     </a>
     <nav id="mainNav">
-      <a href="guide.html"><svg class="icon" width="15" height="15" color="#aab8cc"><use href="#ic-guide"/></svg>TOPIK 안내</a>
-      <a href="rules.html"><svg class="icon" width="15" height="15" color="#aab8cc"><use href="#ic-rules"/></svg>시험 규정</a>
-      <a href="register.html"><svg class="icon" width="15" height="15" color="#aab8cc"><use href="#ic-register"/></svg>시험 접수</a>
-      <a href="mypage.html"><svg class="icon" width="15" height="15" color="#aab8cc"><use href="#ic-mypage"/></svg>접수 확인</a>
-      <a href="notice.html"><svg class="icon" width="15" height="15" color="#aab8cc"><use href="#ic-notice"/></svg>공지사항</a>
+      <a href="guide.html"><svg class="icon" width="15" height="15" color="#aab8cc"><use href="#ic-guide"/></svg><span data-i18n="nav_guide">TOPIK 안내</span></a>
+      <a href="rules.html"><svg class="icon" width="15" height="15" color="#aab8cc"><use href="#ic-rules"/></svg><span data-i18n="nav_rules">시험 규정</span></a>
+      <a href="register.html"><svg class="icon" width="15" height="15" color="#aab8cc"><use href="#ic-register"/></svg><span data-i18n="nav_register">시험 접수</span></a>
+      <a href="mypage.html"><svg class="icon" width="15" height="15" color="#aab8cc"><use href="#ic-mypage"/></svg><span data-i18n="nav_mypage">접수 확인</span></a>
+      <a href="notice.html"><svg class="icon" width="15" height="15" color="#aab8cc"><use href="#ic-notice"/></svg><span data-i18n="nav_notice">공지사항</span></a>
+      <a href="faq.html"><svg class="icon" width="15" height="15" color="#aab8cc"><use href="#ic-info"/></svg><span data-i18n="nav_faq">FAQ</span></a>
+      <a href="lookup.html"><svg class="icon" width="15" height="15" color="#aab8cc"><use href="#ic-search"/></svg><span data-i18n="nav_lookup">수험번호 조회</span></a>
     </nav>
     <div class="header-actions">
-      <a href="login.html" class="btn btn-outline"><svg class="icon" width="14" height="14"><use href="#ic-login"/></svg>로그인</a>
-      <a href="signup.html" class="btn btn-primary"><svg class="icon" width="14" height="14"><use href="#ic-signup"/></svg>회원가입</a>
+      <a href="login.html" class="btn btn-outline"><svg class="icon" width="14" height="14"><use href="#ic-login"/></svg><span data-i18n="nav_login">로그인</span></a>
+      <a href="signup.html" class="btn btn-primary"><svg class="icon" width="14" height="14"><use href="#ic-signup"/></svg><span data-i18n="nav_signup">회원가입</span></a>
     </div>
-    <button class="hamburger" onclick="toggleMenu()" aria-label="메뉴">
+    <button type="button" class="hamburger" onclick="toggleMenu()" aria-label="메뉴 열기" aria-expanded="false">
       <svg width="22" height="22"><use href="#ic-menu"/></svg>
     </button>
   </div>
@@ -216,16 +223,16 @@
     <div class="hero-content">
       <div class="hero-badge">
         <svg class="icon" width="13" height="13"><use href="#ic-cert"/></svg>
-        제98회 한국어능력시험 (TOPIK)
+        <span data-i18n="hero_badge">제98회 한국어능력시험 (TOPIK)</span>
       </div>
-      <h1 class="hero-title">미얀마 한국어능력시험<br/>공식 접수 시스템</h1>
-      <p class="hero-sub">ကိုရီးယား ဘာသာစကား ကျွမ်းကျင်မှု စစ်ဆေးခြင်း — တိုပစ် မြန်မာ</p>
+      <h1 class="hero-title" data-i18n="hero_title" data-i18n-html="">미얀마 한국어능력시험<br/>공식 접수 시스템</h1>
+      <p class="hero-sub" data-i18n="hero_sub" data-i18n-html="">ကိုရီးယား ဘာသာစကား ကျွမ်းကျင်မှု စစ်ဆေးခြင်း — တိုပစ် မြန်မာ</p>
       <div class="hero-actions">
         <a href="register.html" class="btn btn-primary">
-          <svg class="icon" width="15" height="15"><use href="#ic-register"/></svg>시험 접수하기
+          <svg class="icon" width="15" height="15"><use href="#ic-register"/></svg><span data-i18n="hero_reg">시험 접수하기</span>
         </a>
         <a href="guide.html" class="btn btn-gold">
-          <svg class="icon" width="15" height="15"><use href="#ic-guide"/></svg>시험 안내 보기
+          <svg class="icon" width="15" height="15"><use href="#ic-guide"/></svg><span data-i18n="hero_guide">시험 안내 보기</span>
         </a>
       </div>
     </div>
@@ -233,20 +240,20 @@
       <div class="countdown-card">
         <div class="countdown-label">
           <svg class="icon" width="13" height="13"><use href="#ic-clock"/></svg>
-          접수 마감까지
+          <span data-i18n="cd_label">접수 마감까지</span>
         </div>
         <div class="countdown">
-          <div class="cd-box"><div class="num" id="cd-days">12</div><div class="lbl">일</div></div>
+          <div class="cd-box"><div class="num" id="cd-days">12</div><div class="lbl" data-i18n="cd_day">일</div></div>
           <div class="cd-sep">:</div>
-          <div class="cd-box"><div class="num" id="cd-hours">08</div><div class="lbl">시</div></div>
+          <div class="cd-box"><div class="num" id="cd-hours">08</div><div class="lbl" data-i18n="cd_hour">시</div></div>
           <div class="cd-sep">:</div>
-          <div class="cd-box"><div class="num" id="cd-mins">34</div><div class="lbl">분</div></div>
+          <div class="cd-box"><div class="num" id="cd-mins">34</div><div class="lbl" data-i18n="cd_min">분</div></div>
           <div class="cd-sep">:</div>
-          <div class="cd-box"><div class="num" id="cd-secs">52</div><div class="lbl">초</div></div>
+          <div class="cd-box"><div class="num" id="cd-secs">52</div><div class="lbl" data-i18n="cd_sec">초</div></div>
         </div>
         <div class="cd-period">
           <svg class="icon" width="12" height="12"><use href="#ic-calendar"/></svg>
-          접수기간: 2025.04.01 ~ 2025.04.14
+          <span data-i18n="cd_period">접수기간: 2025.04.01 ~ 2025.04.14</span>
         </div>
       </div>
     </div>
@@ -259,9 +266,9 @@
     <div class="section-header">
       <h2 class="section-title">
         <svg class="icon" width="18" height="18" color="var(--red)"><use href="#ic-notice"/></svg>
-        공지사항
+        <span data-i18n="sec_notice">공지사항</span>
       </h2>
-      <a href="notice.html" class="more-link">더보기 <svg class="icon" width="14" height="14"><use href="#ic-arrow-r"/></svg></a>
+      <a href="notice.html" class="more-link"><span data-i18n="sec_notice_more">더보기</span> <svg class="icon" width="14" height="14"><use href="#ic-arrow-r"/></svg></a>
     </div>
     <div class="notice-list">
       <a href="notice.html" class="notice-item">
@@ -335,45 +342,86 @@
   </div>
 </section>
 
+<!-- ════ FAQ ════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2 class="section-title">
+        <svg class="icon" width="18" height="18" color="var(--red)"><use href="#ic-info"/></svg>
+        <span data-i18n="sec_faq">자주 묻는 질문 (FAQ)</span>
+      </h2>
+      <a href="faq.html" class="more-link"><span data-i18n="sec_notice_more">더보기</span> <svg class="icon" width="14" height="14"><use href="#ic-arrow-r"/></svg></a>
+    </div>
+    <div class="faq-home">
+      <div class="faq-item">
+        <button type="button" class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          <span data-i18n="faq_q1"></span>
+          <svg class="icon" width="18" height="18" color="var(--navy)"><use href="#ic-chev-d"/></svg>
+        </button>
+        <div class="faq-a" data-i18n="faq_a1"></div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          <span data-i18n="faq_q2"></span>
+          <svg class="icon" width="18" height="18" color="var(--navy)"><use href="#ic-chev-d"/></svg>
+        </button>
+        <div class="faq-a" data-i18n="faq_a2"></div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          <span data-i18n="faq_q3"></span>
+          <svg class="icon" width="18" height="18" color="var(--navy)"><use href="#ic-chev-d"/></svg>
+        </button>
+        <div class="faq-a" data-i18n="faq_a3"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ════ QUICK LINKS ════ -->
 <section class="section">
   <div class="section-inner">
     <div class="section-header">
       <h2 class="section-title">
         <svg class="icon" width="18" height="18" color="var(--red)"><use href="#ic-link"/></svg>
-        바로가기
+        <span data-i18n="sec_quick">바로가기</span>
       </h2>
     </div>
     <div class="ql-grid">
-      <a href="#" class="ql-item">
+      <a href="https://www.topik.go.kr/" class="ql-item" target="_blank" rel="noopener noreferrer">
         <div class="ql-icon-wrap navy"><svg class="icon" width="26" height="26" color="#003478"><use href="#ic-globe"/></svg></div>
-        <div class="ql-label">TOPIK 본부</div>
-        <div class="ql-sub">topik.go.kr</div>
+        <div class="ql-label" data-i18n="ql_topik">TOPIK 본부</div>
+        <div class="ql-sub" data-i18n="ql_topik_sub">topik.go.kr</div>
       </a>
-      <a href="#" class="ql-item">
+      <a href="https://www.topik.go.kr/usr/cmm/index.do" class="ql-item" target="_blank" rel="noopener noreferrer">
         <div class="ql-icon-wrap gold"><svg class="icon" width="26" height="26" color="#b07800"><use href="#ic-star"/></svg></div>
-        <div class="ql-label">성적 조회</div>
-        <div class="ql-sub">합격 결과 확인</div>
+        <div class="ql-label" data-i18n="ql_score">성적 조회</div>
+        <div class="ql-sub" data-i18n="ql_score_sub">합격 결과 확인</div>
       </a>
-      <a href="#" class="ql-item">
+      <a href="https://www.topik.go.kr/usr/cmm/index.do" class="ql-item" target="_blank" rel="noopener noreferrer">
         <div class="ql-icon-wrap teal"><svg class="icon" width="26" height="26" color="#0d9488"><use href="#ic-folder"/></svg></div>
-        <div class="ql-label">자료실</div>
-        <div class="ql-sub">기출문제 다운로드</div>
+        <div class="ql-label" data-i18n="ql_docs">자료실</div>
+        <div class="ql-sub" data-i18n="ql_docs_sub">기출문제 다운로드</div>
       </a>
       <a href="admit.html" class="ql-item">
         <div class="ql-icon-wrap red"><svg class="icon" width="26" height="26" color="#CD2E3A"><use href="#ic-ticket"/></svg></div>
-        <div class="ql-label">수험표 출력</div>
-        <div class="ql-sub">승인 후 출력 가능</div>
+        <div class="ql-label" data-i18n="ql_admit">수험표 출력</div>
+        <div class="ql-sub" data-i18n="ql_admit_sub">승인 후 출력 가능</div>
+      </a>
+      <a href="lookup.html" class="ql-item">
+        <div class="ql-icon-wrap navy"><svg class="icon" width="26" height="26" color="#003478"><use href="#ic-search"/></svg></div>
+        <div class="ql-label" data-i18n="ql_lookup">수험번호 조회</div>
+        <div class="ql-sub" data-i18n="ql_lookup_sub">이름·생년월일</div>
       </a>
       <a href="mypage.html" class="ql-item">
         <div class="ql-icon-wrap purple"><svg class="icon" width="26" height="26" color="#7c3aed"><use href="#ic-mypage"/></svg></div>
-        <div class="ql-label">마이페이지</div>
-        <div class="ql-sub">접수 현황 확인</div>
+        <div class="ql-label" data-i18n="ql_mypage">마이페이지</div>
+        <div class="ql-sub" data-i18n="ql_mypage_sub">접수 현황 확인</div>
       </a>
       <a href="rules.html" class="ql-item">
         <div class="ql-icon-wrap green"><svg class="icon" width="26" height="26" color="#065f46"><use href="#ic-rules"/></svg></div>
-        <div class="ql-label">시험 규정</div>
-        <div class="ql-sub">유의사항 안내</div>
+        <div class="ql-label" data-i18n="ql_rules">시험 규정</div>
+        <div class="ql-sub" data-i18n="ql_rules_sub">유의사항 안내</div>
       </a>
     </div>
   </div>
@@ -388,27 +436,29 @@
           <svg width="36" height="36"><use href="#ic-topik-logo"/></svg>
           <div class="main">TOPIK Myanmar</div>
         </div>
-        <p>주관: 국립국제교육원 (NIIED)<br/>미얀마 시행기관: 주미얀마 한국문화원<br/>문의: topik.myanmar@koica.go.kr</p>
+        <p data-i18n="foot_brand" data-i18n-html="">주관: 국립국제교육원 (NIIED)<br/>미얀마 시행기관: 주미얀마 한국문화원<br/>문의: topik.myanmar@koica.go.kr</p>
       </div>
       <div class="footer-col">
-        <h4>사이트 메뉴</h4>
+        <h4 data-i18n="foot_menu">사이트 메뉴</h4>
         <ul>
-          <li><a href="guide.html"><svg class="icon" width="12" height="12"><use href="#ic-guide"/></svg>TOPIK 안내</a></li>
-          <li><a href="rules.html"><svg class="icon" width="12" height="12"><use href="#ic-rules"/></svg>시험 규정</a></li>
-          <li><a href="register.html"><svg class="icon" width="12" height="12"><use href="#ic-register"/></svg>시험 접수</a></li>
-          <li><a href="notice.html"><svg class="icon" width="12" height="12"><use href="#ic-notice"/></svg>공지사항</a></li>
+          <li><a href="guide.html"><svg class="icon" width="12" height="12"><use href="#ic-guide"/></svg><span data-i18n="nav_guide">TOPIK 안내</span></a></li>
+          <li><a href="rules.html"><svg class="icon" width="12" height="12"><use href="#ic-rules"/></svg><span data-i18n="nav_rules">시험 규정</span></a></li>
+          <li><a href="register.html"><svg class="icon" width="12" height="12"><use href="#ic-register"/></svg><span data-i18n="nav_register">시험 접수</span></a></li>
+          <li><a href="notice.html"><svg class="icon" width="12" height="12"><use href="#ic-notice"/></svg><span data-i18n="nav_notice">공지사항</span></a></li>
+          <li><a href="faq.html"><svg class="icon" width="12" height="12"><use href="#ic-info"/></svg><span data-i18n="nav_faq">FAQ</span></a></li>
+          <li><a href="lookup.html"><svg class="icon" width="12" height="12"><use href="#ic-search"/></svg><span data-i18n="nav_lookup">수험번호 조회</span></a></li>
         </ul>
       </div>
       <div class="footer-col">
-        <h4>관련 링크</h4>
+        <h4 data-i18n="foot_links">관련 링크</h4>
         <ul>
-          <li><a href="#"><svg class="icon" width="12" height="12"><use href="#ic-link"/></svg>TOPIK 본부</a></li>
-          <li><a href="#"><svg class="icon" width="12" height="12"><use href="#ic-link"/></svg>국립국제교육원</a></li>
-          <li><a href="#"><svg class="icon" width="12" height="12"><use href="#ic-link"/></svg>주미얀마 한국문화원</a></li>
+          <li><a href="https://www.topik.go.kr/" target="_blank" rel="noopener noreferrer"><svg class="icon" width="12" height="12"><use href="#ic-link"/></svg>TOPIK (topik.go.kr)</a></li>
+          <li><a href="https://www.niied.go.kr/main.do" target="_blank" rel="noopener noreferrer"><svg class="icon" width="12" height="12"><use href="#ic-link"/></svg>NIIED</a></li>
+          <li><a href="https://overseas.mofa.go.kr/mm-ko/index.do" target="_blank" rel="noopener noreferrer"><svg class="icon" width="12" height="12"><use href="#ic-link"/></svg>재외공관 안내</a></li>
         </ul>
       </div>
       <div class="footer-col">
-        <h4>문의처</h4>
+        <h4 data-i18n="foot_contact">문의처</h4>
         <ul>
           <li><a href="#"><svg class="icon" width="12" height="12"><use href="#ic-phone"/></svg>+95-1-234-5678</a></li>
           <li><a href="#"><svg class="icon" width="12" height="12"><use href="#ic-email"/></svg>topik.myanmar@kr.go</a></li>
@@ -424,6 +474,13 @@
   </div>
 </footer>
 
+<script src="js/mobile-nav.js" defer></script>
+<script src="js/i18n.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.TMI18N) TMI18N.boot();
+  });
+</script>
 <script>
   const target = new Date('2025-04-14T23:59:59');
   function updateCD(){
@@ -436,12 +493,6 @@
     document.getElementById('cd-secs').textContent=String(s).padStart(2,'0');
   }
   setInterval(updateCD,1000); updateCD();
-
-  function toggleMenu(){
-    const nav=document.getElementById('mainNav');
-    const open=nav.style.display==='flex';
-    Object.assign(nav.style,open?{display:'none'}:{display:'flex',flexDirection:'column',position:'absolute',top:'100%',left:'0',right:'0',background:'#003478',padding:'12px 16px',zIndex:'999',gap:'4px'});
-  }
 </script>
 </body>
 </html>

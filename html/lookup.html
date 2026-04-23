@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>수험번호 조회 — TOPIK Myanmar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+Myanmar:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--red:#CD2E3A;--navy:#003478;--gold:#C8963E;--gray-bg:#f4f6f9;--gray-light:#e8ecf0;--gray-text:#6b7280;--shadow:0 2px 12px rgba(0,0,0,0.08);}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--gray-bg);color:#1a1a2e;}
+    svg.icon{display:inline-block;vertical-align:middle;flex-shrink:0;}
+    header{background:var(--navy);position:sticky;top:0;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+    .header-top{background:#002060;display:flex;justify-content:flex-end;padding:6px 24px;font-size:12px;color:#aab8cc;}
+    .lang-switch{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+    .lang-switch button{background:none;border:1px solid #aab8cc;color:#aab8cc;padding:2px 10px;border-radius:4px;cursor:pointer;font-size:11px;}
+    .lang-switch button.active,.lang-switch button:hover{background:var(--gold);border-color:var(--gold);color:#fff;}
+    .header-main{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;max-width:1200px;margin:0 auto;}
+    .logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
+    .logo-text .main{font-size:18px;font-weight:700;color:white;}
+    .logo-text .sub{font-size:11px;color:#aab8cc;}
+    nav{display:flex;gap:2px;flex-wrap:wrap;}
+    nav a{color:#dce8f5;text-decoration:none;padding:8px 11px;border-radius:6px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:5px;}
+    nav a:hover,nav a.active{background:rgba(255,255,255,0.12);color:white;}
+    .header-actions{display:flex;gap:8px;}
+    .btn{padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .btn-outline{border:1.5px solid #aab8cc;color:#dce8f5;background:transparent;}
+    .btn-primary{background:var(--red);color:white;}
+    .page-hero{background:linear-gradient(135deg,var(--navy),#002060);color:white;padding:36px 24px;}
+    .page-hero-inner{max-width:640px;margin:0 auto;}
+    .breadcrumb{font-size:12px;color:#aab8cc;margin-bottom:10px;}
+    .breadcrumb a{color:#aab8cc;text-decoration:none;}
+    .page-hero h1{font-size:clamp(22px,4vw,30px);font-weight:700;display:flex;align-items:center;gap:10px;}
+    .page-hero p{margin-top:10px;font-size:13px;color:#aab8cc;line-height:1.55;}
+    .content{max-width:640px;margin:0 auto;padding:32px 24px 48px;}
+    .lookup-card{background:white;border-radius:14px;padding:26px;box-shadow:var(--shadow);border:1px solid var(--gray-light);}
+    .form-group{margin-bottom:18px;}
+    .form-group label{display:block;font-size:13px;font-weight:600;color:var(--navy);margin-bottom:8px;}
+    .form-group input{width:100%;padding:12px 14px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:15px;font-family:inherit;}
+    .form-group input:focus{outline:none;border-color:var(--navy);}
+    .btn-submit{width:100%;padding:14px;background:var(--navy);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;}
+    .btn-submit:hover{background:#002060;}
+    .result-box{margin-top:22px;padding:20px;border-radius:12px;background:#f0fdf4;border:1.5px solid #86efac;display:none;}
+    .result-box.show{display:block;}
+    .result-box.err{background:#fff7ed;border-color:#fdba74;}
+    .result-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.06);font-size:14px;}
+    .result-row:last-child{border-bottom:none;}
+    .result-k{color:var(--gray-text);}
+    .result-v{font-weight:700;color:var(--navy);}
+    .exam-num{font-size:22px;color:var(--red);}
+    .official{margin-top:24px;padding:16px;background:#f0f4ff;border-radius:10px;font-size:13px;line-height:1.65;}
+    .official a{color:var(--red);font-weight:600;word-break:break-all;}
+    footer{background:#1a2a4a;color:#aab8cc;padding:28px 24px;}
+    .footer-bottom{max-width:1200px;margin:0 auto;font-size:12px;}
+  </style>
+  <link rel="stylesheet" href="css/mobile.css"/>
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <symbol id="ic-guide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></symbol>
+    <symbol id="ic-rules" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></symbol>
+    <symbol id="ic-register" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+    <symbol id="ic-mypage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="ic-notice" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></symbol>
+    <symbol id="ic-login" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/></symbol>
+    <symbol id="ic-signup" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></symbol>
+    <symbol id="ic-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></symbol>
+    <symbol id="ic-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+    <symbol id="ic-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+    <symbol id="ic-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></symbol>
+    <symbol id="ic-topik-logo" viewBox="0 0 44 44"><rect width="44" height="44" rx="8" fill="#CD2E3A"/><text x="22" y="20" text-anchor="middle" fill="white" font-size="8" font-weight="700">TOPIK</text><text x="22" y="32" text-anchor="middle" fill="white" font-size="7">MM</text></symbol>
+  </svg>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="lang-switch">
+      <svg class="icon" width="13" height="13"><use href="#ic-globe"/></svg>
+      <button type="button" data-lang="ko" class="active">한국어</button>
+      <button type="button" data-lang="my">မြန်မာ</button>
+      <button type="button" data-lang="en">English</button>
+    </div>
+  </div>
+  <div class="header-main">
+    <a href="index.html" class="logo">
+      <svg width="44" height="44"><use href="#ic-topik-logo"/></svg>
+      <div class="logo-text"><div class="main">TOPIK Myanmar</div><div class="sub">တိုပစ် မြန်မာ</div></div>
+    </a>
+    <nav id="mainNav">
+      <a href="guide.html"><svg class="icon" width="15" height="15"><use href="#ic-guide"/></svg><span data-i18n="nav_guide">TOPIK 안내</span></a>
+      <a href="rules.html"><svg class="icon" width="15" height="15"><use href="#ic-rules"/></svg><span data-i18n="nav_rules">시험 규정</span></a>
+      <a href="register.html"><svg class="icon" width="15" height="15"><use href="#ic-register"/></svg><span data-i18n="nav_register">시험 접수</span></a>
+      <a href="mypage.html"><svg class="icon" width="15" height="15"><use href="#ic-mypage"/></svg><span data-i18n="nav_mypage">접수 확인</span></a>
+      <a href="notice.html"><svg class="icon" width="15" height="15"><use href="#ic-notice"/></svg><span data-i18n="nav_notice">공지사항</span></a>
+      <a href="faq.html"><svg class="icon" width="15" height="15"><use href="#ic-info"/></svg><span data-i18n="nav_faq">FAQ</span></a>
+      <a href="lookup.html" class="active"><svg class="icon" width="15" height="15"><use href="#ic-search"/></svg><span data-i18n="nav_lookup">수험번호 조회</span></a>
+    </nav>
+    <div class="header-actions">
+      <a href="login.html" class="btn btn-outline"><svg class="icon" width="14" height="14"><use href="#ic-login"/></svg><span data-i18n="nav_login">로그인</span></a>
+      <a href="signup.html" class="btn btn-primary"><svg class="icon" width="14" height="14"><use href="#ic-signup"/></svg><span data-i18n="nav_signup">회원가입</span></a>
+    </div>
+    <button type="button" class="hamburger" onclick="toggleMenu()" aria-label="Menu" aria-expanded="false">
+      <svg width="22" height="22"><use href="#ic-menu"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="breadcrumb"><a href="index.html">Home</a> › <span data-i18n="nav_lookup">수험번호 조회</span></div>
+    <h1><svg class="icon" width="28" height="28" color="#fff"><use href="#ic-search"/></svg> <span data-i18n="lookup_title">수험번호 조회</span></h1>
+    <p data-i18n="lookup_desc">접수 시 입력한 영문 성명과 생년월일로 수험번호를 확인합니다.</p>
+  </div>
+</div>
+
+<div class="content">
+  <div class="lookup-card">
+    <div class="form-group">
+      <label for="lk-name" data-i18n="lbl_fullname">영문 성명</label>
+      <input type="text" id="lk-name" autocomplete="name" placeholder="MA THIDA"/>
+    </div>
+    <div class="form-group">
+      <label for="lk-birth" data-i18n="lbl_birth">생년월일</label>
+      <input type="text" id="lk-birth" inputmode="numeric" maxlength="10" placeholder="19950315"/>
+    </div>
+    <button type="button" class="btn-submit" id="lk-btn">
+      <svg class="icon" width="18" height="18"><use href="#ic-search"/></svg>
+      <span data-i18n="btn_search">수험번호 조회</span>
+    </button>
+
+    <div class="result-box" id="lk-ok">
+      <div class="result-row"><span class="result-k" data-i18n="res_exam">수험번호</span><span class="result-v exam-num" id="lk-exam"></span></div>
+      <div class="result-row"><span class="result-k" data-i18n="res_round">회차</span><span class="result-v" id="lk-round"></span></div>
+      <div class="result-row"><span class="result-k" data-i18n="res_level">급수</span><span class="result-v" id="lk-level"></span></div>
+      <div class="result-row"><span class="result-k" data-i18n="res_venue">시험장</span><span class="result-v" id="lk-venue"></span></div>
+    </div>
+    <div class="result-box err" id="lk-bad">
+      <p id="lk-bad-msg" style="font-size:14px;line-height:1.65;"></p>
+    </div>
+  </div>
+
+  <div class="official">
+    <span data-i18n="official_line">시험 안내·급수·유의사항:</span>
+    <a href="https://www.topik.go.kr/" target="_blank" rel="noopener noreferrer">https://www.topik.go.kr/</a>
+    ·
+    <a href="https://www.niied.go.kr/main.do" target="_blank" rel="noopener noreferrer">NIIED</a>
+  </div>
+</div>
+
+<footer><div class="footer-bottom">© 2025 TOPIK Myanmar</div></footer>
+
+<script src="js/i18n.js"></script>
+<script src="js/mobile-nav.js" defer></script>
+<script>
+  var DEMO = [
+    { en: "MA THIDA", birth: "19950315", exam: "MM-97-1041", roundKo: "제97회 TOPIK", roundEn: "97th TOPIK", level: "TOPIK II", venue: "Yangon" },
+    { en: "HONG GILDONG", birth: "19900101", exam: "MM-98-0001", roundKo: "제98회 TOPIK", roundEn: "98th TOPIK", level: "TOPIK I", venue: "Yangon" },
+    { en: "LEE JIMIN", birth: "20020815", exam: "MM-98-0142", roundKo: "제98회 TOPIK", roundEn: "98th TOPIK", level: "TOPIK I", venue: "Yangon" }
+  ];
+
+  function normBirth(s) {
+    return String(s || "").replace(/\D/g, "").slice(0, 8);
+  }
+  function normName(s) {
+    return String(s || "")
+      .trim()
+      .toUpperCase()
+      .replace(/\s+/g, " ");
+  }
+
+  function runLookup() {
+    var lang = window.TMI18N ? TMI18N.getLang() : "ko";
+    var name = normName(document.getElementById("lk-name").value);
+    var birth = normBirth(document.getElementById("lk-birth").value);
+    var ok = document.getElementById("lk-ok");
+    var bad = document.getElementById("lk-bad");
+    ok.classList.remove("show");
+    bad.classList.remove("show");
+    if (!name || birth.length < 8) {
+      bad.classList.add("show");
+      document.getElementById("lk-bad-msg").textContent = TMI18N.t(lang, "err_empty");
+      return;
+    }
+    var hit = DEMO.find(function (r) {
+      return normName(r.en) === name && r.birth === birth;
+    });
+    if (!hit) {
+      bad.classList.add("show");
+      document.getElementById("lk-bad-msg").textContent = TMI18N.t(lang, "msg_notfound");
+      return;
+    }
+    document.getElementById("lk-exam").textContent = hit.exam;
+    document.getElementById("lk-round").textContent = lang === "en" ? hit.roundEn : hit.roundKo;
+    document.getElementById("lk-level").textContent = hit.level;
+    document.getElementById("lk-venue").textContent = hit.venue;
+    ok.classList.add("show");
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.TMI18N) TMI18N.boot();
+    document.getElementById("lk-btn").addEventListener("click", runLookup);
+  });
+</script>
+</body>
+</html>

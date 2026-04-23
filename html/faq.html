@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>FAQ — TOPIK Myanmar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+Myanmar:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--red:#CD2E3A;--navy:#003478;--gold:#C8963E;--gray-bg:#f4f6f9;--gray-light:#e8ecf0;--gray-text:#6b7280;--shadow:0 2px 12px rgba(0,0,0,0.08);}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--gray-bg);color:#1a1a2e;}
+    svg.icon{display:inline-block;vertical-align:middle;flex-shrink:0;}
+    header{background:var(--navy);position:sticky;top:0;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+    .header-top{background:#002060;display:flex;justify-content:flex-end;align-items:center;padding:6px 24px;font-size:12px;color:#aab8cc;}
+    .lang-switch{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+    .lang-switch button{background:none;border:1px solid #aab8cc;color:#aab8cc;padding:2px 10px;border-radius:4px;cursor:pointer;font-size:11px;transition:all .2s;}
+    .lang-switch button.active,.lang-switch button:hover{background:var(--gold);border-color:var(--gold);color:#fff;}
+    .header-main{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;max-width:1200px;margin:0 auto;}
+    .logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
+    .logo-text .main{font-size:18px;font-weight:700;color:white;}
+    .logo-text .sub{font-size:11px;color:#aab8cc;}
+    nav{display:flex;gap:2px;flex-wrap:wrap;}
+    nav a{color:#dce8f5;text-decoration:none;padding:8px 11px;border-radius:6px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:5px;}
+    nav a:hover,nav a.active{background:rgba(255,255,255,0.12);color:white;}
+    .header-actions{display:flex;gap:8px;}
+    .btn{padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .btn-outline{border:1.5px solid #aab8cc;color:#dce8f5;background:transparent;}
+    .btn-primary{background:var(--red);color:white;}
+    .page-hero{background:linear-gradient(135deg,var(--navy),#002060);color:white;padding:36px 24px;}
+    .page-hero-inner{max-width:800px;margin:0 auto;}
+    .breadcrumb{font-size:12px;color:#aab8cc;margin-bottom:10px;}
+    .breadcrumb a{color:#aab8cc;text-decoration:none;}
+    .page-hero h1{font-size:clamp(22px,4vw,30px);font-weight:700;display:flex;align-items:center;gap:10px;}
+    .content{max-width:800px;margin:0 auto;padding:32px 24px 48px;}
+    .faq-list{display:flex;flex-direction:column;gap:10px;}
+    .faq-item{background:white;border-radius:12px;box-shadow:var(--shadow);overflow:hidden;border:1px solid var(--gray-light);}
+    .faq-q{width:100%;text-align:left;padding:16px 18px;font-size:15px;font-weight:700;color:var(--navy);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;font-family:inherit;background:white;border:none;}
+    .faq-q:hover{background:#fafbfc;}
+    .faq-q svg{transition:transform .2s;}
+    .faq-item.open .faq-q svg{transform:rotate(180deg);}
+    .faq-a{display:none;padding:0 18px 18px;font-size:14px;line-height:1.75;color:#374151;}
+    .faq-item.open .faq-a{display:block;}
+    .faq-official{margin-top:28px;padding:18px;background:#f0f4ff;border-radius:12px;font-size:13px;color:var(--navy);line-height:1.65;}
+    .faq-official a{color:var(--red);font-weight:600;}
+    footer{background:#1a2a4a;color:#aab8cc;padding:28px 24px;}
+    .footer-bottom{max-width:1200px;margin:0 auto;font-size:12px;}
+  </style>
+  <link rel="stylesheet" href="css/mobile.css"/>
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <symbol id="ic-guide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></symbol>
+    <symbol id="ic-rules" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></symbol>
+    <symbol id="ic-register" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+    <symbol id="ic-mypage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="ic-notice" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></symbol>
+    <symbol id="ic-login" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/></symbol>
+    <symbol id="ic-signup" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></symbol>
+    <symbol id="ic-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></symbol>
+    <symbol id="ic-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+    <symbol id="ic-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+    <symbol id="ic-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></symbol>
+    <symbol id="ic-chev-d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></symbol>
+    <symbol id="ic-topik-logo" viewBox="0 0 44 44"><rect width="44" height="44" rx="8" fill="#CD2E3A"/><text x="22" y="20" text-anchor="middle" fill="white" font-size="8" font-weight="700">TOPIK</text><text x="22" y="32" text-anchor="middle" fill="white" font-size="7">MM</text></symbol>
+  </svg>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="lang-switch">
+      <svg class="icon" width="13" height="13"><use href="#ic-globe"/></svg>
+      <button type="button" data-lang="ko" class="active">한국어</button>
+      <button type="button" data-lang="my">မြန်မာ</button>
+      <button type="button" data-lang="en">English</button>
+    </div>
+  </div>
+  <div class="header-main">
+    <a href="index.html" class="logo">
+      <svg width="44" height="44"><use href="#ic-topik-logo"/></svg>
+      <div class="logo-text"><div class="main">TOPIK Myanmar</div><div class="sub">တိုပစ် မြန်မာ</div></div>
+    </a>
+    <nav id="mainNav">
+      <a href="guide.html"><svg class="icon" width="15" height="15"><use href="#ic-guide"/></svg><span data-i18n="nav_guide">TOPIK 안내</span></a>
+      <a href="rules.html"><svg class="icon" width="15" height="15"><use href="#ic-rules"/></svg><span data-i18n="nav_rules">시험 규정</span></a>
+      <a href="register.html"><svg class="icon" width="15" height="15"><use href="#ic-register"/></svg><span data-i18n="nav_register">시험 접수</span></a>
+      <a href="mypage.html"><svg class="icon" width="15" height="15"><use href="#ic-mypage"/></svg><span data-i18n="nav_mypage">접수 확인</span></a>
+      <a href="notice.html"><svg class="icon" width="15" height="15"><use href="#ic-notice"/></svg><span data-i18n="nav_notice">공지사항</span></a>
+      <a href="faq.html" class="active"><svg class="icon" width="15" height="15"><use href="#ic-info"/></svg><span data-i18n="nav_faq">FAQ</span></a>
+      <a href="lookup.html"><svg class="icon" width="15" height="15"><use href="#ic-search"/></svg><span data-i18n="nav_lookup">수험번호 조회</span></a>
+    </nav>
+    <div class="header-actions">
+      <a href="login.html" class="btn btn-outline"><svg class="icon" width="14" height="14"><use href="#ic-login"/></svg><span data-i18n="nav_login">로그인</span></a>
+      <a href="signup.html" class="btn btn-primary"><svg class="icon" width="14" height="14"><use href="#ic-signup"/></svg><span data-i18n="nav_signup">회원가입</span></a>
+    </div>
+    <button type="button" class="hamburger" onclick="toggleMenu()" aria-label="Menu" aria-expanded="false">
+      <svg width="22" height="22"><use href="#ic-menu"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="breadcrumb"><a href="index.html">Home</a> › <span data-i18n="nav_faq">FAQ</span></div>
+    <h1><svg class="icon" width="28" height="28" color="#fff"><use href="#ic-info"/></svg> <span data-i18n="sec_faq">자주 묻는 질문 (FAQ)</span></h1>
+  </div>
+</div>
+
+<div class="content">
+  <div class="faq-list">
+    <div class="faq-item">
+      <button type="button" class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+        <span data-i18n="faq_q1"></span>
+        <svg class="icon" width="18" height="18"><use href="#ic-chev-d"/></svg>
+      </button>
+      <div class="faq-a" data-i18n="faq_a1"></div>
+    </div>
+    <div class="faq-item">
+      <button type="button" class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+        <span data-i18n="faq_q2"></span>
+        <svg class="icon" width="18" height="18"><use href="#ic-chev-d"/></svg>
+      </button>
+      <div class="faq-a" data-i18n="faq_a2"></div>
+    </div>
+    <div class="faq-item">
+      <button type="button" class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+        <span data-i18n="faq_q3"></span>
+        <svg class="icon" width="18" height="18"><use href="#ic-chev-d"/></svg>
+      </button>
+      <div class="faq-a" data-i18n="faq_a3"></div>
+    </div>
+    <div class="faq-item">
+      <button type="button" class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+        <span data-i18n="faq_q4"></span>
+        <svg class="icon" width="18" height="18"><use href="#ic-chev-d"/></svg>
+      </button>
+      <div class="faq-a" data-i18n="faq_a4"></div>
+    </div>
+    <div class="faq-item">
+      <button type="button" class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+        <span data-i18n="faq_q5"></span>
+        <svg class="icon" width="18" height="18"><use href="#ic-chev-d"/></svg>
+      </button>
+      <div class="faq-a" data-i18n="faq_a5"></div>
+    </div>
+  </div>
+  <div class="faq-official">
+    <strong>TOPIK</strong> — <span data-i18n="faq_official"></span>
+    <a href="https://www.topik.go.kr/" target="_blank" rel="noopener noreferrer">https://www.topik.go.kr/</a>
+  </div>
+</div>
+
+<footer><div class="footer-bottom">© 2025 TOPIK Myanmar</div></footer>
+
+<script src="js/i18n.js"></script>
+<script src="js/mobile-nav.js" defer></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.TMI18N) TMI18N.boot();
+  });
+</script>
+</body>
+</html>

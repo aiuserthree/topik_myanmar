@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>회원가입 — TOPIK Myanmar</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+Myanmar:wght@400;700&display=swap" rel="stylesheet"/>
   <style>
@@ -65,6 +65,8 @@
     .two-btns .btn-submit{flex:2;}
     @media(max-width:600px){.form-row{grid-template-columns:1fr;}}
   </style>
+  <link rel="stylesheet" href="css/mobile.css"/>
+  <script src="js/profile-store.js"></script>
   <!-- ════ SVG ICON SPRITE (공통 적용) ════ -->
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
     <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></symbol>
@@ -296,6 +298,7 @@
         else{el.classList.remove('error');err.classList.remove('show');}
       });
       if(!document.querySelector('input[name="gender"]:checked')){alert('성별을 선택하세요.');ok=false;}
+      if(!document.getElementById('birthdate').value){alert('생년월일을 선택하세요.');ok=false;}
     }
     if(n===2){
       const pw=document.getElementById('pw').value,pwC=document.getElementById('pwConfirm').value;
@@ -309,7 +312,21 @@
   function submitForm(e){
     e.preventDefault();
     if(!document.getElementById('terms1').checked||!document.getElementById('terms2').checked){alert('필수 약관에 동의해주세요.');return;}
-    alert('✅ 회원가입이 완료되었습니다!\n자동으로 로그인됩니다.');
+    var g=document.querySelector('input[name="gender"]:checked');
+    if(window.TMProfile){
+      TMProfile.save({
+        nameKr:document.getElementById('nameKr').value.trim(),
+        nameEn:document.getElementById('nameEn').value.trim(),
+        birthdate:document.getElementById('birthdate').value,
+        gender:g?g.value:'',
+        nationality:document.getElementById('nationality').value,
+        phone:document.getElementById('phone').value.trim(),
+        email:document.getElementById('email').value.trim(),
+        savedAt:new Date().toISOString()
+      });
+    }
+    try{localStorage.setItem('tm_session','1');}catch(x){}
+    alert('✅ 회원가입이 완료되었습니다!\n개인정보가 저장되어 재접수 시 입력이 간소화됩니다.\n자동으로 로그인됩니다.');
     window.location.href='index.html';
   }
 </script>

@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>접수 확인 — TOPIK Myanmar</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+Myanmar:wght@400;700&display=swap" rel="stylesheet"/>
   <style>
@@ -64,11 +64,22 @@
     .btn-cancel{padding:9px 18px;background:white;color:var(--red);border:1.5px solid var(--red);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .2s;}
     .btn-cancel:hover:not(:disabled){background:#fff0f1;}
     .btn-cancel:disabled{opacity:.4;cursor:not-allowed;}
+    .btn-receipt{padding:9px 16px;background:white;color:var(--navy);border:1.5px solid var(--navy);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:inherit;}
+    .btn-receipt:hover{background:#f0f4ff;}
+    #receiptA{margin-top:18px;padding:18px;border:2px dashed var(--gray-light);border-radius:10px;background:#fafbfc;}
+    #receiptA h4{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px;}
+    #receiptA .rp-row{font-size:13px;padding:6px 0;border-bottom:1px solid var(--gray-light);display:flex;justify-content:space-between;gap:12px;}
+    #receiptA .rp-note{font-size:11px;color:var(--gray-text);margin-top:12px;line-height:1.5;}
+    @media print{
+      header,footer,.page-hero,.user-card,.content > .reg-card ~ .reg-card,.info-notice,.reg-card-footer{display:none!important;}
+      .content{padding:16px;max-width:100%;}
+      #receiptA{border:none;background:white;}
+    }
     /* Footer */
     footer{background:#1a2a4a;color:#aab8cc;padding:32px 24px;margin-top:0;}
     .footer-bottom{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:12px;}
-    @media(max-width:768px){nav{display:none;}}
   </style>
+  <link rel="stylesheet" href="css/mobile.css"/>
   <!-- ════ SVG ICON SPRITE (공통 적용) ════ -->
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
     <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></symbol>
@@ -126,16 +137,21 @@
       <svg width="44" height="44"><use href="#ic-topik-logo"/></svg>
       <div class="logo-text"><div class="main">TOPIK Myanmar</div><div class="sub">တိုပစ် မြန်မာ</div></div>
     </a>
-    <nav>
+    <nav id="mainNav">
       <a href="guide.html"><svg class="icon" width="15" height="15"><use href="#ic-guide"/></svg>TOPIK 안내</a>
       <a href="rules.html"><svg class="icon" width="15" height="15"><use href="#ic-rules"/></svg>시험 규정</a>
       <a href="register.html"><svg class="icon" width="15" height="15"><use href="#ic-register"/></svg>시험 접수</a>
       <a href="mypage.html" class="active"><svg class="icon" width="15" height="15"><use href="#ic-mypage"/></svg>접수 확인</a>
       <a href="notice.html"><svg class="icon" width="15" height="15"><use href="#ic-notice"/></svg>공지사항</a>
+      <a href="faq.html"><svg class="icon" width="15" height="15"><use href="#ic-info"/></svg>FAQ</a>
+      <a href="lookup.html"><svg class="icon" width="15" height="15"><use href="#ic-search"/></svg>수험번호 조회</a>
     </nav>
     <div class="header-actions">
       <a href="login.html" class="btn btn-outline"><svg class="icon" width="14" height="14"><use href="#ic-logout"/></svg>로그아웃</a>
     </div>
+    <button type="button" class="hamburger" onclick="toggleMenu()" aria-label="메뉴 열기" aria-expanded="false">
+      <svg width="22" height="22"><use href="#ic-menu"/></svg>
+    </button>
   </div>
 </header>
 
@@ -207,12 +223,24 @@
           <div class="di-value">TM-2025-98-0041</div>
         </div>
       </div>
+      <div id="receiptA">
+        <h4><svg class="icon" width="16" height="16" color="var(--navy)"><use href="#ic-cert"/></svg> 접수 확인증 (인쇄용)</h4>
+        <div class="rp-row"><span>회차</span><strong>제98회 TOPIK</strong></div>
+        <div class="rp-row"><span>접수번호</span><strong>TM-2025-98-0041</strong></div>
+        <div class="rp-row"><span>응시 급수</span><strong>TOPIK I (초급)</strong></div>
+        <div class="rp-row"><span>접수일</span><strong>2025.04.02</strong></div>
+        <div class="rp-row"><span>수납</span><strong>대기 (온라인/현장 수납 후 확정)</strong></div>
+        <p class="rp-note">본 확인증은 접수 사실 확인용이며, 수험표는 사진 승인 및 수험번호 부여 후 발급됩니다. 공식 시험 정보는 <a href="https://www.topik.go.kr/" target="_blank" rel="noopener noreferrer">topik.go.kr</a>을 참고하세요.</p>
+      </div>
       <div class="info-notice">
         <svg class="icon" width="15" height="15" color="var(--gold)" style="flex-shrink:0;margin-top:1px;"><use href="#ic-alert"/></svg>
         <span>관리자 검토 중입니다. 증명사진 승인 완료 후 수험표를 출력하실 수 있습니다.</span>
       </div>
     </div>
     <div class="reg-card-footer">
+      <button type="button" class="btn-receipt" onclick="window.print()">
+        <svg class="icon" width="14" height="14"><use href="#ic-print"/></svg>접수 확인증 출력
+      </button>
       <a href="admit.html" class="btn-admit" style="opacity:.45;pointer-events:none;">
         <svg class="icon" width="14" height="14"><use href="#ic-ticket"/></svg>수험표 출력 (승인 후 활성화)
       </a>
@@ -280,6 +308,7 @@
   </div>
 </footer>
 
+<script src="js/mobile-nav.js" defer></script>
 <script>
   function cancelReg(btn){
     if(confirm('정말 접수를 취소하시겠습니까?\n취소 후에는 응시료가 환불되지 않을 수 있습니다.')){

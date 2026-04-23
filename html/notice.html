@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>공지사항 — TOPIK Myanmar</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+Myanmar:wght@400;700&display=swap" rel="stylesheet"/>
   <style>
@@ -84,8 +84,8 @@
       .board-row{grid-template-columns:40px 1fr 90px;}
       .board-head div:last-child,.board-row .col-view{display:none;}
     }
-    @media(max-width:768px){nav{display:none;}}
   </style>
+  <link rel="stylesheet" href="css/mobile.css"/>
   <!-- ════ SVG ICON SPRITE (공통 적용) ════ -->
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
     <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></symbol>
@@ -143,17 +143,22 @@
       <svg width="44" height="44"><use href="#ic-topik-logo"/></svg>
       <div class="logo-text"><div class="main">TOPIK Myanmar</div><div class="sub">တိုပစ် မြန်မာ</div></div>
     </a>
-    <nav>
+    <nav id="mainNav">
       <a href="guide.html"><svg class="icon" width="15" height="15"><use href="#ic-guide"/></svg>TOPIK 안내</a>
       <a href="rules.html"><svg class="icon" width="15" height="15"><use href="#ic-rules"/></svg>시험 규정</a>
       <a href="register.html"><svg class="icon" width="15" height="15"><use href="#ic-register"/></svg>시험 접수</a>
       <a href="mypage.html"><svg class="icon" width="15" height="15"><use href="#ic-mypage"/></svg>접수 확인</a>
       <a href="notice.html" class="active"><svg class="icon" width="15" height="15"><use href="#ic-notice"/></svg>공지사항</a>
+      <a href="faq.html"><svg class="icon" width="15" height="15"><use href="#ic-info"/></svg>FAQ</a>
+      <a href="lookup.html"><svg class="icon" width="15" height="15"><use href="#ic-search"/></svg>수험번호 조회</a>
     </nav>
     <div class="header-actions">
       <a href="login.html" class="btn btn-outline"><svg class="icon" width="14" height="14"><use href="#ic-login"/></svg>로그인</a>
       <a href="signup.html" class="btn btn-primary"><svg class="icon" width="14" height="14"><use href="#ic-signup"/></svg>회원가입</a>
     </div>
+    <button type="button" class="hamburger" onclick="toggleMenu()" aria-label="메뉴 열기" aria-expanded="false">
+      <svg width="22" height="22"><use href="#ic-menu"/></svg>
+    </button>
   </div>
 </header>
 
@@ -314,6 +319,7 @@
   </div>
 </footer>
 
+<script src="js/mobile-nav.js" defer></script>
 <script>
   function showDetail(id){
     document.getElementById('listView').style.display='none';
