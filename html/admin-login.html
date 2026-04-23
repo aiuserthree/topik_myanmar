@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>관리자 로그인 — TOPIK Myanmar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--red:#CD2E3A;--navy:#003478;--shadow:0 8px 32px rgba(0,20,60,0.12);--gray-light:#e2e8f0;--gray-text:#64748b;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(160deg,#0a1628 0%,#0f2744 45%,#132f52 100%);min-height:100vh;color:#1a1a2e;}
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:max(24px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));}
+    .card{width:100%;max-width:420px;background:#fff;border-radius:18px;box-shadow:var(--shadow);overflow:hidden;}
+    .card-top{background:linear-gradient(135deg,var(--navy),#001a40);padding:32px 28px;text-align:center;color:#fff;}
+    .badge{display:inline-flex;align-items:center;gap:6px;background:var(--red);font-size:11px;font-weight:700;padding:4px 12px;border-radius:999px;margin-bottom:14px;}
+    .card-top h1{font-size:22px;font-weight:700;margin-bottom:6px;}
+    .card-top p{font-size:12px;color:#94a8c4;line-height:1.5;}
+    .card-body{padding:28px 26px 30px;}
+    .form-group{margin-bottom:16px;}
+    .form-group label{display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:6px;}
+    .input-wrap{position:relative;}
+    .input-wrap input{width:100%;padding:12px 14px;border:1.5px solid var(--gray-light);border-radius:10px;font-size:15px;font-family:inherit;transition:border .2s,box-shadow .2s;}
+    .input-wrap input:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(0,52,120,0.1);}
+    .btn{width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;background:var(--navy);color:#fff;transition:background .2s;margin-top:4px;}
+    .btn:hover{background:#002060;}
+    .btn:active{transform:scale(0.99);}
+    .foot{margin-top:20px;text-align:center;font-size:12px;color:var(--gray-text);}
+    .foot a{color:var(--navy);font-weight:600;text-decoration:none;}
+    .foot a:hover{color:var(--red);}
+  </style>
+  <link rel="stylesheet" href="css/mobile.css"/>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="card-top">
+      <div class="badge">ADMIN</div>
+      <h1>관리자 로그인</h1>
+      <p>관리자 계정으로 로그인하세요.</p>
+    </div>
+    <div class="card-body">
+      <form id="adminLoginForm" novalidate>
+        <div class="form-group">
+          <label for="adminUser">관리자 아이디</label>
+          <div class="input-wrap">
+            <input type="text" id="adminUser" name="username" autocomplete="username" placeholder="admin"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="adminPass">비밀번호</label>
+          <div class="input-wrap">
+            <input type="password" id="adminPass" name="password" autocomplete="current-password" placeholder="비밀번호"/>
+          </div>
+        </div>
+        <button type="submit" class="btn">로그인</button>
+      </form>
+      <p class="foot"><a href="index.html">← 사용자 사이트로 돌아가기</a></p>
+    </div>
+  </div>
+</div>
+<script src="js/admin-auth.js"></script>
+<script>
+(function () {
+  function safeNext() {
+    var q = new URLSearchParams(window.location.search).get('next');
+    return q === 'admin.html' ? q : 'admin.html';
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.AdminAuth && AdminAuth.isSessionValid()) {
+      location.replace(safeNext());
+      return;
+    }
+    document.getElementById('adminLoginForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (window.AdminAuth && AdminAuth.loginTest()) {
+        location.href = safeNext();
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
