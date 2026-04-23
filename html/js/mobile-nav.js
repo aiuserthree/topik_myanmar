@@ -21,7 +21,9 @@
   document.addEventListener("click", function (e) {
     var nav = document.getElementById("mainNav");
     if (!nav || !nav.classList.contains("is-open")) return;
-    if (e.target.closest("#mainNav") || e.target.closest(".hamburger")) return;
+    var el = e.target;
+    if (!el || typeof el.closest !== "function") return;
+    if (el.closest("#mainNav") || el.closest(".hamburger")) return;
     closeMenu();
   });
 
@@ -108,10 +110,20 @@
     });
   }
 
+  function wireHamburger() {
+    document.querySelectorAll(".hamburger").forEach(function (btn) {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        toggleMenu();
+      });
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     relocateLangSwitch();
     buildTabBar();
     wireDrawerLinks();
+    wireHamburger();
   });
 
   window.toggleMenu = toggleMenu;

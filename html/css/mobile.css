@@ -14,6 +14,22 @@ html{
   html,body{overflow-x:hidden;}
 }
 
+/* 헤더 글래스: 블러는 .header-main-bg(배경층)만 — #mainNav 조상에 filter를 두지 않아 fixed 드로어가 뷰포트 기준 유지 */
+.header-main{position:relative;}
+.header-main-bg{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background:rgba(0,52,120,0.82);
+  backdrop-filter:saturate(140%) blur(12px);
+  -webkit-backdrop-filter:saturate(140%) blur(12px);
+}
+.header-main > :not(.header-main-bg){
+  position:relative;
+  z-index:1;
+}
+
 /* ───── Page title band (all interior pages + tablet widths) ───── */
 @media (max-width:900px){
   .page-hero{
@@ -107,11 +123,15 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
     padding-bottom:calc(68px + env(safe-area-inset-bottom));
   }
 
+  /* 드로어(#mainNav)가 header 안이면 스택이 200이라 body::after 스크림(1000) 아래로 깔려 어둡게 보임 */
+  body.nav-open header{
+    z-index:1010;
+  }
+
   /* ───── Header (compact app bar) ───── */
   header{
     position:sticky;top:0;z-index:200;
-    backdrop-filter:saturate(140%) blur(10px);
-    -webkit-backdrop-filter:saturate(140%) blur(10px);
+    background:var(--navy,#003478);
   }
   .header-top{display:none !important;}
 
@@ -174,17 +194,20 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
     top:0;left:0;bottom:0;
     width:min(86vw,320px);
     max-height:none;
-    background:#ffffff;
+    background:#fff;
     color:#111;
     padding:
       calc(18px + env(safe-area-inset-top))
       18px
       calc(18px + env(safe-area-inset-bottom))
       max(18px,env(safe-area-inset-left));
-    z-index:1001;
+    z-index:2;
+    isolation:isolate;
     gap:2px;
-    box-shadow:12px 0 40px rgba(0,0,0,.25);
+    box-shadow:8px 0 32px rgba(0,20,60,0.12);
     border-radius:0 18px 18px 0;
+    border:1px solid #eef1f5;
+    border-left:0;
     animation:drawerIn .22s ease-out;
     overflow-y:auto;-webkit-overflow-scrolling:touch;
   }
@@ -192,7 +215,7 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
     content:"TOPIK Myanmar";
     display:block;
     font-size:13px;font-weight:700;letter-spacing:.04em;
-    color:#6b7280;padding:4px 10px 14px;
+    color:#1e293b;padding:4px 10px 14px;
     border-bottom:1px solid #eef1f5;margin-bottom:10px;
   }
   nav#mainNav.is-open a{
@@ -208,13 +231,14 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
   nav#mainNav.is-open a.is-active{
     background:#f1f4fa;color:#003478 !important;
   }
-  nav#mainNav.is-open a svg{color:#003478 !important;opacity:.9;}
+  nav#mainNav.is-open a svg{color:#003478 !important;opacity:1;}
 
   /* lang switch injected into drawer */
   nav#mainNav.is-open .lang-switch{
     display:flex;gap:6px;flex-wrap:wrap;
     margin:14px 4px 6px;padding:10px;
-    background:#f5f7fb;border-radius:12px;
+    background:#f8fafc;border-radius:12px;
+    border:1px solid #eef1f5;
   }
   nav#mainNav.is-open .lang-switch svg{display:none;}
   nav#mainNav.is-open .lang-switch button{
@@ -228,12 +252,11 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
     background:#003478;color:#fff;border-color:#003478;
   }
 
-  /* drawer scrim */
+  /* drawer scrim — 딤만 (블러 없음: 펼친 메뉴·주변 레이아웃이 흐릿해 보이지 않도록) */
   body.nav-open::after{
     content:"";position:fixed;inset:0;
-    background:rgba(10,12,24,.38);
+    background:rgba(10,12,24,.45);
     z-index:1000;
-    backdrop-filter:blur(2px);
   }
 
   /* ───── HERO (compact) ───── */
@@ -263,14 +286,9 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
   .hero-title{
     font-size:clamp(20px,5.6vw,28px) !important;
     line-height:1.25 !important;
-    margin-bottom:8px !important;
-  }
-  .hero-title br{display:none;}
-  .hero-sub{
-    font-size:13px !important;
-    line-height:1.5 !important;
-    margin-bottom:16px !important;
-    opacity:.9;
+    margin-bottom:18px !important;
+    word-break:keep-all;
+    overflow-wrap:break-word;
   }
   .hero-actions{
     display:grid !important;
