@@ -55,7 +55,7 @@
       faq_q4: "오프라인으로 응시료를 냈는데 반영이 안 돼요.",
       faq_a4: "시험장 또는 지정 창구에서 납부하신 경우, 관리자가 수납 완료 처리 후 수험번호가 부여됩니다. 처리까지 시간이 걸릴 수 있습니다.",
       faq_q5: "한국어·미얀마어·영어 중 화면 언어를 바꾸려면?",
-      faq_a5: "상단의 언어 버튼(한국어 / မြန်မာ / English)을 누르면 주요 메뉴와 안내 문구가 변경됩니다. 설정은 브라우저에 저장됩니다.",
+      faq_a5: "상단의 언어 선택 상자에서 원하는 언어를 고르면 주요 메뉴와 안내 문구가 변경됩니다. 설정은 브라우저에 저장됩니다.",
       faq_official: "급수·시험 구성 등 공식 안내는 국립국제교육원 TOPIK 홈페이지를 참고하세요.",
       foot_menu: "사이트 메뉴",
       foot_links: "관련 링크",
@@ -131,7 +131,7 @@
       faq_q4: "ကွင်းတွင် ပေးချေပြီးသော်လည်း မပြသပါက?",
       faq_a4: "စီမံခန့်ခွဲသူက ပေးချေမှု ပြီးကြောင်း မှတ်ပြီးနောက် စာမေးပွဲနံပါတ် ပေးပါမည်။",
       faq_q5: "ဘာသာစကား ပြောင်းချင်ပါက?",
-      faq_a5: "ထိပ်ရှိ ဘာသာခလုတ်များဖြင့် မီနူးနှင့် စာသားများ ပြောင်းပါသည်။",
+      faq_a5: "ထိပ်ရှိ ဘာသာရွေးချယ်မှုတွင် လိုချင်သော ဘာသာကို ရွေးပါ။ မီနူးနှင့် စာသား ပြောင်းလဲပြီး သိမ်းဆည်းချက်ကို ဘရောက်ဇာတွင် သိမ်းပါသည်။",
       faq_official: "အဆင့်၊ စာမေးပွဲ ဖွဲ့စည်းပုံ အတွက် တရားဝင် လမ်းညွှန်သည် —",
       foot_menu: "မီနူး",
       foot_links: "လင့်များ",
@@ -206,7 +206,7 @@
       faq_q4: "I paid offline but status did not update.",
       faq_a4: "Staff will mark payment complete; then your exam number can be assigned. This may take some time.",
       faq_q5: "How do I switch Korean / Myanmar / English?",
-      faq_a5: "Use the language buttons in the header. Your choice is saved in the browser.",
+      faq_a5: "Use the language dropdown in the header. Your choice is saved in the browser.",
       faq_official: "For levels and test structure, see the official TOPIK site:",
       foot_menu: "Menu",
       foot_links: "Links",
@@ -264,16 +264,18 @@
       else if (el.hasAttribute("data-i18n-html")) el.innerHTML = val;
       else el.textContent = val;
     });
-    document.querySelectorAll(".lang-switch [data-lang]").forEach(function (btn) {
-      btn.classList.toggle("active", btn.getAttribute("data-lang") === lang);
+    document.querySelectorAll(".tm-lang-select").forEach(function (sel) {
+      if (sel.value !== lang) sel.value = lang;
     });
   }
 
   function initLangButtons(root) {
     root = root || document;
-    root.querySelectorAll(".lang-switch [data-lang]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        setLang(btn.getAttribute("data-lang"));
+    root.querySelectorAll(".tm-lang-select").forEach(function (sel) {
+      if (sel.getAttribute("data-tm-lang-bound") === "1") return;
+      sel.setAttribute("data-tm-lang-bound", "1");
+      sel.addEventListener("change", function () {
+        setLang(sel.value);
       });
     });
   }

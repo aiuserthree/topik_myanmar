@@ -43,10 +43,10 @@
       window.TMI18N.initLangButtons(ref);
       window.TMI18N.apply(window.TMI18N.getLang());
     } else {
-      ref.querySelectorAll("button[data-lang]").forEach(function (b) {
-        b.addEventListener("click", function () {
+      ref.querySelectorAll(".tm-lang-select").forEach(function (sel) {
+        sel.addEventListener("change", function () {
           if (window.TMI18N && window.TMI18N.setLang) {
-            window.TMI18N.setLang(b.getAttribute("data-lang"));
+            window.TMI18N.setLang(sel.value);
           }
         });
       });

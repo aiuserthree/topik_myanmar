@@ -94,6 +94,27 @@ html{
   }
 }
 
+/* 헤더 상단 언어 콤보박스 (index·FAQ·lookup 등 공통) */
+.header-top .lang-switch{display:flex;align-items:center;gap:8px;}
+.header-top .lang-switch .tm-lang-select{
+  min-width:128px;
+  max-width:min(46vw,220px);
+  padding:5px 26px 5px 10px;
+  font-size:12px;
+  font-family:inherit;
+  font-weight:600;
+  color:#f8fafc;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.42);
+  border-radius:6px;
+  cursor:pointer;
+}
+.header-top .lang-switch .tm-lang-select:focus-visible{
+  outline:2px solid var(--gold,#C8963E);
+  outline-offset:2px;
+}
+.header-top .lang-switch .tm-lang-select option{color:#1a1a2e;background:#fff;}
+
 /* ───── Page title band (all interior pages + tablet widths) ───── */
 @media (max-width:900px){
   .page-hero{
@@ -305,15 +326,23 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
     border:1px solid #eef1f5;
   }
   nav#mainNav.is-open .lang-switch svg{display:none;}
-  nav#mainNav.is-open .lang-switch button{
-    flex:1 1 auto;
-    min-height:38px;padding:8px 10px;
-    font-size:12px;font-weight:600;
-    background:#fff;border:1px solid #e5e9f0;color:#475569;
+  nav#mainNav.is-open .lang-switch .tm-lang-select{
+    flex:1 1 100%;
+    width:100%;
+    min-height:42px;
+    padding:8px 12px;
+    font-size:14px;
+    font-weight:600;
+    font-family:inherit;
+    color:#1a1a2e;
+    background:#fff;
+    border:1px solid #e5e9f0;
     border-radius:10px;
+    cursor:pointer;
   }
-  nav#mainNav.is-open .lang-switch button.active{
-    background:#003478;color:#fff;border-color:#003478;
+  nav#mainNav.is-open .lang-switch .tm-lang-select:focus-visible{
+    outline:2px solid #003478;
+    outline-offset:2px;
   }
 
   /* drawer scrim — 딤만 (블러 없음: 펼친 메뉴·주변 레이아웃이 흐릿해 보이지 않도록) */
