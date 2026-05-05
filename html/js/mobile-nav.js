@@ -1,10 +1,55 @@
 (function () {
+  var TM_NAV_PH = null;
+
+  function isMobileDrawerBreakpoint() {
+    return window.matchMedia("(max-width: 768px)").matches;
+  }
+
+  /* Sticky header + position:fixed nav can mis-anchor in WebKit (left inset / gap). Reparent while open. */
+  function portalMainNav() {
+    var nav = document.getElementById("mainNav");
+    if (!nav || !isMobileDrawerBreakpoint()) return;
+    if (nav.dataset.tmPortaled === "1") return;
+    var parent = nav.parentNode;
+    if (!parent) return;
+    TM_NAV_PH = document.createComment("tm-mainnav-placeholder");
+    parent.insertBefore(TM_NAV_PH, nav);
+    document.body.appendChild(nav);
+    nav.dataset.tmPortaled = "1";
+  }
+
+  function unportalMainNav() {
+    var nav = document.getElementById("mainNav");
+    if (!nav) {
+      TM_NAV_PH = null;
+      return;
+    }
+    if (nav.dataset.tmPortaled !== "1") {
+      TM_NAV_PH = null;
+      return;
+    }
+    if (TM_NAV_PH && TM_NAV_PH.parentNode) {
+      TM_NAV_PH.parentNode.insertBefore(nav, TM_NAV_PH);
+      TM_NAV_PH.remove();
+    } else {
+      var hm = document.querySelector("header .header-main");
+      var actions = hm && hm.querySelector(".header-actions");
+      if (hm && actions) hm.insertBefore(nav, actions);
+      else if (hm) hm.appendChild(nav);
+    }
+    TM_NAV_PH = null;
+    delete nav.dataset.tmPortaled;
+  }
+
   /* ─────────── Drawer control ─────────── */
   function toggleMenu() {
     var nav = document.getElementById("mainNav");
     if (!nav) return;
+    var willOpen = !nav.classList.contains("is-open");
+    if (willOpen) portalMainNav();
     nav.classList.toggle("is-open");
     var open = nav.classList.contains("is-open");
+    if (!open) unportalMainNav();
     document.body.classList.toggle("nav-open", open);
     var hb = document.querySelector(".hamburger");
     if (hb) hb.setAttribute("aria-expanded", open ? "true" : "false");
@@ -13,10 +58,15 @@
   function closeMenu() {
     var nav = document.getElementById("mainNav");
     if (nav) nav.classList.remove("is-open");
+    unportalMainNav();
     document.body.classList.remove("nav-open");
     var hb = document.querySelector(".hamburger");
     if (hb) hb.setAttribute("aria-expanded", "false");
   }
+
+  window.addEventListener("resize", function () {
+    if (!isMobileDrawerBreakpoint()) closeMenu();
+  });
 
   document.addEventListener("click", function (e) {
     var nav = document.getElementById("mainNav");

@@ -286,7 +286,8 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
       18px
       calc(18px + env(safe-area-inset-bottom))
       max(18px,env(safe-area-inset-left));
-    z-index:2;
+    /* Above body scrim (1000) & sticky header (1010); needed when #mainNav is portaled under body */
+    z-index:1020;
     isolation:isolate;
     gap:2px;
     box-shadow:8px 0 32px rgba(0,20,60,0.12);
