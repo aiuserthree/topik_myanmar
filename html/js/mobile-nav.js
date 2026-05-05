@@ -85,26 +85,36 @@
     if (e.key === "Escape") closeMenu();
   });
 
-  /* ─────────── Move lang-switch into drawer on mobile ─────────── */
+  /* ─────────── Inject 3 lang buttons into drawer (mobile only) ─────────── */
+  /* PC header-top keeps the <select> combobox; drawer always uses buttons */
   function relocateLangSwitch() {
     var nav = document.getElementById("mainNav");
-    var lang = document.querySelector(".header-top .lang-switch, header .lang-switch");
-    if (!nav || !lang || lang.dataset.relocated === "1") return;
-    var ref = lang.cloneNode(true);
-    ref.dataset.relocated = "1";
-    nav.appendChild(ref);
-    if (window.TMI18N && typeof window.TMI18N.initLangButtons === "function") {
-      window.TMI18N.initLangButtons(ref);
-      window.TMI18N.apply(window.TMI18N.getLang());
-    } else {
-      ref.querySelectorAll(".tm-lang-select").forEach(function (sel) {
-        sel.addEventListener("change", function () {
-          if (window.TMI18N && window.TMI18N.setLang) {
-            window.TMI18N.setLang(sel.value);
-          }
-        });
+    if (!nav || nav.querySelector(".tm-drawer-lang")) return;
+
+    var LANGS = [
+      { code: "ko", label: "한국어" },
+      { code: "my", label: "မြန်မာ" },
+      { code: "en", label: "English" },
+    ];
+
+    var cur = window.TMI18N ? window.TMI18N.getLang() : "ko";
+
+    var wrap = document.createElement("div");
+    wrap.className = "tm-drawer-lang";
+
+    LANGS.forEach(function (l) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.setAttribute("data-lang", l.code);
+      btn.textContent = l.label;
+      if (l.code === cur) btn.classList.add("is-active");
+      btn.addEventListener("click", function () {
+        if (window.TMI18N) window.TMI18N.setLang(l.code);
       });
-    }
+      wrap.appendChild(btn);
+    });
+
+    nav.appendChild(wrap);
   }
 
   /* ─────────── Bottom tab bar ─────────── */

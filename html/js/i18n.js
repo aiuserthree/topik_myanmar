@@ -267,6 +267,10 @@
     document.querySelectorAll(".tm-lang-select").forEach(function (sel) {
       if (sel.value !== lang) sel.value = lang;
     });
+    /* sync active state on drawer lang buttons */
+    document.querySelectorAll(".tm-drawer-lang button[data-lang]").forEach(function (btn) {
+      btn.classList.toggle("is-active", btn.getAttribute("data-lang") === lang);
+    });
   }
 
   function initLangButtons(root) {

@@ -326,31 +326,35 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
   }
   nav#mainNav.is-open a svg{color:#003478 !important;opacity:1;}
 
-  /* lang switch injected into drawer */
-  nav#mainNav.is-open .lang-switch{
-    display:flex;gap:6px;flex-wrap:wrap;
-    margin:14px 4px 6px;padding:10px;
+  /* lang buttons injected into drawer (3-button style, mobile only) */
+  nav#mainNav.is-open .tm-drawer-lang{
+    display:flex;gap:6px;flex-wrap:nowrap;
+    margin:14px 0 6px;
+    padding:10px;
     background:#f8fafc;border-radius:12px;
     border:1px solid #eef1f5;
-  }
-  nav#mainNav.is-open .lang-switch svg{display:none;}
-  nav#mainNav.is-open .lang-switch .tm-lang-select{
-    flex:1 1 100%;
     width:100%;
-    min-height:42px;
-    padding:8px 12px;
-    font-size:14px;
-    font-weight:600;
-    font-family:inherit;
+    box-sizing:border-box;
+  }
+  nav#mainNav.is-open .tm-drawer-lang button{
+    flex:1 1 0;
+    min-height:38px;
+    padding:8px 4px;
+    font-size:13px;font-weight:600;font-family:inherit;
     color:#1a1a2e;
     background:#fff;
-    border:1px solid #e5e9f0;
-    border-radius:10px;
+    border:1.5px solid #e5e9f0;
+    border-radius:8px;
     cursor:pointer;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
-  nav#mainNav.is-open .lang-switch .tm-lang-select:focus-visible{
-    outline:2px solid #003478;
-    outline-offset:2px;
+  nav#mainNav.is-open .tm-drawer-lang button.is-active{
+    background:#003478;color:#fff;border-color:#003478;
+  }
+  nav#mainNav.is-open .tm-drawer-lang button:hover:not(.is-active){
+    background:#f1f4fa;border-color:#c5cfe0;
   }
 
   /* drawer scrim — 딤만 (블러 없음: 펼친 메뉴·주변 레이아웃이 흐릿해 보이지 않도록) */
