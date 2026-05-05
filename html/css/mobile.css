@@ -12,6 +12,9 @@ html{
 
 @media (max-width:900px){
   html,body{overflow-x:hidden;}
+  /* 관리자(html/admin): 루트 overflow-x:hidden이 WebKit에서 자식 가로 스크롤·스와이프를 막는 경우가 있음 */
+  html:has(body.admin-shell){overflow-x:auto;}
+  body.admin-shell{overflow-x:auto;}
 }
 
 /* 헤더 글래스: 블러는 .header-main-bg(배경층)만 — #mainNav 조상에 filter를 두지 않아 fixed 드로어가 뷰포트 기준 유지 */
@@ -1186,6 +1189,10 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
   /* Wide tables: allow card layout below (no forced 720px scroll) */
   .main-wrap .data-table{font-size:12.5px;min-width:0 !important;}
   .main-wrap{margin-left:0 !important;}
+  body.admin-shell .main-wrap,
+  body.admin-shell .page-content{
+    min-width:0;
+  }
 
   .topbar{
     padding:10px max(12px,env(safe-area-inset-left)) !important;
@@ -1218,32 +1225,55 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
   }
   .admin-tag{font-size:12px;padding:6px 12px;min-height:34px;align-items:center;}
 
-  /* 접수자 필터: 칩 줄바꿈 + 검색창 전체 폭 (가로 스크롤만 강요하지 않음) */
+  /* 접수자 필터: 칩 한 줄 가로 스와이프 + 검색창 다음 줄 전체 폭 */
   .main-wrap .filter-bar{
-    flex-direction:row;
-    flex-wrap:wrap;
+    flex-direction:column;
     align-items:stretch;
-    gap:8px;
+    gap:10px;
     overflow-x:visible;
-    padding:10px 12px;
-    scrollbar-width:thin;
-  }
-  .main-wrap .filter-bar::-webkit-scrollbar{height:4px;}
-  .main-wrap .filter-bar .search-mini{
-    flex:1 1 100%;
+    min-width:0;
     width:100%;
-    min-width:0 !important;
-    margin-left:0 !important;
-    order:10;
+    padding:10px max(12px,env(safe-area-inset-right)) 10px max(12px,env(safe-area-inset-left));
   }
-  .main-wrap .filter-bar .filter-chip{
-    flex-shrink:0;
+  .main-wrap .filter-chip-scroll{
+    display:flex;
+    flex-wrap:nowrap;
+    gap:8px;
+    /* 플렉스 자식이 내용 너비만큼 커지면 스크롤이 안 생김 → 폭 제한 */
+    min-width:0;
+    width:100%;
+    max-width:100%;
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-x:contain;
+    touch-action:pan-x;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+    margin-left:calc(-1 * max(12px, env(safe-area-inset-left)));
+    margin-right:calc(-1 * max(12px, env(safe-area-inset-right)));
+    padding-left:max(12px, env(safe-area-inset-left));
+    padding-right:max(12px, env(safe-area-inset-right));
+    padding-bottom:6px;
+    scroll-snap-type:x proximity;
+  }
+  .main-wrap .filter-chip-scroll::-webkit-scrollbar{display:none;height:0;width:0;}
+  .main-wrap .filter-chip-scroll .filter-chip{
+    flex:0 0 auto;
+    scroll-snap-align:start;
     white-space:nowrap;
     min-height:38px;
     padding:6px 12px;
     font-size:12.5px;
     align-items:center;
     border-radius:999px;
+  }
+  .main-wrap .filter-bar .search-mini{
+    flex:none;
+    width:100%;
+    min-width:0 !important;
+    margin-left:0 !important;
+    order:0;
   }
 
   .page-content{
@@ -1295,6 +1325,11 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
 
   .round-form-grid{grid-template-columns:1fr !important;}
   .notice-form-wrap{padding:14px !important;}
+}
+
+/* 관리자 접수자 필터 칩 래퍼 — 넓은 화면에서는 부모 flex에 칩을 직접 편입 */
+@media (min-width:901px){
+  .main-wrap .filter-chip-scroll{display:contents;}
 }
 
 @media (max-width:600px){

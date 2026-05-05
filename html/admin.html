@@ -210,7 +210,7 @@
     }
 
   </style>
-  <link rel="stylesheet" href="css/mobile.css"/>
+  <link rel="stylesheet" href="css/mobile.css?v=20260518"/>
   <script src="js/admin-auth.js"></script>
   <script src="js/content-store.js?v=20260510"></script>
   <script>
@@ -267,7 +267,7 @@
     <symbol id="ic-topik-logo" viewBox="0 0 44 44"><rect width="44" height="44" rx="8" fill="#CD2E3A"/><text x="22" y="17" text-anchor="middle" fill="white" font-size="9" font-weight="700" font-family="sans-serif">TOPIK</text><line x1="8" y1="21" x2="36" y2="21" stroke="white" stroke-width="1.2" opacity="0.5"/><text x="22" y="33" text-anchor="middle" fill="white" font-size="8" font-weight="600" font-family="sans-serif">MYANMAR</text><circle cx="22" cy="27" r="0" fill="none"/></symbol>
   </svg>
 </head>
-<body>
+<body class="admin-shell">
 
 <div class="sb-overlay" id="sbOverlay" onclick="closeAdminSidebar()" aria-hidden="true"></div>
 
@@ -437,6 +437,7 @@
           <strong>자동화:</strong> 응시자 목록에서 <strong>오프라인 수납 완료</strong> 처리 시 상태가 <strong>검토중</strong>으로 바뀝니다. 승인 후 「수험번호 일괄 부여」를 실행하면 수납 완료 건에 순차적으로 수험번호가 부여됩니다(연동 데모). 엑셀 다운로드로 전체 목록·수납·수험번호를 내보낼 수 있습니다.
         </div>
         <div class="filter-bar">
+          <div class="filter-chip-scroll">
           <button class="filter-chip active" onclick="filterStatus(this,'all')">전체 142</button>
           <button class="filter-chip" onclick="filterStatus(this,'pending')">
             <svg class="icon" width="10" height="10"><use href="#ic-ticket"/></svg>접수완료 7
@@ -452,6 +453,7 @@
           </button>
           <button class="filter-chip" onclick="filterStatus(this,'cancelled')">취소 5</button>
           <button class="filter-chip" onclick="filterPaidOnly(this)">수납 미완료</button>
+          </div>
           <div class="search-mini">
             <input type="text" placeholder="이름 / 수험번호 검색" id="tableSearch" oninput="searchTable()"/>
             <button><svg class="icon" width="13" height="13"><use href="#ic-search"/></svg></button>
