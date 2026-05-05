@@ -344,7 +344,7 @@
       <div class="panel">
         <div class="panel-header">
           <h2><svg class="icon" width="16" height="16" color="var(--red)"><use href="#ic-users"/></svg>최근 접수 현황</h2>
-          <button type="button" class="btn btn-navy" onclick="confirmNavigateApplicants()">
+          <button type="button" class="btn btn-navy" onclick="showPanel('applicants',document.getElementById('sbApplicants'))">
             <svg class="icon" width="13" height="13"><use href="#ic-arrow-r"/></svg>전체 보기
           </button>
         </div>
@@ -778,17 +778,6 @@
       message:'메인 사이트를 새 탭에서 엽니다.',
       confirmLabel:'열기',
       onConfirm:function(){ window.open('index.html'); }
-    });
-  }
-  function confirmNavigateApplicants(){
-    openConfirmModal({
-      title:'접수자 목록',
-      message:'접수자 목록 화면으로 이동합니다.',
-      confirmLabel:'이동',
-      onConfirm:function(){
-        var el=document.getElementById('sbApplicants');
-        showPanel('applicants',el||null);
-      }
     });
   }
   function adminDemoEdit(scopeLabel){
