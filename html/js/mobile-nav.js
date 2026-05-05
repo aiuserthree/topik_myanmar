@@ -1,8 +1,34 @@
 (function () {
   var TM_NAV_PH = null;
+  var TM_PC_LANG_PH = null;
+  var TM_PC_LANG_NODE = null;
 
   function isMobileDrawerBreakpoint() {
     return window.matchMedia("(max-width: 768px)").matches;
+  }
+
+  /* PC 전용 언어 콤보박스(.hdr-lang-pc)가 모바일 viewport에서 layout(overflow / fixed anchor)에
+     영향을 주지 않도록 DOM에서 빼두고, PC로 돌아가면 원위치로 복원한다. */
+  function detachPcLangForMobile() {
+    if (!isMobileDrawerBreakpoint()) return;
+    if (TM_PC_LANG_NODE) return;
+    var node = document.querySelector("header .hdr-lang-pc");
+    if (!node || !node.parentNode) return;
+    TM_PC_LANG_NODE = node;
+    TM_PC_LANG_PH = document.createComment("tm-pc-lang-placeholder");
+    node.parentNode.insertBefore(TM_PC_LANG_PH, node);
+    node.parentNode.removeChild(node);
+  }
+
+  function reattachPcLangForDesktop() {
+    if (isMobileDrawerBreakpoint()) return;
+    if (!TM_PC_LANG_NODE || !TM_PC_LANG_PH) return;
+    if (TM_PC_LANG_PH.parentNode) {
+      TM_PC_LANG_PH.parentNode.insertBefore(TM_PC_LANG_NODE, TM_PC_LANG_PH);
+      TM_PC_LANG_PH.remove();
+    }
+    TM_PC_LANG_PH = null;
+    TM_PC_LANG_NODE = null;
   }
 
   /* Sticky header + position:fixed nav can mis-anchor in WebKit (left inset / gap). Reparent while open. */
@@ -69,7 +95,12 @@
   }
 
   window.addEventListener("resize", function () {
-    if (!isMobileDrawerBreakpoint()) closeMenu();
+    if (!isMobileDrawerBreakpoint()) {
+      closeMenu();
+      reattachPcLangForDesktop();
+    } else {
+      detachPcLangForMobile();
+    }
   });
 
   document.addEventListener("click", function (e) {
@@ -184,6 +215,7 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
+    detachPcLangForMobile();
     relocateLangSwitch();
     buildTabBar();
     wireDrawerLinks();

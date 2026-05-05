@@ -75,6 +75,9 @@ html{
   /* 드로어 전용 요소(lang-switch 복제본, 3-버튼) — PC GNB에서 모두 숨김 */
   header nav#mainNav .lang-switch{display:none !important;}
   header nav#mainNav .tm-drawer-lang{display:none !important;}
+  /* 캐시된 옛날 빌드 대비: 드로어 안에 어떤 select가 있더라도 절대 표시하지 않음 */
+  header nav#mainNav .tm-lang-select,
+  header nav#mainNav select{display:none !important;}
   /* PC에서 언어 콤보박스 표시 */
   .hdr-lang-pc{display:flex;align-items:center;gap:8px;}
   header nav#mainNav a{
@@ -278,6 +281,10 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
   }
   .header-actions .btn svg{width:15px;height:15px;}
   .header-actions .btn span{display:none;}
+  /* 모바일에서 PC 언어 콤보박스(.hdr-lang-pc)는 JS가 DOM에서 detach하지만, 만약 남아있더라도 강제로 숨김 */
+  .hdr-lang-pc,
+  header .hdr-lang-pc,
+  .header-actions .hdr-lang-pc{display:none !important;}
 
   /* ───── Drawer ───── */
   nav#mainNav.is-open{
