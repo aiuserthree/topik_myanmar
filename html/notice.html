@@ -85,7 +85,7 @@
       .board-head div:last-child,.board-row .col-view{display:none;}
     }
   </style>
-  <link rel="stylesheet" href="css/mobile.css"/>
+  <link rel="stylesheet" href="css/mobile.css?v=20260506"/>
   <!-- ════ SVG ICON SPRITE (공통 적용) ════ -->
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
     <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></symbol>
@@ -145,17 +145,25 @@
       <div class="logo-text"><div class="main">TOPIK Myanmar</div><div class="sub">တိုပစ် မြန်မာ</div></div>
     </a>
     <nav id="mainNav">
-      <a href="guide.html"><svg class="icon" width="15" height="15"><use href="#ic-guide"/></svg>TOPIK 안내</a>
-      <a href="rules.html"><svg class="icon" width="15" height="15"><use href="#ic-rules"/></svg>시험 규정</a>
-      <a href="register.html"><svg class="icon" width="15" height="15"><use href="#ic-register"/></svg>시험 접수</a>
-      <a href="mypage.html"><svg class="icon" width="15" height="15"><use href="#ic-mypage"/></svg>접수 확인</a>
-      <a href="notice.html" class="active"><svg class="icon" width="15" height="15"><use href="#ic-notice"/></svg>공지사항</a>
-      <a href="faq.html"><svg class="icon" width="15" height="15"><use href="#ic-info"/></svg>FAQ</a>
-      <a href="lookup.html"><svg class="icon" width="15" height="15"><use href="#ic-search"/></svg>수험번호 조회</a>
+      <a href="guide.html"><svg class="icon" width="15" height="15"><use href="#ic-guide"/></svg><span data-i18n="nav_guide">TOPIK 안내</span></a>
+      <a href="rules.html"><svg class="icon" width="15" height="15"><use href="#ic-rules"/></svg><span data-i18n="nav_rules">시험 규정</span></a>
+      <a href="register.html"><svg class="icon" width="15" height="15"><use href="#ic-register"/></svg><span data-i18n="nav_register">시험 접수</span></a>
+      <a href="mypage.html"><svg class="icon" width="15" height="15"><use href="#ic-mypage"/></svg><span data-i18n="nav_mypage">접수 확인</span></a>
+      <a href="notice.html" class="active"><svg class="icon" width="15" height="15"><use href="#ic-notice"/></svg><span data-i18n="nav_notice">공지사항</span></a>
+      <a href="faq.html"><svg class="icon" width="15" height="15"><use href="#ic-info"/></svg><span data-i18n="nav_faq">FAQ</span></a>
+      <a href="lookup.html"><svg class="icon" width="15" height="15"><use href="#ic-search"/></svg><span data-i18n="nav_lookup">수험번호 조회</span></a>
     </nav>
     <div class="header-actions">
-      <a href="login.html" class="btn btn-outline"><svg class="icon" width="14" height="14"><use href="#ic-login"/></svg>로그인</a>
-      <a href="signup.html" class="btn btn-primary"><svg class="icon" width="14" height="14"><use href="#ic-signup"/></svg>회원가입</a>
+      <div class="hdr-lang-pc lang-switch">
+        <svg class="icon" width="13" height="13"><use href="#ic-globe"/></svg>
+        <select class="tm-lang-select" aria-label="언어 선택">
+          <option value="ko">한국어</option>
+          <option value="my">မြန်မာ</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+      <a href="login.html" class="btn btn-outline"><svg class="icon" width="14" height="14"><use href="#ic-login"/></svg><span data-i18n="nav_login">로그인</span></a>
+      <a href="signup.html" class="btn btn-primary"><svg class="icon" width="14" height="14"><use href="#ic-signup"/></svg><span data-i18n="nav_signup">회원가입</span></a>
     </div>
     <button type="button" class="hamburger" aria-label="메뉴 열기" aria-expanded="false">
       <svg width="22" height="22"><use href="#ic-menu"/></svg>
@@ -320,7 +328,13 @@
   </div>
 </footer>
 
-<script src="js/mobile-nav.js" defer></script>
+<script src="js/i18n.js?v=20260506"></script>
+<script src="js/mobile-nav.js?v=20260506" defer></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.TMI18N) TMI18N.boot();
+  });
+</script>
 <script>
   function showDetail(id){
     document.getElementById('listView').style.display='none';

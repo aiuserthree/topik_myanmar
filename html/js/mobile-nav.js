@@ -140,7 +140,17 @@
       btn.textContent = l.label;
       if (l.code === cur) btn.classList.add("is-active");
       btn.addEventListener("click", function () {
-        if (window.TMI18N) window.TMI18N.setLang(l.code);
+        if (window.TMI18N && window.TMI18N.setLang) {
+          window.TMI18N.setLang(l.code);
+        } else {
+          try {
+            localStorage.setItem("tm_lang", l.code);
+          } catch (e) {}
+          document.documentElement.setAttribute(
+            "lang",
+            l.code === "my" ? "my" : l.code === "en" ? "en" : "ko"
+          );
+        }
       });
       wrap.appendChild(btn);
     });
