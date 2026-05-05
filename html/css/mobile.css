@@ -103,6 +103,36 @@ html{
     justify-self:end;
     margin-left:0 !important;
     gap:8px !important;
+    align-items:center;
+  }
+  /* 로그인·회원가입·로그아웃: PC에서도 텍스트 숨기고 아이콘만 (라벨 span은 스크린리더용 유지) */
+  header .header-actions .btn{
+    position:relative;
+    padding:0 !important;
+    width:38px;
+    height:38px;
+    min-height:0 !important;
+    border-radius:50%;
+    justify-content:center;
+    align-items:center;
+    font-size:0;
+    gap:0;
+  }
+  header .header-actions .btn svg{
+    width:15px !important;
+    height:15px !important;
+    flex-shrink:0;
+  }
+  header .header-actions .btn span{
+    position:absolute;
+    width:1px;
+    height:1px;
+    padding:0;
+    margin:-1px;
+    overflow:hidden;
+    clip-path:inset(50%);
+    white-space:nowrap;
+    border:0;
   }
 }
 
@@ -275,6 +305,7 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
     flex:0 0 auto;margin-left:auto;
   }
   .header-actions .btn{
+    position:relative;
     padding:0;
     width:36px;height:36px;
     border-radius:50%;
@@ -283,7 +314,15 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
     min-height:0;
   }
   .header-actions .btn svg{width:15px;height:15px;}
-  .header-actions .btn span{display:none;}
+  /* 텍스트 비표시 — 라벨은 스크린리더용 유지 */
+  .header-actions .btn span{
+    position:absolute;
+    width:1px;height:1px;
+    padding:0;margin:-1px;
+    overflow:hidden;
+    clip-path:inset(50%);
+    white-space:nowrap;border:0;
+  }
   /* 모바일에서 PC 언어 콤보박스(.hdr-lang-pc)는 JS가 DOM에서 detach하지만, 만약 남아있더라도 강제로 숨김 */
   .hdr-lang-pc,
   header .hdr-lang-pc,
