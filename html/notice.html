@@ -121,6 +121,7 @@
     <symbol id="ic-ticket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 010 6v2a2 2 0 002 2h16a2 2 0 002-2v-2a3 3 0 010-6V7a2 2 0 00-2-2H4a2 2 0 00-2 2v2z"/><line x1="9" y1="3" x2="9" y2="21"/></symbol>
     <symbol id="ic-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></symbol>
     <symbol id="ic-arrow-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+    <symbol id="ic-arrow-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></symbol>
     <symbol id="ic-chev-d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></symbol>
     <symbol id="ic-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
     <symbol id="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
@@ -184,7 +185,7 @@
   <!-- 목록 뷰 -->
   <div id="listView">
     <div class="board-toolbar">
-      <select class="filter-select" id="noticeCatFilter" onchange="filterCat(this.value)">
+      <select class="filter-select" id="noticeCatFilter" onchange="applyNoticeFilters()">
         <option value="all">전체 카테고리</option>
         <option value="imp">중요</option>
         <option value="new">접수 안내</option>
@@ -206,51 +207,7 @@
         <div><svg class="icon" width="12" height="12"><use href="#ic-calendar"/></svg>작성일</div>
         <div style="justify-content:center;"><svg class="icon" width="12" height="12"><use href="#ic-eye"/></svg>조회</div>
       </div>
-      <div class="board-row" onclick="showDetail(1)" data-cat="new">
-        <div class="col-num">5</div>
-        <div class="col-title">
-          <span class="nbadge nb-new"><svg class="icon" width="9" height="9"><use href="#ic-notice"/></svg>NEW</span>
-          제98회 TOPIK 접수 안내 (양곤 시험장)
-        </div>
-        <div class="col-date"><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>2025.04.01</div>
-        <div class="col-view"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>128</div>
-      </div>
-      <div class="board-row" onclick="showDetail(2)" data-cat="imp">
-        <div class="col-num">4</div>
-        <div class="col-title">
-          <span class="nbadge nb-imp"><svg class="icon" width="9" height="9"><use href="#ic-alert"/></svg>중요</span>
-          증명사진 제출 기준 변경 안내
-        </div>
-        <div class="col-date"><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>2025.03.28</div>
-        <div class="col-view"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>247</div>
-      </div>
-      <div class="board-row" onclick="showDetail(3)" data-cat="gen">
-        <div class="col-num">3</div>
-        <div class="col-title">
-          <span class="nbadge nb-gen"><svg class="icon" width="9" height="9"><use href="#ic-rules"/></svg>일반</span>
-          2025년 TOPIK 미얀마 연간 시험 일정 공고
-        </div>
-        <div class="col-date"><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>2025.03.15</div>
-        <div class="col-view"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>512</div>
-      </div>
-      <div class="board-row" onclick="showDetail(4)" data-cat="gen">
-        <div class="col-num">2</div>
-        <div class="col-title">
-          <span class="nbadge nb-gen"><svg class="icon" width="9" height="9"><use href="#ic-rules"/></svg>일반</span>
-          수험표 출력 기간 안내 (제97회)
-        </div>
-        <div class="col-date"><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>2025.03.10</div>
-        <div class="col-view"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>389</div>
-      </div>
-      <div class="board-row" onclick="showDetail(5)" data-cat="gen">
-        <div class="col-num">1</div>
-        <div class="col-title">
-          <span class="nbadge nb-gen"><svg class="icon" width="9" height="9"><use href="#ic-rules"/></svg>일반</span>
-          제97회 TOPIK 최종 합격자 발표
-        </div>
-        <div class="col-date"><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>2025.02.20</div>
-        <div class="col-view"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>1,024</div>
-      </div>
+      <div id="noticeBoardRows"></div>
       </div>
     </div>
 
@@ -266,39 +223,24 @@
   <div id="detailView">
     <div class="detail-card">
       <div class="detail-head">
-        <div class="detail-cat">
+        <div class="detail-cat" id="detailCatLine">
           <svg class="icon" width="12" height="12"><use href="#ic-notice"/></svg>
-          공지사항 · 접수 안내
+          <span id="detailCatText">공지사항</span>
         </div>
-        <h2 id="detail-title">제98회 TOPIK 접수 안내 (양곤 시험장)</h2>
+        <h2 id="detail-title">—</h2>
         <div class="detail-meta">
-          <span><svg class="icon" width="12" height="12"><use href="#ic-user"/></svg>관리자</span>
-          <span><svg class="icon" width="12" height="12"><use href="#ic-calendar"/></svg>2025.04.01</span>
-          <span><svg class="icon" width="12" height="12"><use href="#ic-eye"/></svg>조회 128</span>
+          <span><svg class="icon" width="12" height="12"><use href="#ic-user"/></svg><span id="detailAuthor">관리자</span></span>
+          <span><svg class="icon" width="12" height="12"><use href="#ic-calendar"/></svg><span id="detailDate">—</span></span>
+          <span><svg class="icon" width="12" height="12"><use href="#ic-eye"/></svg><span id="detailViews">조회 —</span></span>
         </div>
       </div>
-      <div class="detail-body" id="detail-content">
-        <p><strong>제98회 한국어능력시험(TOPIK) 미얀마 시행 접수 안내</strong></p>
-        <p>안녕하세요, TOPIK Myanmar입니다.<br/>제98회 한국어능력시험(TOPIK) 미얀마 시행 원서 접수를 아래와 같이 안내드립니다.</p>
-        <p><strong>■ 접수 기간</strong><br/>2025년 4월 1일(화) ~ 2025년 4월 14일(월) 23:59까지</p>
-        <p><strong>■ 시험 일시</strong><br/>2025년 5월 17일(토)<br/>- TOPIK I: 오전 09:20 (입실 마감 09:05)<br/>- TOPIK II: 오후 12:35 (입실 마감 12:05)</p>
-        <p><strong>■ 시험 장소</strong><br/>양곤 시험장 (상세 위치는 추후 공지)</p>
-        <p><strong>■ 응시료</strong><br/>TOPIK I: MMK 55,000 / TOPIK II: MMK 75,000</p>
-        <p>접수는 반드시 온라인으로만 가능하며, 방문 접수는 받지 않습니다.<br/>기타 문의사항은 이메일(topik.myanmar@kr.go)로 문의해 주세요.</p>
-      </div>
-      <div class="detail-attach">
+      <div class="detail-body" id="detail-content"></div>
+      <div class="detail-attach" id="detailAttachWrap" style="display:none;">
         <h4>
           <svg class="icon" width="14" height="14" color="var(--navy)"><use href="#ic-download"/></svg>
           첨부파일
         </h4>
-        <a href="#" class="attach-item">
-          <svg class="icon" width="13" height="13" color="var(--red)"><use href="#ic-download"/></svg>
-          제98회_TOPIK_접수안내.pdf
-        </a>
-        <a href="#" class="attach-item">
-          <svg class="icon" width="13" height="13" color="var(--red)"><use href="#ic-download"/></svg>
-          시험장_위치도.pdf
-        </a>
+        <div id="detailAttachList"></div>
       </div>
       <div class="detail-nav">
         <button class="nav-btn" onclick="showList()">
@@ -325,7 +267,7 @@
   </div>
 </footer>
 
-<script src="js/content-store.js?v=20260505"></script>
+<script src="js/content-store.js?v=20260510"></script>
 <script src="js/i18n.js?v=20260506"></script>
 <script src="js/mobile-nav.js?v=20260506" defer></script>
 <script>
@@ -348,19 +290,93 @@
     });
     var ok=(cur==='all')||cats.some(function(c){ return c.id===cur; });
     sel.value=ok?cur:'all';
-    filterCat(sel.value);
+    applyNoticeFilters();
   }
   document.addEventListener('DOMContentLoaded',function(){
     if(window.TMI18N) TMI18N.boot();
     syncNoticeCategoryFilter();
+    renderNoticeBoard();
   });
-  window.addEventListener('topik-content-change',syncNoticeCategoryFilter);
+  window.addEventListener('topik-content-change',function(){
+    syncNoticeCategoryFilter();
+    renderNoticeBoard();
+  });
   window.addEventListener('storage',function(e){
-    if(window.ContentStore&&e.key===ContentStore.STORAGE_KEY) syncNoticeCategoryFilter();
+    if(window.ContentStore&&e.key===ContentStore.STORAGE_KEY){
+      syncNoticeCategoryFilter();
+      renderNoticeBoard();
+    }
   });
 </script>
 <script>
-  function showDetail(id){
+  function fmtNoticeViews(n){
+    var x=Number(n)||0;
+    return String(x).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  }
+  function noticeBadgeHtml(catId){
+    if(catId==='new'){
+      return '<span class="nbadge nb-new"><svg class="icon" width="9" height="9"><use href="#ic-notice"/></svg>NEW</span>';
+    }
+    if(catId==='imp'){
+      return '<span class="nbadge nb-imp"><svg class="icon" width="9" height="9"><use href="#ic-alert"/></svg>중요</span>';
+    }
+    return '<span class="nbadge nb-gen"><svg class="icon" width="9" height="9"><use href="#ic-rules"/></svg>일반</span>';
+  }
+  var currentNoticeId=null;
+  function renderNoticeBoard(){
+    if(!window.ContentStore)return;
+    var wrap=document.getElementById('noticeBoardRows');
+    if(!wrap)return;
+    var items=ContentStore.getNoticeItems();
+    wrap.innerHTML='';
+    var total=items.length;
+    items.forEach(function(it,i){
+      var row=document.createElement('div');
+      row.className='board-row';
+      row.setAttribute('data-cat',it.catId);
+      row.setAttribute('data-notice-id',it.id);
+      row.onclick=function(){ showNoticeDetail(it.id); };
+      row.innerHTML='<div class="col-num">'+(total-i)+'</div>'+
+        '<div class="col-title">'+noticeBadgeHtml(it.catId)+escapeNotice(it.title)+'</div>'+
+        '<div class="col-date"><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>'+escapeNotice(it.date)+'</div>'+
+        '<div class="col-view"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>'+fmtNoticeViews(it.views)+'</div>';
+      wrap.appendChild(row);
+    });
+    applyNoticeFilters();
+  }
+  function escapeNotice(str){
+    if(str==null)return'';
+    var d=document.createElement('div');
+    d.textContent=String(str);
+    return d.innerHTML;
+  }
+  function showNoticeDetail(id){
+    if(!window.ContentStore)return;
+    var items=ContentStore.getNoticeItems();
+    var it=items.find(function(x){ return x.id===id; });
+    if(!it)return;
+    currentNoticeId=id;
+    document.getElementById('detailCatText').textContent='공지사항 · '+ContentStore.labelForNoticeCatId(it.catId);
+    document.getElementById('detail-title').textContent=it.title;
+    document.getElementById('detailDate').textContent=it.date;
+    document.getElementById('detailViews').textContent='조회 '+fmtNoticeViews(it.views);
+    document.getElementById('detail-content').innerHTML=it.bodyHtml||'';
+    var attW=document.getElementById('detailAttachWrap');
+    var attL=document.getElementById('detailAttachList');
+    var files=Array.isArray(it.attachments)?it.attachments:[];
+    if(attW&&attL){
+      if(files.length){
+        attW.style.display='block';
+        attL.innerHTML=files.map(function(a){
+          var href=escapeNotice(a.href||'#');
+          var name=escapeNotice(a.name||'파일');
+          return '<a href="'+href+'" class="attach-item"><svg class="icon" width="13" height="13" color="var(--red)"><use href="#ic-download"/></svg>'+name+'</a>';
+        }).join('');
+      }else{
+        attW.style.display='none';
+        attL.innerHTML='';
+      }
+    }
     document.getElementById('listView').style.display='none';
     document.getElementById('detailView').style.display='block';
     window.scrollTo({top:0,behavior:'smooth'});
@@ -368,17 +384,21 @@
   function showList(){
     document.getElementById('detailView').style.display='none';
     document.getElementById('listView').style.display='block';
+    currentNoticeId=null;
+  }
+  function applyNoticeFilters(){
+    var fvEl=document.getElementById('noticeCatFilter');
+    var fv=fvEl?fvEl.value:'all';
+    var qEl=document.getElementById('searchInput');
+    var q=qEl?(qEl.value||'').toLowerCase():'';
+    document.querySelectorAll('#noticeBoardRows .board-row').forEach(function(row){
+      var catOk=(fv==='all'||row.dataset.cat===fv);
+      var textOk=!q||row.textContent.toLowerCase().includes(q);
+      row.style.display=(catOk&&textOk)?'':'none';
+    });
   }
   function searchNotice(){
-    const q=document.getElementById('searchInput').value.toLowerCase();
-    document.querySelectorAll('.board-row').forEach(row=>{
-      row.style.display=row.textContent.toLowerCase().includes(q)?'':'none';
-    });
-  }
-  function filterCat(val){
-    document.querySelectorAll('.board-row').forEach(row=>{
-      row.style.display=(val==='all'||row.dataset.cat===val)?'':'none';
-    });
+    applyNoticeFilters();
   }
 </script>
 </body>

@@ -179,6 +179,8 @@
     .modal-dl dd{font-weight:600;color:#1a1a2e;margin:0;}
     .modal-foot{padding:14px 20px;border-top:1px solid var(--gray-light);display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;background:#fafbfc;border-radius:0 0 14px 14px;}
     .modal-overlay.confirm-layer{z-index:450;}
+    .modal-overlay.taxonomy-modal-layer{z-index:430;}
+    .modal-dialog--taxonomy{max-width:min(560px,94vw);}
     #confirmModalMessage.confirm-msg{color:#374151;line-height:1.55;white-space:pre-wrap;}
 
     /* Print: 접수자 목록 (body.print-applicants 토글) */
@@ -210,7 +212,7 @@
   </style>
   <link rel="stylesheet" href="css/mobile.css"/>
   <script src="js/admin-auth.js"></script>
-  <script src="js/content-store.js?v=20260505"></script>
+  <script src="js/content-store.js?v=20260510"></script>
   <script>
     if (!window.AdminAuth || !AdminAuth.isSessionValid()) {
       location.replace('admin-login.html?next=' + encodeURIComponent('admin.html'));
@@ -683,39 +685,29 @@
       <div class="panel">
         <div class="panel-header">
           <h2><svg class="icon" width="16" height="16" color="var(--red)"><use href="#ic-notice"/></svg>공지사항 관리</h2>
-          <button class="btn btn-navy" onclick="toggleNoticeForm()">
-            <svg class="icon" width="13" height="13"><use href="#ic-plus"/></svg>공지 작성
-          </button>
-        </div>
-        <div class="taxonomy-panel" style="padding:16px 20px;background:#fafbfc;border-bottom:1px solid var(--gray-light);">
-          <p style="font-size:12px;color:var(--gray-text);margin-bottom:12px;line-height:1.5;">공지 카테고리를 추가·삭제하면 <strong>프론트 공지사항 페이지</strong> 필터(select)에 같은 브라우저 저장소 기준으로 반영됩니다.</p>
-          <h3 style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-            <svg class="icon" width="14" height="14"><use href="#ic-folder"/></svg>카테고리 목록
-          </h3>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center;">
-            <input type="text" id="newNoticeCatLabel" placeholder="새 카테고리 이름" style="flex:1;min-width:180px;padding:8px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-family:inherit;"/>
-            <button type="button" class="btn btn-navy" onclick="addNoticeCategoryAdmin()">
-              <svg class="icon" width="13" height="13"><use href="#ic-plus"/></svg>추가
+          <div class="panel-actions">
+            <button type="button" class="btn btn-gray" onclick="openNoticeCategoryModal()">
+              <svg class="icon" width="13" height="13"><use href="#ic-folder"/></svg>카테고리 목록 관리
             </button>
-          </div>
-          <div style="overflow-x:auto;">
-            <table class="taxonomy-table">
-              <thead><tr><th>표시명</th><th>코드(ID)</th><th class="taxonomy-del-wrap">관리</th></tr></thead>
-              <tbody id="noticeCatTableBody"></tbody>
-            </table>
+            <button type="button" class="btn btn-navy" onclick="openNoticeFormNew()">
+              <svg class="icon" width="13" height="13"><use href="#ic-plus"/></svg>공지 작성
+            </button>
           </div>
         </div>
         <div id="noticeFormWrap" style="display:none;">
           <div class="notice-form-wrap">
+            <p class="faq-form-hint" id="noticeFormHint">새 공지를 작성합니다.</p>
             <label for="noticeCatSelect" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">카테고리</label>
             <select id="noticeCatSelect"></select>
-            <input type="text" placeholder="공지사항 제목을 입력하세요"/>
-            <textarea placeholder="공지사항 내용을 입력하세요..."></textarea>
+            <label for="noticeTitleInput" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:12px 0 6px;">제목</label>
+            <input type="text" id="noticeTitleInput" placeholder="공지사항 제목을 입력하세요"/>
+            <label for="noticeBodyInput" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:12px 0 6px;">내용</label>
+            <textarea id="noticeBodyInput" placeholder="공지사항 내용을 입력하세요..." rows="8"></textarea>
             <div class="notice-form-btns">
               <button type="button" class="btn btn-navy" onclick="submitNoticeDemo()">
-                <svg class="icon" width="13" height="13"><use href="#ic-notice"/></svg>등록
+                <svg class="icon" width="13" height="13"><use href="#ic-notice"/></svg><span id="noticeSubmitLbl">등록</span>
               </button>
-              <button type="button" class="btn btn-gray" onclick="toggleNoticeForm()">
+              <button type="button" class="btn btn-gray" onclick="cancelNoticeForm()">
                 <svg class="icon" width="13" height="13"><use href="#ic-x"/></svg>취소
               </button>
             </div>
@@ -726,41 +718,7 @@
             <thead><tr>
               <th>번호</th><th>제목</th><th>카테고리</th><th>작성일</th><th>조회수</th><th>관리</th>
             </tr></thead>
-            <tbody>
-              <tr>
-                <td>5</td>
-                <td>제98회 TOPIK 접수 안내</td>
-                <td>접수 안내</td>
-                <td>2025.04.01</td>
-                <td>128</td>
-                <td><div class="action-btns">
-                  <button type="button" class="ab-view" onclick="adminDemoEdit('공지사항')"><svg class="icon" width="11" height="11"><use href="#ic-edit"/></svg>수정</button>
-                  <button type="button" class="ab-reject" onclick="deleteNoticeRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-trash"/></svg>삭제</button>
-                </div></td>
-              </tr>
-              <tr>
-                <td>4</td>
-                <td>증명사진 기준 변경 안내</td>
-                <td>중요</td>
-                <td>2025.03.28</td>
-                <td>247</td>
-                <td><div class="action-btns">
-                  <button type="button" class="ab-view" onclick="adminDemoEdit('공지사항')"><svg class="icon" width="11" height="11"><use href="#ic-edit"/></svg>수정</button>
-                  <button type="button" class="ab-reject" onclick="deleteNoticeRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-trash"/></svg>삭제</button>
-                </div></td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>2025년 연간 시험 일정 공고</td>
-                <td>시험 일정</td>
-                <td>2025.03.15</td>
-                <td>512</td>
-                <td><div class="action-btns">
-                  <button type="button" class="ab-view" onclick="adminDemoEdit('공지사항')"><svg class="icon" width="11" height="11"><use href="#ic-edit"/></svg>수정</button>
-                  <button type="button" class="ab-reject" onclick="deleteNoticeRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-trash"/></svg>삭제</button>
-                </div></td>
-              </tr>
-            </tbody>
+            <tbody id="noticeTableBody"></tbody>
           </table>
         </div>
       </div>
@@ -771,26 +729,13 @@
       <div class="panel">
         <div class="panel-header">
           <h2><svg class="icon" width="16" height="16" color="var(--red)"><use href="#ic-info"/></svg>FAQ 관리</h2>
-          <button type="button" class="btn btn-navy" onclick="openFaqFormNew()">
-            <svg class="icon" width="13" height="13"><use href="#ic-plus"/></svg>FAQ 등록
-          </button>
-        </div>
-        <div class="taxonomy-panel" style="padding:16px 20px;background:#fafbfc;border-bottom:1px solid var(--gray-light);">
-          <p style="font-size:12px;color:var(--gray-text);margin-bottom:12px;line-height:1.5;">FAQ 분류를 추가·삭제하면 <strong>프론트 FAQ 페이지</strong> 분류 필터·저장 FAQ 목록에 반영됩니다.</p>
-          <h3 style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-            <svg class="icon" width="14" height="14"><use href="#ic-folder"/></svg>분류 목록
-          </h3>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center;">
-            <input type="text" id="newFaqCatLabel" placeholder="새 분류 이름" style="flex:1;min-width:180px;padding:8px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-family:inherit;"/>
-            <button type="button" class="btn btn-navy" onclick="addFaqCategoryAdmin()">
-              <svg class="icon" width="13" height="13"><use href="#ic-plus"/></svg>추가
+          <div class="panel-actions">
+            <button type="button" class="btn btn-gray" onclick="openFaqCategoryModal()">
+              <svg class="icon" width="13" height="13"><use href="#ic-folder"/></svg>분류 목록 관리
             </button>
-          </div>
-          <div style="overflow-x:auto;">
-            <table class="taxonomy-table">
-              <thead><tr><th>표시명</th><th>코드(ID)</th><th class="taxonomy-del-wrap">관리</th></tr></thead>
-              <tbody id="faqCatTableBody"></tbody>
-            </table>
+            <button type="button" class="btn btn-navy" onclick="openFaqFormNew()">
+              <svg class="icon" width="13" height="13"><use href="#ic-plus"/></svg>FAQ 등록
+            </button>
           </div>
         </div>
         <div id="faqFormWrap" style="display:none;">
@@ -855,6 +800,62 @@
   </div>
 </div>
 
+<div id="modalNoticeCategories" class="modal-overlay taxonomy-modal-layer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalNoticeCategoriesTitle">
+  <div class="modal-backdrop" onclick="closeNoticeCategoryModal()" aria-hidden="true"></div>
+  <div class="modal-dialog modal-dialog--taxonomy">
+    <div class="modal-head">
+      <h3 id="modalNoticeCategoriesTitle">카테고리 목록 관리</h3>
+      <button type="button" class="modal-close" onclick="closeNoticeCategoryModal()" aria-label="닫기"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--gray-text);margin:0 0 14px;line-height:1.55;">추가·삭제한 내용은 <strong>프론트 공지사항</strong> 필터와 이 화면의 공지 작성 카테고리에 반영됩니다. (브라우저 저장소)</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center;">
+        <input type="text" id="newNoticeCatLabel" placeholder="새 카테고리 이름" style="flex:1;min-width:180px;padding:8px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-family:inherit;"/>
+        <button type="button" class="btn btn-navy" onclick="addNoticeCategoryAdmin()">
+          <svg class="icon" width="13" height="13"><use href="#ic-plus"/></svg>추가
+        </button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="taxonomy-table">
+          <thead><tr><th>표시명</th><th>코드(ID)</th><th class="taxonomy-del-wrap">관리</th></tr></thead>
+          <tbody id="noticeCatTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-navy" onclick="closeNoticeCategoryModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalFaqCategories" class="modal-overlay taxonomy-modal-layer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalFaqCategoriesTitle">
+  <div class="modal-backdrop" onclick="closeFaqCategoryModal()" aria-hidden="true"></div>
+  <div class="modal-dialog modal-dialog--taxonomy">
+    <div class="modal-head">
+      <h3 id="modalFaqCategoriesTitle">분류 목록 관리</h3>
+      <button type="button" class="modal-close" onclick="closeFaqCategoryModal()" aria-label="닫기"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--gray-text);margin:0 0 14px;line-height:1.55;">추가·삭제한 내용은 <strong>프론트 FAQ</strong> 분류 필터·FAQ 등록 분류에 반영됩니다. (브라우저 저장소)</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center;">
+        <input type="text" id="newFaqCatLabel" placeholder="새 분류 이름" style="flex:1;min-width:180px;padding:8px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-family:inherit;"/>
+        <button type="button" class="btn btn-navy" onclick="addFaqCategoryAdmin()">
+          <svg class="icon" width="13" height="13"><use href="#ic-plus"/></svg>추가
+        </button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="taxonomy-table">
+          <thead><tr><th>표시명</th><th>코드(ID)</th><th class="taxonomy-del-wrap">관리</th></tr></thead>
+          <tbody id="faqCatTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-navy" onclick="closeFaqCategoryModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
 <script>
   function closeConfirmModal(){
     var modal=document.getElementById('confirmModal');
@@ -877,6 +878,42 @@
     };
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden','false');
+  }
+  function openNoticeCategoryModal(){
+    refreshNoticeTaxonomyAdmin();
+    var m=document.getElementById('modalNoticeCategories');
+    if(!m)return;
+    m.classList.add('is-open');
+    m.setAttribute('aria-hidden','false');
+    setTimeout(function(){
+      var inp=document.getElementById('newNoticeCatLabel');
+      if(inp)inp.focus();
+    },50);
+  }
+  function closeNoticeCategoryModal(){
+    var m=document.getElementById('modalNoticeCategories');
+    if(!m||!m.classList.contains('is-open'))return false;
+    m.classList.remove('is-open');
+    m.setAttribute('aria-hidden','true');
+    return true;
+  }
+  function openFaqCategoryModal(){
+    refreshFaqTaxonomyAdmin();
+    var m=document.getElementById('modalFaqCategories');
+    if(!m)return;
+    m.classList.add('is-open');
+    m.setAttribute('aria-hidden','false');
+    setTimeout(function(){
+      var inp=document.getElementById('newFaqCatLabel');
+      if(inp)inp.focus();
+    },50);
+  }
+  function closeFaqCategoryModal(){
+    var m=document.getElementById('modalFaqCategories');
+    if(!m||!m.classList.contains('is-open'))return false;
+    m.classList.remove('is-open');
+    m.setAttribute('aria-hidden','true');
+    return true;
   }
   function confirmAdminLogout(){
     openConfirmModal({
@@ -911,12 +948,106 @@
       onConfirm:function(){ alert('회차가 등록되었습니다.'); toggleRoundForm(); }
     });
   }
+  var noticeEditingTr=null;
+  function renderNoticeAdminTable(){
+    if(!window.ContentStore)return;
+    cancelNoticeForm();
+    var items=ContentStore.getNoticeItems();
+    var tbody=document.getElementById('noticeTableBody');
+    if(!tbody)return;
+    tbody.innerHTML='';
+    var total=items.length;
+    items.forEach(function(it,i){
+      var label=ContentStore.labelForNoticeCatId(it.catId);
+      var tr=document.createElement('tr');
+      tr.dataset.noticeId=it.id;
+      var tdN=document.createElement('td');
+      var tdT=document.createElement('td'); tdT.textContent=it.title;
+      var tdC=document.createElement('td'); tdC.textContent=label;
+      var tdD=document.createElement('td'); tdD.textContent=it.date||'';
+      var tdV=document.createElement('td'); tdV.textContent=String(it.views!=null?it.views:0).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+      var tdA=document.createElement('td');
+      tdA.innerHTML='<div class="action-btns">'+
+        '<button type="button" class="ab-view" onclick="editNoticeAdminRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-edit"/></svg>수정</button>'+
+        '<button type="button" class="ab-reject" onclick="deleteNoticeRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-trash"/></svg>삭제</button>'+
+        '</div>';
+      tr.appendChild(tdN); tr.appendChild(tdT); tr.appendChild(tdC); tr.appendChild(tdD); tr.appendChild(tdV); tr.appendChild(tdA);
+      tbody.appendChild(tr);
+    });
+    noticeRenumber();
+  }
+  function noticeRenumber(){
+    var tbody=document.getElementById('noticeTableBody');
+    if(!tbody)return;
+    var rows=tbody.querySelectorAll('tr');
+    var n=rows.length;
+    for(var i=0;i<rows.length;i++){
+      rows[i].cells[0].textContent=String(n-i);
+    }
+  }
+  function openNoticeFormNew(){
+    noticeEditingTr=null;
+    document.getElementById('noticeFormHint').textContent='새 공지를 작성합니다.';
+    document.getElementById('noticeSubmitLbl').textContent='등록';
+    document.getElementById('noticeTitleInput').value='';
+    document.getElementById('noticeBodyInput').value='';
+    refreshNoticeTaxonomyAdmin();
+    document.getElementById('noticeFormWrap').style.display='block';
+    document.getElementById('noticeTitleInput').focus();
+  }
+  function cancelNoticeForm(){
+    noticeEditingTr=null;
+    document.getElementById('noticeFormWrap').style.display='none';
+    document.getElementById('noticeFormHint').textContent='새 공지를 작성합니다.';
+    document.getElementById('noticeSubmitLbl').textContent='등록';
+    document.getElementById('noticeTitleInput').value='';
+    document.getElementById('noticeBodyInput').value='';
+  }
+  function editNoticeAdminRow(btn){
+    var tr=btn.closest('tr');
+    if(!tr||!tr.dataset.noticeId)return;
+    var items=ContentStore.getNoticeItems();
+    var it=items.find(function(x){ return x.id===tr.dataset.noticeId; });
+    if(!it)return;
+    noticeEditingTr=tr;
+    refreshNoticeTaxonomyAdmin();
+    document.getElementById('noticeCatSelect').value=it.catId;
+    document.getElementById('noticeTitleInput').value=it.title||'';
+    var tmp=document.createElement('div');
+    tmp.innerHTML=it.bodyHtml||'';
+    document.getElementById('noticeBodyInput').value=(tmp.innerText||tmp.textContent||'').trim();
+    document.getElementById('noticeFormHint').textContent='선택한 공지를 수정합니다.';
+    document.getElementById('noticeSubmitLbl').textContent='저장';
+    document.getElementById('noticeFormWrap').style.display='block';
+    document.getElementById('noticeTitleInput').focus();
+  }
   function submitNoticeDemo(){
+    if(!window.ContentStore)return;
+    var cat=document.getElementById('noticeCatSelect').value;
+    var title=(document.getElementById('noticeTitleInput').value||'').trim();
+    var raw=(document.getElementById('noticeBodyInput').value||'').trim();
+    if(!title){ alert('제목을 입력하세요.'); return; }
+    if(!raw){ alert('내용을 입력하세요.'); return; }
+    var bodyHtml='<p>'+escapeHtml(raw).replace(/\n/g,'<br/>')+'</p>';
+    var editing=noticeEditingTr;
     openConfirmModal({
-      title:'공지 등록',
-      message:'작성한 공지사항을 등록합니다. (데모)',
-      confirmLabel:'등록',
-      onConfirm:function(){ alert('공지사항이 등록되었습니다.'); toggleNoticeForm(); }
+      title:editing?'공지 수정':'공지 등록',
+      message:editing?'변경 내용을 저장합니다.':'새 공지사항을 등록합니다.',
+      confirmLabel:editing?'저장':'등록',
+      onConfirm:function(){
+        var payload={ catId:cat, title:title, bodyHtml:bodyHtml };
+        if(editing&&editing.dataset.noticeId){
+          payload.id=editing.dataset.noticeId;
+          var cur=ContentStore.getNoticeItems().find(function(x){ return x.id===payload.id; });
+          if(cur){
+            payload.date=cur.date;
+            payload.views=cur.views;
+          }
+        }
+        ContentStore.upsertNoticeItem(payload);
+        renderNoticeAdminTable();
+        cancelNoticeForm();
+      }
     });
   }
   function deleteNoticeRow(btn){
@@ -927,7 +1058,11 @@
       message:'「'+title+'」 항목을 삭제합니다. 이 작업은 되돌릴 수 없습니다.',
       confirmLabel:'삭제',
       danger:true,
-      onConfirm:function(){ if(tr)tr.remove(); }
+      onConfirm:function(){
+        if(noticeEditingTr===tr)cancelNoticeForm();
+        if(window.ContentStore&&tr&&tr.dataset.noticeId) ContentStore.removeNoticeItem(tr.dataset.noticeId);
+        renderNoticeAdminTable();
+      }
     });
   }
   function refreshNoticeTaxonomyAdmin(){
@@ -1234,6 +1369,8 @@
       closeConfirmModal();
       return;
     }
+    if(closeNoticeCategoryModal())return;
+    if(closeFaqCategoryModal())return;
     closeApplicantModal();
     closeAdminSidebar();
   });
@@ -1431,12 +1568,9 @@
     if(!window.ContentStore)return;
     refreshNoticeTaxonomyAdmin();
     refreshFaqTaxonomyAdmin();
+    renderNoticeAdminTable();
     renderFaqAdminTable();
   });
-  function toggleNoticeForm(){
-    const el=document.getElementById('noticeFormWrap');
-    el.style.display=el.style.display==='none'?'block':'none';
-  }
 </script>
 <script src="js/admin-mobile.js"></script>
 </body>

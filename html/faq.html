@@ -42,6 +42,7 @@
     .faq-cat-chip{padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;border:1.5px solid var(--gray-light);background:white;cursor:pointer;font-family:inherit;color:var(--navy);transition:background .15s,border-color .15s,color .15s;}
     .faq-cat-chip:hover{background:#fafbfc;border-color:#cbd5e1;}
     .faq-cat-chip.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+    .faq-empty{font-size:14px;color:var(--gray-text);padding:24px;text-align:center;background:white;border-radius:12px;border:1px dashed var(--gray-light);}
     footer{background:#1a2a4a;color:#aab8cc;padding:28px 24px;}
     .footer-bottom{max-width:1200px;margin:0 auto;font-size:12px;}
   </style>
@@ -108,43 +109,6 @@
 <div class="content">
   <div id="faqCatBar" class="faq-cat-bar" role="toolbar" aria-label="FAQ 분류"></div>
   <div id="faqDynamicList" class="faq-list"></div>
-  <div class="faq-list" id="faqStaticBlock">
-    <div class="faq-item" data-faq-cat="reg">
-      <button type="button" class="faq-q" onclick="this.parentElement.classList.toggle('open')">
-        <span data-i18n="faq_q1"></span>
-        <svg class="icon" width="18" height="18"><use href="#ic-chev-d"/></svg>
-      </button>
-      <div class="faq-a" data-i18n="faq_a1"></div>
-    </div>
-    <div class="faq-item" data-faq-cat="exam">
-      <button type="button" class="faq-q" onclick="this.parentElement.classList.toggle('open')">
-        <span data-i18n="faq_q2"></span>
-        <svg class="icon" width="18" height="18"><use href="#ic-chev-d"/></svg>
-      </button>
-      <div class="faq-a" data-i18n="faq_a2"></div>
-    </div>
-    <div class="faq-item" data-faq-cat="score">
-      <button type="button" class="faq-q" onclick="this.parentElement.classList.toggle('open')">
-        <span data-i18n="faq_q3"></span>
-        <svg class="icon" width="18" height="18"><use href="#ic-chev-d"/></svg>
-      </button>
-      <div class="faq-a" data-i18n="faq_a3"></div>
-    </div>
-    <div class="faq-item" data-faq-cat="etc">
-      <button type="button" class="faq-q" onclick="this.parentElement.classList.toggle('open')">
-        <span data-i18n="faq_q4"></span>
-        <svg class="icon" width="18" height="18"><use href="#ic-chev-d"/></svg>
-      </button>
-      <div class="faq-a" data-i18n="faq_a4"></div>
-    </div>
-    <div class="faq-item" data-faq-cat="reg">
-      <button type="button" class="faq-q" onclick="this.parentElement.classList.toggle('open')">
-        <span data-i18n="faq_q5"></span>
-        <svg class="icon" width="18" height="18"><use href="#ic-chev-d"/></svg>
-      </button>
-      <div class="faq-a" data-i18n="faq_a5"></div>
-    </div>
-  </div>
   <div class="faq-official">
     <strong>TOPIK</strong> — <span data-i18n="faq_official"></span>
     <a href="https://www.topik.go.kr/" target="_blank" rel="noopener noreferrer">https://www.topik.go.kr/</a>
@@ -153,7 +117,7 @@
 
 <footer><div class="footer-bottom">© 2025 TOPIK Myanmar</div></footer>
 
-<script src="js/content-store.js?v=20260505"></script>
+<script src="js/content-store.js?v=20260510"></script>
 <script src="js/i18n.js?v=20260506"></script>
 <script src="js/mobile-nav.js?v=20260506" defer></script>
 <script>
@@ -199,7 +163,8 @@
     wrap.innerHTML='';
     var items=ContentStore.getFaqItems();
     if(!items.length){
-      wrap.style.display='none';
+      wrap.style.display='flex';
+      wrap.innerHTML='<p class="faq-empty">등록된 FAQ가 없습니다.</p>';
       return;
     }
     wrap.style.display='flex';
