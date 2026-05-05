@@ -72,8 +72,10 @@ html{
     padding:2px 0;
   }
   header nav#mainNav::-webkit-scrollbar{display:none;height:0;}
-  /* relocateLangSwitch 복제본은 모바일 드로어 전용 — PC GNB 줄에서는 숨기고 .header-top만 표시 */
+  /* relocateLangSwitch 복제본은 모바일 드로어 전용 — PC GNB 줄에서는 숨기고 .hdr-lang-pc만 표시 */
   header nav#mainNav .lang-switch{display:none !important;}
+  /* PC에서 언어 콤보박스 표시 */
+  .hdr-lang-pc{display:flex;align-items:center;gap:8px;}
   header nav#mainNav a{
     flex:0 0 auto;
     padding:8px 9px !important;
@@ -96,9 +98,9 @@ html{
   }
 }
 
-/* 헤더 상단 언어 콤보박스 (index·FAQ·lookup 등 공통) */
-.header-top .lang-switch{display:flex;align-items:center;gap:8px;}
-.header-top .lang-switch .tm-lang-select{
+/* 언어 콤보박스 (PC 전용 — index·FAQ·lookup header-actions 안) */
+.hdr-lang-pc{display:none;}
+.hdr-lang-pc .tm-lang-select{
   min-width:128px;
   max-width:min(46vw,220px);
   padding:5px 26px 5px 10px;
@@ -111,11 +113,11 @@ html{
   border-radius:6px;
   cursor:pointer;
 }
-.header-top .lang-switch .tm-lang-select:focus-visible{
+.hdr-lang-pc .tm-lang-select:focus-visible{
   outline:2px solid var(--gold,#C8963E);
   outline-offset:2px;
 }
-.header-top .lang-switch .tm-lang-select option{color:#1a1a2e;background:#fff;}
+.hdr-lang-pc .tm-lang-select option{color:#1a1a2e;background:#fff;}
 
 /* ───── Page title band (all interior pages + tablet widths) ───── */
 @media (max-width:900px){
@@ -220,7 +222,10 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
     position:sticky;top:0;z-index:200;
     background:var(--navy,#003478);
   }
+  /* header-top은 세 페이지(index·faq·lookup)에서 제거됨 — 혹시 남아있을 경우 대비 */
   .header-top{display:none !important;}
+  /* 언어 콤보박스는 PC 전용 — 모바일에서 숨김 */
+  .hdr-lang-pc{display:none !important;}
 
   .header-main{
     position:relative;

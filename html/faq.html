@@ -11,8 +11,6 @@
     body{font-family:'Noto Sans KR',sans-serif;background:var(--gray-bg);color:#1a1a2e;}
     svg.icon{display:inline-block;vertical-align:middle;flex-shrink:0;}
     header{background:var(--navy);position:sticky;top:0;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
-    .header-top{background:#002060;display:flex;justify-content:flex-end;align-items:center;padding:6px 24px;font-size:12px;color:#aab8cc;}
-    .lang-switch{display:flex;gap:8px;align-items:center;}
     .header-main{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;max-width:1200px;margin:0 auto;}
     .logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
     .logo-text .main{font-size:18px;font-weight:700;color:white;}
@@ -63,16 +61,6 @@
 <body>
 
 <header>
-  <div class="header-top">
-    <div class="lang-switch">
-      <svg class="icon" width="13" height="13"><use href="#ic-globe"/></svg>
-      <select class="tm-lang-select" aria-label="언어 선택">
-        <option value="ko">한국어</option>
-        <option value="my">မြန်မာ</option>
-        <option value="en">English</option>
-      </select>
-    </div>
-  </div>
   <div class="header-main">
     <div class="header-main-bg" aria-hidden="true"></div>
     <a href="index.html" class="logo">
@@ -89,6 +77,14 @@
       <a href="lookup.html"><svg class="icon" width="15" height="15"><use href="#ic-search"/></svg><span data-i18n="nav_lookup">수험번호 조회</span></a>
     </nav>
     <div class="header-actions">
+      <div class="hdr-lang-pc lang-switch">
+        <svg class="icon" width="13" height="13"><use href="#ic-globe"/></svg>
+        <select class="tm-lang-select" aria-label="언어 선택">
+          <option value="ko">한국어</option>
+          <option value="my">မြန်မာ</option>
+          <option value="en">English</option>
+        </select>
+      </div>
       <a href="login.html" class="btn btn-outline"><svg class="icon" width="14" height="14"><use href="#ic-login"/></svg><span data-i18n="nav_login">로그인</span></a>
       <a href="signup.html" class="btn btn-primary"><svg class="icon" width="14" height="14"><use href="#ic-signup"/></svg><span data-i18n="nav_signup">회원가입</span></a>
     </div>
