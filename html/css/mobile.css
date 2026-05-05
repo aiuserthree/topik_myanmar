@@ -72,6 +72,8 @@ html{
     padding:2px 0;
   }
   header nav#mainNav::-webkit-scrollbar{display:none;height:0;}
+  /* relocateLangSwitch 복제본은 모바일 드로어 전용 — PC GNB 줄에서는 숨기고 .header-top만 표시 */
+  header nav#mainNav .lang-switch{display:none !important;}
   header nav#mainNav a{
     flex:0 0 auto;
     padding:8px 9px !important;
