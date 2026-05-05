@@ -166,6 +166,31 @@
     .modal-overlay.confirm-layer{z-index:450;}
     #confirmModalMessage.confirm-msg{color:#374151;line-height:1.55;white-space:pre-wrap;}
 
+    /* Print: 접수자 목록 (body.print-applicants 토글) */
+    @media print {
+      body.print-applicants{background:white !important;}
+      body.print-applicants .sidebar,
+      body.print-applicants #sbOverlay,
+      body.print-applicants .modal-overlay{display:none !important;}
+      body.print-applicants .main-wrap{margin-left:0 !important;}
+      body.print-applicants .page-content{padding:12px 16px !important;}
+      body.print-applicants #panel-dashboard,
+      body.print-applicants #panel-photos,
+      body.print-applicants #panel-rounds,
+      body.print-applicants #panel-notices{display:none !important;}
+      body.print-applicants #panel-applicants{display:block !important;}
+      body.print-applicants .sb-menu-btn,
+      body.print-applicants .topbar-right{display:none !important;}
+      body.print-applicants .panel-actions,
+      body.print-applicants .admin-callout,
+      body.print-applicants .filter-bar,
+      body.print-applicants .table-footer{display:none !important;}
+      body.print-applicants #applicantTable th:last-child,
+      body.print-applicants #applicantTable td:last-child{display:none !important;}
+      body.print-applicants .panel{box-shadow:none !important;border:1px solid #e5e7eb;}
+      body.print-applicants .data-table tr:hover td{background:transparent !important;}
+    }
+
   </style>
   <link rel="stylesheet" href="css/mobile.css"/>
   <script src="js/admin-auth.js"></script>
@@ -381,7 +406,7 @@
             <button type="button" class="btn btn-green" onclick="downloadExcel()">
               <svg class="icon" width="13" height="13"><use href="#ic-download"/></svg>엑셀 다운로드
             </button>
-            <button class="btn btn-gray">
+            <button type="button" class="btn btn-gray" onclick="printApplicantList()">
               <svg class="icon" width="13" height="13"><use href="#ic-print"/></svg>인쇄
             </button>
           </div>
@@ -1050,6 +1075,18 @@
     a.href=URL.createObjectURL(blob);
     a.download='TOPIK_Myanmar_접수자목록.csv';
     a.click();
+  }
+  function printApplicantList(){
+    document.body.classList.add('print-applicants');
+    function cleanup(){
+      document.body.classList.remove('print-applicants');
+      window.removeEventListener('afterprint',cleanup);
+    }
+    window.addEventListener('afterprint',cleanup);
+    requestAnimationFrame(function(){
+      window.print();
+    });
+    setTimeout(cleanup,2000);
   }
   function searchTable(){
     const q=document.getElementById('tableSearch').value.toLowerCase();
