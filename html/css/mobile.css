@@ -72,8 +72,9 @@ html{
     padding:2px 0;
   }
   header nav#mainNav::-webkit-scrollbar{display:none;height:0;}
-  /* relocateLangSwitch 복제본은 모바일 드로어 전용 — PC GNB 줄에서는 숨기고 .hdr-lang-pc만 표시 */
+  /* 드로어 전용 요소(lang-switch 복제본, 3-버튼) — PC GNB에서 모두 숨김 */
   header nav#mainNav .lang-switch{display:none !important;}
+  header nav#mainNav .tm-drawer-lang{display:none !important;}
   /* PC에서 언어 콤보박스 표시 */
   .hdr-lang-pc{display:flex;align-items:center;gap:8px;}
   header nav#mainNav a{
