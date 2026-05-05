@@ -11,7 +11,8 @@
     { key: "applicants", label: "접수자",   icon: "ic-users" },
     { key: "photos",     label: "사진심사", icon: "ic-image" },
     { key: "rounds",     label: "회차",     icon: "ic-calendar" },
-    { key: "notices",    label: "공지",     icon: "ic-notice" },
+    { key: "notices",    label: "공지사항 관리", icon: "ic-notice" },
+    { key: "faq",        label: "FAQ",      icon: "ic-info" },
   ];
 
   /* Plain text from <th> (strip SVG icons so data-label stays short) */

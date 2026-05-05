@@ -148,6 +148,21 @@
     .notice-form-wrap input:focus,.notice-form-wrap select:focus,.notice-form-wrap textarea:focus{outline:none;border-color:var(--navy);}
     .notice-form-wrap textarea{height:140px;resize:vertical;}
     .notice-form-btns{display:flex;gap:8px;}
+    .faq-form-hint{font-size:12px;color:var(--gray-text);margin:-4px 0 8px;font-weight:600;}
+
+    /* 카테고리·분류 소형 표 — 모바일 data-table 카드 변환 대상에서 제외 */
+    .taxonomy-table{width:100%;border-collapse:collapse;font-size:12px;background:#fff;}
+    .taxonomy-table th{background:#f0f4ff;color:var(--navy);padding:8px 10px;text-align:left;font-weight:700;border-bottom:2px solid var(--gray-light);white-space:nowrap;}
+    .taxonomy-table td{padding:8px 10px;border-bottom:1px solid var(--gray-light);vertical-align:middle;}
+    .taxonomy-table tr:last-child td{border-bottom:none;}
+    .taxonomy-table .taxonomy-del-wrap{text-align:right;white-space:nowrap;}
+    .taxonomy-del{
+      padding:6px 10px;font-size:11px;font-weight:600;border-radius:8px;border:1px solid #e2e8f0;
+      background:#fff;color:#64748b;cursor:pointer;font-family:inherit;
+      display:inline-flex;align-items:center;gap:5px;transition:background .15s,border-color .15s,color .15s;
+    }
+    .taxonomy-del:hover{background:#fef2f2;color:#b91c1c;border-color:#fecaca;}
+    .taxonomy-del svg{flex-shrink:0;}
 
     /* Applicant detail modal */
     .modal-overlay{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;padding:16px;visibility:hidden;opacity:0;transition:opacity .2s,visibility .2s;}
@@ -177,7 +192,8 @@
       body.print-applicants #panel-dashboard,
       body.print-applicants #panel-photos,
       body.print-applicants #panel-rounds,
-      body.print-applicants #panel-notices{display:none !important;}
+      body.print-applicants #panel-notices,
+      body.print-applicants #panel-faq{display:none !important;}
       body.print-applicants #panel-applicants{display:block !important;}
       body.print-applicants .sb-menu-btn,
       body.print-applicants .topbar-right{display:none !important;}
@@ -194,6 +210,7 @@
   </style>
   <link rel="stylesheet" href="css/mobile.css"/>
   <script src="js/admin-auth.js"></script>
+  <script src="js/content-store.js?v=20260505"></script>
   <script>
     if (!window.AdminAuth || !AdminAuth.isSessionValid()) {
       location.replace('admin-login.html?next=' + encodeURIComponent('admin.html'));
@@ -286,7 +303,10 @@
     </button>
     <div class="sb-section">콘텐츠</div>
     <button type="button" class="sb-link" onclick="showPanel('notices',this)">
-      <span class="sb-icon"><svg class="icon" width="16" height="16"><use href="#ic-notice"/></svg></span>공지사항
+      <span class="sb-icon"><svg class="icon" width="16" height="16"><use href="#ic-notice"/></svg></span>공지사항 관리
+    </button>
+    <button type="button" class="sb-link" onclick="showPanel('faq',this)">
+      <span class="sb-icon"><svg class="icon" width="16" height="16"><use href="#ic-info"/></svg></span>FAQ 관리
     </button>
     <div class="sb-section">시스템</div>
     <button class="sb-link" type="button" onclick="confirmOpenPublicSite()">
@@ -667,15 +687,28 @@
             <svg class="icon" width="13" height="13"><use href="#ic-plus"/></svg>공지 작성
           </button>
         </div>
+        <div class="taxonomy-panel" style="padding:16px 20px;background:#fafbfc;border-bottom:1px solid var(--gray-light);">
+          <p style="font-size:12px;color:var(--gray-text);margin-bottom:12px;line-height:1.5;">공지 카테고리를 추가·삭제하면 <strong>프론트 공지사항 페이지</strong> 필터(select)에 같은 브라우저 저장소 기준으로 반영됩니다.</p>
+          <h3 style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+            <svg class="icon" width="14" height="14"><use href="#ic-folder"/></svg>카테고리 목록
+          </h3>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center;">
+            <input type="text" id="newNoticeCatLabel" placeholder="새 카테고리 이름" style="flex:1;min-width:180px;padding:8px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-family:inherit;"/>
+            <button type="button" class="btn btn-navy" onclick="addNoticeCategoryAdmin()">
+              <svg class="icon" width="13" height="13"><use href="#ic-plus"/></svg>추가
+            </button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="taxonomy-table">
+              <thead><tr><th>표시명</th><th>코드(ID)</th><th class="taxonomy-del-wrap">관리</th></tr></thead>
+              <tbody id="noticeCatTableBody"></tbody>
+            </table>
+          </div>
+        </div>
         <div id="noticeFormWrap" style="display:none;">
           <div class="notice-form-wrap">
-            <select>
-              <option>카테고리 선택</option>
-              <option>중요</option>
-              <option>접수 안내</option>
-              <option>시험 일정</option>
-              <option>결과 발표</option>
-            </select>
+            <label for="noticeCatSelect" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">카테고리</label>
+            <select id="noticeCatSelect"></select>
             <input type="text" placeholder="공지사항 제목을 입력하세요"/>
             <textarea placeholder="공지사항 내용을 입력하세요..."></textarea>
             <div class="notice-form-btns">
@@ -728,6 +761,63 @@
                 </div></td>
               </tr>
             </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ FAQ ══ -->
+    <div id="panel-faq" style="display:none;">
+      <div class="panel">
+        <div class="panel-header">
+          <h2><svg class="icon" width="16" height="16" color="var(--red)"><use href="#ic-info"/></svg>FAQ 관리</h2>
+          <button type="button" class="btn btn-navy" onclick="openFaqFormNew()">
+            <svg class="icon" width="13" height="13"><use href="#ic-plus"/></svg>FAQ 등록
+          </button>
+        </div>
+        <div class="taxonomy-panel" style="padding:16px 20px;background:#fafbfc;border-bottom:1px solid var(--gray-light);">
+          <p style="font-size:12px;color:var(--gray-text);margin-bottom:12px;line-height:1.5;">FAQ 분류를 추가·삭제하면 <strong>프론트 FAQ 페이지</strong> 분류 필터·저장 FAQ 목록에 반영됩니다.</p>
+          <h3 style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+            <svg class="icon" width="14" height="14"><use href="#ic-folder"/></svg>분류 목록
+          </h3>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center;">
+            <input type="text" id="newFaqCatLabel" placeholder="새 분류 이름" style="flex:1;min-width:180px;padding:8px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-family:inherit;"/>
+            <button type="button" class="btn btn-navy" onclick="addFaqCategoryAdmin()">
+              <svg class="icon" width="13" height="13"><use href="#ic-plus"/></svg>추가
+            </button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="taxonomy-table">
+              <thead><tr><th>표시명</th><th>코드(ID)</th><th class="taxonomy-del-wrap">관리</th></tr></thead>
+              <tbody id="faqCatTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="faqFormWrap" style="display:none;">
+          <div class="notice-form-wrap">
+            <p class="faq-form-hint" id="faqFormHint">새 FAQ를 등록합니다.</p>
+            <label for="faqCat" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">분류</label>
+            <select id="faqCat"></select>
+            <label for="faqQ" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">질문</label>
+            <input type="text" id="faqQ" placeholder="자주 묻는 질문을 입력하세요"/>
+            <label for="faqA" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">답변</label>
+            <textarea id="faqA" placeholder="답변 내용을 입력하세요..."></textarea>
+            <div class="notice-form-btns">
+              <button type="button" class="btn btn-navy" id="faqSubmitBtn" onclick="submitFaqDemo()">
+                <svg class="icon" width="13" height="13"><use href="#ic-info"/></svg><span id="faqSubmitLbl">등록</span>
+              </button>
+              <button type="button" class="btn btn-gray" onclick="cancelFaqForm()">
+                <svg class="icon" width="13" height="13"><use href="#ic-x"/></svg>취소
+              </button>
+            </div>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead><tr>
+              <th>번호</th><th>질문</th><th>분류</th><th>수정일</th><th>관리</th>
+            </tr></thead>
+            <tbody id="faqTableBody"></tbody>
           </table>
         </div>
       </div>
@@ -840,6 +930,245 @@
       onConfirm:function(){ if(tr)tr.remove(); }
     });
   }
+  function refreshNoticeTaxonomyAdmin(){
+    if(!window.ContentStore)return;
+    var cats=ContentStore.getNoticeCategories();
+    var tb=document.getElementById('noticeCatTableBody');
+    if(tb){
+      tb.innerHTML='';
+      cats.forEach(function(c){
+        var tr=document.createElement('tr');
+        var td1=document.createElement('td'); td1.textContent=c.label;
+        var td2=document.createElement('td'); td2.textContent=c.id;
+        var td3=document.createElement('td');
+        td3.className='taxonomy-del-wrap';
+        var del=document.createElement('button');
+        del.type='button';
+        del.className='taxonomy-del';
+        del.innerHTML='<svg class="icon" width="11" height="11"><use href="#ic-trash"/></svg>삭제';
+        (function(cid){
+          del.onclick=function(){ deleteNoticeCategoryAdmin(cid); };
+        })(c.id);
+        td3.appendChild(del);
+        tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
+        tb.appendChild(tr);
+      });
+    }
+    var sel=document.getElementById('noticeCatSelect');
+    if(sel){
+      var cur=sel.value;
+      sel.innerHTML='';
+      cats.forEach(function(c){
+        var o=document.createElement('option');
+        o.value=c.id;
+        o.textContent=c.label;
+        sel.appendChild(o);
+      });
+      var ok=cats.some(function(c){ return c.id===cur; });
+      sel.value=ok?cur:cats[0].id;
+    }
+  }
+  function refreshFaqTaxonomyAdmin(){
+    if(!window.ContentStore)return;
+    var cats=ContentStore.getFaqCategories();
+    var tb=document.getElementById('faqCatTableBody');
+    if(tb){
+      tb.innerHTML='';
+      cats.forEach(function(c){
+        var tr=document.createElement('tr');
+        var td1=document.createElement('td'); td1.textContent=c.label;
+        var td2=document.createElement('td'); td2.textContent=c.id;
+        var td3=document.createElement('td');
+        td3.className='taxonomy-del-wrap';
+        var del=document.createElement('button');
+        del.type='button';
+        del.className='taxonomy-del';
+        del.innerHTML='<svg class="icon" width="11" height="11"><use href="#ic-trash"/></svg>삭제';
+        (function(cid){
+          del.onclick=function(){ deleteFaqCategoryAdmin(cid); };
+        })(c.id);
+        td3.appendChild(del);
+        tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
+        tb.appendChild(tr);
+      });
+    }
+    var sel=document.getElementById('faqCat');
+    if(sel){
+      var cur=sel.value;
+      sel.innerHTML='';
+      cats.forEach(function(c){
+        var o=document.createElement('option');
+        o.value=c.id;
+        o.textContent=c.label;
+        sel.appendChild(o);
+      });
+      var ok=cats.some(function(c){ return c.id===cur; });
+      sel.value=ok?cur:cats[0].id;
+    }
+  }
+  function addNoticeCategoryAdmin(){
+    if(!window.ContentStore)return;
+    var inp=document.getElementById('newNoticeCatLabel');
+    var r=ContentStore.addNoticeCategory(inp&&inp.value);
+    if(inp)inp.value='';
+    if(!r.ok){
+      alert(r.error==='dup'?'같은 이름이 있습니다.':r.error==='empty'?'이름을 입력하세요.':'추가할 수 없습니다.');
+      return;
+    }
+    refreshNoticeTaxonomyAdmin();
+  }
+  function deleteNoticeCategoryAdmin(id){
+    if(!window.ContentStore)return;
+    openConfirmModal({
+      title:'카테고리 삭제',
+      message:'이 카테고리를 삭제합니다. 이미 해당 코드로 분류된 공지 행은 필터에서만 매칭되지 않을 수 있습니다.',
+      confirmLabel:'삭제',
+      danger:true,
+      onConfirm:function(){
+        var r=ContentStore.removeNoticeCategory(id);
+        if(!r.ok)alert('분류는 최소 1개 이상 유지해야 합니다.');
+        refreshNoticeTaxonomyAdmin();
+      }
+    });
+  }
+  function addFaqCategoryAdmin(){
+    if(!window.ContentStore)return;
+    var inp=document.getElementById('newFaqCatLabel');
+    var r=ContentStore.addFaqCategory(inp&&inp.value);
+    if(inp)inp.value='';
+    if(!r.ok){
+      alert(r.error==='dup'?'같은 이름이 있습니다.':r.error==='empty'?'이름을 입력하세요.':'추가할 수 없습니다.');
+      return;
+    }
+    refreshFaqTaxonomyAdmin();
+  }
+  function deleteFaqCategoryAdmin(id){
+    if(!window.ContentStore)return;
+    openConfirmModal({
+      title:'FAQ 분류 삭제',
+      message:'이 분류를 삭제합니다. 저장된 FAQ 항목의 분류 코드는 그대로이며, 표시명만 매칭되지 않을 수 있습니다.',
+      confirmLabel:'삭제',
+      danger:true,
+      onConfirm:function(){
+        var r=ContentStore.removeFaqCategory(id);
+        if(!r.ok)alert('분류는 최소 1개 이상 유지해야 합니다.');
+        refreshFaqTaxonomyAdmin();
+        renderFaqAdminTable();
+      }
+    });
+  }
+  function renderFaqAdminTable(){
+    if(!window.ContentStore)return;
+    cancelFaqForm();
+    var items=ContentStore.getFaqItems();
+    var tbody=document.getElementById('faqTableBody');
+    if(!tbody)return;
+    tbody.innerHTML='';
+    items.forEach(function(it){
+      var label=ContentStore.labelForFaqCatId(it.catId);
+      var tr=document.createElement('tr');
+      tr.dataset.cat=it.catId;
+      tr.dataset.answer=it.answer||'';
+      tr.dataset.itemId=it.id;
+      var tdN=document.createElement('td');
+      var tdQ=document.createElement('td'); tdQ.textContent=it.question;
+      var tdC=document.createElement('td'); tdC.textContent=label;
+      var tdD=document.createElement('td'); tdD.textContent=it.updatedAt||'';
+      var tdA=document.createElement('td');
+      tdA.innerHTML='<div class="action-btns">'+
+        '<button type="button" class="ab-view" onclick="editFaqRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-edit"/></svg>수정</button>'+
+        '<button type="button" class="ab-reject" onclick="deleteFaqRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-trash"/></svg>삭제</button>'+
+        '</div>';
+      tr.appendChild(tdN); tr.appendChild(tdQ); tr.appendChild(tdC); tr.appendChild(tdD); tr.appendChild(tdA);
+      tbody.appendChild(tr);
+    });
+    faqRenumber();
+  }
+  var faqEditingTr=null;
+  function faqRenumber(){
+    var tbody=document.getElementById('faqTableBody');
+    if(!tbody)return;
+    var rows=tbody.querySelectorAll('tr');
+    var total=rows.length;
+    for(var i=0;i<rows.length;i++){
+      rows[i].cells[0].textContent=String(total-i);
+    }
+  }
+  function clearFaqFormFields(){
+    var cats=window.ContentStore?ContentStore.getFaqCategories():[];
+    var fc=document.getElementById('faqCat');
+    if(fc&&cats.length) fc.value=cats[0].id;
+    document.getElementById('faqQ').value='';
+    document.getElementById('faqA').value='';
+  }
+  function setFaqFormUi(isEdit){
+    document.getElementById('faqFormHint').textContent=isEdit?'선택한 FAQ를 수정합니다.':'새 FAQ를 등록합니다.';
+    document.getElementById('faqSubmitLbl').textContent=isEdit?'저장':'등록';
+  }
+  function openFaqFormNew(){
+    faqEditingTr=null;
+    clearFaqFormFields();
+    setFaqFormUi(false);
+    document.getElementById('faqFormWrap').style.display='block';
+    document.getElementById('faqQ').focus();
+  }
+  function cancelFaqForm(){
+    document.getElementById('faqFormWrap').style.display='none';
+    faqEditingTr=null;
+    clearFaqFormFields();
+    setFaqFormUi(false);
+  }
+  function editFaqRow(btn){
+    var tr=btn.closest('tr');
+    if(!tr)return;
+    faqEditingTr=tr;
+    document.getElementById('faqCat').value=tr.dataset.cat||'etc';
+    document.getElementById('faqQ').value=(tr.cells[1].textContent||'').trim();
+    document.getElementById('faqA').value=tr.dataset.answer||'';
+    document.getElementById('faqFormWrap').style.display='block';
+    setFaqFormUi(true);
+    document.getElementById('faqQ').focus();
+  }
+  function submitFaqDemo(){
+    if(!window.ContentStore){ alert('저장 모듈을 불러오지 못했습니다.'); return; }
+    var cat=document.getElementById('faqCat').value;
+    var q=document.getElementById('faqQ').value.trim();
+    var a=document.getElementById('faqA').value.trim();
+    if(!q){ alert('질문을 입력하세요.'); return; }
+    var editing=faqEditingTr;
+    openConfirmModal({
+      title:editing?'FAQ 수정':'FAQ 등록',
+      message:editing?'변경 내용을 저장합니다. (데모 화면)':'새 FAQ를 등록합니다. (데모 화면)',
+      confirmLabel:editing?'저장':'등록',
+      onConfirm:function(){
+        if(!window.ContentStore)return;
+        var payload={ catId:cat, question:q, answer:a };
+        if(editing&&editing.dataset.itemId) payload.id=editing.dataset.itemId;
+        ContentStore.upsertFaqItem(payload);
+        renderFaqAdminTable();
+        alert(editing?'FAQ가 수정되었습니다.':'FAQ가 등록되었습니다.');
+        cancelFaqForm();
+      }
+    });
+  }
+  function deleteFaqRow(btn){
+    var tr=btn.closest('tr');
+    var title=(tr&&tr.cells[1]&&tr.cells[1].textContent)?tr.cells[1].textContent.trim():'이 FAQ';
+    openConfirmModal({
+      title:'FAQ 삭제',
+      message:'「'+title+'」 항목을 삭제합니다. 이 작업은 되돌릴 수 없습니다.',
+      confirmLabel:'삭제',
+      danger:true,
+      onConfirm:function(){
+        if(faqEditingTr===tr){
+          faqEditingTr=null;
+          cancelFaqForm();
+        }
+        if(tr&&tr.dataset.itemId&&window.ContentStore) ContentStore.removeFaqItem(tr.dataset.itemId);
+        renderFaqAdminTable();
+      }
+    });
+  }
   function photoReviewApprove(btn){
     var card=btn.closest('.photo-review-card');
     var nm=(card&&card.querySelector('.pname')&&card.querySelector('.pname').textContent)||'';
@@ -888,11 +1217,11 @@
     if(clickedBtn) clickedBtn.classList.add('active');
     const icons = {
       dashboard:'ic-chart', applicants:'ic-users',
-      photos:'ic-image', rounds:'ic-calendar', notices:'ic-notice'
+      photos:'ic-image', rounds:'ic-calendar', notices:'ic-notice', faq:'ic-info'
     };
     const labels = {
       dashboard:'대시보드', applicants:'접수자 목록',
-      photos:'사진 심사', rounds:'회차 관리', notices:'공지사항'
+      photos:'사진 심사', rounds:'회차 관리', notices:'공지사항 관리', faq:'FAQ 관리'
     };
     document.getElementById('page-title').innerHTML =
       `<svg class="icon" width="18" height="18" color="var(--navy)"><use href="#${icons[name]}"/></svg>${labels[name]}`;
@@ -1098,6 +1427,12 @@
     const el=document.getElementById('roundFormWrap');
     el.style.display=el.style.display==='none'?'block':'none';
   }
+  document.addEventListener('DOMContentLoaded',function(){
+    if(!window.ContentStore)return;
+    refreshNoticeTaxonomyAdmin();
+    refreshFaqTaxonomyAdmin();
+    renderFaqAdminTable();
+  });
   function toggleNoticeForm(){
     const el=document.getElementById('noticeFormWrap');
     el.style.display=el.style.display==='none'?'block':'none';

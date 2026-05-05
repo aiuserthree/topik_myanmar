@@ -79,13 +79,8 @@
     /* Footer */
     footer{background:#1a2a4a;color:#aab8cc;padding:32px 24px;}
     .footer-bottom{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:12px;}
-    @media(max-width:640px){
-      .board-head{grid-template-columns:40px 1fr 90px;}
-      .board-row{grid-template-columns:40px 1fr 90px;}
-      .board-head div:last-child,.board-row .col-view{display:none;}
-    }
   </style>
-  <link rel="stylesheet" href="css/mobile.css?v=20260508"/>
+  <link rel="stylesheet" href="css/mobile.css?v=20260510"/>
   <!-- ════ SVG ICON SPRITE (공통 적용) ════ -->
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
     <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></symbol>
@@ -189,7 +184,7 @@
   <!-- 목록 뷰 -->
   <div id="listView">
     <div class="board-toolbar">
-      <select class="filter-select" onchange="filterCat(this.value)">
+      <select class="filter-select" id="noticeCatFilter" onchange="filterCat(this.value)">
         <option value="all">전체 카테고리</option>
         <option value="imp">중요</option>
         <option value="new">접수 안내</option>
@@ -204,6 +199,7 @@
     </div>
 
     <div class="board-wrap">
+      <div class="board-table-inner">
       <div class="board-head">
         <div style="justify-content:center;"><svg class="icon" width="12" height="12"><use href="#ic-rules"/></svg>번호</div>
         <div><svg class="icon" width="12" height="12"><use href="#ic-notice"/></svg>제목</div>
@@ -254,6 +250,7 @@
         </div>
         <div class="col-date"><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>2025.02.20</div>
         <div class="col-view"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>1,024</div>
+      </div>
       </div>
     </div>
 
@@ -328,11 +325,38 @@
   </div>
 </footer>
 
+<script src="js/content-store.js?v=20260505"></script>
 <script src="js/i18n.js?v=20260506"></script>
 <script src="js/mobile-nav.js?v=20260506" defer></script>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    if (window.TMI18N) TMI18N.boot();
+  function syncNoticeCategoryFilter(){
+    if(!window.ContentStore)return;
+    var sel=document.getElementById('noticeCatFilter');
+    if(!sel)return;
+    var cur=sel.value;
+    var cats=ContentStore.getNoticeCategories();
+    sel.innerHTML='';
+    var o0=document.createElement('option');
+    o0.value='all';
+    o0.textContent='전체 카테고리';
+    sel.appendChild(o0);
+    cats.forEach(function(c){
+      var o=document.createElement('option');
+      o.value=c.id;
+      o.textContent=c.label;
+      sel.appendChild(o);
+    });
+    var ok=(cur==='all')||cats.some(function(c){ return c.id===cur; });
+    sel.value=ok?cur:'all';
+    filterCat(sel.value);
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    if(window.TMI18N) TMI18N.boot();
+    syncNoticeCategoryFilter();
+  });
+  window.addEventListener('topik-content-change',syncNoticeCategoryFilter);
+  window.addEventListener('storage',function(e){
+    if(window.ContentStore&&e.key===ContentStore.STORAGE_KEY) syncNoticeCategoryFilter();
   });
 </script>
 <script>
