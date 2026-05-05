@@ -278,7 +278,12 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
     display:flex !important;
     flex-direction:column;
     position:fixed;
-    top:0;left:0;bottom:0;
+    top:0;bottom:0;
+    /* 뷰포트 좌측에 붙임 (sticky 헤더 안 fixed 오프셋·애니메이션 translate 잔류 방지) */
+    left:0 !important;
+    margin-left:0 !important;
+    right:auto;
+    transform:translate3d(0,0,0);
     width:min(86vw,320px);
     max-height:none;
     background:#fff;
@@ -296,7 +301,7 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
     border-radius:0 18px 18px 0;
     border:1px solid #eef1f5;
     border-left:0;
-    animation:drawerIn .22s ease-out;
+    animation:drawerIn .18s ease-out;
     overflow-y:auto;-webkit-overflow-scrolling:touch;
   }
   nav#mainNav.is-open::before{
@@ -1333,8 +1338,11 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
    Drawer open animation
    ============================================================ */
 @keyframes drawerIn{
-  from{transform:translateX(-12%);opacity:.4;}
-  to{transform:translateX(0);opacity:1;}
+  from{opacity:.45;}
+  to{opacity:1;}
+}
+@media (prefers-reduced-motion:reduce){
+  nav#mainNav.is-open{animation:none;}
 }
 
 /* ============================================================

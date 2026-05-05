@@ -46,10 +46,14 @@
     var nav = document.getElementById("mainNav");
     if (!nav) return;
     var willOpen = !nav.classList.contains("is-open");
-    if (willOpen) portalMainNav();
-    nav.classList.toggle("is-open");
+    if (willOpen) {
+      portalMainNav();
+      nav.classList.add("is-open");
+    } else {
+      nav.classList.remove("is-open");
+      unportalMainNav();
+    }
     var open = nav.classList.contains("is-open");
-    if (!open) unportalMainNav();
     document.body.classList.toggle("nav-open", open);
     var hb = document.querySelector(".hamburger");
     if (hb) hb.setAttribute("aria-expanded", open ? "true" : "false");
