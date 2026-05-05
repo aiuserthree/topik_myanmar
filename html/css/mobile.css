@@ -693,13 +693,47 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
   .content{
     padding:18px max(14px,env(safe-area-inset-right)) 24px max(14px,env(safe-area-inset-left)) !important;
   }
+
+  /* ───── FAQ 페이지 — 분류 탭 한 줄·가로 스와이프 ───── */
+  .faq-cat-bar{
+    flex-wrap:nowrap !important;
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-x:contain;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+    gap:8px;
+    margin-left:calc(-1 * max(14px, env(safe-area-inset-left)));
+    margin-right:calc(-1 * max(14px, env(safe-area-inset-right)));
+    padding-left:max(14px, env(safe-area-inset-left));
+    padding-right:max(14px, env(safe-area-inset-right));
+    padding-bottom:8px;
+    margin-bottom:14px !important;
+    scroll-snap-type:x proximity;
+  }
+  .faq-cat-bar::-webkit-scrollbar{display:none;height:0;width:0;}
+  .faq-cat-chip{
+    flex:0 0 auto;
+    white-space:nowrap;
+    scroll-snap-align:start;
+  }
+
   .intro-grid{
     grid-template-columns:1fr !important;
     gap:12px !important;
   }
-  .guide-section{
-    padding:16px 14px !important;
+  .intro-card{
+    padding:22px max(20px, env(safe-area-inset-right)) 22px max(24px, env(safe-area-inset-left)) !important;
     border-radius:14px !important;
+  }
+  .guide-section{
+    padding:18px max(18px, env(safe-area-inset-right)) 22px max(24px, env(safe-area-inset-left)) !important;
+    border-radius:14px !important;
+  }
+  .guide-section ul{
+    padding-inline-start:1.35em;
+    margin-inline-start:0;
   }
   .guide-section h2{
     font-size:15px !important;
@@ -709,7 +743,7 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
     font-size:13.5px;line-height:1.65;
   }
   .callout{
-    padding:12px 14px !important;
+    padding:14px max(16px, env(safe-area-inset-right)) 14px max(18px, env(safe-area-inset-left)) !important;
     font-size:13px !important;
     line-height:1.55 !important;
     border-radius:12px !important;
@@ -952,6 +986,7 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
   .search-box input{font-size:16px !important;}
   .search-box button{min-width:48px;min-height:44px;}
 
+  /* 공지 게시판: 행 컨테이너(#noticeBoardRows) 때문에 table 레이아웃은 열이 어긋남 → 그리드로 통일 */
   .board-wrap{
     overflow-x:auto;
     overflow-y:visible;
@@ -960,43 +995,79 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
     border-radius:12px;
   }
   .board-table-inner{
-    display:table;
+    display:flex;
+    flex-direction:column;
     width:max-content;
     min-width:100%;
-    border-collapse:collapse;
-    table-layout:auto;
+    box-sizing:border-box;
+  }
+  #noticeBoardRows{
+    display:flex;
+    flex-direction:column;
+    width:100%;
+    min-width:0;
   }
   .board-head,
   .board-row{
-    display:table-row !important;
-    grid-template-columns:unset !important;
-    min-width:0 !important;
+    display:grid !important;
+    grid-template-columns:44px minmax(112px, 1fr) 94px 56px;
+    column-gap:14px;
+    align-items:center;
+    box-sizing:border-box;
+    width:100%;
+    min-width:548px;
   }
   .board-head > div,
   .board-row > div{
-    display:table-cell !important;
-    white-space:nowrap;
-    vertical-align:middle;
+    display:flex !important;
+    align-items:center;
+    min-width:0;
+    padding:10px 12px !important;
     font-size:12.5px;
-    padding:10px 14px !important;
+    white-space:normal;
+    vertical-align:unset;
+    border-bottom:none;
   }
   .board-head > div{
     background:var(--navy,#003478);
     color:#fff;
+    font-weight:700;
+    letter-spacing:0;
+    white-space:nowrap;
+    justify-content:center;
+    text-align:center;
   }
-  .board-head div:last-child,
-  .board-row .col-view{display:table-cell !important;}
-  .col-title{
-    flex-wrap:nowrap !important;
-    max-width:none;
+  .board-row{
+    border-bottom:1px solid var(--gray-light,#e8ecf0);
+    cursor:pointer;
   }
-  .board-row > div{border-bottom:1px solid var(--gray-light,#e8ecf0);}
-  .board-row:last-child > div{border-bottom:none;}
-  .board-head > div:first-child,
-  .board-head > div:last-child,
+  .board-row:last-child{border-bottom:none;}
   .board-row .col-num,
-  .board-row .col-view{text-align:center;}
+  .board-row .col-view{
+    justify-content:center;
+    text-align:center;
+  }
+  .board-row .col-date{
+    justify-content:flex-start;
+    white-space:nowrap;
+  }
+  .board-row .col-view{
+    white-space:nowrap;
+  }
+  .board-row .col-title{
+    flex-wrap:wrap !important;
+    gap:6px;
+    justify-content:flex-start;
+  }
 
+  .board-head > div:nth-child(3),
+  .board-row .col-date{
+    padding-right:6px !important;
+  }
+  .board-head > div:last-child,
+  .board-row .col-view{
+    padding-left:6px !important;
+  }
   .pagination{flex-wrap:wrap;gap:6px;justify-content:center;}
   .p-btn{min-width:40px;min-height:40px;font-size:13px;border-radius:10px;}
 }
