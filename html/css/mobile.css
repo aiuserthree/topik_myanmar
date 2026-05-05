@@ -290,6 +290,8 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
   nav#mainNav.is-open{
     display:flex !important;
     flex-direction:column;
+    align-items:stretch;
+    text-align:left;
     position:fixed;
     top:0;bottom:0;
     /* 뷰포트 좌측에 붙임 (sticky 헤더 안 fixed 오프셋·애니메이션 translate 잔류 방지) */
@@ -323,10 +325,15 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
     font-size:13px;font-weight:700;letter-spacing:.04em;
     color:#1e293b;padding:4px 10px 14px;
     border-bottom:1px solid #eef1f5;margin-bottom:10px;
+    text-align:left;
+    align-self:stretch;
   }
   nav#mainNav.is-open a{
-    display:flex;align-items:center;gap:12px;
+    display:flex;align-items:center;justify-content:flex-start;
+    gap:12px;
     padding:12px 12px;
+    width:100%;
+    box-sizing:border-box;
     min-height:48px;
     border-radius:12px;
     font-size:15px;font-weight:500;
