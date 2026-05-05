@@ -387,7 +387,7 @@
           </div>
         </div>
         <div class="admin-callout" style="padding:12px 20px;background:#eff6ff;font-size:12px;color:#1e40af;border-bottom:1px solid #bfdbfe;line-height:1.55;">
-          <strong>자동화:</strong> 응시자 목록에서 <strong>오프라인 수납 완료</strong> 처리 후 「수험번호 일괄 부여」를 실행하면, 수납 완료 건에 순차적으로 수험번호가 부여되고 증명사진과 매핑됩니다(연동 데모). 엑셀 다운로드로 전체 목록·수납·수험번호를보낼 수 있습니다.
+          <strong>자동화:</strong> 응시자 목록에서 <strong>오프라인 수납 완료</strong> 처리 시 상태가 <strong>검토중</strong>으로 바뀝니다. 승인 후 「수험번호 일괄 부여」를 실행하면 수납 완료 건에 순차적으로 수험번호가 부여됩니다(연동 데모). 엑셀 다운로드로 전체 목록·수납·수험번호를 내보낼 수 있습니다.
         </div>
         <div class="filter-bar">
           <button class="filter-chip active" onclick="filterStatus(this,'all')">전체 142</button>
@@ -901,14 +901,6 @@
     return d.innerHTML;
   }
   function viewApplicant(btn){
-    openConfirmModal({
-      title:'접수 상세 보기',
-      message:'선택한 접수 건의 상세 정보를 표시합니다.',
-      confirmLabel:'보기',
-      onConfirm:function(){ viewApplicantImpl(btn); }
-    });
-  }
-  function viewApplicantImpl(btn){
     var row=btn.closest('tr');
     if(!row||row.cells.length<9)return;
     var cells=row.cells;
@@ -970,9 +962,12 @@
   function markOfflinePaidImpl(btn){
     var row=btn.closest('tr');
     row.dataset.paid='1';
+    row.dataset.status='review';
     row.cells[6].textContent='수납완료';
-    btn.remove();
-    alert('오프라인 수납이 완료 처리되었습니다. 이후 「수험번호 일괄 부여」로 순차 발급할 수 있습니다.');
+    row.cells[8].innerHTML='<span class="sb sb-review"><svg class="icon" width="10" height="10"><use href="#ic-image"/></svg>검토중</span>';
+    var wrap=btn.closest('.action-btns');
+    if(wrap)wrap.innerHTML=actionBtnsReviewHtml();
+    alert('오프라인 수납이 완료 처리되었습니다. 상태가 검토중으로 변경되었습니다. 승인 후 「수험번호 일괄 부여」로 발급할 수 있습니다.');
   }
   function batchAssignExamNumbers(){
     openConfirmModal({
@@ -1014,6 +1009,11 @@
       danger:true,
       onConfirm:function(){ rejectRowImpl(btn); }
     });
+  }
+  function actionBtnsReviewHtml(){
+    return '<button type="button" class="ab-approve" onclick="approveRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>승인</button>'+
+      '<button type="button" class="ab-reject" onclick="rejectRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-x"/></svg>반려</button>'+
+      '<button type="button" class="ab-view" onclick="viewApplicant(this)"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button>';
   }
   function actionBtnsApprovedHtml(){
     return '<button type="button" class="ab-view" onclick="viewApplicant(this)"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button>';
