@@ -85,6 +85,9 @@
     .filter-chip{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--gray-light);background:white;color:var(--gray-text);transition:all .2s;display:inline-flex;align-items:center;gap:4px;}
     .filter-chip.active{background:var(--navy);color:white;border-color:var(--navy);}
     .filter-chip:hover:not(.active){border-color:var(--navy);color:var(--navy);}
+    .applicant-round-picker{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--navy);margin-right:4px;}
+    .applicant-round-picker select{min-width:200px;padding:7px 10px;border:1.5px solid var(--gray-light);border-radius:8px;background:white;font-family:inherit;font-size:12px;font-weight:600;color:var(--navy);cursor:pointer;}
+    .applicant-round-picker-label{white-space:nowrap;}
     .search-mini{display:flex;border:1.5px solid var(--gray-light);border-radius:8px;overflow:hidden;background:white;margin-left:auto;}
     .search-mini input{padding:6px 12px;border:none;font-size:13px;font-family:inherit;outline:none;width:180px;}
     .search-mini button{padding:6px 12px;background:var(--navy);color:white;border:none;cursor:pointer;display:flex;align-items:center;font-size:12px;}
@@ -455,9 +458,9 @@
     <div id="panel-applicants" style="display:none;">
       <div class="panel">
         <div class="panel-header">
-          <h2><svg class="icon" width="16" height="16" color="var(--red)"><use href="#ic-users"/></svg>접수자 목록 (제98회)</h2>
+          <h2><svg class="icon" width="16" height="16" color="var(--red)"><use href="#ic-users"/></svg>접수자 목록 <span id="applicantRoundTitleText">(제98회)</span></h2>
           <div class="panel-actions">
-            <button type="button" class="btn btn-gold" onclick="batchAssignExamNumbers()">
+            <button type="button" id="applicantBtnBatchExam" class="btn btn-gold" onclick="batchAssignExamNumbers()">
               <svg class="icon" width="13" height="13"><use href="#ic-ticket"/></svg>수험번호 일괄 부여
             </button>
             <button type="button" class="btn btn-green" onclick="downloadExcel()">
@@ -471,22 +474,32 @@
         <div class="admin-callout" style="padding:12px 20px;background:#eff6ff;font-size:12px;color:#1e40af;border-bottom:1px solid #bfdbfe;line-height:1.55;">
           <strong>자동화:</strong> 응시자 목록에서 <strong>오프라인 수납 완료</strong> 처리 시 상태가 <strong>검토중</strong>으로 바뀝니다. 승인 후 「수험번호 일괄 부여」를 실행하면 수납 완료 건에 순차적으로 수험번호가 부여됩니다(연동 데모). 엑셀 다운로드로 전체 목록·수납·수험번호를 내보낼 수 있습니다.
         </div>
+        <div id="applicantArchivedNote" class="admin-callout" style="display:none;padding:12px 20px;background:#fffbeb;font-size:12px;color:#92400e;border-bottom:1px solid #fcd34d;line-height:1.55;">
+          <strong>과거 회차:</strong> 이 회차는 <strong>조회 전용</strong>(데모)입니다. 승인·반려·수납 처리·수험번호 부여는 현재 진행 중인 회차에서만 가능합니다.
+        </div>
         <div class="filter-bar">
+          <label class="applicant-round-picker"><span class="applicant-round-picker-label">회차</span>
+            <select id="applicantRoundSelect" aria-label="시험 회차 선택" onchange="onApplicantRoundChange()">
+              <option value="96">제96회 (종료 · 72명)</option>
+              <option value="97">제97회 (종료 · 118명)</option>
+              <option value="98" selected>제98회 (진행중 · 142명)</option>
+            </select>
+          </label>
           <div class="filter-chip-scroll">
-          <button class="filter-chip active" onclick="filterStatus(this,'all')">전체 142</button>
-          <button class="filter-chip" onclick="filterStatus(this,'pending')">
-            <svg class="icon" width="10" height="10"><use href="#ic-ticket"/></svg>접수완료 7
+          <button type="button" id="applicantChipAll" class="filter-chip active" onclick="filterStatus(this,'all')">전체 <span id="cntAll">142</span></button>
+          <button type="button" class="filter-chip" onclick="filterStatus(this,'pending')">
+            <svg class="icon" width="10" height="10"><use href="#ic-ticket"/></svg>접수완료 <span id="cntPending">7</span>
           </button>
-          <button class="filter-chip" onclick="filterStatus(this,'review')">
-            <svg class="icon" width="10" height="10"><use href="#ic-image"/></svg>검토중 8
+          <button type="button" class="filter-chip" onclick="filterStatus(this,'review')">
+            <svg class="icon" width="10" height="10"><use href="#ic-image"/></svg>검토중 <span id="cntReview">8</span>
           </button>
-          <button class="filter-chip" onclick="filterStatus(this,'approved')">
-            <svg class="icon" width="10" height="10"><use href="#ic-check"/></svg>승인 119
+          <button type="button" class="filter-chip" onclick="filterStatus(this,'approved')">
+            <svg class="icon" width="10" height="10"><use href="#ic-check"/></svg>승인 <span id="cntApproved">119</span>
           </button>
-          <button class="filter-chip" onclick="filterStatus(this,'rejected')">
-            <svg class="icon" width="10" height="10"><use href="#ic-x"/></svg>반려 3
+          <button type="button" class="filter-chip" onclick="filterStatus(this,'rejected')">
+            <svg class="icon" width="10" height="10"><use href="#ic-x"/></svg>반려 <span id="cntRejected">3</span>
           </button>
-          <button class="filter-chip" onclick="filterStatus(this,'cancelled')">취소 5</button>
+          <button type="button" class="filter-chip" onclick="filterStatus(this,'cancelled')">취소 <span id="cntCancelled">5</span></button>
           <button class="filter-chip" onclick="filterPaidOnly(this)">수납 미완료</button>
           </div>
           <div class="search-mini">
@@ -522,7 +535,17 @@
     <div id="panel-photos" style="display:none;">
       <div class="panel">
         <div class="panel-header">
-          <h2 id="photoReviewHeading"><svg class="icon" width="16" height="16" color="var(--red)"><use href="#ic-image"/></svg>사진 심사 (검토 대기 23건)</h2>
+          <h2 id="photoReviewHeading"><svg class="icon" width="16" height="16" color="var(--red)"><use href="#ic-image"/></svg>사진 심사 · 제98회 (검토 대기 23건)</h2>
+          <label class="applicant-round-picker"><span class="applicant-round-picker-label">회차</span>
+            <select id="photoRoundSelect" aria-label="사진 심사 시험 회차 선택" onchange="onPhotoRoundChange()">
+              <option value="96">제96회 (종료 · 72명)</option>
+              <option value="97">제97회 (종료 · 118명)</option>
+              <option value="98" selected>제98회 (진행중 · 142명)</option>
+            </select>
+          </label>
+        </div>
+        <div id="photoArchivedNote" class="admin-callout" style="display:none;padding:12px 20px;background:#fffbeb;font-size:12px;color:#92400e;border-bottom:1px solid #fcd34d;line-height:1.55;">
+          <strong>과거 회차:</strong> 이 회차의 사진 심사는 <strong>종료</strong>되었습니다. 증명사진은 <strong>조회·다운로드(데모)</strong>만 가능하며 승인·반려는 할 수 없습니다.
         </div>
         <div id="photoReviewGrid" class="photo-review-grid" aria-live="polite"></div>
         <div class="table-footer">
@@ -1489,20 +1512,23 @@
     });
   }
   function photoReviewMetaNum(metaLine){
-    var m=String(metaLine||'').match(/TM-2025-98-(\d+)/);
+    var m=String(metaLine||'').match(/TM-2025-\d+-(\d+)/);
     return m?m[1]:'0000';
   }
-  function photoReviewCardMarkup(displayName,metaLine){
+  function photoReviewCardMarkup(displayName,metaLine,archiveReadOnly){
     var numId=photoReviewMetaNum(metaLine);
-    return '<div class="photo-review-card" data-photo-num="'+escapeHtml(numId)+'">'+
+    var actionRow=archiveReadOnly
+      ? '<div class="photo-review-btns" style="justify-content:center;padding:10px 0;"><span style="font-size:11px;font-weight:700;color:#64748b;text-align:center;">처리 종료 · 조회 전용</span></div>'
+      : '<div class="photo-review-btns">'+
+        '<button type="button" class="pr-approve" onclick="photoReviewApprove(this)"><svg class="icon" width="12" height="12"><use href="#ic-check"/></svg>승인</button>'+
+        '<button type="button" class="pr-reject" onclick="photoReviewReject(this)"><svg class="icon" width="12" height="12"><use href="#ic-x"/></svg>반려</button>'+
+        '</div>';
+    return '<div class="photo-review-card" data-photo-num="'+escapeHtml(numId)+'"'+(archiveReadOnly?' data-photo-archive="1"':'')+'>'+
       '<div class="photo-review-img"><svg class="icon" width="52" height="52" color="#aab8cc"><use href="#ic-user"/></svg></div>'+
       '<div class="photo-review-body">'+
       '<div class="pname">'+escapeHtml(displayName)+'</div>'+
       '<div class="pmeta"><svg class="icon" width="11" height="11"><use href="#ic-ticket"/></svg>'+escapeHtml(metaLine)+'</div>'+
-      '<div class="photo-review-btns">'+
-      '<button type="button" class="pr-approve" onclick="photoReviewApprove(this)"><svg class="icon" width="12" height="12"><use href="#ic-check"/></svg>승인</button>'+
-      '<button type="button" class="pr-reject" onclick="photoReviewReject(this)"><svg class="icon" width="12" height="12"><use href="#ic-x"/></svg>반려</button>'+
-      '</div>'+
+      actionRow+
       '<div class="photo-review-save">'+
       '<button type="button" onclick="photoReviewDownloadPhoto(this)"><svg class="icon" width="13" height="13"><use href="#ic-download"/></svg>사진 저장(PC)</button>'+
       '</div></div></div>';
@@ -1583,13 +1609,24 @@
   }
   var PHOTO_REVIEW_PAGE_SIZE=10;
   var photoReviewCurrentPage=1;
+  function photoReviewUpdateArchivedCallout(){
+    var note=document.getElementById('photoArchivedNote');
+    if(!note)return;
+    note.style.display=applicantIsArchivedRound()?'block':'none';
+  }
   function photoReviewSyncCounts(){
     var grid=document.getElementById('photoReviewGrid');
     var n=grid?grid.querySelectorAll('.photo-review-card').length:0;
+    var cfg=currentApplicantRoundConfig||getApplicantRoundById('98');
+    var rl=escapeHtml(cfg.shortLabel||'');
     var h=document.getElementById('photoReviewHeading');
     if(h){
-      h.innerHTML='<svg class="icon" width="16" height="16" color="var(--red)"><use href="#ic-image"/></svg>사진 심사 (검토 대기 '+n+'건)';
+      var sub=cfg.archived
+        ? (' · '+rl+' — 종료 (조회 '+n+'건)')
+        : (' · '+rl+' — 검토 대기 '+n+'건');
+      h.innerHTML='<svg class="icon" width="16" height="16" color="var(--red)"><use href="#ic-image"/></svg>사진 심사'+sub;
     }
+    photoReviewUpdateArchivedCallout();
     var sb=document.getElementById('sbPhotoBadge');
     if(sb) sb.textContent=String(n);
     var dash=document.getElementById('dashPhotoPending');
@@ -1650,25 +1687,61 @@
       photoReviewApplyPaging({resetPage:false});
     });
   }
-  function initPhotoReviewDemo(){
+  function photoReviewTicketMeta(roundId,seq,level){
+    return 'TM-2025-'+roundId+'-'+String(seq).padStart(4,'0')+' · '+level;
+  }
+  function rebuildPhotoReviewGrid(){
     var grid=document.getElementById('photoReviewGrid');
-    if(!grid||grid.dataset.initialized)return;
-    grid.dataset.initialized='1';
+    if(!grid)return;
+    var cfg=currentApplicantRoundConfig||getApplicantRoundById(document.getElementById('applicantRoundSelect')&&document.getElementById('applicantRoundSelect').value||'98');
+    var rid=String(cfg.id);
+    var arch=!!cfg.archived;
     var chunks=[];
-    chunks.push(photoReviewCardMarkup('이지민 (LEE JIMIN)','TM-2025-98-0142 · TOPIK I'));
-    chunks.push(photoReviewCardMarkup('아웅산우 (AUNG SAN OO)','TM-2025-98-0141 · TOPIK II'));
-    chunks.push(photoReviewCardMarkup('코진린 (KO ZIN LIN)','TM-2025-98-0140 · TOPIK I'));
     var seq;
-    for(seq=139;seq>=120;seq--){
-      var lvl=seq%2===0?'TOPIK I':'TOPIK II';
-      chunks.push(photoReviewCardMarkup('데모응시자 '+seq+' (Applicant '+seq+')','TM-2025-98-'+String(seq).padStart(4,'0')+' · '+lvl));
+    if(rid==='98'){
+      chunks.push(photoReviewCardMarkup('이지민 (LEE JIMIN)',photoReviewTicketMeta('98',142,'TOPIK I'),false));
+      chunks.push(photoReviewCardMarkup('아웅산우 (AUNG SAN OO)',photoReviewTicketMeta('98',141,'TOPIK II'),false));
+      chunks.push(photoReviewCardMarkup('코진린 (KO ZIN LIN)',photoReviewTicketMeta('98',140,'TOPIK I'),false));
+      for(seq=139;seq>=120;seq--){
+        var lvl98=seq%2===0?'TOPIK I':'TOPIK II';
+        chunks.push(photoReviewCardMarkup('데모응시자 '+seq+' (Applicant '+seq+')',photoReviewTicketMeta('98',seq,lvl98),false));
+      }
+    }else if(rid==='97'){
+      for(seq=118;seq>=105;seq--){
+        var lvl97=seq%2===0?'TOPIK I':'TOPIK II';
+        chunks.push(photoReviewCardMarkup('데모응시자 '+seq+' (Applicant '+seq+')',photoReviewTicketMeta('97',seq,lvl97),arch));
+      }
+    }else{
+      for(seq=72;seq>=64;seq--){
+        var lvl96=seq%2===0?'TOPIK I':'TOPIK II';
+        chunks.push(photoReviewCardMarkup('데모응시자 '+seq+' (Applicant '+seq+')',photoReviewTicketMeta('96',seq,lvl96),arch));
+      }
     }
     grid.innerHTML=chunks.join('');
     photoReviewBindPaginationOnce();
+    photoReviewCurrentPage=1;
     photoReviewSyncCounts();
     photoReviewApplyPaging({resetPage:true});
   }
+  function syncExamRoundSelects(primaryValue){
+    var v=primaryValue!=null?String(primaryValue):(document.getElementById('applicantRoundSelect')||{}).value||'98';
+    var app=document.getElementById('applicantRoundSelect');
+    var pho=document.getElementById('photoRoundSelect');
+    if(app)app.value=v;
+    if(pho)pho.value=v;
+    return v;
+  }
+  function onPhotoRoundChange(){
+    syncExamRoundSelects(document.getElementById('photoRoundSelect').value);
+    applicantResetFiltersToAll();
+    initApplicantDemoRows();
+    rebuildPhotoReviewGrid();
+  }
   function photoReviewApprove(btn){
+    if(applicantIsArchivedRound()){
+      alert('종료된 회차에서는 사진을 승인할 수 없습니다.');
+      return;
+    }
     var card=btn.closest('.photo-review-card');
     var nm=(card&&card.querySelector('.pname')&&card.querySelector('.pname').textContent)||'';
     openConfirmModal({
@@ -1684,6 +1757,10 @@
     });
   }
   function photoReviewReject(btn){
+    if(applicantIsArchivedRound()){
+      alert('종료된 회차에서는 사진을 반려할 수 없습니다.');
+      return;
+    }
     var card=btn&&btn.closest('.photo-review-card');
     if(card)openRejectReasonModal({photoCard:card});
   }
@@ -1760,6 +1837,48 @@
   var applicantCurrentPage=1;
   /** @type {'all'|'paid0'|'pending'|'review'|'approved'|'rejected'|'cancelled'} */
   var applicantFilterKey='all';
+  var APPLICANT_ROUNDS_META=[
+    {id:'96',shortLabel:'제96회',total:72,prefix:'MM-96-',archived:true},
+    {id:'97',shortLabel:'제97회',total:118,prefix:'MM-97-',archived:true},
+    {id:'98',shortLabel:'제98회',total:142,prefix:'MM-98-',archived:false}
+  ];
+  var currentApplicantRoundConfig=APPLICANT_ROUNDS_META[2];
+
+  function getApplicantRoundById(rid){
+    for(var i=0;i<APPLICANT_ROUNDS_META.length;i++){
+      if(APPLICANT_ROUNDS_META[i].id===String(rid))return APPLICANT_ROUNDS_META[i];
+    }
+    return APPLICANT_ROUNDS_META[APPLICANT_ROUNDS_META.length-1];
+  }
+
+  function applicantIsArchivedRound(){
+    return !!(currentApplicantRoundConfig&&currentApplicantRoundConfig.archived);
+  }
+
+  function applicantStatusPoolForTotal(T){
+    if(T<=0)return[];
+    var baseA=119,baseR=8,baseP=7,baseRej=3,baseC=5,B=142;
+    var a=Math.max(1,Math.round(baseA*T/B));
+    var r=Math.max(1,Math.round(baseR*T/B));
+    var p=Math.max(1,Math.round(baseP*T/B));
+    var rej=Math.max(0,Math.round(baseRej*T/B));
+    var c=Math.max(0,Math.round(baseC*T/B));
+    if(T<=20){rej=Math.min(1,rej);c=Math.min(2,c);}
+    var sum=a+r+p+rej+c;
+    var pool=[];
+    while(sum<T){a++;sum++;}
+    while(sum>T){if(a>1){a--;sum--;}else if(r>1){r--;sum--;}else if(p>1){p--;sum--;}else if(c>0){c--;sum--;}else if(rej>0){rej--;sum--;}else break;}
+    var i;
+    for(i=0;i<a;i++)pool.push('approved');
+    for(i=0;i<r;i++)pool.push('review');
+    for(i=0;i<p;i++)pool.push('pending');
+    for(i=0;i<rej;i++)pool.push('rejected');
+    for(i=0;i<c;i++)pool.push('cancelled');
+    while(pool.length<T)pool.push('approved');
+    while(pool.length>T)pool.pop();
+    applicantShuffleStatuses(pool);
+    return pool;
+  }
 
   function applicantShuffleStatuses(pool){
     var s=982451653;
@@ -1800,7 +1919,9 @@
     if(status==='rejected')return '<td><span class="sb sb-rejected"><svg class="icon" width="10" height="10"><use href="#ic-x"/></svg>반려</span></td>';
     return '<td><span class="sb sb-cancelled">취소</span></td>';
   }
-  function applicantActionsTd(status,isPendingUnpaid){
+  function applicantActionsTd(status,isPendingUnpaid,readOnly){
+    if(readOnly)return '<td><div class="action-btns">'+
+      '<button type="button" class="ab-view" onclick="viewApplicant(this)"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button></div></td>';
     if(isPendingUnpaid)return '<td><div class="action-btns">'+
       '<button type="button" class="ab-approve" style="background:#fef3c7;color:#92400e;" onclick="markOfflinePaid(this)"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>오프라인 수납</button>'+
       '<button type="button" class="ab-approve" onclick="approveRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>승인</button>'+
@@ -1818,7 +1939,8 @@
     return '<td><div class="action-btns">'+
       '<button type="button" class="ab-view" onclick="viewApplicant(this)"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button></div></td>';
   }
-  function applicantPaidExamCells(status,num,paidOverride){
+  function applicantPaidExamCells(status,num,paidOverride,examPrefix){
+    examPrefix=examPrefix||((currentApplicantRoundConfig&&currentApplicantRoundConfig.prefix)||'MM-98-');
     var paid,paidLabel,exam;
     if(paidOverride){
       paid=paidOverride.paid;
@@ -1830,14 +1952,16 @@
       paid='0'; paidLabel='—'; exam='—';
     }else{
       paid='1'; paidLabel='수납완료';
-      if(status==='approved'&&num%4!==0) exam='MM-98-'+String(num).padStart(4,'0');
+      if(status==='approved'&&num%4!==0) exam=examPrefix+String(num).padStart(4,'0');
       else exam='—';
     }
     return {paid:paid,paidLabel:paidLabel,exam:exam};
   }
-  function applicantBuildRowHtml(num,status,fix){
+  function applicantBuildRowHtml(num,status,fix,examPrefix,readOnly){
+    examPrefix=examPrefix||((currentApplicantRoundConfig&&currentApplicantRoundConfig.prefix)||'MM-98-');
+    readOnly=!!readOnly;
     var st=status;
-    var pe=applicantPaidExamCells(st,num,fix&&fix.paid?fix.paid:null);
+    var pe=applicantPaidExamCells(st,num,fix&&fix.paid?fix.paid:null,examPrefix);
     var isPU=fix&&fix.pendingUnpaid;
     var rrAttr='';
     if(fix&&fix.rejectReason){
@@ -1853,33 +1977,101 @@
       '<td>'+escapeHtml(pe.paidLabel)+'</td>'+
       '<td>'+escapeHtml(pe.exam)+'</td>'+
       applicantStatusBadgeTd(st)+
-      applicantActionsTd(st,isPU)+'</tr>';
+      applicantActionsTd(st,isPU,readOnly)+'</tr>';
     return html;
+  }
+  function applicantUpdateArchivedUi(){
+    var arch=applicantIsArchivedRound();
+    var note=document.getElementById('applicantArchivedNote');
+    if(note)note.style.display=arch?'block':'none';
+    var batchBtn=document.getElementById('applicantBtnBatchExam');
+    if(batchBtn){
+      batchBtn.disabled=arch;
+      batchBtn.style.opacity=arch?'0.55':'';
+      batchBtn.style.cursor=arch?'not-allowed':'';
+    }
+  }
+  function applicantRefreshFilterChipCounts(){
+    var rows=document.querySelectorAll('#applicantBody tr');
+    var n={all:rows.length,pending:0,review:0,approved:0,rejected:0,cancelled:0,paid0:0};
+    rows.forEach(function(row){
+      var st=row.dataset.status;
+      if(st==='pending')n.pending++;
+      else if(st==='review')n.review++;
+      else if(st==='approved')n.approved++;
+      else if(st==='rejected')n.rejected++;
+      else if(st==='cancelled')n.cancelled++;
+      if(row.dataset.paid==='0')n.paid0++;
+    });
+    function setCt(id,val){var el=document.getElementById(id);if(el)el.textContent=String(val);}
+    setCt('cntAll',n.all);
+    setCt('cntPending',n.pending);
+    setCt('cntReview',n.review);
+    setCt('cntApproved',n.approved);
+    setCt('cntRejected',n.rejected);
+    setCt('cntCancelled',n.cancelled);
+  }
+  function applicantResetFiltersToAll(){
+    applicantFilterKey='all';
+    var panel=document.getElementById('panel-applicants');
+    if(panel)panel.querySelectorAll('.filter-chip').forEach(function(c){
+      c.classList.toggle('active',c.id==='applicantChipAll');
+    });
+    var ts=document.getElementById('tableSearch');
+    if(ts)ts.value='';
+  }
+  function onApplicantRoundChange(){
+    syncExamRoundSelects(document.getElementById('applicantRoundSelect').value);
+    applicantResetFiltersToAll();
+    initApplicantDemoRows();
+    rebuildPhotoReviewGrid();
   }
   function initApplicantDemoRows(){
     var tb=document.getElementById('applicantBody');
-    if(!tb||tb.dataset.initialized)return;
-    tb.dataset.initialized='1';
-    var pool=applicantStatusPoolSansFixed();
-    var fix={
-      142:{ko:'이지민',en:'LEE JIMIN',level:'TOPIK I',day:'04.02',pendingUnpaid:true,paid:{paid:'0',label:'미수납',exam:'—'}},
-      141:{ko:'아웅산우',en:'AUNG SAN OO',level:'TOPIK II',day:'04.02'},
-      140:{ko:'마띠다',en:'MA THIDA',level:'TOPIK I',day:'04.01',paid:{paid:'1',label:'수납완료',exam:'MM-98-0140'}},
-      138:{ko:'윈나잉',en:'WIN NAING',level:'TOPIK I',day:'04.01',rejectReason:'증명사진 규격 미준수(배경·밝기 기준). 재촬영 후 재제출 바랍니다.'},
-      137:{ko:'조민',en:'CHO MIN',level:'TOPIK II',day:'03.31'}
-    };
+    if(!tb)return;
+    var sel=document.getElementById('applicantRoundSelect');
+    currentApplicantRoundConfig=getApplicantRoundById(sel&&sel.value);
+    applicantUpdateArchivedUi();
+    photoReviewUpdateArchivedCallout();
+    var titleEl=document.getElementById('applicantRoundTitleText');
+    if(titleEl)titleEl.textContent='('+currentApplicantRoundConfig.shortLabel+')';
+
+    var prefix=currentApplicantRoundConfig.prefix;
+    var archived=!!currentApplicantRoundConfig.archived;
     var chunks=[];
-    for(var num=142;num>=1;num--){
-      var fk=fix[num];
-      if(fk){
-        var fkSt=num===138?'rejected':(num===137?'cancelled':(num===142?'pending':(num===141?'review':'approved')));
-        chunks.push(applicantBuildRowHtml(num,fkSt,fk));
-        continue;
+    var rid=String(currentApplicantRoundConfig.id);
+
+    if(rid==='98'){
+      var pool=applicantStatusPoolSansFixed();
+      var fix={
+        142:{ko:'이지민',en:'LEE JIMIN',level:'TOPIK I',day:'04.02',pendingUnpaid:true,paid:{paid:'0',label:'미수납',exam:'—'}},
+        141:{ko:'아웅산우',en:'AUNG SAN OO',level:'TOPIK II',day:'04.02'},
+        140:{ko:'마띠다',en:'MA THIDA',level:'TOPIK I',day:'04.01',paid:{paid:'1',label:'수납완료',exam:prefix+'0140'}},
+        138:{ko:'윈나잉',en:'WIN NAING',level:'TOPIK I',day:'04.01',rejectReason:'증명사진 규격 미준수(배경·밝기 기준). 재촬영 후 재제출 바랍니다.'},
+        137:{ko:'조민',en:'CHO MIN',level:'TOPIK II',day:'03.31'}
+      };
+      for(var num=142;num>=1;num--){
+        var fk=fix[num];
+        if(fk){
+          var fkSt=num===138?'rejected':(num===137?'cancelled':(num===142?'pending':(num===141?'review':'approved')));
+          chunks.push(applicantBuildRowHtml(num,fkSt,fk,prefix,false));
+          continue;
+        }
+        chunks.push(applicantBuildRowHtml(num,pool.shift(),null,prefix,false));
       }
-      chunks.push(applicantBuildRowHtml(num,pool.shift(),null));
+    }else{
+      var T=currentApplicantRoundConfig.total;
+      var pool2=applicantStatusPoolForTotal(T);
+      var n2=T;
+      while(n2>=1){
+        chunks.push(applicantBuildRowHtml(n2,pool2.shift(),null,prefix,true));
+        n2--;
+      }
     }
+
     tb.innerHTML=chunks.join('');
     applicantBindPaginationClicksOnce();
+    applicantRefreshFilterChipCounts();
     applicantApplyPaging({resetPage:true});
   }
   function applicantRowPassesFilters(row){
@@ -1998,19 +2190,25 @@
     modal.setAttribute('aria-hidden','true');
   }
   function filterStatus(btn, status){
-    document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+    var panel=document.getElementById('panel-applicants');
+    if(panel)panel.querySelectorAll('.filter-chip').forEach(function(c){c.classList.remove('active');});
     btn.classList.add('active');
     applicantFilterKey=status==='all'?'all':status;
     applicantApplyPaging({resetPage:true});
   }
   function filterPaidOnly(btn){
-    document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+    var panel=document.getElementById('panel-applicants');
+    if(panel)panel.querySelectorAll('.filter-chip').forEach(function(c){c.classList.remove('active');});
     btn.classList.add('active');
     applicantFilterKey='paid0';
     applicantApplyPaging({resetPage:true});
   }
   var nextExamSeq=9150;
   function markOfflinePaid(btn){
+    if(applicantIsArchivedRound()){
+      alert('과거 회차는 조회 전용입니다.');
+      return;
+    }
     openConfirmModal({
       title:'오프라인 수납 완료',
       message:'이 접수 건을 오프라인 수납 완료로 처리합니다.',
@@ -2028,8 +2226,13 @@
     if(wrap)wrap.innerHTML=actionBtnsReviewHtml();
     alert('오프라인 수납이 완료 처리되었습니다. 상태가 검토중으로 변경되었습니다. 승인 후 「수험번호 일괄 부여」로 발급할 수 있습니다.');
     applicantApplyPaging({resetPage:false});
+    applicantRefreshFilterChipCounts();
   }
   function batchAssignExamNumbers(){
+    if(applicantIsArchivedRound()){
+      alert('과거 회차 목록에서는 수험번호를 부여할 수 없습니다. 진행 중인 회차를 선택해 주세요.');
+      return;
+    }
     openConfirmModal({
       title:'수험번호 일괄 부여',
       message:'수납 완료이며 수험번호가 비어 있는 접수 건에 순차로 부여합니다.',
@@ -2039,6 +2242,7 @@
   }
   function batchAssignExamNumbersImpl(){
     let n=0;
+    var pref=(currentApplicantRoundConfig&&currentApplicantRoundConfig.prefix)||'MM-98-';
     document.querySelectorAll('#applicantBody tr').forEach(row=>{
       if(row.dataset.paid!=='1')return;
       const st=row.dataset.status;
@@ -2047,12 +2251,16 @@
       if(!cell)return;
       const cur=(cell.textContent||'').trim();
       if(cur&&cur!=='—')return;
-      cell.textContent='MM-98-'+String(nextExamSeq++).slice(-4);
+      cell.textContent=pref+String(nextExamSeq++).slice(-4);
       n++;
     });
     alert(n?('수험번호 '+n+'건이 부여되었습니다. (데모: 수납 완료 건·사진 매핑 워크플로)'):'부여 대상이 없습니다. 수납 완료이고 수험번호가 비어 있으며 반려·취소가 아닌 접수만 부여됩니다.');
   }
   function approveRow(btn){
+    if(applicantIsArchivedRound()){
+      alert('과거 회차는 조회 전용입니다.');
+      return;
+    }
     var verb=(btn.textContent&&btn.textContent.indexOf('재승인')!==-1)?'재승인':'승인';
     openConfirmModal({
       title:verb,
@@ -2062,6 +2270,10 @@
     });
   }
   function rejectRow(btn){
+    if(applicantIsArchivedRound()){
+      alert('과거 회차는 조회 전용입니다.');
+      return;
+    }
     openRejectReasonModal({applicantBtn:btn});
   }
   function actionBtnsReviewHtml(){
@@ -2084,6 +2296,7 @@
     row.dataset.status='approved';
     btn.closest('.action-btns').innerHTML=actionBtnsApprovedHtml();
     applicantApplyPaging({resetPage:false});
+    applicantRefreshFilterChipCounts();
     alert('승인 처리되었습니다.');
   }
   function rejectRowImpl(btn, reason){
@@ -2094,6 +2307,7 @@
     row.dataset.status='rejected';
     btn.closest('.action-btns').innerHTML=actionBtnsRejectedHtml();
     applicantApplyPaging({resetPage:false});
+    applicantRefreshFilterChipCounts();
     alert('반려 처리되었습니다. 사용자에게 재업로드 요청이 발송됩니다.');
   }
   function downloadExcel(){
@@ -2119,7 +2333,7 @@
     const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
     const a=document.createElement('a');
     a.href=URL.createObjectURL(blob);
-    a.download='TOPIK_Myanmar_접수자목록.csv';
+    a.download='TOPIK_Myanmar_접수자목록_'+((currentApplicantRoundConfig&&currentApplicantRoundConfig.shortLabel)||'회차').replace(/\s+/g,'_')+'.csv';
     a.click();
   }
   function printApplicantList(){
@@ -2142,8 +2356,9 @@
     el.style.display=el.style.display==='none'?'block':'none';
   }
   document.addEventListener('DOMContentLoaded',function(){
+    syncExamRoundSelects('98');
     initApplicantDemoRows();
-    initPhotoReviewDemo();
+    rebuildPhotoReviewGrid();
     if(!window.ContentStore)return;
     refreshNoticeTaxonomyAdmin();
     refreshFaqTaxonomyAdmin();
