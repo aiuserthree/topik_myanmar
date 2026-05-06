@@ -30,11 +30,13 @@
     .input-wrap input:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(0,52,120,0.08);}
     .pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--gray-text);background:none;border:none;padding:0;display:flex;align-items:center;}
     .pw-toggle:hover{color:var(--navy);}
-    .login-options{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;font-size:13px;}
+    .login-options{display:flex;justify-content:flex-start;align-items:center;margin-bottom:10px;font-size:13px;}
     .login-options label{display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--gray-text);}
     .login-options label input{accent-color:var(--navy);width:auto;}
-    .login-options a{color:var(--navy);text-decoration:none;font-weight:500;display:flex;align-items:center;gap:4px;}
-    .login-options a:hover{color:var(--red);}
+    .login-find-links{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px 12px;margin-bottom:20px;font-size:13px;}
+    .login-find-links .sep{color:#cbd5e1;font-weight:300;}
+    .login-find-links a{color:var(--navy);text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:4px;}
+    .login-find-links a:hover{color:var(--red);}
     .btn-login{width:100%;padding:13px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;}
     .btn-login:hover{background:#002060;}
     .divider{text-align:center;margin:20px 0;position:relative;}
@@ -44,6 +46,29 @@
     .signup-prompt a{color:var(--red);font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
     .error-alert{background:#fff0f1;border:1px solid #fca5a5;border-radius:8px;padding:12px 16px;font-size:13px;color:var(--red);margin-bottom:16px;display:none;align-items:center;gap:8px;}
     .error-alert.show{display:flex;}
+    /* 비밀번호 찾기 모달 */
+    .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,0.5);z-index:2000;display:none;align-items:center;justify-content:center;padding:24px;}
+    .modal-overlay.show{display:flex;}
+    .modal-dialog{background:white;border-radius:16px;max-width:440px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 24px 48px rgba(0,0,0,0.18);}
+    .modal-head{padding:18px 22px;border-bottom:1px solid var(--gray-light);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+    .modal-head h2{font-size:17px;font-weight:700;color:var(--navy);line-height:1.35;}
+    .modal-head .sub{font-size:12px;color:var(--gray-text);font-weight:400;margin-top:4px;}
+    .modal-close{background:none;border:none;cursor:pointer;padding:6px;color:var(--gray-text);border-radius:8px;line-height:0;}
+    .modal-close:hover{color:var(--navy);background:#f0f4ff;}
+    .modal-body{padding:22px;}
+    .modal-note{font-size:11px;color:var(--gray-text);line-height:1.55;margin-bottom:16px;padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid var(--gray-light);}
+    .modal-actions{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;}
+    .btn-modal-ghost{flex:1;min-width:108px;padding:11px 14px;border:1.5px solid var(--gray-light);background:white;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--navy);}
+    .btn-modal-ghost:hover{background:#f8fafc;}
+    .btn-modal-primary{flex:2;min-width:140px;padding:11px 14px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+    .btn-modal-primary:hover{background:#002060;}
+    .pw-reset-panel{display:none;}
+    .pw-reset-panel.active{display:block;}
+    .demo-code-box{margin-bottom:14px;padding:12px 14px;background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;font-size:12px;color:#78350f;line-height:1.5;}
+    .demo-code{font-size:22px;font-weight:800;letter-spacing:6px;color:var(--navy);margin-top:10px;font-variant-numeric:tabular-nums;text-align:center;}
+    .id-find-result{margin-top:16px;padding:14px;background:#f0f4ff;border:1px solid #bfdbfe;border-radius:8px;display:none;}
+    .id-find-result.show{display:block;}
+    .id-find-result .email{font-size:15px;font-weight:700;color:var(--navy);word-break:break-all;margin-top:6px;}
   </style>
   <link rel="stylesheet" href="css/mobile.css"/>
   <!-- ════ SVG ICON SPRITE (공통 적용) ════ -->
@@ -86,6 +111,7 @@
     <symbol id="ic-ticket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 010 6v2a2 2 0 002 2h16a2 2 0 002-2v-2a3 3 0 010-6V7a2 2 0 00-2-2H4a2 2 0 00-2 2v2z"/><line x1="9" y1="3" x2="9" y2="21"/></symbol>
     <symbol id="ic-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></symbol>
     <symbol id="ic-arrow-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+    <symbol id="ic-arrow-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></symbol>
     <symbol id="ic-chev-d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></symbol>
     <symbol id="ic-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
     <symbol id="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
@@ -120,16 +146,19 @@
       <p style="font-size:12px;color:var(--gray-text);line-height:1.55;margin-bottom:14px;padding:10px 12px;background:#f0f4ff;border-radius:8px;border:1px solid #dbeafe;">
         회원가입 시 입력한 개인정보는 브라우저에 안전하게 저장되어, 이후 <strong>시험 재접수</strong> 시 응시자 정보 입력 단계가 간소화됩니다. (실서비스에서는 서버 인증과 연동됩니다.)
       </p>
+      <p id="pwResetBanner" style="display:none;font-size:13px;color:var(--navy);margin-bottom:14px;padding:10px 12px;background:#ecfdf5;border-radius:8px;border:1px solid #a7f3d0;font-weight:600;">
+        비밀번호가 변경되었습니다. 아이디(이메일)와 새 비밀번호로 로그인해 주세요.
+      </p>
       <div class="error-alert" id="loginError">
         <svg class="icon" width="16" height="16"><use href="#ic-alert"/></svg>
-        이메일 또는 비밀번호가 올바르지 않습니다.
+        <span id="loginErrorText">아이디(이메일) 또는 비밀번호가 올바르지 않습니다.</span>
       </div>
       <form onsubmit="doLogin(event)">
         <div class="form-group">
-          <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-email"/></svg>이메일 주소</label>
+          <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-email"/></svg>아이디(이메일 주소)</label>
           <div class="input-wrap">
             <span class="input-icon"><svg class="icon" width="16" height="16"><use href="#ic-email"/></svg></span>
-            <input type="email" id="loginEmail" placeholder="example@email.com" required/>
+            <input type="email" id="loginEmail" placeholder="example@email.com" required autocomplete="username"/>
           </div>
         </div>
         <div class="form-group">
@@ -144,7 +173,11 @@
         </div>
         <div class="login-options">
           <label><input type="checkbox"/> 로그인 상태 유지</label>
-          <a href="#"><svg class="icon" width="13" height="13"><use href="#ic-lock"/></svg>비밀번호 찾기</a>
+        </div>
+        <div class="login-find-links">
+          <a href="#" id="idFindOpen"><svg class="icon" width="13" height="13"><use href="#ic-user"/></svg>아이디 찾기</a>
+          <span class="sep">|</span>
+          <a href="#" id="pwResetOpen"><svg class="icon" width="13" height="13"><use href="#ic-lock"/></svg>비밀번호 찾기</a>
         </div>
         <button type="submit" class="btn-login">
           <svg class="icon" width="16" height="16"><use href="#ic-login"/></svg>
@@ -159,26 +192,395 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="idFindModal" role="dialog" aria-modal="true" aria-labelledby="idFindTitle" hidden>
+  <div class="modal-dialog">
+    <div class="modal-head">
+      <div>
+        <h2 id="idFindTitle">아이디 찾기</h2>
+        <p class="sub">가입 시 입력한 정보와 일치하면 아이디(이메일 주소)를 안내합니다.</p>
+      </div>
+      <button type="button" class="modal-close" id="idFindClose" aria-label="닫기">
+        <svg class="icon" width="22" height="22"><use href="#ic-x"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-note">
+        프로토타입에서는 브라우저에 저장된 회원 정보(<code style="font-size:10px;">localStorage</code>)와 비교합니다.
+      </p>
+      <div class="form-group">
+        <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-user"/></svg>이름 (한글)</label>
+        <div class="input-wrap">
+          <span class="input-icon"><svg class="icon" width="16" height="16"><use href="#ic-user"/></svg></span>
+          <input type="text" id="idFindNameKr" placeholder="한글 성명" autocomplete="name"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-calendar"/></svg>생년월일</label>
+        <div class="input-wrap">
+          <span class="input-icon"><svg class="icon" width="16" height="16"><use href="#ic-calendar"/></svg></span>
+          <input type="date" id="idFindBirth"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-phone"/></svg>연락처</label>
+        <div class="input-wrap">
+          <span class="input-icon"><svg class="icon" width="16" height="16"><use href="#ic-phone"/></svg></span>
+          <input type="tel" id="idFindPhone" placeholder="가입 시 연락처와 동일" autocomplete="tel"/>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-modal-primary" style="flex:1" id="idFindSubmit">
+          아이디 확인 <svg class="icon" width="14" height="14"><use href="#ic-search"/></svg>
+        </button>
+      </div>
+      <div class="id-find-result" id="idFindResult">
+        <div style="font-size:12px;color:var(--gray-text);">회원 아이디(이메일 주소)</div>
+        <div class="email" id="idFindResultEmail"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="pwResetModal" role="dialog" aria-modal="true" aria-labelledby="pwResetTitle" hidden>
+  <div class="modal-dialog">
+    <div class="modal-head">
+      <div>
+        <h2 id="pwResetTitle">비밀번호 찾기</h2>
+        <p class="sub">가입 이메일로 인증코드를 발송한 뒤, 확인되면 새 비밀번호를 설정합니다.</p>
+      </div>
+      <button type="button" class="modal-close" id="pwResetClose" aria-label="닫기">
+        <svg class="icon" width="22" height="22"><use href="#ic-x"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-note">
+        실제 서비스에서는 입력한 이메일로 인증코드가 발송됩니다.
+        이 프로토타입에서는 메일 전송을 시뮬레이션하고, 같은 브라우저에서만 유효한 인증코드를 화면에 표시합니다.
+      </p>
+      <div class="pw-reset-panel active" id="pwResetStepEmail">
+        <div class="form-group">
+          <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-email"/></svg>이메일 주소</label>
+          <div class="input-wrap">
+            <span class="input-icon"><svg class="icon" width="16" height="16"><use href="#ic-email"/></svg></span>
+            <input type="email" id="pwResetEmail" placeholder="가입 시 이메일" autocomplete="username"/>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-modal-primary" style="flex:1" id="pwResetSendCode">
+            인증코드 발송 <svg class="icon" width="14" height="14"><use href="#ic-email"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="pw-reset-panel" id="pwResetStepCode">
+        <p style="font-size:13px;color:#444;margin-bottom:12px;"><strong id="pwResetSentTo"></strong> 로 인증코드를 발송했습니다. 메일함을 확인해 주세요.</p>
+        <div class="demo-code-box" id="pwResetDemoBox">
+          <strong>데모 안내</strong> — 실제 메일 대신 아래 코드를 입력하면 됩니다.
+          <div class="demo-code" id="pwResetDemoCode"></div>
+        </div>
+        <div class="form-group">
+          <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-lock"/></svg>인증코드 (6자리)</label>
+          <div class="input-wrap">
+            <span class="input-icon"><svg class="icon" width="16" height="16"><use href="#ic-check"/></svg></span>
+            <input type="text" id="pwResetCodeInput" placeholder="000000" maxlength="8" inputmode="numeric" autocomplete="one-time-code"/>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-modal-ghost" id="pwResetBackEmail"><svg class="icon" width="14" height="14"><use href="#ic-arrow-l"/></svg>이메일 수정</button>
+          <button type="button" class="btn-modal-ghost" id="pwResetResend">재발송</button>
+          <button type="button" class="btn-modal-primary" id="pwResetVerifyCode">
+            확인 <svg class="icon" width="14" height="14"><use href="#ic-arrow-r"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="pw-reset-panel" id="pwResetStepNewPw">
+        <div class="form-group">
+          <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-lock"/></svg>새 비밀번호</label>
+          <div class="input-wrap">
+            <span class="input-icon"><svg class="icon" width="16" height="16"><use href="#ic-lock"/></svg></span>
+            <input type="password" id="pwResetNew1" placeholder="8자 이상" autocomplete="new-password"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-lock"/></svg>새 비밀번호 확인</label>
+          <div class="input-wrap">
+            <span class="input-icon"><svg class="icon" width="16" height="16"><use href="#ic-lock"/></svg></span>
+            <input type="password" id="pwResetNew2" placeholder="한 번 더 입력" autocomplete="new-password"/>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-modal-primary" style="flex:1" id="pwResetSubmit">
+            <svg class="icon" width="14" height="14"><use href="#ic-check"/></svg>비밀번호 변경 완료
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/profile-store.js"></script>
 <script>
-  let pwVisible=false;
+  var PW_VERIFY_KEY='tm_pw_email_verify_v1';
+  var PW_VERIFY_TTL_MS=10*60*1000;
+
+  function normEmail(s){return String(s||'').trim().toLowerCase();}
+  function normName(s){return String(s||'').trim().replace(/\s+/g,' ');}
+  function normPhone(s){return String(s||'').replace(/\D/g,'');}
+
+  function showPwResetBanner(){
+    var b=document.getElementById('pwResetBanner');
+    if(b)b.style.display='block';
+  }
+  if(typeof URLSearchParams!=='undefined'){
+    var qsBoot=new URLSearchParams(location.search);
+    if(qsBoot.get('reset')==='ok')showPwResetBanner();
+    var emBoot=qsBoot.get('email');
+    if(emBoot){
+      try{
+        var loginEmailEl=document.getElementById('loginEmail');
+        if(loginEmailEl&&!loginEmailEl.value)loginEmailEl.value=decodeURIComponent(emBoot);
+      }catch(e){}
+    }
+    if(qsBoot.get('reset')||qsBoot.get('email')){
+      try{history.replaceState({},'',location.pathname+location.hash);}catch(e){}
+    }
+  }
+
+  var pwVisible=false;
   function togglePw(){
-    const pw=document.getElementById('loginPw');
-    const icon=document.getElementById('eyeIcon');
+    var pw=document.getElementById('loginPw');
+    var icon=document.getElementById('eyeIcon');
     pwVisible=!pwVisible;
     pw.type=pwVisible?'text':'password';
     icon.querySelector('use').setAttribute('href',pwVisible?'#ic-eye-off':'#ic-eye');
   }
+  function showLoginErr(msg){
+    document.getElementById('loginErrorText').textContent=msg;
+    document.getElementById('loginError').classList.add('show');
+  }
+  function hideLoginErr(){
+    document.getElementById('loginError').classList.remove('show');
+  }
   function doLogin(e){
     e.preventDefault();
-    const email=document.getElementById('loginEmail').value;
-    const pw=document.getElementById('loginPw').value;
-    if(email&&pw){
+    hideLoginErr();
+    var email=document.getElementById('loginEmail').value;
+    var pw=document.getElementById('loginPw').value;
+    if(!email||!pw){showLoginErr('아이디(이메일)와 비밀번호를 입력하세요.');return;}
+
+    var profile=window.TMProfile&&TMProfile.load();
+    var want=normEmail(email);
+
+    if(profile&&profile.email){
+      if(normEmail(profile.email)!==want){
+        showLoginErr('저장된 회원 정보의 아이디(이메일)와 일치하지 않습니다.');
+        return;
+      }
+      var stored=profile.password!=null?String(profile.password):'';
+      if(!stored){
+        showLoginErr('저장된 비밀번호가 없습니다. 비밀번호 찾기로 새 비밀번호를 설정해 주세요.');
+        return;
+      }
+      if(pw!==stored){
+        showLoginErr('아이디(이메일) 또는 비밀번호가 올바르지 않습니다.');
+        return;
+      }
       try{localStorage.setItem('tm_session','1');}catch(x){}
-      alert('✅ 로그인 성공! 메인 페이지로 이동합니다.');
       window.location.href='index.html';
+      return;
     }
-    else{document.getElementById('loginError').classList.add('show');}
+
+    try{localStorage.setItem('tm_session','1');}catch(x){}
+    window.location.href='index.html';
   }
+
+  function showModal(el){el.hidden=false;el.classList.add('show');}
+  function hideModal(el){el.classList.remove('show');el.hidden=true;}
+
+  function openIdFindModal(){
+    hideModal(document.getElementById('pwResetModal'));
+    document.getElementById('idFindNameKr').value='';
+    document.getElementById('idFindBirth').value='';
+    document.getElementById('idFindPhone').value='';
+    document.getElementById('idFindResult').classList.remove('show');
+    showModal(document.getElementById('idFindModal'));
+    document.getElementById('idFindNameKr').focus();
+  }
+  function closeIdFindModal(){
+    hideModal(document.getElementById('idFindModal'));
+  }
+  function submitIdFind(){
+    var profile=window.TMProfile&&TMProfile.load();
+    if(!profile||!profile.email){
+      alert('저장된 회원 정보가 없습니다.\n먼저 회원가입을 완료해 주세요.');
+      return;
+    }
+    var nameKr=normName(document.getElementById('idFindNameKr').value);
+    var birth=document.getElementById('idFindBirth').value;
+    var phone=normPhone(document.getElementById('idFindPhone').value);
+
+    if(!nameKr||!birth||!phone){
+      alert('이름, 생년월일, 연락처를 모두 입력해 주세요.');
+      return;
+    }
+    if(normName(profile.nameKr)!==nameKr||String(profile.birthdate||'')!==birth||normPhone(profile.phone)!==phone){
+      alert('입력하신 정보가 저장된 회원 정보와 일치하지 않습니다.');
+      return;
+    }
+    document.getElementById('idFindResultEmail').textContent=profile.email;
+    document.getElementById('idFindResult').classList.add('show');
+    document.getElementById('loginEmail').value=profile.email.trim();
+  }
+
+  function genSixDigitCode(){
+    return String(Math.floor(100000+Math.random()*900000));
+  }
+  function issuePwResetCode(emailNorm){
+    var code=genSixDigitCode();
+    try{
+      sessionStorage.setItem(PW_VERIFY_KEY,JSON.stringify({
+        code:code,
+        email:emailNorm,
+        verified:false,
+        exp:Date.now()+PW_VERIFY_TTL_MS
+      }));
+    }catch(err){}
+    return code;
+  }
+  function readPwVerify(){
+    try{
+      var raw=sessionStorage.getItem(PW_VERIFY_KEY);
+      return raw?JSON.parse(raw):null;
+    }catch(e){return null;}
+  }
+
+  function openPwResetModal(){
+    hideModal(document.getElementById('idFindModal'));
+    try{sessionStorage.removeItem(PW_VERIFY_KEY);}catch(e){}
+    document.getElementById('pwResetStepEmail').classList.add('active');
+    document.getElementById('pwResetStepCode').classList.remove('active');
+    document.getElementById('pwResetStepNewPw').classList.remove('active');
+    document.getElementById('pwResetEmail').value=document.getElementById('loginEmail').value.trim();
+    document.getElementById('pwResetCodeInput').value='';
+    document.getElementById('pwResetNew1').value='';
+    document.getElementById('pwResetNew2').value='';
+    document.getElementById('pwResetDemoCode').textContent='';
+    showModal(document.getElementById('pwResetModal'));
+    document.getElementById('pwResetEmail').focus();
+  }
+  function closePwResetModal(){
+    hideModal(document.getElementById('pwResetModal'));
+  }
+  function goPwResetEmailStep(){
+    document.getElementById('pwResetStepEmail').classList.add('active');
+    document.getElementById('pwResetStepCode').classList.remove('active');
+    document.getElementById('pwResetStepNewPw').classList.remove('active');
+    try{sessionStorage.removeItem(PW_VERIFY_KEY);}catch(e){}
+    document.getElementById('pwResetCodeInput').value='';
+    document.getElementById('pwResetDemoCode').textContent='';
+  }
+  function goPwResetCodeStep(emailNorm,code){
+    document.getElementById('pwResetStepEmail').classList.remove('active');
+    document.getElementById('pwResetStepCode').classList.add('active');
+    document.getElementById('pwResetStepNewPw').classList.remove('active');
+    document.getElementById('pwResetSentTo').textContent=emailNorm;
+    document.getElementById('pwResetDemoCode').textContent=code;
+    document.getElementById('pwResetCodeInput').value='';
+    document.getElementById('pwResetCodeInput').focus();
+  }
+  function sendPwResetCode(){
+    var em=normEmail(document.getElementById('pwResetEmail').value);
+    if(!em){alert('이메일 주소를 입력해 주세요.');return;}
+    var profile=window.TMProfile&&TMProfile.load();
+    if(!profile||!profile.email){
+      alert('저장된 회원 정보가 없습니다.\n먼저 회원가입을 완료해 주세요.');
+      return;
+    }
+    if(normEmail(profile.email)!==em){
+      alert('가입되어 있지 않은 이메일 주소입니다.');
+      return;
+    }
+    var code=issuePwResetCode(em);
+    alert('인증코드를 이메일로 발송했습니다.\n\n※ 프로토타입: 실제 메일 대신 화면의 데모 코드를 입력하세요.');
+    goPwResetCodeStep(em,code);
+  }
+  function verifyPwResetCode(){
+    var data=readPwVerify();
+    var entered=String(document.getElementById('pwResetCodeInput').value||'').replace(/\s/g,'');
+    if(!data){alert('먼저 인증코드를 발송해 주세요.');goPwResetEmailStep();return;}
+    if(Date.now()>data.exp){
+      alert('인증코드가 만료되었습니다. 다시 발송해 주세요.');
+      goPwResetEmailStep();
+      return;
+    }
+    if(entered!==String(data.code)){
+      alert('인증코드가 올바르지 않습니다.');
+      return;
+    }
+    data.verified=true;
+    try{sessionStorage.setItem(PW_VERIFY_KEY,JSON.stringify(data));}catch(e){}
+    document.getElementById('pwResetStepCode').classList.remove('active');
+    document.getElementById('pwResetStepNewPw').classList.add('active');
+    document.getElementById('pwResetNew1').focus();
+  }
+  function submitPwReset(){
+    var data=readPwVerify();
+    if(!data||!data.verified||Date.now()>data.exp){
+      alert('인증이 완료되지 않았거나 만료되었습니다. 처음부터 다시 진행해 주세요.');
+      openPwResetModal();
+      return;
+    }
+    var profile=window.TMProfile&&TMProfile.load();
+    if(!profile||normEmail(profile.email)!==normEmail(data.email)){
+      alert('회원 정보를 확인할 수 없습니다.');
+      return;
+    }
+    var n1=document.getElementById('pwResetNew1').value;
+    var n2=document.getElementById('pwResetNew2').value;
+    if(n1.length<8){
+      alert('새 비밀번호는 8자 이상이어야 합니다.');
+      return;
+    }
+    if(n1!==n2){
+      alert('새 비밀번호가 서로 일치하지 않습니다.');
+      return;
+    }
+    profile.password=n1;
+    profile.savedAt=new Date().toISOString();
+    TMProfile.save(profile);
+    try{sessionStorage.removeItem(PW_VERIFY_KEY);}catch(e){}
+    window.location.href='login.html?reset=ok';
+  }
+
+  document.getElementById('idFindOpen').addEventListener('click',function(e){
+    e.preventDefault();
+    openIdFindModal();
+  });
+  document.getElementById('idFindClose').addEventListener('click',closeIdFindModal);
+  document.getElementById('idFindModal').addEventListener('click',function(e){
+    if(e.target===this)closeIdFindModal();
+  });
+  document.getElementById('idFindSubmit').addEventListener('click',submitIdFind);
+
+  document.getElementById('pwResetOpen').addEventListener('click',function(e){
+    e.preventDefault();
+    openPwResetModal();
+  });
+  document.getElementById('pwResetClose').addEventListener('click',closePwResetModal);
+  document.getElementById('pwResetModal').addEventListener('click',function(e){
+    if(e.target===this)closePwResetModal();
+  });
+  document.getElementById('pwResetSendCode').addEventListener('click',sendPwResetCode);
+  document.getElementById('pwResetBackEmail').addEventListener('click',goPwResetEmailStep);
+  document.getElementById('pwResetResend').addEventListener('click',sendPwResetCode);
+  document.getElementById('pwResetVerifyCode').addEventListener('click',verifyPwResetCode);
+  document.getElementById('pwResetSubmit').addEventListener('click',submitPwReset);
+  document.addEventListener('keydown',function(e){
+    if(e.key!=='Escape')return;
+    var pw=document.getElementById('pwResetModal');
+    var idm=document.getElementById('idFindModal');
+    if(!pw.hidden)closePwResetModal();
+    else if(!idm.hidden)closeIdFindModal();
+  });
 </script>
 </body>
 </html>

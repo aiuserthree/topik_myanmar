@@ -39,9 +39,9 @@
     .search-box button{padding:9px 14px;background:var(--navy);color:white;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;font-size:13px;font-family:inherit;font-weight:600;}
     /* List View */
     .board-wrap{background:white;border-radius:12px;box-shadow:var(--shadow);overflow:hidden;}
-    .board-head{display:grid;grid-template-columns:64px 1fr 120px 80px;background:var(--navy);color:white;}
+    .board-head{display:grid;grid-template-columns:64px 1fr 120px;background:var(--navy);color:white;}
     .board-head div{padding:12px 16px;font-size:12px;font-weight:700;letter-spacing:.3px;display:flex;align-items:center;justify-content:center;gap:5px;text-align:center;}
-    .board-row{display:grid;grid-template-columns:64px 1fr 120px 80px;border-bottom:1px solid var(--gray-light);cursor:pointer;transition:background .2s;}
+    .board-row{display:grid;grid-template-columns:64px 1fr 120px;border-bottom:1px solid var(--gray-light);cursor:pointer;transition:background .2s;}
     .board-row:last-child{border-bottom:none;}
     .board-row:hover{background:#f8f9fc;}
     .board-row > div{padding:13px 16px;font-size:14px;display:flex;align-items:center;}
@@ -49,7 +49,6 @@
     .board-head .col-num{color:#fff;}
     .col-title{gap:8px;flex-wrap:wrap;}
     .col-date{color:var(--gray-text);font-size:13px;display:flex;align-items:center;gap:4px;}
-    .col-view{color:var(--gray-text);font-size:13px;justify-content:center;gap:4px;}
     .nbadge{padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;}
     .nb-new{background:#fff0f1;color:var(--red);}
     .nb-imp{background:#fff8e1;color:#b07800;}
@@ -81,7 +80,7 @@
     footer{background:#1a2a4a;color:#aab8cc;padding:32px 24px;}
     .footer-bottom{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:12px;}
   </style>
-  <link rel="stylesheet" href="css/mobile.css?v=20260515"/>
+  <link rel="stylesheet" href="css/mobile.css?v=20260516"/>
   <!-- ════ SVG ICON SPRITE (공통 적용) ════ -->
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
     <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></symbol>
@@ -206,7 +205,6 @@
         <div class="col-num">번호</div>
         <div class="col-title-h">제목</div>
         <div class="col-date-h">작성일</div>
-        <div class="col-view-h">조회</div>
       </div>
       <div id="noticeBoardRows"></div>
       </div>
@@ -232,7 +230,6 @@
         <div class="detail-meta">
           <span><svg class="icon" width="12" height="12"><use href="#ic-user"/></svg><span id="detailAuthor">관리자</span></span>
           <span><svg class="icon" width="12" height="12"><use href="#ic-calendar"/></svg><span id="detailDate">—</span></span>
-          <span><svg class="icon" width="12" height="12"><use href="#ic-eye"/></svg><span id="detailViews">조회 —</span></span>
         </div>
       </div>
       <div class="detail-body" id="detail-content"></div>
@@ -310,10 +307,6 @@
   });
 </script>
 <script>
-  function fmtNoticeViews(n){
-    var x=Number(n)||0;
-    return String(x).replace(/\B(?=(\d{3})+(?!\d))/g,',');
-  }
   function noticeBadgeHtml(catId){
     if(catId==='new'){
       return '<span class="nbadge nb-new"><svg class="icon" width="9" height="9"><use href="#ic-notice"/></svg>NEW</span>';
@@ -339,8 +332,7 @@
       row.onclick=function(){ showNoticeDetail(it.id); };
       row.innerHTML='<div class="col-num">'+(total-i)+'</div>'+
         '<div class="col-title">'+noticeBadgeHtml(it.catId)+escapeNotice(it.title)+'</div>'+
-        '<div class="col-date"><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>'+escapeNotice(it.date)+'</div>'+
-        '<div class="col-view"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>'+fmtNoticeViews(it.views)+'</div>';
+        '<div class="col-date"><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>'+escapeNotice(it.date)+'</div>';
       wrap.appendChild(row);
     });
     applyNoticeFilters();
@@ -360,7 +352,6 @@
     document.getElementById('detailCatText').textContent='공지사항 · '+ContentStore.labelForNoticeCatId(it.catId);
     document.getElementById('detail-title').textContent=it.title;
     document.getElementById('detailDate').textContent=it.date;
-    document.getElementById('detailViews').textContent='조회 '+fmtNoticeViews(it.views);
     document.getElementById('detail-content').innerHTML=it.bodyHtml||'';
     var attW=document.getElementById('detailAttachWrap');
     var attL=document.getElementById('detailAttachList');

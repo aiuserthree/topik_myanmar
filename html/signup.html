@@ -56,13 +56,29 @@
     .check-group label{font-size:13px;color:#333;cursor:pointer;}
     .check-all{font-weight:700;color:var(--navy);}
     .btn-submit{width:100%;padding:13px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;transition:all .2s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;}
-    .btn-submit:hover{background:#002060;}
+    .btn-submit:hover:not(:disabled){background:#002060;}
+    .btn-submit:disabled,.two-btns .btn-submit:disabled{background:#cbd5e1;color:#94a3b8;cursor:not-allowed;}
+    .btn-submit:disabled:hover,.two-btns .btn-submit:disabled:hover{background:#cbd5e1;}
     .btn-prev{width:100%;padding:13px;background:var(--gray-text);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;}
     .login-link{text-align:center;margin-top:16px;font-size:13px;color:var(--gray-text);}
     .login-link a{color:var(--navy);font-weight:600;text-decoration:none;}
     .two-btns{display:flex;gap:10px;}
     .two-btns .btn-prev{flex:1;}
     .two-btns .btn-submit{flex:2;}
+    .email-verify-actions{margin-top:8px;margin-bottom:12px;}
+    .btn-email-send{width:100%;padding:10px 14px;background:#f0f4ff;color:var(--navy);border:1.5px solid var(--navy);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+    .btn-email-send:hover{background:#e0e7ff;}
+    .signup-verify-panel{display:none;margin-bottom:16px;padding:14px 16px;background:#fafbfc;border:1px solid var(--gray-light);border-radius:10px;}
+    .signup-verify-panel.show{display:block;}
+    .signup-verify-panel .verify-note{font-size:11px;color:var(--gray-text);line-height:1.55;margin-bottom:12px;}
+    .signup-demo-code{padding:10px 12px;background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;margin-bottom:12px;font-size:11px;color:#78350f;}
+    .signup-demo-code .code{font-size:20px;font-weight:800;letter-spacing:6px;color:var(--navy);text-align:center;margin-top:10px;font-variant-numeric:tabular-nums;}
+    .verify-btn-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+    .verify-btn-row .btn-verify-ok{flex:1;min-width:120px;padding:10px 14px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+    .verify-btn-row .btn-verify-ok:hover{background:#002060;}
+    .verify-btn-row .btn-verify-resend{padding:10px 14px;background:white;color:var(--navy);border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+    .email-verified-badge{display:none;align-items:center;gap:8px;margin-bottom:16px;padding:11px 14px;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;color:#065f46;font-size:13px;font-weight:600;}
+    .email-verified-badge.show{display:flex;}
     @media(max-width:600px){.form-row{grid-template-columns:1fr;}}
   </style>
   <link rel="stylesheet" href="css/mobile.css"/>
@@ -201,7 +217,7 @@
             </div>
           </div>
         </div>
-        <button type="button" class="btn-submit" onclick="goStep(2)">
+        <button type="button" class="btn-submit" id="signupStep1NextBtn" onclick="goStep(2)" disabled aria-disabled="true">
           다음 단계 <svg class="icon" width="16" height="16"><use href="#ic-arrow-r"/></svg>
         </button>
       </div>
@@ -213,24 +229,53 @@
             <svg class="icon" width="16" height="16" color="var(--navy)"><use href="#ic-lock"/></svg>계정 설정
           </div>
           <div class="form-group">
-            <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-email"/></svg>이메일 주소 <span class="req">*</span></label>
-            <input type="email" id="email" placeholder="example@email.com"/>
-            <div class="error-msg" id="err-email"><svg class="icon" width="12" height="12"><use href="#ic-alert"/></svg>유효한 이메일을 입력하세요.</div>
+            <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-email"/></svg>아이디(이메일 주소) <span class="req">*</span></label>
+            <input type="email" id="email" placeholder="example@email.com" autocomplete="email"/>
+            <div class="error-msg" id="err-email"><svg class="icon" width="12" height="12"><use href="#ic-alert"/></svg><span class="err-txt">유효한 이메일 주소가 아닙니다.</span></div>
+            <div class="email-verify-actions">
+              <button type="button" class="btn-email-send" id="signupEmailSendBtn">
+                <svg class="icon" width="14" height="14"><use href="#ic-email"/></svg>인증코드 발송
+              </button>
+            </div>
+            <div class="signup-verify-panel" id="signupVerifyPanel">
+              <p class="verify-note">
+                입력하신 주소로 인증코드를 발송했습니다. 메일함을 확인해 주세요.<br/>
+                <strong>※ 프로토타입:</strong> 실제 메일 대신 아래 데모 코드를 입력하면 됩니다.
+              </p>
+              <div class="signup-demo-code">
+                데모 인증코드
+                <div class="code" id="signupDemoCode"></div>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label style="font-size:12px;">인증코드 (6자리)</label>
+                <input type="text" id="signupEmailCode" placeholder="000000" maxlength="8" inputmode="numeric" autocomplete="one-time-code"/>
+              </div>
+              <div class="verify-btn-row">
+                <button type="button" class="btn-verify-ok" id="signupEmailVerifyBtn">
+                  <svg class="icon" width="14" height="14" style="vertical-align:-2px;"><use href="#ic-check"/></svg>인증 확인
+                </button>
+                <button type="button" class="btn-verify-resend" id="signupEmailResendBtn">재발송</button>
+              </div>
+            </div>
+            <div class="email-verified-badge" id="signupEmailVerifiedBadge">
+              <svg class="icon" width="16" height="16"><use href="#ic-check"/></svg>
+              이메일 인증이 완료되었습니다.
+            </div>
           </div>
           <div class="form-group">
             <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-lock"/></svg>비밀번호 <span class="req">*</span></label>
             <input type="password" id="pw" placeholder="영문+숫자+특수문자 8자 이상"/>
-            <div class="error-msg" id="err-pw"><svg class="icon" width="12" height="12"><use href="#ic-alert"/></svg>비밀번호는 8자 이상이어야 합니다.</div>
+            <div class="error-msg" id="err-pw"><svg class="icon" width="12" height="12"><use href="#ic-alert"/></svg><span class="err-txt">영문·숫자·특수문자를 각각 포함하여 8자 이상 입력해 주세요.</span></div>
           </div>
           <div class="form-group">
             <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-lock"/></svg>비밀번호 확인 <span class="req">*</span></label>
             <input type="password" id="pwConfirm" placeholder="비밀번호 재입력"/>
-            <div class="error-msg" id="err-pwConfirm"><svg class="icon" width="12" height="12"><use href="#ic-alert"/></svg>비밀번호가 일치하지 않습니다.</div>
+            <div class="error-msg" id="err-pwConfirm"><svg class="icon" width="12" height="12"><use href="#ic-alert"/></svg><span class="err-txt">비밀번호가 일치하지 않습니다.</span></div>
           </div>
         </div>
         <div class="two-btns">
           <button type="button" class="btn-prev" onclick="goStep(1)">← 이전</button>
-          <button type="button" class="btn-submit" onclick="goStep(3)">다음 단계 <svg class="icon" width="16" height="16"><use href="#ic-arrow-r"/></svg></button>
+          <button type="button" class="btn-submit" id="signupStep2NextBtn" onclick="goStep(3)" disabled aria-disabled="true">다음 단계 <svg class="icon" width="16" height="16"><use href="#ic-arrow-r"/></svg></button>
         </div>
       </div>
 
@@ -263,7 +308,7 @@
         </div>
         <div class="two-btns">
           <button type="button" class="btn-prev" onclick="goStep(2)">← 이전</button>
-          <button type="submit" class="btn-submit"><svg class="icon" width="16" height="16"><use href="#ic-check"/></svg>가입 완료</button>
+          <button type="submit" class="btn-submit" id="signupSubmitBtn" disabled aria-disabled="true"><svg class="icon" width="16" height="16"><use href="#ic-check"/></svg>가입 완료</button>
         </div>
       </div>
     </form>
@@ -272,12 +317,219 @@
 </div>
 
 <script>
+  var SIGNUP_EMAIL_VERIFY_KEY='tm_signup_email_verify_v1';
+  var SIGNUP_CODE_TTL_MS=10*60*1000;
+  var PW_COMPLEX_MSG='영문·숫자·특수문자를 각각 포함하여 8자 이상 입력해 주세요.';
+
   let cur=1;
+  function normSignupEmail(s){return String(s||'').trim().toLowerCase();}
+  function isValidSignupEmail(value){
+    var v=String(value||'').trim();
+    if(!v)return false;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  }
+  function isValidSignupPassword(value){
+    var p=String(value||'');
+    if(p.length<8)return false;
+    if(!/[A-Za-z]/.test(p))return false;
+    if(!/\d/.test(p))return false;
+    if(!/[^A-Za-z0-9]/.test(p))return false;
+    return true;
+  }
+  function showSignupFieldErr(inputEl, errId, show, errText){
+    if(inputEl){
+      if(show)inputEl.classList.add('error');else inputEl.classList.remove('error');
+    }
+    var box=document.getElementById(errId);
+    if(!box)return;
+    if(show&&errText!==undefined){
+      var span=box.querySelector('.err-txt');
+      if(span)span.textContent=errText;
+    }
+    box.classList.toggle('show',!!show);
+  }
+  function refreshSignupEmailError(){
+    var el=document.getElementById('email');
+    var v=el.value.trim();
+    if(!v){showSignupFieldErr(el,'err-email',false);return;}
+    if(!isValidSignupEmail(v)){
+      showSignupFieldErr(el,'err-email',true,'유효한 이메일 주소가 아닙니다.');
+      return;
+    }
+    showSignupFieldErr(el,'err-email',false);
+  }
+  function refreshSignupPwError(){
+    var el=document.getElementById('pw');
+    var v=el.value;
+    if(!v){showSignupFieldErr(el,'err-pw',false);refreshSignupPwConfirmError();return;}
+    if(!isValidSignupPassword(v)){
+      showSignupFieldErr(el,'err-pw',true,PW_COMPLEX_MSG);
+      refreshSignupPwConfirmError();
+      return;
+    }
+    showSignupFieldErr(el,'err-pw',false);
+    refreshSignupPwConfirmError();
+  }
+  function refreshSignupPwConfirmError(){
+    var pw=document.getElementById('pw').value;
+    var el=document.getElementById('pwConfirm');
+    var c=el.value;
+    if(!c){showSignupFieldErr(el,'err-pwConfirm',false);refreshSignupStep2Next();return;}
+    if(c!==pw){
+      showSignupFieldErr(el,'err-pwConfirm',true,'비밀번호가 일치하지 않습니다.');
+      refreshSignupStep2Next();
+      return;
+    }
+    showSignupFieldErr(el,'err-pwConfirm',false);
+    refreshSignupStep2Next();
+  }
+  function getSignupEmailVerify(){
+    try{
+      var raw=sessionStorage.getItem(SIGNUP_EMAIL_VERIFY_KEY);
+      return raw?JSON.parse(raw):null;
+    }catch(e){return null;}
+  }
+  function setSignupEmailVerify(obj){
+    try{sessionStorage.setItem(SIGNUP_EMAIL_VERIFY_KEY,JSON.stringify(obj));}catch(e){}
+  }
+  function clearSignupEmailVerify(){
+    try{sessionStorage.removeItem(SIGNUP_EMAIL_VERIFY_KEY);}catch(e){}
+  }
+  function isSignupEmailVerified(){
+    var em=normSignupEmail(document.getElementById('email').value);
+    if(!em)return false;
+    var d=getSignupEmailVerify();
+    if(!d||!d.verified)return false;
+    if(normSignupEmail(d.email)!==em)return false;
+    if(d.expVerified&&Date.now()>d.expVerified)return false;
+    return true;
+  }
+  function resetSignupEmailVerificationUI(){
+    document.getElementById('signupVerifyPanel').classList.remove('show');
+    document.getElementById('signupEmailVerifiedBadge').classList.remove('show');
+    document.getElementById('signupEmailCode').value='';
+    document.getElementById('signupDemoCode').textContent='';
+    clearSignupEmailVerify();
+  }
+  function onSignupEmailInput(){
+    document.getElementById('signupEmailVerifiedBadge').classList.remove('show');
+    document.getElementById('signupVerifyPanel').classList.remove('show');
+    document.getElementById('signupEmailCode').value='';
+    document.getElementById('signupDemoCode').textContent='';
+    clearSignupEmailVerify();
+    refreshSignupEmailError();
+    refreshSignupStep2Next();
+  }
+  function sendSignupEmailCode(){
+    var el=document.getElementById('email');
+    var v=el.value.trim();
+    if(!v){showSignupFieldErr(el,'err-email',true,'아이디(이메일 주소)를 입력해 주세요.');refreshSignupStep2Next();return;}
+    if(!isValidSignupEmail(v)){showSignupFieldErr(el,'err-email',true,'유효한 이메일 주소가 아닙니다.');refreshSignupStep2Next();return;}
+    showSignupFieldErr(el,'err-email',false);
+    var code=String(Math.floor(100000+Math.random()*900000));
+    setSignupEmailVerify({
+      code:code,
+      email:normSignupEmail(v),
+      verified:false,
+      exp:Date.now()+SIGNUP_CODE_TTL_MS
+    });
+    document.getElementById('signupDemoCode').textContent=code;
+    document.getElementById('signupVerifyPanel').classList.add('show');
+    document.getElementById('signupEmailVerifiedBadge').classList.remove('show');
+    document.getElementById('signupEmailCode').value='';
+    refreshSignupStep2Next();
+    alert('인증코드가 이메일로 발송되었습니다.\n\n※ 프로토타입: 실제 메일 대신 화면의 데모 코드를 입력한 뒤 [인증 확인]을 눌러 주세요.');
+  }
+  function confirmSignupEmailCode(){
+    var curE=normSignupEmail(document.getElementById('email').value);
+    if(!curE){alert('아이디(이메일 주소)를 입력해 주세요.');return;}
+    var d=getSignupEmailVerify();
+    if(!d){alert('먼저 인증코드를 발송해 주세요.');return;}
+    if(normSignupEmail(d.email)!==curE){
+      alert('이메일이 변경되었습니다. 인증코드를 다시 발송해 주세요.');
+      resetSignupEmailVerificationUI();
+      refreshSignupStep2Next();
+      return;
+    }
+    if(Date.now()>d.exp){alert('인증코드가 만료되었습니다. 재발송해 주세요.');return;}
+    var entered=String(document.getElementById('signupEmailCode').value||'').replace(/\s/g,'');
+    if(entered!==String(d.code)){alert('인증코드가 올바르지 않습니다.');return;}
+    d.verified=true;
+    d.expVerified=Date.now()+60*60*1000;
+    setSignupEmailVerify(d);
+    document.getElementById('signupVerifyPanel').classList.remove('show');
+    document.getElementById('signupEmailVerifiedBadge').classList.add('show');
+    refreshSignupStep2Next();
+    alert('이메일 인증이 완료되었습니다.');
+  }
+
+  document.getElementById('email').addEventListener('input',onSignupEmailInput);
+  document.getElementById('pw').addEventListener('input',refreshSignupPwError);
+  document.getElementById('pwConfirm').addEventListener('input',refreshSignupPwConfirmError);
+  document.getElementById('signupEmailSendBtn').addEventListener('click',sendSignupEmailCode);
+  document.getElementById('signupEmailResendBtn').addEventListener('click',sendSignupEmailCode);
+  document.getElementById('signupEmailVerifyBtn').addEventListener('click',confirmSignupEmailCode);
+  ;['terms1','terms2','terms3'].forEach(function(id){
+    document.getElementById(id).addEventListener('change',function(){
+      syncAgreeAllFromTerms();
+      refreshSignupSubmitEnabled();
+    });
+  });
+  ;['nameKr','nameEn','birthdate','phone'].forEach(function(id){
+    document.getElementById(id).addEventListener('input',refreshSignupStep1Next);
+    document.getElementById(id).addEventListener('change',refreshSignupStep1Next);
+  });
+  document.querySelectorAll('input[name="gender"]').forEach(function(r){
+    r.addEventListener('change',refreshSignupStep1Next);
+  });
+
+  function refreshSignupSubmitEnabled(){
+    var btn=document.getElementById('signupSubmitBtn');
+    if(!btn)return;
+    var ok=document.getElementById('terms1').checked&&document.getElementById('terms2').checked;
+    btn.disabled=!ok;
+    btn.setAttribute('aria-disabled',ok?'false':'true');
+  }
+  function isSignupStep1Complete(){
+    if(!document.getElementById('nameKr').value.trim())return false;
+    if(!document.getElementById('nameEn').value.trim())return false;
+    if(!document.getElementById('phone').value.trim())return false;
+    if(!document.getElementById('birthdate').value)return false;
+    if(!document.querySelector('input[name="gender"]:checked'))return false;
+    return true;
+  }
+  function refreshSignupStep1Next(){
+    var btn=document.getElementById('signupStep1NextBtn');
+    if(!btn)return;
+    var ok=isSignupStep1Complete();
+    btn.disabled=!ok;
+    btn.setAttribute('aria-disabled',ok?'false':'true');
+  }
+  function isSignupStep2Complete(){
+    var em=document.getElementById('email').value.trim();
+    if(!em||!isValidSignupEmail(em))return false;
+    if(!isSignupEmailVerified())return false;
+    var pw=document.getElementById('pw').value;
+    var pwC=document.getElementById('pwConfirm').value;
+    if(!isValidSignupPassword(pw))return false;
+    if(!pwC||pw!==pwC)return false;
+    return true;
+  }
+  function refreshSignupStep2Next(){
+    var btn=document.getElementById('signupStep2NextBtn');
+    if(!btn)return;
+    var ok=isSignupStep2Complete();
+    btn.disabled=!ok;
+    btn.setAttribute('aria-disabled',ok?'false':'true');
+  }
   function goStep(n){
     if(n>cur&&!validateStep(cur))return;
     document.getElementById('page'+cur).style.display='none';
     document.getElementById('page'+n).style.display='block';
     updateBar(n); cur=n;
+    if(n===1)refreshSignupStep1Next();
+    if(n===2)refreshSignupStep2Next();
+    if(n===3)refreshSignupSubmitEnabled();
   }
   function updateBar(n){
     for(let i=1;i<=3;i++){
@@ -302,17 +554,65 @@
       if(!document.getElementById('birthdate').value){alert('생년월일을 선택하세요.');ok=false;}
     }
     if(n===2){
-      const pw=document.getElementById('pw').value,pwC=document.getElementById('pwConfirm').value;
-      if(!document.getElementById('email').value){document.getElementById('email').classList.add('error');document.getElementById('err-email').classList.add('show');ok=false;}
-      if(pw.length<8){document.getElementById('pw').classList.add('error');document.getElementById('err-pw').classList.add('show');ok=false;}
-      if(pw!==pwC){document.getElementById('pwConfirm').classList.add('error');document.getElementById('err-pwConfirm').classList.add('show');ok=false;}
+      const emEl=document.getElementById('email');
+      const pwEl=document.getElementById('pw');
+      const pwCF=document.getElementById('pwConfirm');
+      const emV=emEl.value.trim();
+      const pw=pwEl.value;
+      const pwC=pwCF.value;
+      let emailOk=true;
+      if(!emV){
+        showSignupFieldErr(emEl,'err-email',true,'아이디(이메일 주소)를 입력해 주세요.');
+        emailOk=false;ok=false;
+      }else if(!isValidSignupEmail(emV)){
+        showSignupFieldErr(emEl,'err-email',true,'유효한 이메일 주소가 아닙니다.');
+        emailOk=false;ok=false;
+      }else{
+        showSignupFieldErr(emEl,'err-email',false);
+      }
+      if(emailOk&&!isSignupEmailVerified()){
+        alert('아이디(이메일) 인증을 완료해 주세요.\n인증코드 발송 후, 코드 입력 및 [인증 확인]을 진행해 주세요.');
+        ok=false;
+      }
+      if(!pw){
+        showSignupFieldErr(pwEl,'err-pw',true,'비밀번호를 입력해 주세요.');
+        ok=false;
+      }else if(!isValidSignupPassword(pw)){
+        showSignupFieldErr(pwEl,'err-pw',true,PW_COMPLEX_MSG);
+        ok=false;
+      }else{
+        showSignupFieldErr(pwEl,'err-pw',false);
+      }
+      if(!pwC){
+        showSignupFieldErr(pwCF,'err-pwConfirm',true,'비밀번호 확인을 입력해 주세요.');
+        ok=false;
+      }else if(pwC!==pw){
+        showSignupFieldErr(pwCF,'err-pwConfirm',true,'비밀번호가 일치하지 않습니다.');
+        ok=false;
+      }else{
+        showSignupFieldErr(pwCF,'err-pwConfirm',false);
+      }
     }
     return ok;
   }
-  function toggleAll(cb){document.querySelectorAll('.term-check').forEach(c=>c.checked=cb.checked);}
+  function syncAgreeAllFromTerms(){
+    var agreeAll=document.getElementById('agreeAll');
+    if(!agreeAll)return;
+    var list=document.querySelectorAll('.term-check');
+    var allOn=true;
+    for(var i=0;i<list.length;i++){
+      if(!list[i].checked){allOn=false;break;}
+    }
+    agreeAll.checked=allOn;
+  }
+  function toggleAll(cb){
+    document.querySelectorAll('.term-check').forEach(c=>c.checked=cb.checked);
+    refreshSignupSubmitEnabled();
+  }
   function submitForm(e){
     e.preventDefault();
     if(!document.getElementById('terms1').checked||!document.getElementById('terms2').checked){alert('필수 약관에 동의해주세요.');return;}
+    if(!validateStep(2)){goStep(2);return;}
     var g=document.querySelector('input[name="gender"]:checked');
     if(window.TMProfile){
       TMProfile.save({
@@ -323,13 +623,16 @@
         nationality:document.getElementById('nationality').value,
         phone:document.getElementById('phone').value.trim(),
         email:document.getElementById('email').value.trim(),
+        password:document.getElementById('pw').value,
         savedAt:new Date().toISOString()
       });
     }
-    try{localStorage.setItem('tm_session','1');}catch(x){}
-    alert('✅ 회원가입이 완료되었습니다!\n개인정보가 저장되어 재접수 시 입력이 간소화됩니다.\n자동으로 로그인됩니다.');
-    window.location.href='index.html';
+    var joinEmail=document.getElementById('email').value.trim();
+    window.location.href='signup-complete.html?email='+encodeURIComponent(joinEmail);
   }
+
+  refreshSignupStep1Next();
+  refreshSignupStep2Next();
 </script>
 </body>
 </html>

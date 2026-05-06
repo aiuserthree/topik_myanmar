@@ -910,6 +910,15 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
     border-top:1px solid #eef1f5;
     z-index:80;
   }
+
+  /* 시험접수 3단계: sticky 이전/다음 바 위로 응시급수 카드 하단이 가려지지 않도록 스크롤 여유 */
+  #regStep3{
+    padding-bottom:calc(88px + env(safe-area-inset-bottom));
+  }
+  /* 시험접수 4단계: 하단 안내 카드·내용이 sticky 이전/접수완료 바에 가리지 않도록 */
+  #regStep4{
+    padding-bottom:calc(88px + env(safe-area-inset-bottom));
+  }
   .form-actions .btn-prev,
   .form-actions .btn-next{
     flex:1;width:auto !important;
@@ -922,9 +931,17 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
 
   div[style*="text-align:right"] .btn-next{max-width:100% !important;width:100%;}
 
-  .btn-final{
-    width:100%;min-height:50px;
-    font-size:15px;border-radius:12px;
+  /* 4단계: 이전 + 접수완료 한 줄 (btn-final을 form-actions 안에 둠) */
+  .form-actions .btn-final{
+    flex:1 1 auto;
+    width:auto !important;
+    min-height:46px;
+    margin-top:0;
+    padding:12px 10px;
+    font-size:13px;
+    font-weight:700;
+    justify-content:center;
+    border-radius:12px;
   }
 
   .photo-upload{
@@ -1013,12 +1030,12 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
   .board-head,
   .board-row{
     display:grid !important;
-    grid-template-columns:44px minmax(112px, 1fr) 94px 56px;
+    grid-template-columns:44px minmax(112px, 1fr) 94px;
     column-gap:14px;
     align-items:center;
     box-sizing:border-box;
     width:100%;
-    min-width:548px;
+    min-width:480px;
   }
   .board-head > div,
   .board-row > div{
@@ -1045,16 +1062,12 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
     cursor:pointer;
   }
   .board-row:last-child{border-bottom:none;}
-  .board-row .col-num,
-  .board-row .col-view{
+  .board-row .col-num{
     justify-content:center;
     text-align:center;
   }
   .board-row .col-date{
     justify-content:flex-start;
-    white-space:nowrap;
-  }
-  .board-row .col-view{
     white-space:nowrap;
   }
   .board-row .col-title{
@@ -1066,9 +1079,6 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
   .board-head > div:nth-child(3),
   .board-row .col-date{
     padding-right:6px !important;
-  }
-  .board-head > div:last-child,
-  .board-row .col-view{
     padding-left:6px !important;
   }
   .pagination{flex-wrap:wrap;gap:6px;justify-content:center;}
@@ -1148,7 +1158,10 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
   }
   .applicant-row{flex-direction:column;}
   .photo-box{margin:0 auto;}
-  .exam-grid{grid-template-columns:1fr !important;}
+  /* 수험표 시험정보 카드: 모바일 2열 */
+  .admit-wrap .exam-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
   .admit-card{border-radius:12px;}
   .field-row{grid-template-columns:1fr !important;}
 }
