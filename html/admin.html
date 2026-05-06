@@ -116,9 +116,10 @@
 
     /* Table Footer */
     .table-footer{padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--gray-text);}
-    .pagination{display:flex;gap:4px;}
-    .p-btn{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;border:1px solid var(--gray-light);background:white;color:var(--navy);transition:all .2s;}
+    .pagination{display:flex;gap:4px;flex-wrap:wrap;align-items:center;justify-content:flex-end;max-width:100%;}
+    .p-btn{width:30px;min-width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;border:1px solid var(--gray-light);background:white;color:var(--navy);transition:all .2s;}
     .p-btn.active{background:var(--navy);color:white;border-color:var(--navy);}
+    .p-btn:disabled,.p-btn.p-btn-disabled{opacity:.45;cursor:not-allowed;}
 
     /* Photo Cards */
     .photo-review-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;padding:20px;}
@@ -130,6 +131,12 @@
     .photo-review-body .pmeta{font-size:12px;color:var(--gray-text);margin-bottom:12px;display:flex;align-items:center;gap:4px;}
     .photo-review-btns{display:flex;gap:8px;}
     .photo-review-btns button{flex:1;padding:8px 0;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .2s;}
+    .photo-review-save{margin-top:8px;}
+    .photo-review-save button{width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--gray-light);background:#fff;color:var(--navy);font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .2s,border-color .2s;}
+    .photo-review-save button:hover{background:#f8fafc;border-color:var(--navy);}
+    .reject-reason-textarea{width:100%;min-height:100px;padding:10px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;}
+    .reject-reason-textarea:focus{outline:none;border-color:var(--navy);}
+    .reject-reason-hint{font-size:12px;color:var(--gray-text);margin:0 0 8px;line-height:1.5;}
     .pr-approve{background:#d1fae5;color:#065f46;}
     .pr-approve:hover{background:#a7f3d0;}
     .pr-reject{background:#fee2e2;color:#b91c1c;}
@@ -203,6 +210,7 @@
     .modal-dl dd{font-weight:600;color:#1a1a2e;margin:0;}
     .modal-foot{padding:14px 20px;border-top:1px solid var(--gray-light);display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;background:#fafbfc;border-radius:0 0 14px 14px;}
     .modal-overlay.confirm-layer{z-index:450;}
+    .modal-overlay.reject-reason-layer{z-index:455;}
     .modal-overlay.taxonomy-modal-layer{z-index:430;}
     .modal-overlay.content-form-layer{z-index:435;}
     .modal-dialog--taxonomy{max-width:min(560px,94vw);}
@@ -324,7 +332,7 @@
     </button>
     <button type="button" class="sb-link" onclick="showPanel('photos',this)">
       <span class="sb-icon"><svg class="icon" width="16" height="16"><use href="#ic-image"/></svg></span>사진 심사
-      <span class="sb-badge-count alert">3</span>
+      <span class="sb-badge-count alert" id="sbPhotoBadge">23</span>
     </button>
     <div class="sb-section">시험 관리</div>
     <button type="button" class="sb-link" onclick="showPanel('rounds',this)">
@@ -386,7 +394,7 @@
             <div class="s-label">검토 대기</div>
             <div class="stat-icon red"><svg class="icon" width="20" height="20" color="#CD2E3A"><use href="#ic-image"/></svg></div>
           </div>
-          <div class="s-num">8</div>
+          <div class="s-num" id="dashPhotoPending">23</div>
           <div class="s-sub">사진 미심사</div>
         </div>
         <div class="stat-card green">
@@ -394,7 +402,7 @@
             <div class="s-label">승인 완료</div>
             <div class="stat-icon green"><svg class="icon" width="20" height="20" color="#10b981"><use href="#ic-check"/></svg></div>
           </div>
-          <div class="s-num">127</div>
+          <div class="s-num">119</div>
           <div class="s-sub">수험표 발급 가능</div>
         </div>
         <div class="stat-card gold">
@@ -473,7 +481,7 @@
             <svg class="icon" width="10" height="10"><use href="#ic-image"/></svg>검토중 8
           </button>
           <button class="filter-chip" onclick="filterStatus(this,'approved')">
-            <svg class="icon" width="10" height="10"><use href="#ic-check"/></svg>승인 127
+            <svg class="icon" width="10" height="10"><use href="#ic-check"/></svg>승인 119
           </button>
           <button class="filter-chip" onclick="filterStatus(this,'rejected')">
             <svg class="icon" width="10" height="10"><use href="#ic-x"/></svg>반려 3
@@ -500,74 +508,12 @@
               <th>상태</th>
               <th>관리</th>
             </tr></thead>
-            <tbody id="applicantBody">
-              <tr data-status="pending" data-paid="0">
-                <td>142</td>
-                <td><div class="photo-thumb"><svg class="icon" width="18" height="18" color="#aab8cc"><use href="#ic-user"/></svg></div></td>
-                <td>이지민</td><td>LEE JIMIN</td><td>TOPIK I</td><td>04.02</td>
-                <td>미수납</td><td>—</td>
-                <td><span class="sb sb-pending"><svg class="icon" width="10" height="10"><use href="#ic-ticket"/></svg>접수완료</span></td>
-                <td><div class="action-btns">
-                  <button type="button" class="ab-approve" style="background:#fef3c7;color:#92400e;" onclick="markOfflinePaid(this)"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>오프라인 수납</button>
-                  <button type="button" class="ab-approve" onclick="approveRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>승인</button>
-                  <button type="button" class="ab-reject" onclick="rejectRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-x"/></svg>반려</button>
-                  <button type="button" class="ab-view" onclick="viewApplicant(this)"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button>
-                </div></td>
-              </tr>
-              <tr data-status="review" data-paid="1">
-                <td>141</td>
-                <td><div class="photo-thumb"><svg class="icon" width="18" height="18" color="#aab8cc"><use href="#ic-user"/></svg></div></td>
-                <td>아웅산우</td><td>AUNG SAN OO</td><td>TOPIK II</td><td>04.02</td>
-                <td>수납완료</td><td>—</td>
-                <td><span class="sb sb-review"><svg class="icon" width="10" height="10"><use href="#ic-image"/></svg>검토중</span></td>
-                <td><div class="action-btns">
-                  <button type="button" class="ab-approve" onclick="approveRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>승인</button>
-                  <button type="button" class="ab-reject" onclick="rejectRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-x"/></svg>반려</button>
-                  <button type="button" class="ab-view" onclick="viewApplicant(this)"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button>
-                </div></td>
-              </tr>
-              <tr data-status="approved" data-paid="1">
-                <td>140</td>
-                <td><div class="photo-thumb" style="color:#10b981;"><svg class="icon" width="18" height="18"><use href="#ic-check"/></svg></div></td>
-                <td>마띠다</td><td>MA THIDA</td><td>TOPIK I</td><td>04.01</td>
-                <td>수납완료</td><td>MM-98-0140</td>
-                <td><span class="sb sb-approved"><svg class="icon" width="10" height="10"><use href="#ic-check"/></svg>승인완료</span></td>
-                <td><div class="action-btns">
-                  <button type="button" class="ab-view" onclick="viewApplicant(this)"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button>
-                </div></td>
-              </tr>
-              <tr data-status="rejected" data-paid="1">
-                <td>138</td>
-                <td><div class="photo-thumb" style="color:var(--red);"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></div></td>
-                <td>윈나잉</td><td>WIN NAING</td><td>TOPIK I</td><td>04.01</td>
-                <td>수납완료</td><td>—</td>
-                <td><span class="sb sb-rejected"><svg class="icon" width="10" height="10"><use href="#ic-x"/></svg>반려</span></td>
-                <td><div class="action-btns">
-                  <button type="button" class="ab-approve" onclick="approveRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>재승인</button>
-                  <button type="button" class="ab-view" onclick="viewApplicant(this)"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button>
-                </div></td>
-              </tr>
-              <tr data-status="cancelled" data-paid="0">
-                <td>137</td>
-                <td><div class="photo-thumb"><svg class="icon" width="18" height="18" color="#aab8cc"><use href="#ic-x"/></svg></div></td>
-                <td>조민</td><td>CHO MIN</td><td>TOPIK II</td><td>03.31</td>
-                <td>—</td><td>—</td>
-                <td><span class="sb sb-cancelled">취소</span></td>
-                <td><div class="action-btns">
-                  <button type="button" class="ab-view" onclick="viewApplicant(this)"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button>
-                </div></td>
-              </tr>
-            </tbody>
+            <tbody id="applicantBody"></tbody>
           </table>
         </div>
         <div class="table-footer">
-          <span>총 142명 | 현재 1~10</span>
-          <div class="pagination">
-            <div class="p-btn active">1</div>
-            <div class="p-btn">2</div>
-            <div class="p-btn">3</div>
-            <div class="p-btn"><svg class="icon" width="12" height="12"><use href="#ic-arrow-r"/></svg></div>
-          </div>
+          <span id="applicantPagingSummary">총 142명</span>
+          <div class="pagination" id="applicantPagination" aria-label="접수자 목록 페이지"></div>
         </div>
       </div>
     </div>
@@ -576,60 +522,12 @@
     <div id="panel-photos" style="display:none;">
       <div class="panel">
         <div class="panel-header">
-          <h2><svg class="icon" width="16" height="16" color="var(--red)"><use href="#ic-image"/></svg>사진 심사 (검토 대기 3건)</h2>
+          <h2 id="photoReviewHeading"><svg class="icon" width="16" height="16" color="var(--red)"><use href="#ic-image"/></svg>사진 심사 (검토 대기 23건)</h2>
         </div>
-        <div class="photo-review-grid">
-          <div class="photo-review-card">
-            <div class="photo-review-img">
-              <svg class="icon" width="52" height="52" color="#aab8cc"><use href="#ic-user"/></svg>
-            </div>
-            <div class="photo-review-body">
-              <div class="pname">이지민 (LEE JIMIN)</div>
-              <div class="pmeta"><svg class="icon" width="11" height="11"><use href="#ic-ticket"/></svg>TM-2025-98-0142 · TOPIK I</div>
-              <div class="photo-review-btns">
-                <button type="button" class="pr-approve" onclick="photoReviewApprove(this)">
-                  <svg class="icon" width="12" height="12"><use href="#ic-check"/></svg>승인
-                </button>
-                <button type="button" class="pr-reject" onclick="photoReviewReject(this)">
-                  <svg class="icon" width="12" height="12"><use href="#ic-x"/></svg>반려
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="photo-review-card">
-            <div class="photo-review-img">
-              <svg class="icon" width="52" height="52" color="#aab8cc"><use href="#ic-user"/></svg>
-            </div>
-            <div class="photo-review-body">
-              <div class="pname">아웅산우 (AUNG SAN OO)</div>
-              <div class="pmeta"><svg class="icon" width="11" height="11"><use href="#ic-ticket"/></svg>TM-2025-98-0141 · TOPIK II</div>
-              <div class="photo-review-btns">
-                <button type="button" class="pr-approve" onclick="photoReviewApprove(this)">
-                  <svg class="icon" width="12" height="12"><use href="#ic-check"/></svg>승인
-                </button>
-                <button type="button" class="pr-reject" onclick="photoReviewReject(this)">
-                  <svg class="icon" width="12" height="12"><use href="#ic-x"/></svg>반려
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="photo-review-card">
-            <div class="photo-review-img">
-              <svg class="icon" width="52" height="52" color="#aab8cc"><use href="#ic-user"/></svg>
-            </div>
-            <div class="photo-review-body">
-              <div class="pname">코진린 (KO ZIN LIN)</div>
-              <div class="pmeta"><svg class="icon" width="11" height="11"><use href="#ic-ticket"/></svg>TM-2025-98-0140 · TOPIK I</div>
-              <div class="photo-review-btns">
-                <button type="button" class="pr-approve" onclick="photoReviewApprove(this)">
-                  <svg class="icon" width="12" height="12"><use href="#ic-check"/></svg>승인
-                </button>
-                <button type="button" class="pr-reject" onclick="photoReviewReject(this)">
-                  <svg class="icon" width="12" height="12"><use href="#ic-x"/></svg>반려
-                </button>
-              </div>
-            </div>
-          </div>
+        <div id="photoReviewGrid" class="photo-review-grid" aria-live="polite"></div>
+        <div class="table-footer">
+          <span id="photoReviewPagingSummary">총 23건</span>
+          <div class="pagination" id="photoReviewPagination" aria-label="사진 심사 페이지"></div>
         </div>
       </div>
     </div>
@@ -918,12 +816,85 @@
   </div>
 </div>
 
+<div id="rejectReasonModal" class="modal-overlay reject-reason-layer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="rejectReasonModalTitle">
+  <div class="modal-backdrop" onclick="closeRejectReasonModal()" aria-hidden="true"></div>
+  <div class="modal-dialog modal-dialog--content-form">
+    <div class="modal-head">
+      <h3 id="rejectReasonModalTitle">반려 사유</h3>
+      <button type="button" class="modal-close" onclick="closeRejectReasonModal()" aria-label="닫기"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p class="reject-reason-hint" id="rejectReasonContextHint">응시자에게 안내됩니다. 구체적으로 입력해 주세요.</p>
+      <textarea id="rejectReasonInput" class="reject-reason-textarea" placeholder="예) 증명사진 배경이 기준에 맞지 않음, 상반신이 잘림 등" title="반려 사유"></textarea>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-gray" onclick="closeRejectReasonModal()">취소</button>
+      <button type="button" class="btn btn-red" onclick="submitRejectReason()">반려 처리</button>
+    </div>
+  </div>
+</div>
+
 <script>
   function closeConfirmModal(){
     var modal=document.getElementById('confirmModal');
     if(!modal)return;
     modal.classList.remove('is-open');
     modal.setAttribute('aria-hidden','true');
+  }
+  var rejectReasonApplicantBtn=null;
+  var rejectReasonPhotoCard=null;
+  function closeRejectReasonModal(){
+    var m=document.getElementById('rejectReasonModal');
+    if(!m)return;
+    m.classList.remove('is-open');
+    m.setAttribute('aria-hidden','true');
+    rejectReasonApplicantBtn=null;
+    rejectReasonPhotoCard=null;
+    var ta=document.getElementById('rejectReasonInput');
+    if(ta)ta.value='';
+    var mh=document.getElementById('rejectReasonModalTitle');
+    if(mh)mh.textContent='반려 사유';
+  }
+  function openRejectReasonModal(opts){
+    opts=opts||{};
+    rejectReasonApplicantBtn=opts.applicantBtn||null;
+    rejectReasonPhotoCard=opts.photoCard||null;
+    var mh=document.getElementById('rejectReasonModalTitle');
+    if(mh)mh.textContent=rejectReasonPhotoCard?'증명사진 반려 사유':'반려 사유';
+    var hint=document.getElementById('rejectReasonContextHint');
+    if(hint){
+      hint.textContent=rejectReasonPhotoCard
+        ? '증명사진이 기준에 맞지 않는 이유를 구체적으로 작성해 주세요. 응시자에게 재촬영·재제출을 안내합니다.'
+        : '응시자에게 안내됩니다. 접수 반려 사유를 구체적으로 입력해 주세요.';
+    }
+    var m=document.getElementById('rejectReasonModal');
+    if(!m)return;
+    var ta=document.getElementById('rejectReasonInput');
+    if(ta){
+      ta.value='';
+      ta.placeholder=rejectReasonPhotoCard
+        ? '예) 정면이 아님, 배경 기준 미준수, 안경 반사, 상반신 잘림 등'
+        : '예) 증명사진 규격 미준수, 접수 서류 누락 등';
+    }
+    m.classList.add('is-open');
+    m.setAttribute('aria-hidden','false');
+    setTimeout(function(){ if(ta)ta.focus(); },50);
+  }
+  function applicantSafeDecodeReject(s){
+    try{ return decodeURIComponent(s||''); }catch(err){ return s||''; }
+  }
+  function submitRejectReason(){
+    var ta=document.getElementById('rejectReasonInput');
+    var raw=(ta&&ta.value||'').trim();
+    if(!raw){
+      alert('반려 사유를 입력해 주세요.');
+      return;
+    }
+    var ab=rejectReasonApplicantBtn;
+    var pc=rejectReasonPhotoCard;
+    closeRejectReasonModal();
+    if(ab)rejectRowImpl(ab,raw);
+    else if(pc)photoReviewRejectImpl(pc,raw);
   }
   function openConfirmModal(opts){
     opts=opts||{};
@@ -1517,6 +1488,186 @@
       }
     });
   }
+  function photoReviewMetaNum(metaLine){
+    var m=String(metaLine||'').match(/TM-2025-98-(\d+)/);
+    return m?m[1]:'0000';
+  }
+  function photoReviewCardMarkup(displayName,metaLine){
+    var numId=photoReviewMetaNum(metaLine);
+    return '<div class="photo-review-card" data-photo-num="'+escapeHtml(numId)+'">'+
+      '<div class="photo-review-img"><svg class="icon" width="52" height="52" color="#aab8cc"><use href="#ic-user"/></svg></div>'+
+      '<div class="photo-review-body">'+
+      '<div class="pname">'+escapeHtml(displayName)+'</div>'+
+      '<div class="pmeta"><svg class="icon" width="11" height="11"><use href="#ic-ticket"/></svg>'+escapeHtml(metaLine)+'</div>'+
+      '<div class="photo-review-btns">'+
+      '<button type="button" class="pr-approve" onclick="photoReviewApprove(this)"><svg class="icon" width="12" height="12"><use href="#ic-check"/></svg>승인</button>'+
+      '<button type="button" class="pr-reject" onclick="photoReviewReject(this)"><svg class="icon" width="12" height="12"><use href="#ic-x"/></svg>반려</button>'+
+      '</div>'+
+      '<div class="photo-review-save">'+
+      '<button type="button" onclick="photoReviewDownloadPhoto(this)"><svg class="icon" width="13" height="13"><use href="#ic-download"/></svg>사진 저장(PC)</button>'+
+      '</div></div></div>';
+  }
+  function photoReviewCanvasFillLines(ctx,text,x,y,maxW,lineH,maxLines){
+    text=String(text||'').replace(/\s+/g,' ').trim();
+    var line='';
+    var lines=0;
+    for(var i=0;i<text.length;i++){
+      var test=line+text[i];
+      if(ctx.measureText(test).width>maxW&&line){
+        ctx.fillText(line,x,y);
+        y+=lineH;
+        lines++;
+        if(lines>=maxLines){ return; }
+        line=text[i];
+      }else{
+        line=test;
+      }
+    }
+    if(line&&lines<maxLines){ ctx.fillText(line,x,y); }
+  }
+  function photoReviewDownloadPhoto(btn){
+    var card=btn.closest('.photo-review-card');
+    if(!card)return;
+    var pnameEl=card.querySelector('.pname');
+    var pmetaEl=card.querySelector('.pmeta');
+    var pname=(pnameEl&&pnameEl.textContent)?pnameEl.textContent.trim():'Applicant';
+    var pmetaRaw=(pmetaEl&&pmetaEl.textContent)?pmetaEl.textContent.replace(/\s+/g,' ').trim():'';
+    var num=card.getAttribute('data-photo-num')||'0000';
+    var fileName='TOPIK_Myanmar_photo_'+num+'.png';
+    var w=480;
+    var h=620;
+    var canvas=document.createElement('canvas');
+    canvas.width=w;
+    canvas.height=h;
+    var ctx=canvas.getContext('2d');
+    if(!ctx){
+      alert('이 브라우저에서는 이미지를 만들 수 없습니다.');
+      return;
+    }
+    var grd=ctx.createLinearGradient(0,0,w,h);
+    grd.addColorStop(0,'#f0f4ff');
+    grd.addColorStop(1,'#e8ecf5');
+    ctx.fillStyle=grd;
+    ctx.fillRect(0,0,w,h);
+    ctx.fillStyle='#003478';
+    ctx.font='700 18px "Noto Sans KR",sans-serif';
+    ctx.fillText('TOPIK Myanmar — 증명사진(데모 카드)',24,42);
+    ctx.fillStyle='#1a1a2e';
+    ctx.font='600 15px "Noto Sans KR",sans-serif';
+    photoReviewCanvasFillLines(ctx,pname,24,78,w-48,22,3);
+    ctx.fillStyle='#64748b';
+    ctx.font='13px "Noto Sans KR",sans-serif';
+    photoReviewCanvasFillLines(ctx,pmetaRaw,24,154,w-48,18,4);
+    ctx.strokeStyle='#cbd5e1';
+    ctx.lineWidth=2;
+    ctx.strokeRect(24,200,w-48,h-224);
+    ctx.fillStyle='#94a3b8';
+    ctx.font='13px "Noto Sans KR",sans-serif';
+    ctx.fillText('실제 서비스에서는 업로드된 증명사진 파일이 표시되며, 같은 파일이 저장됩니다.',36,h/2);
+    canvas.toBlob(function(blob){
+      if(!blob){
+        alert('PNG 생성에 실패했습니다.');
+        return;
+      }
+      var a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download=fileName;
+      a.rel='noopener';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){
+        URL.revokeObjectURL(a.href);
+        a.remove();
+      },1500);
+    },'image/png');
+  }
+  var PHOTO_REVIEW_PAGE_SIZE=10;
+  var photoReviewCurrentPage=1;
+  function photoReviewSyncCounts(){
+    var grid=document.getElementById('photoReviewGrid');
+    var n=grid?grid.querySelectorAll('.photo-review-card').length:0;
+    var h=document.getElementById('photoReviewHeading');
+    if(h){
+      h.innerHTML='<svg class="icon" width="16" height="16" color="var(--red)"><use href="#ic-image"/></svg>사진 심사 (검토 대기 '+n+'건)';
+    }
+    var sb=document.getElementById('sbPhotoBadge');
+    if(sb) sb.textContent=String(n);
+    var dash=document.getElementById('dashPhotoPending');
+    if(dash) dash.textContent=String(n);
+  }
+  function photoReviewRenderPaginationBar(total){
+    var wrap=document.getElementById('photoReviewPagination');
+    if(!wrap)return;
+    var totalPages=Math.max(1,Math.ceil(total/PHOTO_REVIEW_PAGE_SIZE));
+    if(totalPages<=1){ wrap.innerHTML=''; return; }
+    var btns=[];
+    var prevDis=photoReviewCurrentPage<=1;
+    var nextDis=photoReviewCurrentPage>=totalPages;
+    btns.push('<button type="button" class="p-btn'+(!prevDis?'':' p-btn-disabled')+'" data-photo-page="'+(photoReviewCurrentPage-1)+'" '+(prevDis?'disabled':'')+' aria-label="이전">&lt;</button>');
+    var p;
+    for(p=1;p<=totalPages;p++){
+      var cur=p===photoReviewCurrentPage;
+      btns.push('<button type="button" class="p-btn '+(cur?'active':'')+'" data-photo-page="'+p+'"'+(cur?' aria-current="page"':'')+(cur?' disabled':'')+'">'+p+'</button>');
+    }
+    btns.push('<button type="button" class="p-btn'+(!nextDis?'':' p-btn-disabled')+'" data-photo-page="'+(photoReviewCurrentPage+1)+'" '+(nextDis?'disabled':'')+' aria-label="다음">&gt;</button>');
+    wrap.innerHTML=btns.join('');
+  }
+  function photoReviewApplyPaging(options){
+    options=options||{};
+    var grid=document.getElementById('photoReviewGrid');
+    if(!grid)return;
+    var cards=Array.from(grid.querySelectorAll('.photo-review-card'));
+    var total=cards.length;
+    if(options.resetPage) photoReviewCurrentPage=1;
+    var totalPages=Math.max(1,Math.ceil(total/PHOTO_REVIEW_PAGE_SIZE)||1);
+    if(photoReviewCurrentPage>totalPages) photoReviewCurrentPage=totalPages;
+    if(photoReviewCurrentPage<1) photoReviewCurrentPage=1;
+    var startIdx=(photoReviewCurrentPage-1)*PHOTO_REVIEW_PAGE_SIZE;
+    cards.forEach(function(card,i){
+      card.style.display=(i>=startIdx&&i<startIdx+PHOTO_REVIEW_PAGE_SIZE)?'':'none';
+    });
+    var summary=document.getElementById('photoReviewPagingSummary');
+    if(summary){
+      if(total===0){ summary.textContent='검토 대기 0건'; }
+      else{
+        var from=startIdx+1;
+        var to=Math.min(startIdx+PHOTO_REVIEW_PAGE_SIZE,total);
+        summary.textContent='총 '+total+'건 · 현재 '+from+'–'+to;
+      }
+    }
+    photoReviewRenderPaginationBar(total);
+  }
+  function photoReviewBindPaginationOnce(){
+    var wrap=document.getElementById('photoReviewPagination');
+    if(!wrap||wrap.dataset.bound)return;
+    wrap.dataset.bound='1';
+    wrap.addEventListener('click',function(e){
+      var btn=e.target&&e.target.closest('button[data-photo-page]');
+      if(!btn||btn.disabled)return;
+      var p=parseInt(btn.getAttribute('data-photo-page'),10);
+      if(!isFinite(p))return;
+      photoReviewCurrentPage=p;
+      photoReviewApplyPaging({resetPage:false});
+    });
+  }
+  function initPhotoReviewDemo(){
+    var grid=document.getElementById('photoReviewGrid');
+    if(!grid||grid.dataset.initialized)return;
+    grid.dataset.initialized='1';
+    var chunks=[];
+    chunks.push(photoReviewCardMarkup('이지민 (LEE JIMIN)','TM-2025-98-0142 · TOPIK I'));
+    chunks.push(photoReviewCardMarkup('아웅산우 (AUNG SAN OO)','TM-2025-98-0141 · TOPIK II'));
+    chunks.push(photoReviewCardMarkup('코진린 (KO ZIN LIN)','TM-2025-98-0140 · TOPIK I'));
+    var seq;
+    for(seq=139;seq>=120;seq--){
+      var lvl=seq%2===0?'TOPIK I':'TOPIK II';
+      chunks.push(photoReviewCardMarkup('데모응시자 '+seq+' (Applicant '+seq+')','TM-2025-98-'+String(seq).padStart(4,'0')+' · '+lvl));
+    }
+    grid.innerHTML=chunks.join('');
+    photoReviewBindPaginationOnce();
+    photoReviewSyncCounts();
+    photoReviewApplyPaging({resetPage:true});
+  }
   function photoReviewApprove(btn){
     var card=btn.closest('.photo-review-card');
     var nm=(card&&card.querySelector('.pname')&&card.querySelector('.pname').textContent)||'';
@@ -1524,19 +1675,24 @@
       title:'사진 심사 승인',
       message:(nm.trim()||'해당')+' 응시자의 증명사진을 승인합니다.',
       confirmLabel:'승인',
-      onConfirm:function(){ alert('승인 처리되었습니다.'); }
+      onConfirm:function(){
+        alert('승인 처리되었습니다.');
+        if(card&&card.parentNode){ card.remove(); }
+        photoReviewSyncCounts();
+        photoReviewApplyPaging({resetPage:false});
+      }
     });
   }
   function photoReviewReject(btn){
-    var card=btn.closest('.photo-review-card');
-    var nm=(card&&card.querySelector('.pname')&&card.querySelector('.pname').textContent)||'';
-    openConfirmModal({
-      title:'사진 심사 반려',
-      message:(nm.trim()||'해당')+' 응시자의 증명사진을 반려합니다.',
-      confirmLabel:'반려',
-      danger:true,
-      onConfirm:function(){ alert('반려 처리되었습니다.'); }
-    });
+    var card=btn&&btn.closest('.photo-review-card');
+    if(card)openRejectReasonModal({photoCard:card});
+  }
+  function photoReviewRejectImpl(card, reason){
+    var nm=(card&&card.querySelector('.pname')&&card.querySelector('.pname').textContent)?card.querySelector('.pname').textContent.trim():'해당 응시자';
+    alert('증명사진이 반려 처리되었습니다.\n\n대상: '+nm+'\n반려 사유: '+reason);
+    if(card&&card.parentNode)card.remove();
+    photoReviewSyncCounts();
+    photoReviewApplyPaging({resetPage:false});
   }
   function toggleAdminSidebar(){
     var s=document.getElementById('sidebar');
@@ -1582,6 +1738,11 @@
       closeConfirmModal();
       return;
     }
+    var rrm=document.getElementById('rejectReasonModal');
+    if(rrm&&rrm.classList.contains('is-open')){
+      closeRejectReasonModal();
+      return;
+    }
     if(closeNoticeCategoryModal())return;
     if(closeFaqCategoryModal())return;
     if(closeNoticeFormModal())return;
@@ -1594,6 +1755,209 @@
     var d=document.createElement('div');
     d.textContent=String(str);
     return d.innerHTML;
+  }
+  var APPLICANTS_PAGE_SIZE=10;
+  var applicantCurrentPage=1;
+  /** @type {'all'|'paid0'|'pending'|'review'|'approved'|'rejected'|'cancelled'} */
+  var applicantFilterKey='all';
+
+  function applicantShuffleStatuses(pool){
+    var s=982451653;
+    for(var i=pool.length-1;i>0;i--){
+      s=((s*1103515245+12345)>>>0);
+      var j=s%(i+1);
+      var t=pool[i]; pool[i]=pool[j]; pool[j]=t;
+    }
+    return pool;
+  }
+  function applicantSubtractFromPool(pool, want){
+    for(var i=pool.length-1;i>=0;i--){
+      if(pool[i]===want){ pool.splice(i,1); return; }
+    }
+  }
+  function applicantStatusPoolSansFixed(){
+    var pool=[];
+    var k;
+    for(k=0;k<119;k++)pool.push('approved');
+    for(k=0;k<8;k++)pool.push('review');
+    for(k=0;k<7;k++)pool.push('pending');
+    for(k=0;k<3;k++)pool.push('rejected');
+    for(k=0;k<5;k++)pool.push('cancelled');
+    applicantShuffleStatuses(pool);
+    var fixSts=['pending','review','approved','rejected','cancelled'];
+    for(var f=0;f<fixSts.length;f++) applicantSubtractFromPool(pool, fixSts[f]);
+    return pool;
+  }
+  function applicantPhotoTd(status){
+    if(status==='approved')return '<td><div class="photo-thumb" style="color:#10b981;"><svg class="icon" width="18" height="18"><use href="#ic-check"/></svg></div></td>';
+    if(status==='rejected')return '<td><div class="photo-thumb" style="color:var(--red);"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></div></td>';
+    return '<td><div class="photo-thumb"><svg class="icon" width="18" height="18" color="#aab8cc"><use href="#ic-user"/></svg></div></td>';
+  }
+  function applicantStatusBadgeTd(status){
+    if(status==='pending')return '<td><span class="sb sb-pending"><svg class="icon" width="10" height="10"><use href="#ic-ticket"/></svg>접수완료</span></td>';
+    if(status==='review')return '<td><span class="sb sb-review"><svg class="icon" width="10" height="10"><use href="#ic-image"/></svg>검토중</span></td>';
+    if(status==='approved')return '<td><span class="sb sb-approved"><svg class="icon" width="10" height="10"><use href="#ic-check"/></svg>승인완료</span></td>';
+    if(status==='rejected')return '<td><span class="sb sb-rejected"><svg class="icon" width="10" height="10"><use href="#ic-x"/></svg>반려</span></td>';
+    return '<td><span class="sb sb-cancelled">취소</span></td>';
+  }
+  function applicantActionsTd(status,isPendingUnpaid){
+    if(isPendingUnpaid)return '<td><div class="action-btns">'+
+      '<button type="button" class="ab-approve" style="background:#fef3c7;color:#92400e;" onclick="markOfflinePaid(this)"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>오프라인 수납</button>'+
+      '<button type="button" class="ab-approve" onclick="approveRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>승인</button>'+
+      '<button type="button" class="ab-reject" onclick="rejectRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-x"/></svg>반려</button>'+
+      '<button type="button" class="ab-view" onclick="viewApplicant(this)"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button></div></td>';
+    if(status==='review')return '<td><div class="action-btns">'+
+      '<button type="button" class="ab-approve" onclick="approveRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>승인</button>'+
+      '<button type="button" class="ab-reject" onclick="rejectRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-x"/></svg>반려</button>'+
+      '<button type="button" class="ab-view" onclick="viewApplicant(this)"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button></div></td>';
+    if(status==='approved')return '<td><div class="action-btns">'+
+      '<button type="button" class="ab-view" onclick="viewApplicant(this)"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button></div></td>';
+    if(status==='rejected')return '<td><div class="action-btns">'+
+      '<button type="button" class="ab-approve" onclick="approveRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>재승인</button>'+
+      '<button type="button" class="ab-view" onclick="viewApplicant(this)"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button></div></td>';
+    return '<td><div class="action-btns">'+
+      '<button type="button" class="ab-view" onclick="viewApplicant(this)"><svg class="icon" width="11" height="11"><use href="#ic-eye"/></svg>보기</button></div></td>';
+  }
+  function applicantPaidExamCells(status,num,paidOverride){
+    var paid,paidLabel,exam;
+    if(paidOverride){
+      paid=paidOverride.paid;
+      paidLabel=paidOverride.label;
+      exam=paidOverride.exam;
+    }else if(status==='pending'){
+      paid='0'; paidLabel='미수납'; exam='—';
+    }else if(status==='cancelled'){
+      paid='0'; paidLabel='—'; exam='—';
+    }else{
+      paid='1'; paidLabel='수납완료';
+      if(status==='approved'&&num%4!==0) exam='MM-98-'+String(num).padStart(4,'0');
+      else exam='—';
+    }
+    return {paid:paid,paidLabel:paidLabel,exam:exam};
+  }
+  function applicantBuildRowHtml(num,status,fix){
+    var st=status;
+    var pe=applicantPaidExamCells(st,num,fix&&fix.paid?fix.paid:null);
+    var isPU=fix&&fix.pendingUnpaid;
+    var rrAttr='';
+    if(fix&&fix.rejectReason){
+      rrAttr=' data-reject-reason="'+encodeURIComponent(fix.rejectReason)+'"';
+    }
+    var html='<tr data-status="'+st+'" data-paid="'+pe.paid+'"'+rrAttr+'>'+
+      '<td>'+num+'</td>'+
+      applicantPhotoTd(st)+
+      '<td>'+escapeHtml(fix?fix.ko:('데모응시자 '+num))+'</td>'+
+      '<td>'+escapeHtml(fix?fix.en:('Applicant '+num))+'</td>'+
+      '<td>'+(fix&&fix.level?fix.level:(num%2===0?'TOPIK I':'TOPIK II'))+'</td>'+
+      '<td>'+(fix&&fix.day?fix.day:(('04.')+String((num%28)+1).padStart(2,'0')))+'</td>'+
+      '<td>'+escapeHtml(pe.paidLabel)+'</td>'+
+      '<td>'+escapeHtml(pe.exam)+'</td>'+
+      applicantStatusBadgeTd(st)+
+      applicantActionsTd(st,isPU)+'</tr>';
+    return html;
+  }
+  function initApplicantDemoRows(){
+    var tb=document.getElementById('applicantBody');
+    if(!tb||tb.dataset.initialized)return;
+    tb.dataset.initialized='1';
+    var pool=applicantStatusPoolSansFixed();
+    var fix={
+      142:{ko:'이지민',en:'LEE JIMIN',level:'TOPIK I',day:'04.02',pendingUnpaid:true,paid:{paid:'0',label:'미수납',exam:'—'}},
+      141:{ko:'아웅산우',en:'AUNG SAN OO',level:'TOPIK II',day:'04.02'},
+      140:{ko:'마띠다',en:'MA THIDA',level:'TOPIK I',day:'04.01',paid:{paid:'1',label:'수납완료',exam:'MM-98-0140'}},
+      138:{ko:'윈나잉',en:'WIN NAING',level:'TOPIK I',day:'04.01',rejectReason:'증명사진 규격 미준수(배경·밝기 기준). 재촬영 후 재제출 바랍니다.'},
+      137:{ko:'조민',en:'CHO MIN',level:'TOPIK II',day:'03.31'}
+    };
+    var chunks=[];
+    for(var num=142;num>=1;num--){
+      var fk=fix[num];
+      if(fk){
+        var fkSt=num===138?'rejected':(num===137?'cancelled':(num===142?'pending':(num===141?'review':'approved')));
+        chunks.push(applicantBuildRowHtml(num,fkSt,fk));
+        continue;
+      }
+      chunks.push(applicantBuildRowHtml(num,pool.shift(),null));
+    }
+    tb.innerHTML=chunks.join('');
+    applicantBindPaginationClicksOnce();
+    applicantApplyPaging({resetPage:true});
+  }
+  function applicantRowPassesFilters(row){
+    return applicantRowPassesApplicantFilter(row)&&applicantRowPassesApplicantSearch(row);
+  }
+  function applicantRowPassesApplicantFilter(row){
+    if(applicantFilterKey==='all')return true;
+    if(applicantFilterKey==='paid0')return row.dataset.paid==='0';
+    return row.dataset.status===applicantFilterKey;
+  }
+  function applicantRowPassesApplicantSearch(row){
+    var el=document.getElementById('tableSearch');
+    var q=(el&&el.value||'').trim().toLowerCase();
+    if(!q)return true;
+    return row.textContent.toLowerCase().indexOf(q)!==-1;
+  }
+  function applicantApplyPaging(options){
+    options=options||{};
+    var rows=Array.from(document.querySelectorAll('#applicantBody tr'));
+    if(!rows.length)return;
+    if(options.resetPage)applicantCurrentPage=1;
+    var totalMatched=0;
+    rows.forEach(function(row){
+      if(applicantRowPassesFilters(row))totalMatched++;
+    });
+    var totalPages=Math.max(1,Math.ceil(totalMatched/APPLICANTS_PAGE_SIZE)||1);
+    if(applicantCurrentPage>totalPages)applicantCurrentPage=totalPages;
+    var startIdx=(applicantCurrentPage-1)*APPLICANTS_PAGE_SIZE;
+    var idx=0;
+    rows.forEach(function(row){
+      if(!applicantRowPassesFilters(row)){
+        row.style.display='none';
+        return;
+      }
+      var show=idx>=startIdx&&idx<startIdx+APPLICANTS_PAGE_SIZE;
+      row.style.display=show?'':'none';
+      idx++;
+    });
+    var summary=document.getElementById('applicantPagingSummary');
+    if(summary){
+      if(totalMatched===0){
+        summary.textContent='총 0명 · 조건에 맞는 접수 없음';
+      }else{
+        var from=startIdx+1;
+        var to=Math.min(startIdx+APPLICANTS_PAGE_SIZE,totalMatched);
+        summary.textContent='총 '+totalMatched+'명 · 현재 '+from+'–'+to;
+      }
+    }
+    applicantRenderPagination(totalMatched);
+  }
+  function applicantBindPaginationClicksOnce(){
+    var wrap=document.getElementById('applicantPagination');
+    if(!wrap||wrap.dataset.bound)return;
+    wrap.dataset.bound='1';
+    wrap.addEventListener('click',function(e){
+      var btn=e.target&&e.target.closest('button[data-app-page]');
+      if(!btn)return;
+      var p=parseInt(btn.getAttribute('data-app-page'),10);
+      if(!isFinite(p)||p===applicantCurrentPage)return;
+      applicantCurrentPage=p;
+      applicantApplyPaging({resetPage:false});
+    });
+  }
+  function applicantRenderPagination(totalMatched){
+    var wrap=document.getElementById('applicantPagination');
+    if(!wrap)return;
+    var totalPages=Math.max(1,Math.ceil(totalMatched/APPLICANTS_PAGE_SIZE));
+    if(totalPages<=1){ wrap.innerHTML=''; return; }
+    var btns=[];
+    var prevDisabled=applicantCurrentPage<=1;
+    var nextDisabled=applicantCurrentPage>=totalPages;
+    btns.push('<button type="button" class="p-btn'+(!prevDisabled?'':' p-btn-disabled')+'" data-app-page="'+(applicantCurrentPage-1)+'" '+(prevDisabled?'disabled':'')+' aria-label="이전">&lt;</button>');
+    for(var p=1;p<=totalPages;p++){
+      var cur=p===applicantCurrentPage;
+      btns.push('<button type="button" class="p-btn '+(cur?'active':'')+'" data-app-page="'+p+'"'+(cur?' aria-current="page"':'')+(cur?' disabled':'')+'">'+p+'</button>');
+    }
+    btns.push('<button type="button" class="p-btn'+(!nextDisabled?'':' p-btn-disabled')+'" data-app-page="'+(applicantCurrentPage+1)+'" '+(nextDisabled?'disabled':'')+' aria-label="다음">&gt;</button>');
+    wrap.innerHTML=btns.join('');
   }
   function viewApplicant(btn){
     var row=btn.closest('tr');
@@ -1608,6 +1972,8 @@
     var examNo=(cells[7].textContent||'').trim();
     var status=(cells[8].innerText||cells[8].textContent||'').replace(/\s+/g,' ').trim();
     var photoNote='증명사진 썸네일(데모)';
+    var rej=row.getAttribute('data-reject-reason')?applicantSafeDecodeReject(row.getAttribute('data-reject-reason')):'';
+    var rejDl=rej?('<dt>반려 사유</dt><dd>'+escapeHtml(rej)+'</dd>'):'';
     var body=document.getElementById('applicantModalBody');
     body.innerHTML=
       '<dl class="modal-dl">'+
@@ -1618,7 +1984,7 @@
       '<dt>접수일</dt><dd>'+escapeHtml(regDate)+'</dd>'+
       '<dt>수납</dt><dd>'+escapeHtml(paid||'—')+'</dd>'+
       '<dt>수험번호</dt><dd>'+escapeHtml(examNo||'—')+'</dd>'+
-      '<dt>진행상태</dt><dd>'+escapeHtml(status)+'</dd>'+
+      '<dt>진행상태</dt><dd>'+escapeHtml(status)+'</dd>'+rejDl+
       '<dt>사진</dt><dd>'+escapeHtml(photoNote)+'</dd>'+
       '</dl>';
     var modal=document.getElementById('applicantModal');
@@ -1634,16 +2000,14 @@
   function filterStatus(btn, status){
     document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
     btn.classList.add('active');
-    document.querySelectorAll('#applicantBody tr').forEach(row=>{
-      row.style.display=(status==='all'||row.dataset.status===status)?'':'none';
-    });
+    applicantFilterKey=status==='all'?'all':status;
+    applicantApplyPaging({resetPage:true});
   }
   function filterPaidOnly(btn){
     document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
     btn.classList.add('active');
-    document.querySelectorAll('#applicantBody tr').forEach(row=>{
-      row.style.display=row.dataset.paid==='0'?'':'none';
-    });
+    applicantFilterKey='paid0';
+    applicantApplyPaging({resetPage:true});
   }
   var nextExamSeq=9150;
   function markOfflinePaid(btn){
@@ -1663,6 +2027,7 @@
     var wrap=btn.closest('.action-btns');
     if(wrap)wrap.innerHTML=actionBtnsReviewHtml();
     alert('오프라인 수납이 완료 처리되었습니다. 상태가 검토중으로 변경되었습니다. 승인 후 「수험번호 일괄 부여」로 발급할 수 있습니다.');
+    applicantApplyPaging({resetPage:false});
   }
   function batchAssignExamNumbers(){
     openConfirmModal({
@@ -1697,13 +2062,7 @@
     });
   }
   function rejectRow(btn){
-    openConfirmModal({
-      title:'반려',
-      message:'이 접수 건을 반려 처리합니다. 응시자에게 재업로드를 요청합니다.',
-      confirmLabel:'반려 처리',
-      danger:true,
-      onConfirm:function(){ rejectRowImpl(btn); }
-    });
+    openRejectReasonModal({applicantBtn:btn});
   }
   function actionBtnsReviewHtml(){
     return '<button type="button" class="ab-approve" onclick="approveRow(this)"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>승인</button>'+
@@ -1719,18 +2078,22 @@
   }
   function approveRowImpl(btn){
     var row=btn.closest('tr');
+    row.removeAttribute('data-reject-reason');
     row.querySelector('.sb').className='sb sb-approved';
     row.querySelector('.sb').innerHTML='<svg class="icon" width="10" height="10"><use href="#ic-check"/></svg>승인완료';
     row.dataset.status='approved';
     btn.closest('.action-btns').innerHTML=actionBtnsApprovedHtml();
+    applicantApplyPaging({resetPage:false});
     alert('승인 처리되었습니다.');
   }
-  function rejectRowImpl(btn){
+  function rejectRowImpl(btn, reason){
     var row=btn.closest('tr');
+    row.setAttribute('data-reject-reason', encodeURIComponent(reason||''));
     row.querySelector('.sb').className='sb sb-rejected';
     row.querySelector('.sb').innerHTML='<svg class="icon" width="10" height="10"><use href="#ic-x"/></svg>반려';
     row.dataset.status='rejected';
     btn.closest('.action-btns').innerHTML=actionBtnsRejectedHtml();
+    applicantApplyPaging({resetPage:false});
     alert('반려 처리되었습니다. 사용자에게 재업로드 요청이 발송됩니다.');
   }
   function downloadExcel(){
@@ -1743,12 +2106,14 @@
   }
   function downloadExcelImpl(){
     const rows=document.querySelectorAll('#applicantBody tr');
-    let csv='\uFEFF번호,이름(한글),이름(영문),급수,접수일,수납,수험번호,상태\n';
+    let csv='\uFEFF번호,이름(한글),이름(영문),급수,접수일,수납,수험번호,상태,반려사유\n';
     rows.forEach(row=>{
       const cells=row.querySelectorAll('td');
       if(cells.length>=10){
         const statusTxt=(cells[8].innerText||cells[8].textContent||'').replace(/\s+/g,' ').trim();
-        csv+=`${cells[0].textContent.trim()},${cells[2].textContent.trim()},${cells[3].textContent.trim()},${cells[4].textContent.trim()},${cells[5].textContent.trim()},${cells[6].textContent.trim()},${cells[7].textContent.trim()},${statusTxt}\n`;
+        const rr=row.getAttribute('data-reject-reason')?applicantSafeDecodeReject(row.getAttribute('data-reject-reason')).replace(/\r?\n/g,' '):'';
+        const rrEsc='"'+String(rr).replace(/"/g,'""')+'"';
+        csv+=`${cells[0].textContent.trim()},${cells[2].textContent.trim()},${cells[3].textContent.trim()},${cells[4].textContent.trim()},${cells[5].textContent.trim()},${cells[6].textContent.trim()},${cells[7].textContent.trim()},${statusTxt},${rrEsc}\n`;
       }
     });
     const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
@@ -1770,16 +2135,15 @@
     setTimeout(cleanup,2000);
   }
   function searchTable(){
-    const q=document.getElementById('tableSearch').value.toLowerCase();
-    document.querySelectorAll('#applicantBody tr').forEach(row=>{
-      row.style.display=row.textContent.toLowerCase().includes(q)?'':'none';
-    });
+    applicantApplyPaging({resetPage:true});
   }
   function toggleRoundForm(){
     const el=document.getElementById('roundFormWrap');
     el.style.display=el.style.display==='none'?'block':'none';
   }
   document.addEventListener('DOMContentLoaded',function(){
+    initApplicantDemoRows();
+    initPhotoReviewDemo();
     if(!window.ContentStore)return;
     refreshNoticeTaxonomyAdmin();
     refreshFaqTaxonomyAdmin();
