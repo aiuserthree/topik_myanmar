@@ -97,7 +97,9 @@
     .data-table th{background:#f0f4ff;color:var(--navy);padding:10px 14px;text-align:left;font-weight:700;border-bottom:2px solid var(--gray-light);white-space:nowrap;}
     .data-table td{padding:11px 14px;border-bottom:1px solid var(--gray-light);vertical-align:middle;}
     .data-table tr:hover td{background:#fafbfc;}
-    .photo-thumb{width:36px;height:46px;border-radius:3px;object-fit:cover;border:1px solid var(--gray-light);background:#f0f4ff;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--gray-text);}
+    .photo-thumb{width:36px;height:46px;border-radius:3px;object-fit:cover;border:1px solid var(--gray-light);background:#f0f4ff;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--gray-text);flex-shrink:0;}
+    .photo-thumb.photo-thumb--with-photo{display:block;padding:0;overflow:hidden;line-height:0;}
+    .photo-thumb .photo-thumb-img{width:36px;height:46px;display:block;object-fit:cover;vertical-align:middle;}
 
     /* Status Badges */
     .sb{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;}
@@ -151,6 +153,8 @@
     .round-form-grid input:focus,.round-form-grid select:focus{outline:none;border-color:var(--navy);}
     .round-form-label{font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px;}
     .round-form-btns{padding:12px 20px;display:flex;gap:8px;background:#fafbfc;border-bottom:1px solid var(--gray-light);}
+    .modal-overlay.round-modal-layer{z-index:432;}
+    .modal-dialog--round-form{max-width:min(580px,96vw);}
 
     /* Notice Form */
     .notice-form-wrap{padding:20px;background:#fafbfc;border-bottom:1px solid var(--gray-light);}
@@ -211,6 +215,11 @@
     .modal-dl{display:grid;grid-template-columns:110px 1fr;gap:10px 14px;margin:0;}
     .modal-dl dt{color:var(--gray-text);font-weight:600;margin:0;}
     .modal-dl dd{font-weight:600;color:#1a1a2e;margin:0;}
+    .applicant-modal-photo-dd{align-self:start;}
+    .applicant-modal-photo-wrap{position:relative;display:inline-block;max-width:100%;border-radius:10px;overflow:hidden;border:1.5px solid var(--gray-light);box-shadow:0 2px 10px rgba(0,0,51,0.08);background:#f0f4ff;}
+    .applicant-modal-photo{display:block;width:min(176px,100%);height:auto;aspect-ratio:176/224;object-fit:cover;vertical-align:middle;}
+    .applicant-modal-photo-hint{font-size:11px;font-weight:600;color:var(--gray-text);margin:8px 0 0;line-height:1.45;max-width:220px;}
+    .applicant-modal-photo-fallback.photo-thumb{width:176px;max-width:100%;height:224px;box-sizing:border-box;margin:0;}
     .modal-foot{padding:14px 20px;border-top:1px solid var(--gray-light);display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;background:#fafbfc;border-radius:0 0 14px 14px;}
     .modal-overlay.confirm-layer{z-index:450;}
     .modal-overlay.reject-reason-layer{z-index:455;}
@@ -560,68 +569,50 @@
       <div class="panel">
         <div class="panel-header">
           <h2><svg class="icon" width="16" height="16" color="var(--red)"><use href="#ic-calendar"/></svg>시험 회차 관리</h2>
-          <button class="btn btn-navy" onclick="toggleRoundForm()">
+          <button class="btn btn-navy" onclick="openRoundRegisterForm()" type="button">
             <svg class="icon" width="13" height="13"><use href="#ic-plus"/></svg>회차 등록
           </button>
-        </div>
-        <div id="roundFormWrap" style="display:none;">
-          <div class="round-form-grid">
-            <div>
-              <div class="round-form-label">회차명</div>
-              <input type="text" placeholder="제99회 TOPIK"/>
-            </div>
-            <div>
-              <div class="round-form-label">접수 시작일</div>
-              <input type="date"/>
-            </div>
-            <div>
-              <div class="round-form-label">접수 마감일</div>
-              <input type="date"/>
-            </div>
-            <div>
-              <div class="round-form-label">시험일</div>
-              <input type="date"/>
-            </div>
-            <div>
-              <div class="round-form-label">합격발표일</div>
-              <input type="date"/>
-            </div>
-          </div>
-          <div class="round-form-btns">
-            <button type="button" class="btn btn-navy" onclick="saveRoundDemo()">
-              <svg class="icon" width="13" height="13"><use href="#ic-check"/></svg>저장
-            </button>
-            <button type="button" class="btn btn-gray" onclick="toggleRoundForm()">
-              <svg class="icon" width="13" height="13"><use href="#ic-x"/></svg>취소
-            </button>
-          </div>
         </div>
         <div style="overflow-x:auto;">
           <table class="data-table">
             <thead><tr>
-              <th>회차</th><th>접수기간</th><th>시험일</th><th>발표일</th><th>접수자</th><th>상태</th><th>관리</th>
+              <th>회차명</th><th>접수기간</th><th>시험일</th><th>발표일</th><th>접수자</th><th>상태</th><th>관리</th>
             </tr></thead>
-            <tbody>
-              <tr>
-                <td><strong>제98회</strong></td>
-                <td>04.01 ~ 04.14</td>
-                <td>2025.05.17</td>
-                <td>2025.06.11</td>
-                <td>142명</td>
-                <td><span class="sb sb-pending"><svg class="icon" width="10" height="10"><use href="#ic-ticket"/></svg>접수중</span></td>
+            <tbody id="roundAdminTableBody">
+              <tr id="roundRow-98" class="round-table-row"
+                data-round-id="98"
+                data-round-name="제98회 TOPIK"
+                data-reg-start="2025-04-01"
+                data-reg-end="2025-04-14"
+                data-exam="2025-05-17"
+                data-result="2025-06-11"
+                data-count-label="142명">
+                <td class="round-td-name"><strong>제98회 TOPIK</strong></td>
+                <td class="round-td-range">2025.04.01 ~ 2025.04.14</td>
+                <td class="round-td-exam">2025.05.17</td>
+                <td class="round-td-result">2025.06.11</td>
+                <td class="round-td-count" title="접수 DB와 연동 시 자동 집계됩니다.">142명</td>
+                <td class="round-td-status"><span class="sb sb-pending"><svg class="icon" width="10" height="10"><use href="#ic-ticket"/></svg>접수중</span></td>
                 <td><div class="action-btns">
-                  <button type="button" class="ab-view" onclick="adminDemoEdit('회차')"><svg class="icon" width="11" height="11"><use href="#ic-edit"/></svg>수정</button>
+                  <button type="button" class="ab-view" onclick="openRoundEditor(this)"><svg class="icon" width="11" height="11"><use href="#ic-edit"/></svg>수정</button>
                 </div></td>
               </tr>
-              <tr>
-                <td>제99회</td>
-                <td>07.07 ~ 07.21</td>
-                <td>2025.08.17</td>
-                <td>2025.09.17</td>
-                <td>—</td>
-                <td><span class="sb sb-cancelled">예정</span></td>
+              <tr id="roundRow-99" class="round-table-row"
+                data-round-id="99"
+                data-round-name="제99회 TOPIK"
+                data-reg-start="2025-07-07"
+                data-reg-end="2025-07-21"
+                data-exam="2025-08-17"
+                data-result="2025-09-17"
+                data-count-label="—">
+                <td class="round-td-name"><strong>제99회 TOPIK</strong></td>
+                <td class="round-td-range">2025.07.07 ~ 2025.07.21</td>
+                <td class="round-td-exam">2025.08.17</td>
+                <td class="round-td-result">2025.09.17</td>
+                <td class="round-td-count" title="접수 DB와 연동 시 자동 집계됩니다.">—</td>
+                <td class="round-td-status"><span class="sb sb-cancelled">예정</span></td>
                 <td><div class="action-btns">
-                  <button type="button" class="ab-view" onclick="adminDemoEdit('회차')"><svg class="icon" width="11" height="11"><use href="#ic-edit"/></svg>수정</button>
+                  <button type="button" class="ab-view" onclick="openRoundEditor(this)"><svg class="icon" width="11" height="11"><use href="#ic-edit"/></svg>수정</button>
                 </div></td>
               </tr>
             </tbody>
@@ -693,6 +684,46 @@
     <div class="modal-body" id="applicantModalBody"></div>
     <div class="modal-foot">
       <button type="button" class="btn btn-gray" onclick="closeApplicantModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalRoundForm" class="modal-overlay round-modal-layer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="roundModalTitle">
+  <div class="modal-backdrop" onclick="closeRoundForm()" aria-hidden="true"></div>
+  <div class="modal-dialog modal-dialog--round-form">
+    <div class="modal-head">
+      <h3 id="roundModalTitle">신규 회차 등록</h3>
+      <button type="button" class="modal-close" onclick="closeRoundForm()" aria-label="닫기"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="round-form-grid" style="padding:0;background:transparent;border:none;">
+        <div>
+          <div class="round-form-label">회차명</div>
+          <input id="roundInputName" type="text" placeholder="제99회 TOPIK"/>
+        </div>
+        <div>
+          <div class="round-form-label">접수 시작일</div>
+          <input id="roundInputRegStart" type="date"/>
+        </div>
+        <div>
+          <div class="round-form-label">접수 마감일</div>
+          <input id="roundInputRegEnd" type="date"/>
+        </div>
+        <div>
+          <div class="round-form-label">시험일</div>
+          <input id="roundInputExam" type="date"/>
+        </div>
+        <div>
+          <div class="round-form-label">합격발표일</div>
+          <input id="roundInputResult" type="date"/>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-gray" onclick="closeRoundForm()">취소</button>
+      <button type="button" class="btn btn-navy" onclick="saveRoundDemo()">
+        <svg class="icon" width="13" height="13"><use href="#ic-check"/></svg>저장
+      </button>
     </div>
   </div>
 </div>
@@ -1014,23 +1045,125 @@
       onConfirm:function(){ window.open('index.html'); }
     });
   }
-  function adminDemoEdit(scopeLabel){
-    openConfirmModal({
-      title:(scopeLabel||'항목')+' 수정',
-      message:'데모 화면입니다. 수정 기능을 실행합니다.',
-      confirmLabel:'계속',
-      onConfirm:function(){ alert('수정 모드'); }
+  function isoRoundRegPeriod(rs,re){
+    if(!rs||!re)return '';
+    return isoToYmdDot(rs)+' ~ '+isoToYmdDot(re);
+  }
+  function isoToYmdDot(iso){
+    if(!iso)return'—';
+    var p=String(iso).split('-');
+    if(p.length!==3)return'—';
+    return p[0]+'.'+String(p[1]).padStart(2,'0')+'.'+String(p[2]).padStart(2,'0');
+  }
+  var roundFormState={mode:'create',row:null,key:''};
+  function clearRoundForm(){
+    ['roundInputName','roundInputRegStart','roundInputRegEnd','roundInputExam','roundInputResult'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el)el.value='';
     });
+  }
+  function openRoundFormModal(){
+    var m=document.getElementById('modalRoundForm');
+    if(!m)return;
+    m.classList.add('is-open');
+    m.setAttribute('aria-hidden','false');
+    var first=document.getElementById('roundInputName');
+    setTimeout(function(){
+      try{ if(first)first.focus(); }catch(_e){/* ignore */}
+    },0);
+  }
+  function openRoundRegisterForm(){
+    roundFormState.mode='create';
+    roundFormState.row=null;
+    roundFormState.key='';
+    clearRoundForm();
+    var t=document.getElementById('roundModalTitle');
+    if(t)t.textContent='신규 회차 등록';
+    openRoundFormModal();
+  }
+  function closeRoundForm(){
+    var m=document.getElementById('modalRoundForm');
+    if(!m)return;
+    m.classList.remove('is-open');
+    m.setAttribute('aria-hidden','true');
+  }
+  function openRoundEditor(btn){
+    var tr=btn&&(btn.closest('.round-table-row')||btn.closest('tr'));
+    if(!tr)return;
+    roundFormState.mode='edit';
+    roundFormState.row=tr;
+    roundFormState.key=tr.getAttribute('data-round-id')||'';
+    var nm=document.getElementById('roundInputName');
+    if(nm)nm.value=tr.getAttribute('data-round-name')||'';
+    var rs=document.getElementById('roundInputRegStart');
+    if(rs)rs.value=tr.getAttribute('data-reg-start')||'';
+    var re=document.getElementById('roundInputRegEnd');
+    if(re)re.value=tr.getAttribute('data-reg-end')||'';
+    var ex=document.getElementById('roundInputExam');
+    if(ex)ex.value=tr.getAttribute('data-exam')||'';
+    var res=document.getElementById('roundInputResult');
+    if(res)res.value=tr.getAttribute('data-result')||'';
+    var t=document.getElementById('roundModalTitle');
+    if(t)t.textContent='회차 수정';
+    openRoundFormModal();
   }
   function saveRoundDemo(){
-    openConfirmModal({
-      title:'회차 저장',
-      message:'입력한 회차 정보를 저장합니다. (데모)',
-      confirmLabel:'저장',
-      onConfirm:function(){ alert('회차가 등록되었습니다.'); toggleRoundForm(); }
-    });
+    var name=document.getElementById('roundInputName')&&document.getElementById('roundInputName').value.trim();
+    if(!name){ alert('회차명을 입력해 주세요.'); return; }
+    var rs=document.getElementById('roundInputRegStart')&&document.getElementById('roundInputRegStart').value;
+    var re=document.getElementById('roundInputRegEnd')&&document.getElementById('roundInputRegEnd').value;
+    var ex=document.getElementById('roundInputExam')&&document.getElementById('roundInputExam').value;
+    var res=document.getElementById('roundInputResult')&&document.getElementById('roundInputResult').value;
+    if(!rs||!re||!ex||!res){
+      alert('접수·시험·발표 일자를 모두 선택해 주세요.');
+      return;
+    }
+    if(roundFormState.mode==='edit'&&roundFormState.row){
+      var tr=roundFormState.row;
+      tr.setAttribute('data-round-name',name);
+      tr.setAttribute('data-reg-start',rs);
+      tr.setAttribute('data-reg-end',re);
+      tr.setAttribute('data-exam',ex);
+      tr.setAttribute('data-result',res);
+      var nameTd=tr.querySelector('.round-td-name');
+      if(nameTd)nameTd.innerHTML='<strong>'+escapeHtml(name)+'</strong>';
+      var rg=tr.querySelector('.round-td-range');
+      if(rg)rg.textContent=isoRoundRegPeriod(rs,re);
+      var te=tr.querySelector('.round-td-exam');
+      if(te)te.textContent=isoToYmdDot(ex);
+      var trs=tr.querySelector('.round-td-result');
+      if(trs)trs.textContent=isoToYmdDot(res);
+      alert('회차 정보가 반영되었습니다.');
+      closeRoundForm();
+      return;
+    }
+    var tbody=document.getElementById('roundAdminTableBody');
+    if(!tbody)return;
+    var nid='t'+Date.now();
+    var trNew=document.createElement('tr');
+    trNew.className='round-table-row';
+    trNew.id='roundRow-'+nid;
+    trNew.setAttribute('data-round-id',String(nid));
+    trNew.setAttribute('data-round-name',name);
+    trNew.setAttribute('data-reg-start',rs);
+    trNew.setAttribute('data-reg-end',re);
+    trNew.setAttribute('data-exam',ex);
+    trNew.setAttribute('data-result',res);
+    trNew.setAttribute('data-count-label','—');
+    trNew.innerHTML=
+      '<td class="round-td-name"><strong>'+escapeHtml(name)+'</strong></td>'+
+      '<td class="round-td-range">'+escapeHtml(isoRoundRegPeriod(rs,re))+'</td>'+
+      '<td class="round-td-exam">'+escapeHtml(isoToYmdDot(ex))+'</td>'+
+      '<td class="round-td-result">'+escapeHtml(isoToYmdDot(res))+'</td>'+
+      '<td class="round-td-count" title="실서비스에서 접수·원서 DB와 연동되어 자동 집계됩니다.">—</td>'+
+      '<td class="round-td-status"><span class="sb sb-cancelled">예정</span></td>'+
+      '<td><div class="action-btns">'+
+      '<button type="button" class="ab-view" onclick="openRoundEditor(this)"><svg class="icon" width="11" height="11"><use href="#ic-edit"/></svg>수정</button>'+
+      '</div></td>';
+    tbody.appendChild(trNew);
+    alert('회차가 목록에 추가되었습니다. (데모)');
+    closeRoundForm();
   }
-  var noticeEditingTr=null;
   var noticeDraftAttachments=[];
   var NOTICE_FILE_MAX_BYTES=10*1024*1024;
   var NOTICE_ATTACH_MAX_COUNT=6;
@@ -1824,6 +1957,11 @@
     if(closeFaqCategoryModal())return;
     if(closeNoticeFormModal())return;
     if(closeFaqFormModal())return;
+    var roundM=document.getElementById('modalRoundForm');
+    if(roundM&&roundM.classList.contains('is-open')){
+      closeRoundForm();
+      return;
+    }
     closeApplicantModal();
     closeAdminSidebar();
   });
@@ -1907,10 +2045,33 @@
     for(var f=0;f<fixSts.length;f++) applicantSubtractFromPool(pool, fixSts[f]);
     return pool;
   }
-  function applicantPhotoTd(status){
-    if(status==='approved')return '<td><div class="photo-thumb" style="color:#10b981;"><svg class="icon" width="18" height="18"><use href="#ic-check"/></svg></div></td>';
-    if(status==='rejected')return '<td><div class="photo-thumb" style="color:var(--red);"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></div></td>';
-    return '<td><div class="photo-thumb"><svg class="icon" width="18" height="18" color="#aab8cc"><use href="#ic-user"/></svg></div></td>';
+  function applicantDemoPortraitUrl(no,roundId,sizeKey){
+    var n=parseInt(no,10);
+    if(!isFinite(n)||n<1)n=1;
+    var rNum=parseInt(String(roundId!=null?roundId:'98').replace(/\D/g,''),10);
+    var r=isFinite(rNum)&&rNum>0?rNum:98;
+    var idx=(n*31+r*17)%100;
+    var women=((n+r)%2)===0;
+    var gender=women?'women':'men';
+    var folder=sizeKey==='med'?'med':'thumb';
+    return 'https://randomuser.me/api/portraits/'+folder+'/'+gender+'/'+idx+'.jpg';
+  }
+  function applicantThumbPhotoOnError(img){
+    if(!img||!img.parentNode)return;
+    var wrap=img.parentNode;
+    img.remove();
+    wrap.classList.remove('photo-thumb--with-photo');
+    wrap.style.display='flex';
+    wrap.style.alignItems='center';
+    wrap.style.justifyContent='center';
+    wrap.innerHTML='<svg class="icon" width="18" height="18" color="#aab8cc"><use href="#ic-user"/></svg>';
+  }
+  function applicantPhotoTd(_status,num,roundId){
+    var rid=roundId!=null?String(roundId):'98';
+    var src=applicantDemoPortraitUrl(num,rid,'thumb');
+    return '<td><div class="photo-thumb photo-thumb--with-photo" title="증명사진 데모(RandomUser 초상)">'+
+      '<img class="photo-thumb-img" src="'+src+'" alt="" width="36" height="46" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="applicantThumbPhotoOnError(this)"/>'+
+      '</div></td>';
   }
   function applicantStatusBadgeTd(status){
     if(status==='pending')return '<td><span class="sb sb-pending"><svg class="icon" width="10" height="10"><use href="#ic-ticket"/></svg>접수완료</span></td>';
@@ -1967,9 +2128,10 @@
     if(fix&&fix.rejectReason){
       rrAttr=' data-reject-reason="'+encodeURIComponent(fix.rejectReason)+'"';
     }
-    var html='<tr data-status="'+st+'" data-paid="'+pe.paid+'"'+rrAttr+'>'+
+    var ridForRow=String((currentApplicantRoundConfig&&currentApplicantRoundConfig.id)||'98');
+    var html='<tr data-status="'+st+'" data-paid="'+pe.paid+'" data-applicant-no="'+num+'" data-round-id="'+ridForRow+'"'+rrAttr+'>'+
       '<td>'+num+'</td>'+
-      applicantPhotoTd(st)+
+      applicantPhotoTd(st,num,ridForRow)+
       '<td>'+escapeHtml(fix?fix.ko:('데모응시자 '+num))+'</td>'+
       '<td>'+escapeHtml(fix?fix.en:('Applicant '+num))+'</td>'+
       '<td>'+(fix&&fix.level?fix.level:(num%2===0?'TOPIK I':'TOPIK II'))+'</td>'+
@@ -2151,11 +2313,28 @@
     btns.push('<button type="button" class="p-btn'+(!nextDisabled?'':' p-btn-disabled')+'" data-app-page="'+(applicantCurrentPage+1)+'" '+(nextDisabled?'disabled':'')+' aria-label="다음">&gt;</button>');
     wrap.innerHTML=btns.join('');
   }
+  function applicantModalPhotoOnError(img){
+    if(!img)return;
+    img.style.display='none';
+    var wrap=img.parentNode;
+    if(!wrap||wrap.querySelector('.applicant-modal-photo-fallback'))return;
+    var fb=document.createElement('div');
+    fb.className='applicant-modal-photo-fallback photo-thumb';
+    fb.setAttribute('role','img');
+    fb.setAttribute('aria-label','이미지를 불러올 수 없습니다');
+    fb.innerHTML='<svg class="icon" width="40" height="40" color="#aab8cc"><use href="#ic-user"/></svg>';
+    wrap.appendChild(fb);
+  }
   function viewApplicant(btn){
     var row=btn.closest('tr');
     if(!row||row.cells.length<9)return;
     var cells=row.cells;
     var num=(cells[0].textContent||'').trim();
+    var appNoAttr=row.getAttribute('data-applicant-no');
+    var appNo=parseInt(appNoAttr!=null&&appNoAttr!==''?appNoAttr:num,10);
+    if(!isFinite(appNo))appNo=parseInt(num,10)||1;
+    var roundId=row.getAttribute('data-round-id')||((currentApplicantRoundConfig&&currentApplicantRoundConfig.id)||'98');
+    var photoSrc=applicantDemoPortraitUrl(appNo,roundId,'med');
     var nameKo=(cells[2].textContent||'').trim();
     var nameEn=(cells[3].textContent||'').trim();
     var level=(cells[4].textContent||'').trim();
@@ -2163,9 +2342,15 @@
     var paid=(cells[6].textContent||'').trim();
     var examNo=(cells[7].textContent||'').trim();
     var status=(cells[8].innerText||cells[8].textContent||'').replace(/\s+/g,' ').trim();
-    var photoNote='증명사진 썸네일(데모)';
     var rej=row.getAttribute('data-reject-reason')?applicantSafeDecodeReject(row.getAttribute('data-reject-reason')):'';
     var rejDl=rej?('<dt>반려 사유</dt><dd>'+escapeHtml(rej)+'</dd>'):'';
+    var photoBlock=
+      '<dd class="applicant-modal-photo-dd">'+
+      '<div class="applicant-modal-photo-wrap">'+
+      '<img class="applicant-modal-photo" src="'+photoSrc+'" width="176" height="224" alt="증명사진 데모(RandomUser 초상 샘플)" loading="eager" decoding="async" referrerpolicy="no-referrer" onerror="applicantModalPhotoOnError(this)"/>'+
+      '</div>'+
+      '<p class="applicant-modal-photo-hint">RandomUser.me 샘플 얼굴 사진입니다(접수번호·회차마다 같은 인물이 고정됨). 실서비스에서는 응시자가 업로드한 증명사진이 표시됩니다.</p>'+
+      '</dd>';
     var body=document.getElementById('applicantModalBody');
     body.innerHTML=
       '<dl class="modal-dl">'+
@@ -2177,7 +2362,7 @@
       '<dt>수납</dt><dd>'+escapeHtml(paid||'—')+'</dd>'+
       '<dt>수험번호</dt><dd>'+escapeHtml(examNo||'—')+'</dd>'+
       '<dt>진행상태</dt><dd>'+escapeHtml(status)+'</dd>'+rejDl+
-      '<dt>사진</dt><dd>'+escapeHtml(photoNote)+'</dd>'+
+      '<dt>사진</dt>'+photoBlock+
       '</dl>';
     var modal=document.getElementById('applicantModal');
     modal.classList.add('is-open');
@@ -2350,10 +2535,6 @@
   }
   function searchTable(){
     applicantApplyPaging({resetPage:true});
-  }
-  function toggleRoundForm(){
-    const el=document.getElementById('roundFormWrap');
-    el.style.display=el.style.display==='none'?'block':'none';
   }
   document.addEventListener('DOMContentLoaded',function(){
     syncExamRoundSelects('98');
