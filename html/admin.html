@@ -149,6 +149,30 @@
     .notice-form-wrap textarea{height:140px;resize:vertical;}
     .notice-form-btns{display:flex;gap:8px;}
     .faq-form-hint{font-size:12px;color:var(--gray-text);margin:-4px 0 8px;font-weight:600;}
+    .notice-attach-block{margin-top:4px;margin-bottom:12px;}
+    .notice-attach-label{display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+    .notice-upload-zone{
+      display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;border:1.5px dashed var(--gray-light);
+      border-radius:8px;background:#fff;cursor:pointer;font-size:12px;color:var(--gray-text);
+      transition:border-color .2s,background .2s;
+    }
+    .notice-upload-zone:hover{border-color:var(--navy);background:#f8fafc;color:var(--navy);}
+    .notice-upload-zone input[type=file]{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+    .notice-upload-hint{font-size:11px;color:var(--gray-text);margin:6px 0 0;line-height:1.45;}
+    .notice-attach-list{margin:10px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;}
+    .notice-attach-item{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;
+      background:#fff;border:1px solid var(--gray-light);border-radius:8px;font-size:12px;
+    }
+    .notice-attach-item-main{min-width:0;flex:1;}
+    .notice-attach-name{font-weight:600;color:#1a1a2e;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;}
+    .notice-attach-meta{font-size:11px;color:var(--gray-text);margin-top:2px;}
+    .notice-attach-remove{
+      flex-shrink:0;padding:6px 10px;font-size:11px;font-weight:600;border-radius:8px;border:1px solid #e2e8f0;
+      background:#fff;color:#64748b;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px;
+      transition:background .15s,border-color .15s,color .15s;
+    }
+    .notice-attach-remove:hover{background:#fef2f2;color:#b91c1c;border-color:#fecaca;}
 
     /* 카테고리·분류 소형 표 — 모바일 data-table 카드 변환 대상에서 제외 */
     .taxonomy-table{width:100%;border-collapse:collapse;font-size:12px;background:#fff;}
@@ -180,7 +204,10 @@
     .modal-foot{padding:14px 20px;border-top:1px solid var(--gray-light);display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;background:#fafbfc;border-radius:0 0 14px 14px;}
     .modal-overlay.confirm-layer{z-index:450;}
     .modal-overlay.taxonomy-modal-layer{z-index:430;}
+    .modal-overlay.content-form-layer{z-index:435;}
     .modal-dialog--taxonomy{max-width:min(560px,94vw);}
+    .modal-dialog--content-form{max-width:min(600px,96vw);}
+    .modal-body .notice-form-wrap{background:transparent;border-bottom:none;padding:0;margin:0;}
     #confirmModalMessage.confirm-msg{color:#374151;line-height:1.55;white-space:pre-wrap;}
 
     /* Print: 접수자 목록 (body.print-applicants 토글) */
@@ -692,27 +719,8 @@
               <svg class="icon" width="13" height="13"><use href="#ic-folder"/></svg>카테고리 목록 관리
             </button>
             <button type="button" class="btn btn-navy" onclick="openNoticeFormNew()">
-              <svg class="icon" width="13" height="13"><use href="#ic-plus"/></svg>공지 작성
+              <svg class="icon" width="13" height="13"><use href="#ic-plus"/></svg>공지 등록
             </button>
-          </div>
-        </div>
-        <div id="noticeFormWrap" style="display:none;">
-          <div class="notice-form-wrap">
-            <p class="faq-form-hint" id="noticeFormHint">새 공지를 작성합니다.</p>
-            <label for="noticeCatSelect" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">카테고리</label>
-            <select id="noticeCatSelect"></select>
-            <label for="noticeTitleInput" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:12px 0 6px;">제목</label>
-            <input type="text" id="noticeTitleInput" placeholder="공지사항 제목을 입력하세요"/>
-            <label for="noticeBodyInput" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:12px 0 6px;">내용</label>
-            <textarea id="noticeBodyInput" placeholder="공지사항 내용을 입력하세요..." rows="8"></textarea>
-            <div class="notice-form-btns">
-              <button type="button" class="btn btn-navy" onclick="submitNoticeDemo()">
-                <svg class="icon" width="13" height="13"><use href="#ic-notice"/></svg><span id="noticeSubmitLbl">등록</span>
-              </button>
-              <button type="button" class="btn btn-gray" onclick="cancelNoticeForm()">
-                <svg class="icon" width="13" height="13"><use href="#ic-x"/></svg>취소
-              </button>
-            </div>
           </div>
         </div>
         <div style="overflow-x:auto;">
@@ -738,25 +746,6 @@
             <button type="button" class="btn btn-navy" onclick="openFaqFormNew()">
               <svg class="icon" width="13" height="13"><use href="#ic-plus"/></svg>FAQ 등록
             </button>
-          </div>
-        </div>
-        <div id="faqFormWrap" style="display:none;">
-          <div class="notice-form-wrap">
-            <p class="faq-form-hint" id="faqFormHint">새 FAQ를 등록합니다.</p>
-            <label for="faqCat" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">분류</label>
-            <select id="faqCat"></select>
-            <label for="faqQ" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">질문</label>
-            <input type="text" id="faqQ" placeholder="자주 묻는 질문을 입력하세요"/>
-            <label for="faqA" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">답변</label>
-            <textarea id="faqA" placeholder="답변 내용을 입력하세요..."></textarea>
-            <div class="notice-form-btns">
-              <button type="button" class="btn btn-navy" id="faqSubmitBtn" onclick="submitFaqDemo()">
-                <svg class="icon" width="13" height="13"><use href="#ic-info"/></svg><span id="faqSubmitLbl">등록</span>
-              </button>
-              <button type="button" class="btn btn-gray" onclick="cancelFaqForm()">
-                <svg class="icon" width="13" height="13"><use href="#ic-x"/></svg>취소
-              </button>
-            </div>
           </div>
         </div>
         <div style="overflow-x:auto;">
@@ -858,6 +847,77 @@
   </div>
 </div>
 
+<div id="modalNoticeForm" class="modal-overlay content-form-layer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalNoticeFormTitle">
+  <div class="modal-backdrop" onclick="cancelNoticeForm()" aria-hidden="true"></div>
+  <div class="modal-dialog modal-dialog--content-form">
+    <div class="modal-head">
+      <h3 id="modalNoticeFormTitle">공지 등록</h3>
+      <button type="button" class="modal-close" onclick="cancelNoticeForm()" aria-label="닫기"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="notice-form-wrap">
+        <p class="faq-form-hint" id="noticeFormHint">새 공지를 작성합니다.</p>
+        <label for="noticeCatSelect" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">카테고리</label>
+        <select id="noticeCatSelect"></select>
+        <label for="noticeTitleInput" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:12px 0 6px;">제목</label>
+        <input type="text" id="noticeTitleInput" placeholder="공지사항 제목을 입력하세요"/>
+        <label for="noticeBodyInput" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:12px 0 6px;">내용</label>
+        <textarea id="noticeBodyInput" placeholder="공지사항 내용을 입력하세요..." rows="8"></textarea>
+        <div class="notice-attach-block">
+          <span class="notice-attach-label">첨부파일</span>
+          <label class="notice-upload-zone" for="noticeFileInput">
+            <svg class="icon" width="14" height="14" color="var(--navy)"><use href="#ic-upload"/></svg>
+            <strong style="color:var(--navy);">파일 선택</strong>
+            <input type="file" id="noticeFileInput" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.hwp,.hwpx,.zip" onchange="onNoticeFileInputChange(event)"/>
+          </label>
+          <p class="notice-upload-hint">
+            등록 가능: 이미지(JPG·JPEG·PNG·GIF·WEBP·SVG 등), PDF, TXT, HWP(HWP/HWPX), 워드(DOC/DOCX), 엑셀(XLS/XLSX), 파워포인트(PPT/PPTX), ZIP 등 문서 형식.<br/>
+            파일당 최대 용량 10MB.
+          </p>
+          <ul class="notice-attach-list" id="noticeAttachDraftList" aria-live="polite"></ul>
+        </div>
+        <div class="notice-form-btns">
+          <button type="button" class="btn btn-navy" onclick="submitNoticeDemo()">
+            <svg class="icon" width="13" height="13"><use href="#ic-notice"/></svg><span id="noticeSubmitLbl">등록</span>
+          </button>
+          <button type="button" class="btn btn-gray" onclick="cancelNoticeForm()">
+            <svg class="icon" width="13" height="13"><use href="#ic-x"/></svg>취소
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modalFaqForm" class="modal-overlay content-form-layer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalFaqFormTitle">
+  <div class="modal-backdrop" onclick="cancelFaqForm()" aria-hidden="true"></div>
+  <div class="modal-dialog modal-dialog--content-form">
+    <div class="modal-head">
+      <h3 id="modalFaqFormTitle">FAQ 등록</h3>
+      <button type="button" class="modal-close" onclick="cancelFaqForm()" aria-label="닫기"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="notice-form-wrap">
+        <p class="faq-form-hint" id="faqFormHint">새 FAQ를 등록합니다.</p>
+        <label for="faqCat" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">분류</label>
+        <select id="faqCat"></select>
+        <label for="faqQ" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">질문</label>
+        <input type="text" id="faqQ" placeholder="자주 묻는 질문을 입력하세요"/>
+        <label for="faqA" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">답변</label>
+        <textarea id="faqA" placeholder="답변 내용을 입력하세요..."></textarea>
+        <div class="notice-form-btns">
+          <button type="button" class="btn btn-navy" id="faqSubmitBtn" onclick="submitFaqDemo()">
+            <svg class="icon" width="13" height="13"><use href="#ic-info"/></svg><span id="faqSubmitLbl">등록</span>
+          </button>
+          <button type="button" class="btn btn-gray" onclick="cancelFaqForm()">
+            <svg class="icon" width="13" height="13"><use href="#ic-x"/></svg>취소
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   function closeConfirmModal(){
     var modal=document.getElementById('confirmModal');
@@ -917,6 +977,32 @@
     m.setAttribute('aria-hidden','true');
     return true;
   }
+  function openNoticeFormModal(){
+    var m=document.getElementById('modalNoticeForm');
+    if(!m)return;
+    m.classList.add('is-open');
+    m.setAttribute('aria-hidden','false');
+  }
+  function closeNoticeFormModal(){
+    var m=document.getElementById('modalNoticeForm');
+    if(!m||!m.classList.contains('is-open'))return false;
+    m.classList.remove('is-open');
+    m.setAttribute('aria-hidden','true');
+    return true;
+  }
+  function openFaqFormModal(){
+    var m=document.getElementById('modalFaqForm');
+    if(!m)return;
+    m.classList.add('is-open');
+    m.setAttribute('aria-hidden','false');
+  }
+  function closeFaqFormModal(){
+    var m=document.getElementById('modalFaqForm');
+    if(!m||!m.classList.contains('is-open'))return false;
+    m.classList.remove('is-open');
+    m.setAttribute('aria-hidden','true');
+    return true;
+  }
   function confirmAdminLogout(){
     openConfirmModal({
       title:'로그아웃',
@@ -951,6 +1037,115 @@
     });
   }
   var noticeEditingTr=null;
+  var noticeDraftAttachments=[];
+  var NOTICE_FILE_MAX_BYTES=10*1024*1024;
+  var NOTICE_ATTACH_MAX_COUNT=6;
+  var NOTICE_TOTAL_MAX_BYTES=60*1024*1024;
+  function formatNoticeBytes(n){
+    if(n==null||!isFinite(n))return'';
+    if(n<1024)return String(Math.round(n))+' B';
+    if(n<1048576)return (n/1024).toFixed(1)+' KB';
+    return (n/1048576).toFixed(1)+' MB';
+  }
+  function renderNoticeDraftAttachments(){
+    var ul=document.getElementById('noticeAttachDraftList');
+    if(!ul)return;
+    ul.innerHTML='';
+    noticeDraftAttachments.forEach(function(a){
+      var li=document.createElement('li');
+      li.className='notice-attach-item';
+      var main=document.createElement('div');
+      main.className='notice-attach-item-main';
+      var nm=document.createElement('span');
+      nm.className='notice-attach-name';
+      nm.textContent=a.name||'파일';
+      var meta=document.createElement('div');
+      meta.className='notice-attach-meta';
+      meta.textContent=formatNoticeBytes(a.size)+(a.mime?(' · '+a.mime):'');
+      main.appendChild(nm);
+      main.appendChild(meta);
+      var rm=document.createElement('button');
+      rm.type='button';
+      rm.className='notice-attach-remove';
+      rm.setAttribute('aria-label','첨부 삭제');
+      rm.innerHTML='<svg class="icon" width="11" height="11"><use href="#ic-trash"/></svg>삭제';
+      (function(attId){
+        rm.onclick=function(){ removeNoticeDraftAttachment(attId); };
+      })(a.id);
+      li.appendChild(main);
+      li.appendChild(rm);
+      ul.appendChild(li);
+    });
+  }
+  function removeNoticeDraftAttachment(id){
+    noticeDraftAttachments=noticeDraftAttachments.filter(function(x){ return x.id!==id; });
+    renderNoticeDraftAttachments();
+  }
+  function resetNoticeAttachments(){
+    noticeDraftAttachments=[];
+    var inp=document.getElementById('noticeFileInput');
+    if(inp)inp.value='';
+    renderNoticeDraftAttachments();
+  }
+  function onNoticeFileInputChange(ev){
+    var input=ev.target;
+    var files=input&&input.files;
+    if(!files||!files.length)return;
+    var remain=NOTICE_ATTACH_MAX_COUNT-noticeDraftAttachments.length;
+    if(remain<=0){
+      alert('첨부는 공지당 최대 '+NOTICE_ATTACH_MAX_COUNT+'개까지입니다.');
+      input.value='';
+      return;
+    }
+    var existingSum=noticeDraftAttachments.reduce(function(s,a){ return s+(a.size||0); },0);
+    var queue=[];
+    for(var i=0;i<files.length;i++){
+      if(queue.length>=remain) break;
+      var f=files[i];
+      if(f.size>NOTICE_FILE_MAX_BYTES){
+        alert('「'+f.name+'」은(는) 파일당 10MB를 초과합니다.');
+        continue;
+      }
+      if(existingSum+f.size>NOTICE_TOTAL_MAX_BYTES){
+        alert('첨부 파일 합계가 60MB 한도를 넘습니다. 일부만 추가하거나 용량을 줄여 주세요.');
+        break;
+      }
+      existingSum+=f.size;
+      queue.push(f);
+    }
+    if(!queue.length){
+      input.value='';
+      return;
+    }
+    var idx=0;
+    function next(){
+      if(idx>=queue.length){
+        input.value='';
+        renderNoticeDraftAttachments();
+        return;
+      }
+      var f=queue[idx];
+      var reader=new FileReader();
+      reader.onload=function(){
+        noticeDraftAttachments.push({
+          id:'at_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10),
+          name:f.name,
+          mime:f.type||'application/octet-stream',
+          size:f.size,
+          href:reader.result
+        });
+        idx++;
+        next();
+      };
+      reader.onerror=function(){
+        alert('「'+f.name+'」을(를) 읽지 못했습니다.');
+        idx++;
+        next();
+      };
+      reader.readAsDataURL(f);
+    }
+    next();
+  }
   function renderNoticeAdminTable(){
     if(!window.ContentStore)return;
     cancelNoticeForm();
@@ -989,17 +1184,21 @@
   }
   function openNoticeFormNew(){
     noticeEditingTr=null;
+    resetNoticeAttachments();
+    document.getElementById('modalNoticeFormTitle').textContent='공지 등록';
     document.getElementById('noticeFormHint').textContent='새 공지를 작성합니다.';
     document.getElementById('noticeSubmitLbl').textContent='등록';
     document.getElementById('noticeTitleInput').value='';
     document.getElementById('noticeBodyInput').value='';
     refreshNoticeTaxonomyAdmin();
-    document.getElementById('noticeFormWrap').style.display='block';
+    openNoticeFormModal();
     document.getElementById('noticeTitleInput').focus();
   }
   function cancelNoticeForm(){
     noticeEditingTr=null;
-    document.getElementById('noticeFormWrap').style.display='none';
+    closeNoticeFormModal();
+    resetNoticeAttachments();
+    document.getElementById('modalNoticeFormTitle').textContent='공지 등록';
     document.getElementById('noticeFormHint').textContent='새 공지를 작성합니다.';
     document.getElementById('noticeSubmitLbl').textContent='등록';
     document.getElementById('noticeTitleInput').value='';
@@ -1018,9 +1217,14 @@
     var tmp=document.createElement('div');
     tmp.innerHTML=it.bodyHtml||'';
     document.getElementById('noticeBodyInput').value=(tmp.innerText||tmp.textContent||'').trim();
+    noticeDraftAttachments=(it.attachments||[]).map(function(a){
+      return { id:a.id||('at_legacy_'+Math.random().toString(36).slice(2)), name:a.name||'첨부', mime:a.mime||'', size:a.size, href:a.href||'' };
+    }).filter(function(a){ return a.href; });
+    renderNoticeDraftAttachments();
+    document.getElementById('modalNoticeFormTitle').textContent='공지 수정';
     document.getElementById('noticeFormHint').textContent='선택한 공지를 수정합니다.';
     document.getElementById('noticeSubmitLbl').textContent='저장';
-    document.getElementById('noticeFormWrap').style.display='block';
+    openNoticeFormModal();
     document.getElementById('noticeTitleInput').focus();
   }
   function submitNoticeDemo(){
@@ -1037,7 +1241,7 @@
       message:editing?'변경 내용을 저장합니다.':'새 공지사항을 등록합니다.',
       confirmLabel:editing?'저장':'등록',
       onConfirm:function(){
-        var payload={ catId:cat, title:title, bodyHtml:bodyHtml };
+        var payload={ catId:cat, title:title, bodyHtml:bodyHtml, attachments:noticeDraftAttachments.slice() };
         if(editing&&editing.dataset.noticeId){
           payload.id=editing.dataset.noticeId;
           var cur=ContentStore.getNoticeItems().find(function(x){ return x.id===payload.id; });
@@ -1046,7 +1250,11 @@
             payload.views=cur.views;
           }
         }
-        ContentStore.upsertNoticeItem(payload);
+        var saved=ContentStore.upsertNoticeItem(payload);
+        if(!saved){
+          alert('저장에 실패했습니다. 첨부 용량·개수를 줄이거나 내용을 짧게 한 뒤 다시 시도해 주세요.');
+          return;
+        }
         renderNoticeAdminTable();
         cancelNoticeForm();
       }
@@ -1244,13 +1452,15 @@
   }
   function openFaqFormNew(){
     faqEditingTr=null;
+    document.getElementById('modalFaqFormTitle').textContent='FAQ 등록';
     clearFaqFormFields();
     setFaqFormUi(false);
-    document.getElementById('faqFormWrap').style.display='block';
+    openFaqFormModal();
     document.getElementById('faqQ').focus();
   }
   function cancelFaqForm(){
-    document.getElementById('faqFormWrap').style.display='none';
+    closeFaqFormModal();
+    document.getElementById('modalFaqFormTitle').textContent='FAQ 등록';
     faqEditingTr=null;
     clearFaqFormFields();
     setFaqFormUi(false);
@@ -1262,8 +1472,9 @@
     document.getElementById('faqCat').value=tr.dataset.cat||'etc';
     document.getElementById('faqQ').value=(tr.cells[1].textContent||'').trim();
     document.getElementById('faqA').value=tr.dataset.answer||'';
-    document.getElementById('faqFormWrap').style.display='block';
+    document.getElementById('modalFaqFormTitle').textContent='FAQ 수정';
     setFaqFormUi(true);
+    openFaqFormModal();
     document.getElementById('faqQ').focus();
   }
   function submitFaqDemo(){
@@ -1373,6 +1584,8 @@
     }
     if(closeNoticeCategoryModal())return;
     if(closeFaqCategoryModal())return;
+    if(closeNoticeFormModal())return;
+    if(closeFaqFormModal())return;
     closeApplicantModal();
     closeAdminSidebar();
   });

@@ -131,6 +131,30 @@
     ];
   }
 
+  /** 공지 첨부: 브라우저 저장 한도 고려해 data URL(href)·메타만 보관 (최대 12건) */
+  function sanitizeNoticeAttachments(arr) {
+    if (!Array.isArray(arr)) return [];
+    var out = [];
+    for (var i = 0; i < arr.length; i++) {
+      var a = arr[i];
+      if (!a) continue;
+      var href = String(a.href || "").trim();
+      /* 10MB급 파일을 data URL로 넣어도 잘리지 않도록 상한(대략 15MB 문자) */
+      if (!href || href.length > 15500000) continue;
+      var row = {
+        id: String(a.id || "").trim() || genId("at"),
+        name: String(a.name || "첨부파일").slice(0, 240),
+        mime: String(a.mime || "").slice(0, 120),
+        href: href,
+      };
+      if (typeof a.size === "number" && isFinite(a.size)) {
+        row.size = a.size;
+      }
+      out.push(row);
+    }
+    return out.slice(0, 12);
+  }
+
   function defaults() {
     return {
       noticeCategories: [
@@ -179,6 +203,15 @@
       needSave = true;
     }
 
+    for (var ni = 0; ni < parsed.noticeItems.length; ni++) {
+      var nt = parsed.noticeItems[ni];
+      var san = sanitizeNoticeAttachments(nt.attachments);
+      if (!Array.isArray(nt.attachments)) {
+        needSave = true;
+      }
+      nt.attachments = san;
+    }
+
     var state = {
       noticeCategories: parsed.noticeCategories,
       faqCategories: parsed.faqCategories,
@@ -201,10 +234,34 @@
   }
 
   function save(state) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     try {
-      global.dispatchEvent(new CustomEvent("topik-content-change"));
-    } catch (err) {}
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      try {
+        global.dispatchEvent(new CustomEvent("topik-content-change"));
+      } catch (err) {}
+    } catch (e) {
+      if (e && (e.code === 22 || e.name === "QuotaExceededError")) {
+        console.warn("topik-mm content: 저장 용량 초과");
+      }
+      throw e;
+    }
+  }
+
+  /** 저장 실패(용량 초과 등) 시 false */
+  function saveAllowFail(state) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      try {
+        global.dispatchEvent(new CustomEvent("topik-content-change"));
+      } catch (err) {}
+      return true;
+    } catch (e) {
+      if (e && (e.code === 22 || e.name === "QuotaExceededError")) {
+        console.warn("topik-mm content: 저장 용량 초과");
+        return false;
+      }
+      throw e;
+    }
   }
 
   function labelById(list, id) {
@@ -309,7 +366,10 @@
           if (typeof item.views === "number") {
             s.noticeItems[ix].views = item.views;
           }
-          save(s);
+          if (Array.isArray(item.attachments)) {
+            s.noticeItems[ix].attachments = sanitizeNoticeAttachments(item.attachments);
+          }
+          if (!saveAllowFail(s)) return null;
           return s.noticeItems[ix];
         }
       }
@@ -321,9 +381,10 @@
         date: item.date || todayDots(),
         views: typeof item.views === "number" ? item.views : 0,
         bodyHtml: bodyHtml,
+        attachments: sanitizeNoticeAttachments(item.attachments),
       };
       s.noticeItems.unshift(row);
-      save(s);
+      if (!saveAllowFail(s)) return null;
       return row;
     },
 
