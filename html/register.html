@@ -302,6 +302,66 @@
           <select id="r-city"><option>양곤 (Yangon)</option><option>만달레이 (Mandalay)</option><option>네피도 (Naypyidaw)</option><option>기타</option></select>
         </div>
       </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label><svg class="icon" width="12" height="12" color="var(--gray-text)"><use href="#ic-globe"/></svg>제1언어 <span class="req">*</span></label>
+          <select id="r-firstLang">
+            <option value="">선택</option>
+            <option value="MM">버마어(미얀마어)</option>
+            <option value="KO">한국어</option>
+            <option value="EN">영어</option>
+            <option value="OTHER">기타</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label><svg class="icon" width="12" height="12" color="var(--gray-text)"><use href="#ic-user"/></svg>직업 <span class="req">*</span></label>
+          <select id="r-job">
+            <option value="">선택</option>
+            <option value="1">학생</option>
+            <option value="2">공무원(군인)</option>
+            <option value="3">회사원</option>
+            <option value="4">자영업</option>
+            <option value="5">주부</option>
+            <option value="6">교사</option>
+            <option value="7">무직</option>
+            <option value="8">기타</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label><svg class="icon" width="12" height="12" color="var(--gray-text)"><use href="#ic-info"/></svg>응시동기 <span class="req">*</span></label>
+          <select id="r-motive">
+            <option value="">선택</option>
+            <option value="1">방송</option>
+            <option value="2">신문</option>
+            <option value="3">잡지</option>
+            <option value="4">교육기관</option>
+            <option value="5">포스터</option>
+            <option value="6">친지</option>
+            <option value="7">친구</option>
+            <option value="8">인터넷</option>
+            <option value="9">TOPIK 홈페이지</option>
+            <option value="10">기타</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label><svg class="icon" width="12" height="12" color="var(--gray-text)"><use href="#ic-star"/></svg>응시목적 <span class="req">*</span></label>
+          <select id="r-purpose">
+            <option value="">선택</option>
+            <option value="1">유학</option>
+            <option value="2">취업</option>
+            <option value="3">관광</option>
+            <option value="4">학술연구</option>
+            <option value="5">한국어 실력 확인</option>
+            <option value="6">한국문화 이해</option>
+            <option value="7">기타</option>
+            <option value="8">비자/영주권</option>
+            <option value="9">학점취득</option>
+            <option value="10">사회통합프로그램</option>
+          </select>
+        </div>
+      </div>
     </div>
     <div class="form-actions">
       <button type="button" class="btn-prev" onclick="goRegStep(1)">← 이전</button>
@@ -385,6 +445,10 @@
         <tr><th>국적</th><td id="confirm-nation">—</td></tr>
         <tr><th>연락처</th><td id="confirm-phone">—</td></tr>
         <tr><th>이메일</th><td id="confirm-email">—</td></tr>
+        <tr><th>제1언어</th><td id="confirm-firstLang">—</td></tr>
+        <tr><th>직업</th><td id="confirm-job">—</td></tr>
+        <tr><th>응시동기</th><td id="confirm-motive">—</td></tr>
+        <tr><th>응시목적</th><td id="confirm-purpose">—</td></tr>
         <tr><th>시험장</th><td>양곤 시험장 (추후 확정)</td></tr>
       </table>
       <div style="background:#fff8e1;border:1px solid var(--gold);border-radius:8px;padding:14px 16px;margin-top:16px;font-size:13px;color:#7a5800;display:flex;align-items:flex-start;gap:8px;">
@@ -438,7 +502,7 @@
   });
   let selLevel='I';
   function wireRegStep2Refresh(){
-    ['r-nameKr','r-nameEn','r-birth','r-phone','r-email','r-nationality','r-city'].forEach(function(id){
+    ['r-nameKr','r-nameEn','r-birth','r-phone','r-email','r-nationality','r-city','r-firstLang','r-job','r-motive','r-purpose'].forEach(function(id){
       var el=document.getElementById(id);
       if(!el)return;
       el.addEventListener('input',refreshRegNextButtons);
@@ -465,6 +529,10 @@
     if(!document.querySelector('input[name="r-gender"]:checked'))return false;
     if(!document.getElementById('r-phone').value.trim())return false;
     if(!isValidRegEmail(document.getElementById('r-email').value))return false;
+    if(!document.getElementById('r-firstLang').value)return false;
+    if(!document.getElementById('r-job').value)return false;
+    if(!document.getElementById('r-motive').value)return false;
+    if(!document.getElementById('r-purpose').value)return false;
     return true;
   }
   function isRegStep3Complete(){
@@ -490,6 +558,10 @@
       var em=document.getElementById('r-email').value.trim();
       if(!em)miss.push('· 이메일');
       else if(!isValidRegEmail(em))miss.push('· 이메일 (올바른 형식으로 입력)');
+      if(!document.getElementById('r-firstLang').value)miss.push('· 제1언어');
+      if(!document.getElementById('r-job').value)miss.push('· 직업');
+      if(!document.getElementById('r-motive').value)miss.push('· 응시동기');
+      if(!document.getElementById('r-purpose').value)miss.push('· 응시목적');
       if(miss.length){
         if(showAlert)alert('다음 항목을 입력해 주세요.\n\n'+miss.join('\n'));
         return false;
@@ -605,15 +677,27 @@
       if(i<4)document.getElementById('ln'+i).classList.toggle('done',i<n);
     }
   }
+  function selectTextById(id){
+    var el=document.getElementById(id);
+    if(!el)return '—';
+    var idx=el.selectedIndex;
+    if(idx<0||!el.options[idx])return '—';
+    var txt=(el.options[idx].textContent||'').trim();
+    return txt||'—';
+  }
   function fillConfirm(){
     document.getElementById('confirm-nameKr').textContent=document.getElementById('r-nameKr').value||'—';
     document.getElementById('confirm-nameEn').textContent=document.getElementById('r-nameEn').value||'—';
     document.getElementById('confirm-birth').textContent=document.getElementById('r-birth').value||'—';
     const g=document.querySelector('input[name="r-gender"]:checked');
     document.getElementById('confirm-gender').textContent=g?(g.value==='M'?'남성':'여성'):'—';
-    document.getElementById('confirm-nation').textContent=document.getElementById('r-nationality').value||'—';
+    document.getElementById('confirm-nation').textContent=selectTextById('r-nationality');
     document.getElementById('confirm-phone').textContent=document.getElementById('r-phone').value||'—';
     document.getElementById('confirm-email').textContent=document.getElementById('r-email').value||'—';
+    document.getElementById('confirm-firstLang').textContent=selectTextById('r-firstLang');
+    document.getElementById('confirm-job').textContent=selectTextById('r-job');
+    document.getElementById('confirm-motive').textContent=selectTextById('r-motive');
+    document.getElementById('confirm-purpose').textContent=selectTextById('r-purpose');
     document.getElementById('confirm-level').textContent='TOPIK '+selLevel+(selLevel==='I'?' (초급 1~2급)':' (중고급 3~6급)');
     var cImg=document.getElementById('confirmPhotoImg');
     var cPh=document.getElementById('confirmPhotoPlaceholder');
