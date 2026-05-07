@@ -218,9 +218,43 @@
     .modal-close{width:36px;height:36px;border:none;background:var(--gray-light);border-radius:8px;cursor:pointer;font-size:18px;line-height:1;color:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
     .modal-close:hover{background:#d4d8df;}
     .modal-body{padding:18px 20px;font-size:13px;line-height:1.6;}
-    .modal-dl{display:grid;grid-template-columns:110px 1fr;gap:10px 14px;margin:0;}
-    .modal-dl dt{color:var(--gray-text);font-weight:600;margin:0;}
-    .modal-dl dd{font-weight:600;color:#1a1a2e;margin:0;}
+    .modal-dialog--applicant{max-width:min(820px,96vw);}
+    #applicantModalBody .modal-dl{
+      display:grid;
+      grid-template-columns:100px minmax(0,1fr) 100px minmax(0,1fr);
+      gap:8px 14px;
+      margin:0;
+      align-items:start;
+    }
+    #applicantModalBody .modal-dl dt{
+      color:var(--gray-text);
+      font-weight:700;
+      margin:0;
+      padding:6px 8px;
+      background:#f8fafc;
+      border:1px solid var(--gray-light);
+      border-radius:8px;
+      line-height:1.35;
+    }
+    #applicantModalBody .modal-dl dd{
+      font-weight:600;
+      color:#1a1a2e;
+      margin:0;
+      padding:6px 8px;
+      border:1px solid var(--gray-light);
+      border-radius:8px;
+      background:#fff;
+      line-height:1.35;
+      min-width:0;
+      word-break:break-word;
+    }
+    #applicantModalBody .applicant-modal-wide-label{grid-column:1 / 2;}
+    #applicantModalBody .applicant-modal-wide-value{grid-column:2 / -1;}
+    @media(max-width:760px){
+      #applicantModalBody .modal-dl{grid-template-columns:96px minmax(0,1fr);}
+      #applicantModalBody .applicant-modal-wide-label{grid-column:1 / 2;}
+      #applicantModalBody .applicant-modal-wide-value{grid-column:2 / -1;}
+    }
     .applicant-modal-photo-dd{
       grid-column:1 / -1;
       display:flex;
@@ -683,7 +717,7 @@
 
 <div id="applicantModal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="applicantModalTitle">
   <div class="modal-backdrop" onclick="closeApplicantModal()" aria-hidden="true"></div>
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog--applicant">
     <div class="modal-head">
       <h3 id="applicantModalTitle">접수 상세</h3>
       <button type="button" class="modal-close" onclick="closeApplicantModal()" aria-label="닫기"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></button>
@@ -2083,6 +2117,45 @@
     }
     return {paid:paid,paidLabel:paidLabel,exam:exam};
   }
+  function applicantStep2InfoFromRow(num,fix){
+    var n=parseInt(num,10);
+    if(!isFinite(n)||n<1)n=1;
+    var gender=(fix&&fix.gender)?String(fix.gender):(n%2===0?'남성':'여성');
+    var nationality=(fix&&fix.nationality)?String(fix.nationality):((n%11===0)?'대한민국':'미얀마 (Myanmar)');
+    var cityList=['양곤 (Yangon)','만달레이 (Mandalay)','네피도 (Naypyidaw)','바고 (Bago)','모울메인 (Mawlamyine)'];
+    var firstLangList=['버마어(미얀마어)','한국어','영어','기타'];
+    var jobList=['학생','공무원(군인)','회사원','자영업','주부','교사','무직','기타'];
+    var motiveList=['방송','신문','잡지','교육기관','포스터','친지','친구','인터넷','TOPIK 홈페이지','기타'];
+    var purposeList=['유학','취업','관광','학술연구','한국어 실력 확인','한국문화 이해','기타','비자/영주권','학점취득','사회통합프로그램'];
+    var birthYear=1985+(n%18);
+    var birthMon=String((n%12)+1).padStart(2,'0');
+    var birthDay=String(((n*3)%28)+1).padStart(2,'0');
+    return {
+      birth:(fix&&fix.birth)?String(fix.birth):(String(birthYear)+birthMon+birthDay),
+      gender:gender,
+      nationality:nationality,
+      phone:(fix&&fix.phone)?String(fix.phone):('+95-9-'+String(1000000+(n*37)%9000000)),
+      email:(fix&&fix.email)?String(fix.email):('applicant'+String(n)+'@example.com'),
+      city:(fix&&fix.city)?String(fix.city):cityList[n%cityList.length],
+      firstLang:(fix&&fix.firstLang)?String(fix.firstLang):firstLangList[n%firstLangList.length],
+      job:(fix&&fix.job)?String(fix.job):jobList[n%jobList.length],
+      motive:(fix&&fix.motive)?String(fix.motive):motiveList[n%motiveList.length],
+      purpose:(fix&&fix.purpose)?String(fix.purpose):purposeList[n%purposeList.length]
+    };
+  }
+  function applicantEncodeAttr(v){
+    return encodeURIComponent(v==null?'':String(v));
+  }
+  function applicantDecodeAttr(v){
+    try{ return decodeURIComponent(v||''); }catch(err){ return v||''; }
+  }
+  function applicantRowDataText(row,key,fallback){
+    if(!row)return fallback||'';
+    var raw=row.getAttribute('data-'+key);
+    if(raw==null||raw==='')return fallback||'';
+    var txt=applicantDecodeAttr(raw);
+    return txt===''?(fallback||''):txt;
+  }
   function applicantBuildRowHtml(num,status,fix,examPrefix,readOnly){
     examPrefix=examPrefix||((currentApplicantRoundConfig&&currentApplicantRoundConfig.prefix)||'MM-98-');
     readOnly=!!readOnly;
@@ -2090,11 +2163,23 @@
     var ridForRow=String((currentApplicantRoundConfig&&currentApplicantRoundConfig.id)||'98');
     var pe=applicantPaidExamCells(st,num,fix&&fix.paid?fix.paid:null,examPrefix);
     var isUnpaid=pe.paid==='0';
+    var info=applicantStep2InfoFromRow(num,fix||null);
     var rrAttr='';
     if(fix&&fix.rejectReason){
       rrAttr=' data-reject-reason="'+encodeURIComponent(fix.rejectReason)+'"';
     }
-    var html='<tr data-status="'+st+'" data-paid="'+pe.paid+'" data-applicant-no="'+num+'" data-round-id="'+ridForRow+'"'+rrAttr+'>'+
+    var infoAttr=
+      ' data-birth="'+applicantEncodeAttr(info.birth)+'"'+
+      ' data-gender="'+applicantEncodeAttr(info.gender)+'"'+
+      ' data-nationality="'+applicantEncodeAttr(info.nationality)+'"'+
+      ' data-phone="'+applicantEncodeAttr(info.phone)+'"'+
+      ' data-email="'+applicantEncodeAttr(info.email)+'"'+
+      ' data-city="'+applicantEncodeAttr(info.city)+'"'+
+      ' data-first-lang="'+applicantEncodeAttr(info.firstLang)+'"'+
+      ' data-job="'+applicantEncodeAttr(info.job)+'"'+
+      ' data-motive="'+applicantEncodeAttr(info.motive)+'"'+
+      ' data-purpose="'+applicantEncodeAttr(info.purpose)+'"';
+    var html='<tr data-status="'+st+'" data-paid="'+pe.paid+'" data-applicant-no="'+num+'" data-round-id="'+ridForRow+'"'+rrAttr+infoAttr+'>'+
       '<td>'+num+'</td>'+
       applicantPhotoTd(st,num,ridForRow)+
       '<td>'+escapeHtml(fix?fix.ko:('데모응시자 '+num))+'</td>'+
@@ -2307,8 +2392,18 @@
     var paid=(cells[6].textContent||'').trim();
     var examNo=(cells[7].textContent||'').trim();
     var status=(cells[8].innerText||cells[8].textContent||'').replace(/\s+/g,' ').trim();
+    var birth=applicantRowDataText(row,'birth','—');
+    var gender=applicantRowDataText(row,'gender','—');
+    var nationality=applicantRowDataText(row,'nationality','—');
+    var phone=applicantRowDataText(row,'phone','—');
+    var email=applicantRowDataText(row,'email','—');
+    var city=applicantRowDataText(row,'city','—');
+    var firstLang=applicantRowDataText(row,'first-lang','—');
+    var job=applicantRowDataText(row,'job','—');
+    var motive=applicantRowDataText(row,'motive','—');
+    var purpose=applicantRowDataText(row,'purpose','—');
     var rej=row.getAttribute('data-reject-reason')?applicantSafeDecodeReject(row.getAttribute('data-reject-reason')):'';
-    var rejDl=rej?('<dt>반려 사유</dt><dd>'+escapeHtml(rej)+'</dd>'):'';
+    var rejDl=rej?('<dt class="applicant-modal-wide-label">반려 사유</dt><dd class="applicant-modal-wide-value">'+escapeHtml(rej)+'</dd>'):'';
     applicantPhotoZoomCtx={
       photoSrc:photoSrc,
       nameKo:nameKo,
@@ -2334,6 +2429,16 @@
       '<dt>접수번호</dt><dd>'+escapeHtml(num)+'</dd>'+
       '<dt>이름(한글)</dt><dd>'+escapeHtml(nameKo)+'</dd>'+
       '<dt>이름(영문)</dt><dd>'+escapeHtml(nameEn)+'</dd>'+
+      '<dt>생년월일</dt><dd>'+escapeHtml(birth)+'</dd>'+
+      '<dt>성별</dt><dd>'+escapeHtml(gender)+'</dd>'+
+      '<dt>국적</dt><dd>'+escapeHtml(nationality)+'</dd>'+
+      '<dt>연락처</dt><dd>'+escapeHtml(phone)+'</dd>'+
+      '<dt>이메일</dt><dd>'+escapeHtml(email)+'</dd>'+
+      '<dt>거주 도시</dt><dd>'+escapeHtml(city)+'</dd>'+
+      '<dt>제1언어</dt><dd>'+escapeHtml(firstLang)+'</dd>'+
+      '<dt>직업</dt><dd>'+escapeHtml(job)+'</dd>'+
+      '<dt>응시동기</dt><dd>'+escapeHtml(motive)+'</dd>'+
+      '<dt>응시목적</dt><dd>'+escapeHtml(purpose)+'</dd>'+
       '<dt>급수</dt><dd>'+escapeHtml(level)+'</dd>'+
       '<dt>접수일</dt><dd>'+escapeHtml(regDate)+'</dd>'+
       '<dt>수납</dt><dd>'+escapeHtml(paid||'—')+'</dd>'+
