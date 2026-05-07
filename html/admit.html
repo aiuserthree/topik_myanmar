@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>수험표 출력 — TOPIK Myanmar</title>
+  <title>접수 확인 안내 — TOPIK Myanmar</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+Myanmar:wght@400;700&display=swap" rel="stylesheet"/>
   <style>
     :root{--red:#CD2E3A;--navy:#003478;--gold:#C8963E;--gray-bg:#f4f6f9;--gray-light:#e8ecf0;--gray-text:#6b7280;}
@@ -306,21 +306,8 @@
 
 <div class="print-bar">
   <a href="mypage.html" class="btn-back">
-    <svg class="icon" width="14" height="14"><use href="#ic-arrow-l"/></svg>돌아가기
+    <svg class="icon" width="14" height="14"><use href="#ic-arrow-l"/></svg>접수 확인으로 돌아가기
   </a>
-  <button type="button" class="btn-print" onclick="window.print()">
-    <svg class="icon" width="14" height="14"><use href="#ic-print"/></svg>인쇄하기
-  </button>
-  <button type="button" class="btn-pdf" onclick="savePDF()">
-    <svg class="icon" width="14" height="14"><use href="#ic-download"/></svg>PDF 저장
-  </button>
 </div>
-
-<script>
-  function savePDF(){
-    alert('PDF 저장은 브라우저의 [인쇄 -> PDF 로 저장] 을 이용해 주세요.');
-    window.print();
-  }
-</script>
 </body>
 </html>
