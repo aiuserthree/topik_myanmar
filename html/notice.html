@@ -58,6 +58,7 @@
     .p-btn{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-weight:600;border:1.5px solid var(--gray-light);background:white;color:var(--navy);transition:all .2s;}
     .p-btn.active{background:var(--navy);color:white;border-color:var(--navy);}
     .p-btn:hover:not(.active){background:#f0f4ff;border-color:var(--navy);}
+    .pagination button.p-btn{font-family:inherit;}
     /* Detail View */
     #detailView{display:none;}
     .detail-card{background:white;border-radius:12px;box-shadow:var(--shadow);overflow:hidden;}
@@ -210,12 +211,7 @@
       </div>
     </div>
 
-    <div class="pagination">
-      <div class="p-btn active">1</div>
-      <div class="p-btn">2</div>
-      <div class="p-btn">3</div>
-      <div class="p-btn"><svg class="icon" width="13" height="13"><use href="#ic-arrow-r"/></svg></div>
-    </div>
+    <div class="pagination" id="noticePagination" aria-label="페이지"></div>
   </div>
 
   <!-- 상세 뷰 -->
@@ -265,7 +261,7 @@
   </div>
 </footer>
 
-<script src="js/content-store.js?v=20260510"></script>
+<script src="js/content-store.js?v=20260507b"></script>
 <script src="js/i18n.js?v=20260506"></script>
 <script src="js/mobile-nav.js?v=20260506" defer></script>
 <script>
@@ -290,23 +286,21 @@
     sel.value=ok?cur:'all';
     applyNoticeFilters();
   }
-  document.addEventListener('DOMContentLoaded',function(){
-    if(window.TMI18N) TMI18N.boot();
-    syncNoticeCategoryFilter();
-    renderNoticeBoard();
-  });
-  window.addEventListener('topik-content-change',function(){
-    syncNoticeCategoryFilter();
-    renderNoticeBoard();
-  });
-  window.addEventListener('storage',function(e){
-    if(window.ContentStore&&e.key===ContentStore.STORAGE_KEY){
-      syncNoticeCategoryFilter();
-      renderNoticeBoard();
-    }
-  });
 </script>
 <script>
+  function readNoticeIdFromUrl(){
+    try{
+      return new URLSearchParams(location.search).get('id')||'';
+    }catch(e){
+      return '';
+    }
+  }
+  function noticePlainBody(html){
+    if(!html)return'';
+    var d=document.createElement('div');
+    d.innerHTML=html;
+    return (d.textContent||'').toLowerCase();
+  }
   function noticeBadgeHtml(catId){
     if(catId==='new'){
       return '<span class="nbadge nb-new"><svg class="icon" width="9" height="9"><use href="#ic-notice"/></svg>NEW</span>';
@@ -317,25 +311,67 @@
     return '<span class="nbadge nb-gen"><svg class="icon" width="9" height="9"><use href="#ic-rules"/></svg>일반</span>';
   }
   var currentNoticeId=null;
+  var noticePageSize=10;
+  var noticeCurrentPage=1;
+
+  function getFilteredNoticeItems(){
+    if(!window.ContentStore)return[];
+    var fvEl=document.getElementById('noticeCatFilter');
+    var fv=fvEl?fvEl.value:'all';
+    var qEl=document.getElementById('searchInput');
+    var q=(qEl?(qEl.value||''):'').toLowerCase().trim();
+    return ContentStore.getNoticeItems().filter(function(it){
+      var catOk=(fv==='all'||it.catId===fv);
+      var t=(it.title||'').toLowerCase();
+      var body=noticePlainBody(it.bodyHtml||'');
+      var textOk=!q||t.includes(q)||body.includes(q);
+      return catOk&&textOk;
+    });
+  }
+
+  function renderNoticePagination(totalPages){
+    var pag=document.getElementById('noticePagination');
+    if(!pag)return;
+    pag.innerHTML='';
+    for(var p=1;p<=totalPages;p++){
+      var btn=document.createElement('button');
+      btn.type='button';
+      btn.className='p-btn'+(p===noticeCurrentPage?' active':'');
+      btn.textContent=String(p);
+      if(p===noticeCurrentPage) btn.setAttribute('aria-current','page');
+      (function(page){
+        btn.onclick=function(){ noticeCurrentPage=page; renderNoticeBoard(); };
+      })(p);
+      pag.appendChild(btn);
+    }
+  }
+
   function renderNoticeBoard(){
     if(!window.ContentStore)return;
     var wrap=document.getElementById('noticeBoardRows');
     if(!wrap)return;
-    var items=ContentStore.getNoticeItems();
+    var filtered=getFilteredNoticeItems();
+    var total=filtered.length;
+    var totalPages=Math.max(1,Math.ceil(total/noticePageSize));
+    if(noticeCurrentPage>totalPages) noticeCurrentPage=totalPages;
+    if(noticeCurrentPage<1) noticeCurrentPage=1;
+    var start=(noticeCurrentPage-1)*noticePageSize;
+    var pageItems=filtered.slice(start,start+noticePageSize);
+
     wrap.innerHTML='';
-    var total=items.length;
-    items.forEach(function(it,i){
+    pageItems.forEach(function(it,j){
       var row=document.createElement('div');
       row.className='board-row';
       row.setAttribute('data-cat',it.catId);
       row.setAttribute('data-notice-id',it.id);
       row.onclick=function(){ showNoticeDetail(it.id); };
-      row.innerHTML='<div class="col-num">'+(total-i)+'</div>'+
+      var num=total-start-j;
+      row.innerHTML='<div class="col-num">'+num+'</div>'+
         '<div class="col-title">'+noticeBadgeHtml(it.catId)+escapeNotice(it.title)+'</div>'+
         '<div class="col-date"><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>'+escapeNotice(it.date)+'</div>';
       wrap.appendChild(row);
     });
-    applyNoticeFilters();
+    renderNoticePagination(totalPages);
   }
   function escapeNotice(str){
     if(str==null)return'';
@@ -343,11 +379,15 @@
     d.textContent=String(str);
     return d.innerHTML;
   }
-  function showNoticeDetail(id){
+  function showNoticeDetail(id, opts){
+    opts=opts||{};
     if(!window.ContentStore)return;
     var items=ContentStore.getNoticeItems();
     var it=items.find(function(x){ return x.id===id; });
-    if(!it)return;
+    if(!it){
+      if(opts.fromUrl) renderNoticeBoard();
+      return;
+    }
     currentNoticeId=id;
     document.getElementById('detailCatText').textContent='공지사항 · '+ContentStore.labelForNoticeCatId(it.catId);
     document.getElementById('detail-title').textContent=it.title;
@@ -372,26 +412,54 @@
     document.getElementById('listView').style.display='none';
     document.getElementById('detailView').style.display='block';
     window.scrollTo({top:0,behavior:'smooth'});
+    if(!opts.skipHistory){
+      history.pushState({ tmNotice:'detail', id:id }, '', 'notice.html?id='+encodeURIComponent(id));
+    }
   }
-  function showList(){
+  function showList(opts){
+    opts=opts||{};
     document.getElementById('detailView').style.display='none';
     document.getElementById('listView').style.display='block';
     currentNoticeId=null;
+    renderNoticeBoard();
+    window.scrollTo({top:0,behavior:'smooth'});
+    if(!opts.skipHistory){
+      history.pushState({ tmNotice:'list' }, '', 'notice.html');
+    }
   }
   function applyNoticeFilters(){
-    var fvEl=document.getElementById('noticeCatFilter');
-    var fv=fvEl?fvEl.value:'all';
-    var qEl=document.getElementById('searchInput');
-    var q=qEl?(qEl.value||'').toLowerCase():'';
-    document.querySelectorAll('#noticeBoardRows .board-row').forEach(function(row){
-      var catOk=(fv==='all'||row.dataset.cat===fv);
-      var textOk=!q||row.textContent.toLowerCase().includes(q);
-      row.style.display=(catOk&&textOk)?'':'none';
-    });
+    noticeCurrentPage=1;
+    renderNoticeBoard();
   }
   function searchNotice(){
-    applyNoticeFilters();
+    noticeCurrentPage=1;
+    renderNoticeBoard();
   }
+  window.addEventListener('popstate', function(){
+    var id=readNoticeIdFromUrl();
+    if(id&&window.ContentStore){
+      var ok=ContentStore.getNoticeItems().some(function(x){ return x.id===id; });
+      if(ok) showNoticeDetail(id,{ skipHistory:true });
+      else showList({ skipHistory:true });
+    }else{
+      showList({ skipHistory:true });
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded',function(){
+    if(window.TMI18N) TMI18N.boot();
+    syncNoticeCategoryFilter();
+    var id=readNoticeIdFromUrl();
+    if(id) showNoticeDetail(id,{ skipHistory:true, fromUrl:true });
+  });
+  window.addEventListener('topik-content-change',function(){
+    syncNoticeCategoryFilter();
+  });
+  window.addEventListener('storage',function(e){
+    if(window.ContentStore&&e.key===ContentStore.STORAGE_KEY){
+      syncNoticeCategoryFilter();
+    }
+  });
 </script>
 </body>
 </html>

@@ -118,7 +118,7 @@
     .footer-divider{border:none;border-top:1px solid #2e3e5c;margin:20px 0;}
     .footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:12px;}
 
-    @media(max-width:768px){
+    @media(max-width:767px){
       .hero-inner{flex-direction:column;}
       .footer-top{flex-direction:column;gap:24px;}
     }
@@ -265,33 +265,7 @@
       </h2>
       <a href="notice.html" class="more-link"><span data-i18n="sec_notice_more">더보기</span> <svg class="icon" width="14" height="14"><use href="#ic-arrow-r"/></svg></a>
     </div>
-    <div class="notice-list">
-      <a href="notice.html" class="notice-item">
-        <span class="notice-badge badge-new"><svg class="icon" width="10" height="10"><use href="#ic-notice"/></svg>NEW</span>
-        <span class="notice-title">제98회 TOPIK 접수 안내 (양곤 시험장)</span>
-        <span class="notice-date">2026.04.01</span>
-      </a>
-      <a href="notice.html" class="notice-item">
-        <span class="notice-badge badge-imp"><svg class="icon" width="10" height="10"><use href="#ic-alert"/></svg>중요</span>
-        <span class="notice-title">증명사진 제출 기준 변경 안내</span>
-        <span class="notice-date">2026.03.28</span>
-      </a>
-      <a href="notice.html" class="notice-item">
-        <span class="notice-badge badge-gen"><svg class="icon" width="10" height="10"><use href="#ic-rules"/></svg>일반</span>
-        <span class="notice-title">2026년 TOPIK 미얀마 연간 시험 일정 공고</span>
-        <span class="notice-date">2026.03.15</span>
-      </a>
-      <a href="notice.html" class="notice-item">
-        <span class="notice-badge badge-gen"><svg class="icon" width="10" height="10"><use href="#ic-rules"/></svg>일반</span>
-        <span class="notice-title">수험표 출력 기간 안내 (제97회)</span>
-        <span class="notice-date">2026.03.10</span>
-      </a>
-      <a href="notice.html" class="notice-item">
-        <span class="notice-badge badge-gen"><svg class="icon" width="10" height="10"><use href="#ic-rules"/></svg>일반</span>
-        <span class="notice-title">제97회 TOPIK 최종 합격자 발표</span>
-        <span class="notice-date">2026.02.20</span>
-      </a>
-    </div>
+    <div class="notice-list" id="homeNoticeList" aria-live="polite"></div>
   </div>
 </section>
 
@@ -459,12 +433,56 @@
   </div>
 </footer>
 
+<script src="js/content-store.js?v=20260507b"></script>
 <script src="js/mobile-nav.js?v=20260506" defer></script>
 <script src="js/i18n.js?v=20260506"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     if (window.TMI18N) TMI18N.boot();
+    renderHomeNotices();
   });
+  window.addEventListener('topik-content-change', function () {
+    renderHomeNotices();
+  });
+  window.addEventListener('storage', function (e) {
+    if (window.ContentStore && e.key === ContentStore.STORAGE_KEY) renderHomeNotices();
+  });
+  function homeNoticeBadge(catId) {
+    if (catId === 'new') {
+      return '<span class="notice-badge badge-new"><svg class="icon" width="10" height="10"><use href="#ic-notice"/></svg>NEW</span>';
+    }
+    if (catId === 'imp') {
+      return '<span class="notice-badge badge-imp"><svg class="icon" width="10" height="10"><use href="#ic-alert"/></svg>중요</span>';
+    }
+    return '<span class="notice-badge badge-gen"><svg class="icon" width="10" height="10"><use href="#ic-rules"/></svg>일반</span>';
+  }
+  function escapeHomeText(str) {
+    if (str == null) return '';
+    var d = document.createElement('div');
+    d.textContent = String(str);
+    return d.innerHTML;
+  }
+  function renderHomeNotices() {
+    var wrap = document.getElementById('homeNoticeList');
+    if (!wrap || !window.ContentStore) return;
+    var items = ContentStore.getNoticeItems().slice(0, 5);
+    wrap.innerHTML = items
+      .map(function (it) {
+        return (
+          '<a href="notice.html?id=' +
+          encodeURIComponent(it.id) +
+          '" class="notice-item">' +
+          homeNoticeBadge(it.catId) +
+          '<span class="notice-title">' +
+          escapeHomeText(it.title) +
+          '</span>' +
+          '<span class="notice-date">' +
+          escapeHomeText(it.date) +
+          '</span></a>'
+        );
+      })
+      .join('');
+  }
 </script>
 <script>
   const target = new Date('2026-04-14T23:59:59');

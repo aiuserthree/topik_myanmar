@@ -128,6 +128,97 @@
           "<p><strong>제97회 한국어능력시험 최종 합격자 발표</strong></p>" +
           "<p>합격자 명단 및 성적 확인 방법은 마이페이지·성적 조회 메뉴에서 안내됩니다. 문의는 시행 기관 공지 채널을 이용해 주세요.</p>",
       },
+      /* 더미 공지 — 페이징(10건/페이지) 확인용 */
+      {
+        id: "nt_seed_dm_01",
+        catId: "gen",
+        title: "제96회 시험장 입실 안내 및 지각 처리 기준",
+        date: "2026.02.05",
+        views: 210,
+        bodyHtml:
+          "<p>제96회 시험 당일 입실 마감 시간을 준수해 주시기 바랍니다. 지각 시 응시가 제한될 수 있습니다.</p>",
+      },
+      {
+        id: "nt_seed_dm_02",
+        catId: "imp",
+        title: "[중요] 응시료 환불 신청 마감 안내",
+        date: "2026.01.28",
+        views: 445,
+        bodyHtml:
+          "<p>접수 취소에 따른 환불 신청은 공지된 기한 내에만 처리됩니다. 기한 경과 후에는 환불이 불가할 수 있습니다.</p>",
+      },
+      {
+        id: "nt_seed_dm_03",
+        catId: "new",
+        title: "2026년 상반기 TOPIK 스피킹 시범 운영 안내",
+        date: "2026.01.20",
+        views: 892,
+        bodyHtml:
+          "<p>TOPIK 스피킹 시범 운영 일정 및 신청 방법은 별도 공지를 통해 안내됩니다. 본 공지는 요약 안내입니다.</p>",
+      },
+      {
+        id: "nt_seed_dm_04",
+        catId: "result",
+        title: "제95회 성적표 발급 및 재발급 절차",
+        date: "2026.01.12",
+        views: 1560,
+        bodyHtml:
+          "<p>성적표 온라인 확인 후, 종이 성적표가 필요한 경우 발급 창구 및 수수료 안내를 확인해 주세요.</p>",
+      },
+      {
+        id: "nt_seed_dm_05",
+        catId: "gen",
+        title: "시험 당일 휴대전기·스마트워치 반입 금지 재안내",
+        date: "2025.12.22",
+        views: 334,
+        bodyHtml:
+          "<p>시험장 내 전자기기는 지정 보관함에 보관해야 하며, 시험 중 사용 적발 시 부정행위 처리될 수 있습니다.</p>",
+      },
+      {
+        id: "nt_seed_dm_06",
+        catId: "gen",
+        title: "겨울철 독감 예방 및 시험장 환기 관련 안내",
+        date: "2025.12.08",
+        views: 178,
+        bodyHtml:
+          "<p>시험장 환기 정책은 현지 방역 지침에 따라 조정될 수 있습니다. 응시자 여러분의 양해 부탁드립니다.</p>",
+      },
+      {
+        id: "nt_seed_dm_07",
+        catId: "new",
+        title: "회원정보 수정 시 본인인증 절차 강화 안내",
+        date: "2025.11.30",
+        views: 267,
+        bodyHtml:
+          "<p>개인정보 보호를 위해 마이페이지에서 연락처·주소 변경 시 추가 확인 절차가 적용됩니다.</p>",
+      },
+      {
+        id: "nt_seed_dm_08",
+        catId: "imp",
+        title: "접수 시스템 점검 일정 (야간 2시간)",
+        date: "2025.11.18",
+        views: 1203,
+        bodyHtml:
+          "<p>원서 접수 시스템 안정화를 위한 점검이 예정되어 있습니다. 점검 시간에는 접수·결제가 일시 중단됩니다.</p>",
+      },
+      {
+        id: "nt_seed_dm_09",
+        catId: "gen",
+        title: "TOPIK Myanmar 공식 이메일 주소 변경 안내",
+        date: "2025.11.05",
+        views: 621,
+        bodyHtml:
+          "<p>문의용 공식 이메일이 변경되었습니다. 기존 주소로 발송된 메일은 순차적으로 확인 중입니다.</p>",
+      },
+      {
+        id: "nt_seed_dm_10",
+        catId: "result",
+        title: "제94회 이의신청 접수 기간 및 서류 안내",
+        date: "2025.10.21",
+        views: 88,
+        bodyHtml:
+          "<p>성적 이의신청은 정해진 기간과 양식에 따라 접수해야 하며, 기간 외 접수는 처리되지 않습니다.</p>",
+      },
     ];
   }
 
@@ -201,6 +292,33 @@
     if (!Array.isArray(parsed.noticeItems)) {
       parsed.noticeItems = d.noticeItems.slice();
       needSave = true;
+    } else {
+      /* 기본 시드에 추가된 공지(id 기준)를 로컬 데이터에 병합 — 페이징용 더미 등 */
+      var defById = {};
+      d.noticeItems.forEach(function (def) {
+        defById[def.id] = def;
+      });
+      var merged = [];
+      d.noticeItems.forEach(function (def) {
+        var ix = parsed.noticeItems.findIndex(function (x) {
+          return x && x.id === def.id;
+        });
+        merged.push(ix >= 0 ? parsed.noticeItems[ix] : def);
+      });
+      parsed.noticeItems.forEach(function (x) {
+        if (x && x.id && !defById[x.id]) merged.push(x);
+      });
+      if (merged.length !== parsed.noticeItems.length) {
+        needSave = true;
+      } else {
+        for (var mj = 0; mj < merged.length; mj++) {
+          if (merged[mj] !== parsed.noticeItems[mj]) {
+            needSave = true;
+            break;
+          }
+        }
+      }
+      parsed.noticeItems = merged;
     }
 
     for (var ni = 0; ni < parsed.noticeItems.length; ni++) {

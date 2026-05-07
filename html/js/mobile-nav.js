@@ -4,7 +4,8 @@
   var TM_PC_LANG_NODE = null;
 
   function isMobileDrawerBreakpoint() {
-    return window.matchMedia("(max-width: 768px)").matches;
+    /* 폰·태블릿: 한 줄 GNB 대신 햄버거+드로어. 데스크톱은 ≥1200px. */
+    return window.matchMedia("(max-width: 1199.98px)").matches;
   }
 
   /* PC 전용 언어 콤보박스(.hdr-lang-pc)가 모바일 viewport에서 layout(overflow / fixed anchor)에
