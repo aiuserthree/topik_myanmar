@@ -15,8 +15,8 @@
     .logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
     .logo-text .main{font-size:18px;font-weight:700;color:white;}
     .logo-text .sub{font-size:11px;color:#aab8cc;}
-    /* Print Action Bar */
-    .print-bar{background:white;padding:16px 24px;display:flex;justify-content:center;gap:12px;border-bottom:1px solid var(--gray-light);flex-wrap:wrap;}
+    /* Print Action Bar (화면 하단) */
+    .print-bar{max-width:740px;margin:24px auto 0;padding:20px 24px 40px;display:flex;justify-content:center;gap:12px;border-top:1px solid var(--gray-light);flex-wrap:wrap;background:transparent;}
     .btn-back{padding:10px 20px;background:#f0f4ff;color:var(--navy);border:1.5px solid var(--navy);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .2s;}
     .btn-back:hover{background:var(--navy);color:white;}
     .btn-back svg.icon{color:var(--navy);transition:color .2s;}
@@ -26,7 +26,7 @@
     .btn-pdf{padding:10px 22px;background:var(--red);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:all .2s;}
     .btn-pdf:hover{background:#b02530;}
     /* Admit Wrap */
-    .admit-wrap{max-width:740px;margin:32px auto;padding:0 24px 56px;}
+    .admit-wrap{max-width:740px;margin:32px auto 0;padding:0 24px;}
     /* Admit Card */
     .admit-card{background:white;border:2px solid var(--navy);border-radius:6px;overflow:hidden;box-shadow:0 6px 28px rgba(0,0,0,0.1);position:relative;}
     /* Watermark */
@@ -152,18 +152,6 @@
   시험 급수·유의사항·공식 일정은 <a href="https://www.topik.go.kr/" target="_blank" rel="noopener noreferrer">TOPIK 공식 사이트 (topik.go.kr)</a> 및
   <a href="https://www.niied.go.kr/web/main/main" target="_blank" rel="noopener noreferrer">국립국제교육원 (NIIED)</a> 안내를 함께 확인하세요.
 </p>
-
-<div class="print-bar">
-  <a href="mypage.html" class="btn-back">
-    <svg class="icon" width="14" height="14"><use href="#ic-arrow-l"/></svg>돌아가기
-  </a>
-  <button class="btn-print" onclick="window.print()">
-    <svg class="icon" width="14" height="14"><use href="#ic-print"/></svg>인쇄하기
-  </button>
-  <button class="btn-pdf" onclick="savePDF()">
-    <svg class="icon" width="14" height="14"><use href="#ic-download"/></svg>PDF 저장
-  </button>
-</div>
 
 <div class="admit-wrap">
   <div class="admit-card">
@@ -314,6 +302,18 @@
     </div>
 
   </div><!-- /admit-card -->
+</div>
+
+<div class="print-bar">
+  <a href="mypage.html" class="btn-back">
+    <svg class="icon" width="14" height="14"><use href="#ic-arrow-l"/></svg>돌아가기
+  </a>
+  <button type="button" class="btn-print" onclick="window.print()">
+    <svg class="icon" width="14" height="14"><use href="#ic-print"/></svg>인쇄하기
+  </button>
+  <button type="button" class="btn-pdf" onclick="savePDF()">
+    <svg class="icon" width="14" height="14"><use href="#ic-download"/></svg>PDF 저장
+  </button>
 </div>
 
 <script>
