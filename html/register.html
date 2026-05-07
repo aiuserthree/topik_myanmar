@@ -75,6 +75,11 @@
     .photo-checklist{list-style:none;display:flex;flex-direction:column;gap:5px;}
     .photo-checklist li{font-size:12px;color:#555;display:flex;align-items:center;gap:6px;}
     .upload-btn{margin-top:12px;padding:8px 18px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;}
+    .signup-photo-reuse-banner{display:none;margin-bottom:16px;padding:12px 14px;background:#eff6ff;border:1px solid #93c5fd;border-radius:10px;font-size:13px;color:#1e3a5f;line-height:1.5;}
+    .signup-photo-reuse-banner.show{display:block;}
+    .signup-photo-reuse-actions{margin-top:10px;}
+    .btn-photo-reuse-alt{padding:8px 14px;border-radius:8px;border:1.5px solid var(--navy);background:white;color:var(--navy);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+    .btn-photo-reuse-alt:hover{background:#f0f4ff;}
     /* Level Buttons */
     .level-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
     @media(max-width:600px){.level-grid{grid-template-columns:1fr;}}
@@ -90,8 +95,12 @@
     .level-btn p{font-size:12px;color:var(--gray-text);}
     /* Confirm Table */
     .confirm-table{width:100%;border-collapse:collapse;font-size:14px;}
-    .confirm-table th{background:#f0f4ff;color:var(--navy);padding:10px 16px;text-align:left;font-weight:600;width:35%;border-bottom:1px solid var(--gray-light);}
-    .confirm-table td{padding:10px 16px;border-bottom:1px solid var(--gray-light);}
+    .confirm-table th{background:#f0f4ff;color:var(--navy);padding:10px 16px;text-align:left;font-weight:600;width:35%;border-bottom:1px solid var(--gray-light);vertical-align:middle;}
+    .confirm-table td{padding:10px 16px;border-bottom:1px solid var(--gray-light);vertical-align:middle;}
+    .confirm-photo-cell{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+    #confirmPhotoImg{display:none;width:96px;height:124px;object-fit:cover;border-radius:8px;border:1.5px solid var(--gray-light);background:#fafbfc;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+    #confirmPhotoImg.show{display:block;}
+    .confirm-photo-caption{font-size:12px;color:var(--gray-text);max-width:280px;line-height:1.45;}
     /* Action */
     .form-actions{display:flex;gap:12px;margin-top:8px;}
     .btn-prev{flex:1;padding:13px;background:var(--gray-text);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;}
@@ -301,6 +310,12 @@
   <div id="regStep3" style="display:none;">
     <div class="reg-card">
       <h2><svg class="icon" width="18" height="18" color="var(--red)"><use href="#ic-camera"/></svg>증명사진 업로드</h2>
+      <div id="signupPhotoReuseBanner" class="signup-photo-reuse-banner" role="status">
+        <strong><svg class="icon" width="14" height="14" color="var(--navy)" style="vertical-align:-2px;"><use href="#ic-check"/></svg>회원가입 시 등록한 사진</strong>을 불러왔습니다. 그대로 접수에 사용됩니다.
+        <div class="signup-photo-reuse-actions">
+          <button type="button" class="btn-photo-reuse-alt" onclick="clearRegisterPhotoForNewUpload()">다른 사진으로 변경</button>
+        </div>
+      </div>
       <div class="photo-upload">
         <div class="photo-preview" onclick="document.getElementById('photoInput').click()" id="photoBox">
           <img id="previewImg" src="" alt="미리보기"/>
@@ -354,6 +369,12 @@
       <table class="confirm-table">
         <tr><th>회차</th><td>제98회 TOPIK (2025.05.17)</td></tr>
         <tr><th>응시 급수</th><td id="confirm-level">—</td></tr>
+        <tr><th>증명사진</th><td>
+          <div class="confirm-photo-cell">
+            <img id="confirmPhotoImg" src="" alt="접수 증명사진 확인"/>
+            <span id="confirmPhotoPlaceholder" class="confirm-photo-caption">—</span>
+          </div>
+        </td></tr>
         <tr><th>한글 성명</th><td id="confirm-nameKr">—</td></tr>
         <tr><th>영문 성명</th><td id="confirm-nameEn">—</td></tr>
         <tr><th>생년월일</th><td id="confirm-birth">—</td></tr>
@@ -411,10 +432,60 @@
   let selLevel='I';
   function selectRound(el){document.querySelectorAll('.round-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');}
   function selectLevel(el,lv){document.querySelectorAll('.level-btn').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');selLevel=lv;}
+  function registerHasPhotoPreview(){
+    var img=document.getElementById('previewImg');
+    return !!(img && img.style.display==='block' && img.src && /^data:image\//.test(img.src));
+  }
+  function applySignupPhotoDataUrl(dataUrl){
+    if(!dataUrl)return;
+    var img=document.getElementById('previewImg');
+    img.src=dataUrl;
+    img.style.display='block';
+    document.getElementById('phIcon').style.display='none';
+    document.getElementById('phText').style.display='none';
+  }
+  function initRegisterStep3Photo(){
+    var banner=document.getElementById('signupPhotoReuseBanner');
+    if(!banner)return;
+    var stored=window.TMProfile&&TMProfile.loadSignupPhoto&&TMProfile.loadSignupPhoto();
+    if(registerHasPhotoPreview()){
+      var img=document.getElementById('previewImg');
+      if(stored&&img&&img.src===stored)banner.classList.add('show');
+      else banner.classList.remove('show');
+      return;
+    }
+    banner.classList.remove('show');
+    if(stored){
+      applySignupPhotoDataUrl(stored);
+      banner.classList.add('show');
+    }
+  }
+  function clearRegisterPhotoForNewUpload(){
+    var img=document.getElementById('previewImg');
+    img.src='';
+    img.style.display='none';
+    document.getElementById('phIcon').style.display='';
+    document.getElementById('phText').style.display='';
+    document.getElementById('photoInput').value='';
+    var banner=document.getElementById('signupPhotoReuseBanner');
+    if(banner)banner.classList.remove('show');
+  }
   function goRegStep(n){
+    if(n===4){
+      if(!registerHasPhotoPreview()){
+        alert('증명사진을 등록해 주세요. 회원가입 시 올린 사진이 있으면 이 단계에 자동으로 표시됩니다.');
+        return;
+      }
+      if(!document.querySelector('.level-btn.selected')){
+        alert('응시 급수(TOPIK I 또는 II)를 선택해 주세요.');
+        return;
+      }
+    }
     for(let i=1;i<=4;i++)document.getElementById('regStep'+i).style.display='none';
     document.getElementById('regStep'+n).style.display='block';
-    updateRBar(n); if(n===4)fillConfirm();
+    updateRBar(n);
+    if(n===3)initRegisterStep3Photo();
+    if(n===4)fillConfirm();
     window.scrollTo({top:0,behavior:'smooth'});
   }
   function updateRBar(n){
@@ -437,6 +508,20 @@
     document.getElementById('confirm-phone').textContent=document.getElementById('r-phone').value||'—';
     document.getElementById('confirm-email').textContent=document.getElementById('r-email').value||'—';
     document.getElementById('confirm-level').textContent='TOPIK '+selLevel+(selLevel==='I'?' (초급 1~2급)':' (중고급 3~6급)');
+    var cImg=document.getElementById('confirmPhotoImg');
+    var cPh=document.getElementById('confirmPhotoPlaceholder');
+    var prev=document.getElementById('previewImg');
+    if(cImg&&cPh&&prev&&registerHasPhotoPreview()){
+      cImg.src=prev.src;
+      cImg.classList.add('show');
+      cPh.textContent='위 사진이 접수·수험표에 사용됩니다. 수정하려면 [이전]으로 돌아가 3단계에서 변경하세요.';
+      cPh.style.display='block';
+    }else if(cImg&&cPh){
+      cImg.removeAttribute('src');
+      cImg.classList.remove('show');
+      cPh.textContent='—';
+      cPh.style.display='block';
+    }
   }
   function previewPhoto(e){
     const file=e.target.files[0]; if(!file)return;
@@ -446,6 +531,8 @@
       img.src=ev.target.result; img.style.display='block';
       document.getElementById('phIcon').style.display='none';
       document.getElementById('phText').style.display='none';
+      var b=document.getElementById('signupPhotoReuseBanner');
+      if(b)b.classList.remove('show');
     };
     reader.readAsDataURL(file);
   }
