@@ -1,6 +1,6 @@
 /* ============================================================
    TOPIK Myanmar — Admin mobile helpers
-   - Injects a bottom tab bar (mobile) for the 5 admin panels
+   - Injects a bottom tab bar (mobile) for the admin panels
    - Adds data-label to every td so CSS can convert tables
      to card stacks on small screens
    - Keeps the sidebar in sync with tab activation
@@ -9,7 +9,6 @@
   var PANELS = [
     { key: "dashboard",  label: "대시보드", icon: "ic-chart" },
     { key: "applicants", label: "접수자",   icon: "ic-users" },
-    { key: "photos",     label: "사진심사", icon: "ic-image" },
     { key: "rounds",     label: "회차",     icon: "ic-calendar" },
     { key: "notices",    label: "공지사항 관리", icon: "ic-notice" },
     { key: "faq",        label: "FAQ",      icon: "ic-info" },
