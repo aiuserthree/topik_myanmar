@@ -57,6 +57,9 @@
     .detail-item .di-value.highlight{color:var(--red);font-size:16px;}
     /* Notice Box */
     .info-notice{background:#fff8e1;border:1px solid var(--gold);border-radius:8px;padding:12px 15px;font-size:12px;color:#7a5800;display:flex;align-items:flex-start;gap:8px;line-height:1.6;}
+    .reject-reason-panel{margin-top:14px;padding:14px 16px;border-radius:10px;border:1px solid #fecaca;background:#fef2f2;color:#7f1d1d;font-size:13px;line-height:1.6;}
+    .reject-reason-panel .rr-title{font-size:11px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+    .reject-reason-panel .rr-body{font-weight:600;color:#450a0a;white-space:pre-wrap;}
     /* Card Footer */
     .reg-card-footer{padding:14px 22px;background:#fafbfc;border-top:1px solid var(--gray-light);display:flex;gap:10px;flex-wrap:wrap;}
     .btn-admit{padding:9px 18px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .2s;}
@@ -260,6 +263,63 @@
     </div>
   </div>
 
+  <!-- 접수 내역 — 반려 (관리자 사유는 동일 브라우저 localStorage 연동, 접수번호 138) -->
+  <div class="reg-card" data-sync-reject-applicant-no="138">
+    <div class="reg-card-header">
+      <h3>
+        <svg class="icon" width="16" height="16" color="var(--navy)"><use href="#ic-register"/></svg>
+        제98회 TOPIK — 접수 내역
+      </h3>
+      <span class="status-badge s-rejected">
+        <svg class="icon" width="11" height="11"><use href="#ic-x"/></svg>반려
+      </span>
+    </div>
+    <div class="reg-card-body">
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-register"/></svg>회차</div>
+          <div class="di-value">제98회 TOPIK</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>응시 급수</div>
+          <div class="di-value">TOPIK I (초급)</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>시험일</div>
+          <div class="di-value">2026.05.17 (토)</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>접수일</div>
+          <div class="di-value">2026.04.01</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-ticket"/></svg>접수번호</div>
+          <div class="di-value">138</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>수납</div>
+          <div class="di-value">—</div>
+        </div>
+      </div>
+      <div class="reject-reason-panel" role="region" aria-label="반려 사유">
+        <div class="rr-title"><svg class="icon" width="13" height="13"><use href="#ic-alert"/></svg>반려 사유</div>
+        <div class="rr-body" data-reject-reason-slot="">증명사진 규격 미준수(배경·밝기 기준). 재촬영 후 재제출 바랍니다.</div>
+      </div>
+      <div class="info-notice" style="margin-top:14px;border-color:#fecaca;background:#fff;">
+        <svg class="icon" width="15" height="15" color="#b91c1c" style="flex-shrink:0;margin-top:1px;"><use href="#ic-info"/></svg>
+        <span>반려된 접수는 공지된 기한 내 증빙을 수정한 뒤 <strong>재접수</strong>해 주세요. 수험번호는 부여되지 않습니다.</span>
+      </div>
+    </div>
+    <div class="reg-card-footer">
+      <a href="register.html" class="btn-admit">
+        <svg class="icon" width="14" height="14"><use href="#ic-register"/></svg>재접수하기
+      </a>
+      <button type="button" class="btn-cancel" disabled>
+        <svg class="icon" width="14" height="14"><use href="#ic-x"/></svg>반려 건 취소 불가
+      </button>
+    </div>
+  </div>
+
   <!-- 접수 내역 2 — 승인완료 -->
   <div class="reg-card">
     <div class="reg-card-header">
@@ -323,9 +383,28 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     if (window.TMI18N) TMI18N.boot();
+    mypageApplyRejectReasonsFromAdmin();
+  });
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState==='visible') mypageApplyRejectReasonsFromAdmin();
   });
 </script>
 <script>
+  var FO_REJECT_MAP_KEY='tm_fo_reject_map_v1';
+  function mypageApplyRejectReasonsFromAdmin(){
+    try{
+      var map=JSON.parse(localStorage.getItem(FO_REJECT_MAP_KEY)||'{}');
+      document.querySelectorAll('.reg-card[data-sync-reject-applicant-no]').forEach(function(card){
+        var no=card.getAttribute('data-sync-reject-applicant-no');
+        if(!no)return;
+        var txt=map[no];
+        var el=card.querySelector('[data-reject-reason-slot]');
+        if(el&&txt!=null&&String(txt).trim()!==''){
+          el.textContent=String(txt).trim();
+        }
+      });
+    }catch(err){}
+  }
   function cancelReg(btn){
     if(confirm('정말 접수를 취소하시겠습니까?\n취소 후에는 응시료가 환불되지 않을 수 있습니다.')){
       const card = btn.closest('.reg-card');

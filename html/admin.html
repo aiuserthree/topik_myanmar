@@ -937,6 +937,35 @@
   function applicantSafeDecodeReject(s){
     try{ return decodeURIComponent(s||''); }catch(err){ return s||''; }
   }
+  var FO_REJECT_MAP_KEY='tm_fo_reject_map_v1';
+  function applicantFoRejectMapLoad(){
+    try{ return JSON.parse(localStorage.getItem(FO_REJECT_MAP_KEY)||'{}'); }catch(err){ return {}; }
+  }
+  function applicantFoRejectMapSave(map){
+    try{ localStorage.setItem(FO_REJECT_MAP_KEY,JSON.stringify(map)); }catch(err){}
+  }
+  /** 접수 확인(FO)와 동일 브라우저에서 반려 사유 표시용 */
+  function applicantFoRejectMapUpsert(applicantNo, plainReason){
+    if(applicantNo==null||String(applicantNo)==='')return;
+    var map=applicantFoRejectMapLoad();
+    var key=String(applicantNo);
+    var r=plainReason!=null?String(plainReason).trim():'';
+    if(r) map[key]=r;
+    else delete map[key];
+    applicantFoRejectMapSave(map);
+  }
+  function applicantSyncRejectRowsToFoMap(){
+    try{
+      var map=applicantFoRejectMapLoad();
+      document.querySelectorAll('#applicantBody tr[data-status="rejected"]').forEach(function(row){
+        var no=row.getAttribute('data-applicant-no');
+        var enc=row.getAttribute('data-reject-reason');
+        if(!no||!enc)return;
+        map[String(no)]=applicantSafeDecodeReject(enc);
+      });
+      applicantFoRejectMapSave(map);
+    }catch(err){}
+  }
   function submitRejectReason(){
     var ta=document.getElementById('rejectReasonInput');
     var raw=(ta&&ta.value||'').trim();
@@ -2170,6 +2199,7 @@
     applicantRefreshFilterChipCounts();
     applicantApplyPaging({resetPage:true});
     updateDashboardStatsFromApplicants();
+    applicantSyncRejectRowsToFoMap();
   }
   function applicantRowPassesFilters(row){
     return applicantRowPassesApplicantFilter(row)&&applicantRowPassesApplicantSearch(row);
@@ -2444,6 +2474,7 @@
     }else{
       wrap.innerHTML=actionBtnsApprovedHtml();
     }
+    applicantFoRejectMapUpsert(row.getAttribute('data-applicant-no'), '');
     applicantAssignExamIfEligible(row);
     applicantApplyPaging({resetPage:false});
     applicantRefreshFilterChipCounts();
@@ -2453,6 +2484,7 @@
   function rejectRowImpl(btn, reason){
     var row=btn.closest('tr');
     row.setAttribute('data-reject-reason', encodeURIComponent(reason||''));
+    applicantFoRejectMapUpsert(row.getAttribute('data-applicant-no'), reason||'');
     row.querySelector('.sb').className='sb sb-rejected';
     row.querySelector('.sb').innerHTML='<svg class="icon" width="10" height="10"><use href="#ic-x"/></svg>반려';
     row.dataset.status='rejected';
