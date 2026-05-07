@@ -105,6 +105,9 @@
     .form-actions{display:flex;gap:12px;margin-top:8px;}
     .btn-prev{flex:1;padding:13px;background:var(--gray-text);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;}
     .btn-next{flex:2;padding:13px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;}
+    .btn-next:disabled,.btn-next[disabled]{background:#cbd5e1;color:#94a3b8;cursor:not-allowed;}
+    .btn-next:disabled:hover,.btn-next[disabled]:hover{background:#cbd5e1;}
+    #regBtnNext1{max-width:200px;}
     .btn-final{width:100%;padding:16px;background:var(--red);color:white;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;}
     #regStep4 .form-actions .btn-final{flex:2;width:auto;margin-top:0;padding:13px 16px;}
     @media(max-width:640px){.form-row{grid-template-columns:1fr;}}
@@ -199,7 +202,7 @@
   <div class="page-hero-inner">
     <div class="breadcrumb"><svg class="icon" width="12" height="12"><use href="#ic-register"/></svg><a href="index.html">홈</a> › 시험 접수</div>
     <h1><svg class="icon" width="26" height="26" color="#fff"><use href="#ic-register"/></svg>시험 접수</h1>
-    <p style="font-size:13px;color:#aab8cc;margin-top:4px;">제98회 TOPIK — 접수기간: 2025.04.01 ~ 2025.04.14</p>
+    <p style="font-size:13px;color:#aab8cc;margin-top:4px;">제98회 TOPIK — 접수기간: 2026.04.01 ~ 2026.04.14</p>
   </div>
 </div>
 
@@ -230,7 +233,7 @@
           <span class="rc-badge open"><svg class="icon" width="10" height="10"><use href="#ic-check"/></svg>접수중</span>
           <div class="rc-name">제98회 TOPIK</div>
           <div class="rc-date">
-            <span><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>시험일: 2025.05.17</span>
+            <span><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>시험일: 2026.05.17</span>
             <span><svg class="icon" width="11" height="11"><use href="#ic-register"/></svg>접수: 04.01~04.14</span>
           </div>
         </div>
@@ -239,14 +242,14 @@
           <span class="rc-badge soon"><svg class="icon" width="10" height="10"><use href="#ic-calendar"/></svg>예정</span>
           <div class="rc-name">제99회 TOPIK</div>
           <div class="rc-date">
-            <span><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>시험일: 2025.08.17</span>
+            <span><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>시험일: 2026.08.17</span>
             <span><svg class="icon" width="11" height="11"><use href="#ic-register"/></svg>접수: 07.07~07.21</span>
           </div>
         </div>
       </div>
     </div>
     <div style="text-align:right;">
-      <button class="btn-next" style="max-width:200px;" onclick="goRegStep(2)">
+      <button type="button" class="btn-next" id="regBtnNext1" onclick="goRegStep(2)">
         다음 <svg class="icon" width="15" height="15"><use href="#ic-arrow-r"/></svg>
       </button>
     </div>
@@ -301,8 +304,8 @@
       </div>
     </div>
     <div class="form-actions">
-      <button class="btn-prev" onclick="goRegStep(1)">← 이전</button>
-      <button class="btn-next" onclick="goRegStep(3)">다음 <svg class="icon" width="15" height="15"><use href="#ic-arrow-r"/></svg></button>
+      <button type="button" class="btn-prev" onclick="goRegStep(1)">← 이전</button>
+      <button type="button" class="btn-next" id="regBtnNext2" onclick="goRegStep(3)">다음 <svg class="icon" width="15" height="15"><use href="#ic-arrow-r"/></svg></button>
     </div>
   </div>
 
@@ -356,8 +359,8 @@
       </div>
     </div>
     <div class="form-actions">
-      <button class="btn-prev" onclick="goRegStep(2)">← 이전</button>
-      <button class="btn-next" onclick="goRegStep(4)">다음 <svg class="icon" width="15" height="15"><use href="#ic-arrow-r"/></svg></button>
+      <button type="button" class="btn-prev" onclick="goRegStep(2)">← 이전</button>
+      <button type="button" class="btn-next" id="regBtnNext3" onclick="goRegStep(4)">다음 <svg class="icon" width="15" height="15"><use href="#ic-arrow-r"/></svg></button>
     </div>
   </div>
 
@@ -367,7 +370,7 @@
       <h2><svg class="icon" width="18" height="18" color="var(--red)"><use href="#ic-check"/></svg>접수 내용 최종 확인</h2>
       <p style="font-size:13px;color:var(--gray-text);margin-bottom:16px;">아래 내용을 확인하신 후 접수 완료 버튼을 눌러주세요.</p>
       <table class="confirm-table">
-        <tr><th>회차</th><td>제98회 TOPIK (2025.05.17)</td></tr>
+        <tr><th>회차</th><td>제98회 TOPIK (2026.05.17)</td></tr>
         <tr><th>응시 급수</th><td id="confirm-level">—</td></tr>
         <tr><th>증명사진</th><td>
           <div class="confirm-photo-cell">
@@ -386,7 +389,7 @@
       </table>
       <div style="background:#fff8e1;border:1px solid var(--gold);border-radius:8px;padding:14px 16px;margin-top:16px;font-size:13px;color:#7a5800;display:flex;align-items:flex-start;gap:8px;">
         <svg class="icon" width="16" height="16" color="var(--gold)" style="margin-top:1px;flex-shrink:0;"><use href="#ic-alert"/></svg>
-        <span>접수 완료 후 취소는 접수 기간(~2025.04.14) 내에만 가능합니다.</span>
+        <span>접수 완료 후 취소는 접수 기간(~2026.04.14) 내에만 가능합니다.</span>
       </div>
     </div>
     <div class="form-actions">
@@ -409,29 +412,133 @@
 <script>
   document.addEventListener('DOMContentLoaded',function(){
     var p=window.TMProfile&&TMProfile.load();
-    if(!p)return;
-    var b=document.getElementById('r-birth');
-    if(b&&p.birthdate){
-      var c=TMProfile.birthToCompact(p.birthdate.replace(/\//g,'-'));
-      if(c.length===8)b.value=c;
+    if(p){
+      var b=document.getElementById('r-birth');
+      if(b&&p.birthdate){
+        var c=TMProfile.birthToCompact(p.birthdate.replace(/\//g,'-'));
+        if(c.length===8)b.value=c;
+      }
+      if(p.nameKr&&document.getElementById('r-nameKr'))document.getElementById('r-nameKr').value=p.nameKr;
+      if(p.nameEn&&document.getElementById('r-nameEn'))document.getElementById('r-nameEn').value=p.nameEn;
+      if(p.phone&&document.getElementById('r-phone'))document.getElementById('r-phone').value=p.phone;
+      if(p.email&&document.getElementById('r-email'))document.getElementById('r-email').value=p.email;
+      if(p.nationality&&document.getElementById('r-nationality')){
+        var sel=document.getElementById('r-nationality');
+        for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===p.nationality){sel.selectedIndex=i;break;}}
+      }
+      if(p.gender&&document.querySelector('input[name="r-gender"][value="'+p.gender+'"]')){
+        document.querySelector('input[name="r-gender"][value="'+p.gender+'"]').checked=true;
+      }
+      var ban=document.getElementById('prefillBanner');
+      if(ban)ban.style.display='block';
     }
-    if(p.nameKr&&document.getElementById('r-nameKr'))document.getElementById('r-nameKr').value=p.nameKr;
-    if(p.nameEn&&document.getElementById('r-nameEn'))document.getElementById('r-nameEn').value=p.nameEn;
-    if(p.phone&&document.getElementById('r-phone'))document.getElementById('r-phone').value=p.phone;
-    if(p.email&&document.getElementById('r-email'))document.getElementById('r-email').value=p.email;
-    if(p.nationality&&document.getElementById('r-nationality')){
-      var sel=document.getElementById('r-nationality');
-      for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===p.nationality){sel.selectedIndex=i;break;}}
-    }
-    if(p.gender&&document.querySelector('input[name="r-gender"][value="'+p.gender+'"]')){
-      document.querySelector('input[name="r-gender"][value="'+p.gender+'"]').checked=true;
-    }
-    var ban=document.getElementById('prefillBanner');
-    if(ban)ban.style.display='block';
+    wireRegStep2Refresh();
+    window.regCurrentStep=1;
+    refreshRegNextButtons();
   });
   let selLevel='I';
-  function selectRound(el){document.querySelectorAll('.round-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');}
-  function selectLevel(el,lv){document.querySelectorAll('.level-btn').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');selLevel=lv;}
+  function wireRegStep2Refresh(){
+    ['r-nameKr','r-nameEn','r-birth','r-phone','r-email','r-nationality','r-city'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(!el)return;
+      el.addEventListener('input',refreshRegNextButtons);
+      el.addEventListener('change',refreshRegNextButtons);
+    });
+    document.querySelectorAll('input[name="r-gender"]').forEach(function(r){
+      r.addEventListener('change',refreshRegNextButtons);
+    });
+  }
+  function isRegStep1Complete(){
+    var sel=document.querySelector('.round-card.selected');
+    return !!(sel&&sel.querySelector('.rc-badge.open'));
+  }
+  function isValidRegEmail(v){
+    v=String(v||'').trim();
+    if(!v)return false;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  }
+  function isRegStep2Complete(){
+    if(!document.getElementById('r-nameKr').value.trim())return false;
+    if(!document.getElementById('r-nameEn').value.trim())return false;
+    var birth=document.getElementById('r-birth').value.trim();
+    if(!/^\d{8}$/.test(birth))return false;
+    if(!document.querySelector('input[name="r-gender"]:checked'))return false;
+    if(!document.getElementById('r-phone').value.trim())return false;
+    if(!isValidRegEmail(document.getElementById('r-email').value))return false;
+    return true;
+  }
+  function isRegStep3Complete(){
+    return registerHasPhotoPreview()&&!!document.querySelector('.level-btn.selected');
+  }
+  function validateRegForward(fromStep,showAlert){
+    showAlert=showAlert!==false;
+    if(fromStep===1){
+      if(!isRegStep1Complete()){
+        if(showAlert)alert('다음 항목을 입력해 주세요.\n\n· 접수 회차 (접수 중인 회차)');
+        return false;
+      }
+      return true;
+    }
+    if(fromStep===2){
+      var miss=[];
+      if(!document.getElementById('r-nameKr').value.trim())miss.push('· 한글 성명');
+      if(!document.getElementById('r-nameEn').value.trim())miss.push('· 영문 성명');
+      var birth=document.getElementById('r-birth').value.trim();
+      if(!/^\d{8}$/.test(birth))miss.push('· 생년월일 (8자리 숫자, 예: 19900101)');
+      if(!document.querySelector('input[name="r-gender"]:checked'))miss.push('· 성별');
+      if(!document.getElementById('r-phone').value.trim())miss.push('· 연락처');
+      var em=document.getElementById('r-email').value.trim();
+      if(!em)miss.push('· 이메일');
+      else if(!isValidRegEmail(em))miss.push('· 이메일 (올바른 형식으로 입력)');
+      if(miss.length){
+        if(showAlert)alert('다음 항목을 입력해 주세요.\n\n'+miss.join('\n'));
+        return false;
+      }
+      return true;
+    }
+    if(fromStep===3){
+      var miss3=[];
+      if(!registerHasPhotoPreview())miss3.push('· 증명사진');
+      if(!document.querySelector('.level-btn.selected'))miss3.push('· 응시 급수 (TOPIK I 또는 II)');
+      if(miss3.length){
+        if(showAlert)alert('다음 항목을 입력해 주세요.\n\n'+miss3.join('\n'));
+        return false;
+      }
+      return true;
+    }
+    return true;
+  }
+  function refreshRegNextButtons(){
+    var b1=document.getElementById('regBtnNext1');
+    var b2=document.getElementById('regBtnNext2');
+    var b3=document.getElementById('regBtnNext3');
+    if(b1){
+      var ok1=isRegStep1Complete();
+      b1.disabled=!ok1;
+      b1.setAttribute('aria-disabled',ok1?'false':'true');
+    }
+    if(b2){
+      var ok2=isRegStep2Complete();
+      b2.disabled=!ok2;
+      b2.setAttribute('aria-disabled',ok2?'false':'true');
+    }
+    if(b3){
+      var ok3=isRegStep3Complete();
+      b3.disabled=!ok3;
+      b3.setAttribute('aria-disabled',ok3?'false':'true');
+    }
+  }
+  function selectRound(el){
+    document.querySelectorAll('.round-card').forEach(c=>c.classList.remove('selected'));
+    el.classList.add('selected');
+    refreshRegNextButtons();
+  }
+  function selectLevel(el,lv){
+    document.querySelectorAll('.level-btn').forEach(b=>b.classList.remove('selected'));
+    el.classList.add('selected');
+    selLevel=lv;
+    refreshRegNextButtons();
+  }
   function registerHasPhotoPreview(){
     var img=document.getElementById('previewImg');
     return !!(img && img.style.display==='block' && img.src && /^data:image\//.test(img.src));
@@ -446,12 +553,16 @@
   }
   function initRegisterStep3Photo(){
     var banner=document.getElementById('signupPhotoReuseBanner');
-    if(!banner)return;
+    if(!banner){
+      refreshRegNextButtons();
+      return;
+    }
     var stored=window.TMProfile&&TMProfile.loadSignupPhoto&&TMProfile.loadSignupPhoto();
     if(registerHasPhotoPreview()){
       var img=document.getElementById('previewImg');
       if(stored&&img&&img.src===stored)banner.classList.add('show');
       else banner.classList.remove('show');
+      refreshRegNextButtons();
       return;
     }
     banner.classList.remove('show');
@@ -459,6 +570,7 @@
       applySignupPhotoDataUrl(stored);
       banner.classList.add('show');
     }
+    refreshRegNextButtons();
   }
   function clearRegisterPhotoForNewUpload(){
     var img=document.getElementById('previewImg');
@@ -469,23 +581,18 @@
     document.getElementById('photoInput').value='';
     var banner=document.getElementById('signupPhotoReuseBanner');
     if(banner)banner.classList.remove('show');
+    refreshRegNextButtons();
   }
   function goRegStep(n){
-    if(n===4){
-      if(!registerHasPhotoPreview()){
-        alert('증명사진을 등록해 주세요. 회원가입 시 올린 사진이 있으면 이 단계에 자동으로 표시됩니다.');
-        return;
-      }
-      if(!document.querySelector('.level-btn.selected')){
-        alert('응시 급수(TOPIK I 또는 II)를 선택해 주세요.');
-        return;
-      }
-    }
+    var cur=typeof window.regCurrentStep==='number'?window.regCurrentStep:1;
+    if(n>cur&&!validateRegForward(cur,true))return;
     for(let i=1;i<=4;i++)document.getElementById('regStep'+i).style.display='none';
     document.getElementById('regStep'+n).style.display='block';
+    window.regCurrentStep=n;
     updateRBar(n);
     if(n===3)initRegisterStep3Photo();
     if(n===4)fillConfirm();
+    refreshRegNextButtons();
     window.scrollTo({top:0,behavior:'smooth'});
   }
   function updateRBar(n){
@@ -533,6 +640,7 @@
       document.getElementById('phText').style.display='none';
       var b=document.getElementById('signupPhotoReuseBanner');
       if(b)b.classList.remove('show');
+      refreshRegNextButtons();
     };
     reader.readAsDataURL(file);
   }

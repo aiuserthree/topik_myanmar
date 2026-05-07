@@ -452,11 +452,11 @@
               <th>상태</th>
             </tr></thead>
             <tbody>
-              <tr><td>142</td><td>Aung San Oo</td><td>TOPIK I</td><td>2025.04.02 14:22</td><td><span class="sb sb-pending"><svg class="icon" width="10" height="10"><use href="#ic-ticket"/></svg>접수완료</span></td></tr>
-              <tr><td>141</td><td>Ma Thida</td><td>TOPIK II</td><td>2025.04.02 11:05</td><td><span class="sb sb-review"><svg class="icon" width="10" height="10"><use href="#ic-image"/></svg>검토중</span></td></tr>
-              <tr><td>140</td><td>Ko Zin Lin</td><td>TOPIK I</td><td>2025.04.01 18:40</td><td><span class="sb sb-approved"><svg class="icon" width="10" height="10"><use href="#ic-check"/></svg>승인완료</span></td></tr>
-              <tr><td>139</td><td>Su Mon Aye</td><td>TOPIK II</td><td>2025.04.01 16:12</td><td><span class="sb sb-approved"><svg class="icon" width="10" height="10"><use href="#ic-check"/></svg>승인완료</span></td></tr>
-              <tr><td>138</td><td>Win Naing</td><td>TOPIK I</td><td>2025.04.01 09:33</td><td><span class="sb sb-rejected"><svg class="icon" width="10" height="10"><use href="#ic-x"/></svg>반려</span></td></tr>
+              <tr><td>142</td><td>Aung San Oo</td><td>TOPIK I</td><td>2026.04.02 14:22</td><td><span class="sb sb-pending"><svg class="icon" width="10" height="10"><use href="#ic-ticket"/></svg>접수완료</span></td></tr>
+              <tr><td>141</td><td>Ma Thida</td><td>TOPIK II</td><td>2026.04.02 11:05</td><td><span class="sb sb-review"><svg class="icon" width="10" height="10"><use href="#ic-image"/></svg>검토중</span></td></tr>
+              <tr><td>140</td><td>Ko Zin Lin</td><td>TOPIK I</td><td>2026.04.01 18:40</td><td><span class="sb sb-approved"><svg class="icon" width="10" height="10"><use href="#ic-check"/></svg>승인완료</span></td></tr>
+              <tr><td>139</td><td>Su Mon Aye</td><td>TOPIK II</td><td>2026.04.01 16:12</td><td><span class="sb sb-approved"><svg class="icon" width="10" height="10"><use href="#ic-check"/></svg>승인완료</span></td></tr>
+              <tr><td>138</td><td>Win Naing</td><td>TOPIK I</td><td>2026.04.01 09:33</td><td><span class="sb sb-rejected"><svg class="icon" width="10" height="10"><use href="#ic-x"/></svg>반려</span></td></tr>
             </tbody>
           </table>
         </div>
@@ -582,15 +582,15 @@
               <tr id="roundRow-98" class="round-table-row"
                 data-round-id="98"
                 data-round-name="제98회 TOPIK"
-                data-reg-start="2025-04-01"
-                data-reg-end="2025-04-14"
-                data-exam="2025-05-17"
-                data-result="2025-06-11"
+                data-reg-start="2026-04-01"
+                data-reg-end="2026-04-14"
+                data-exam="2026-05-17"
+                data-result="2026-06-11"
                 data-count-label="142명">
                 <td class="round-td-name"><strong>제98회 TOPIK</strong></td>
-                <td class="round-td-range">2025.04.01 ~ 2025.04.14</td>
-                <td class="round-td-exam">2025.05.17</td>
-                <td class="round-td-result">2025.06.11</td>
+                <td class="round-td-range">2026.04.01 ~ 2026.04.14</td>
+                <td class="round-td-exam">2026.05.17</td>
+                <td class="round-td-result">2026.06.11</td>
                 <td class="round-td-count" title="접수 DB와 연동 시 자동 집계됩니다.">142명</td>
                 <td class="round-td-status"><span class="sb sb-pending"><svg class="icon" width="10" height="10"><use href="#ic-ticket"/></svg>접수중</span></td>
                 <td><div class="action-btns">
@@ -600,15 +600,15 @@
               <tr id="roundRow-99" class="round-table-row"
                 data-round-id="99"
                 data-round-name="제99회 TOPIK"
-                data-reg-start="2025-07-07"
-                data-reg-end="2025-07-21"
-                data-exam="2025-08-17"
-                data-result="2025-09-17"
+                data-reg-start="2026-07-07"
+                data-reg-end="2026-07-21"
+                data-exam="2026-08-17"
+                data-result="2026-09-17"
                 data-count-label="—">
                 <td class="round-td-name"><strong>제99회 TOPIK</strong></td>
-                <td class="round-td-range">2025.07.07 ~ 2025.07.21</td>
-                <td class="round-td-exam">2025.08.17</td>
-                <td class="round-td-result">2025.09.17</td>
+                <td class="round-td-range">2026.07.07 ~ 2026.07.21</td>
+                <td class="round-td-exam">2026.08.17</td>
+                <td class="round-td-result">2026.09.17</td>
                 <td class="round-td-count" title="접수 DB와 연동 시 자동 집계됩니다.">—</td>
                 <td class="round-td-status"><span class="sb sb-cancelled">예정</span></td>
                 <td><div class="action-btns">
@@ -1645,7 +1645,7 @@
     });
   }
   function photoReviewMetaNum(metaLine){
-    var m=String(metaLine||'').match(/TM-2025-\d+-(\d+)/);
+    var m=String(metaLine||'').match(/TM-2026-\d+-(\d+)/);
     return m?m[1]:'0000';
   }
   function photoReviewCardMarkup(displayName,metaLine,archiveReadOnly){
@@ -1821,7 +1821,7 @@
     });
   }
   function photoReviewTicketMeta(roundId,seq,level){
-    return 'TM-2025-'+roundId+'-'+String(seq).padStart(4,'0')+' · '+level;
+    return 'TM-2026-'+roundId+'-'+String(seq).padStart(4,'0')+' · '+level;
   }
   function rebuildPhotoReviewGrid(){
     var grid=document.getElementById('photoReviewGrid');

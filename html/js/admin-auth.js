@@ -7,7 +7,7 @@
   var SESSION_MS = 8 * 60 * 60 * 1000;
 
   var ADMIN_USER = 'admin';
-  var ADMIN_PASSWORD = 'topik2025';
+  var ADMIN_PASSWORD = 'topik2026';
 
   function getSession() {
     try {
