@@ -109,7 +109,7 @@
     .btn-next:disabled:hover,.btn-next[disabled]:hover{background:#cbd5e1;}
     #regBtnNext1{max-width:200px;}
     .btn-final{width:100%;padding:16px;background:var(--red);color:white;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;}
-    #regStep4 .form-actions .btn-final{flex:2;width:auto;margin-top:0;padding:13px 16px;}
+    #regStep3 .form-actions .btn-final{flex:2;width:auto;margin-top:0;padding:13px 16px;}
     @media(max-width:640px){.form-row{grid-template-columns:1fr;}}
   </style>
   <link rel="stylesheet" href="css/mobile.css?v=20260512"/>
@@ -210,11 +210,9 @@
   <div class="step-bar">
     <div class="step"><div class="step-num active" id="s1">1</div><div class="step-label active" id="sl1">회차 선택</div></div>
     <div class="step-line" id="ln1"></div>
-    <div class="step"><div class="step-num" id="s2">2</div><div class="step-label" id="sl2">정보 입력</div></div>
+    <div class="step"><div class="step-num" id="s2">2</div><div class="step-label" id="sl2">정보·사진·급수</div></div>
     <div class="step-line" id="ln2"></div>
-    <div class="step"><div class="step-num" id="s3">3</div><div class="step-label" id="sl3">사진·급수</div></div>
-    <div class="step-line" id="ln3"></div>
-    <div class="step"><div class="step-num" id="s4">4</div><div class="step-label" id="sl4">최종 확인</div></div>
+    <div class="step"><div class="step-num" id="s3">3</div><div class="step-label" id="sl3">최종 확인</div></div>
   </div>
 </div>
 
@@ -363,14 +361,6 @@
         </div>
       </div>
     </div>
-    <div class="form-actions">
-      <button type="button" class="btn-prev" onclick="goRegStep(1)">← 이전</button>
-      <button type="button" class="btn-next" id="regBtnNext2" onclick="goRegStep(3)">다음 <svg class="icon" width="15" height="15"><use href="#ic-arrow-r"/></svg></button>
-    </div>
-  </div>
-
-  <!-- STEP 3 -->
-  <div id="regStep3" style="display:none;">
     <div class="reg-card">
       <h2><svg class="icon" width="18" height="18" color="var(--red)"><use href="#ic-camera"/></svg>증명사진 업로드</h2>
       <div id="signupPhotoReuseBanner" class="signup-photo-reuse-banner" role="status">
@@ -419,13 +409,13 @@
       </div>
     </div>
     <div class="form-actions">
-      <button type="button" class="btn-prev" onclick="goRegStep(2)">← 이전</button>
-      <button type="button" class="btn-next" id="regBtnNext3" onclick="goRegStep(4)">다음 <svg class="icon" width="15" height="15"><use href="#ic-arrow-r"/></svg></button>
+      <button type="button" class="btn-prev" onclick="goRegStep(1)">← 이전</button>
+      <button type="button" class="btn-next" id="regBtnNext2" onclick="goRegStep(3)">다음 <svg class="icon" width="15" height="15"><use href="#ic-arrow-r"/></svg></button>
     </div>
   </div>
 
-  <!-- STEP 4 -->
-  <div id="regStep4" style="display:none;">
+  <!-- STEP 3 -->
+  <div id="regStep3" style="display:none;">
     <div class="reg-card">
       <h2><svg class="icon" width="18" height="18" color="var(--red)"><use href="#ic-check"/></svg>접수 내용 최종 확인</h2>
       <p style="font-size:13px;color:var(--gray-text);margin-bottom:16px;">아래 내용을 확인하신 후 접수 완료 버튼을 눌러주세요.</p>
@@ -457,7 +447,7 @@
       </div>
     </div>
     <div class="form-actions">
-      <button class="btn-prev" onclick="goRegStep(3)">← 이전</button>
+      <button class="btn-prev" onclick="goRegStep(2)">← 이전</button>
       <button type="button" class="btn-final" onclick="submitReg()">
         <svg class="icon" width="18" height="18"><use href="#ic-check"/></svg>접수 완료하기
       </button>
@@ -533,10 +523,9 @@
     if(!document.getElementById('r-job').value)return false;
     if(!document.getElementById('r-motive').value)return false;
     if(!document.getElementById('r-purpose').value)return false;
+    if(!registerHasPhotoPreview())return false;
+    if(!document.querySelector('.level-btn.selected'))return false;
     return true;
-  }
-  function isRegStep3Complete(){
-    return registerHasPhotoPreview()&&!!document.querySelector('.level-btn.selected');
   }
   function validateRegForward(fromStep,showAlert){
     showAlert=showAlert!==false;
@@ -562,18 +551,10 @@
       if(!document.getElementById('r-job').value)miss.push('· 직업');
       if(!document.getElementById('r-motive').value)miss.push('· 응시동기');
       if(!document.getElementById('r-purpose').value)miss.push('· 응시목적');
+      if(!registerHasPhotoPreview())miss.push('· 증명사진');
+      if(!document.querySelector('.level-btn.selected'))miss.push('· 응시 급수 (TOPIK I 또는 II)');
       if(miss.length){
         if(showAlert)alert('다음 항목을 입력해 주세요.\n\n'+miss.join('\n'));
-        return false;
-      }
-      return true;
-    }
-    if(fromStep===3){
-      var miss3=[];
-      if(!registerHasPhotoPreview())miss3.push('· 증명사진');
-      if(!document.querySelector('.level-btn.selected'))miss3.push('· 응시 급수 (TOPIK I 또는 II)');
-      if(miss3.length){
-        if(showAlert)alert('다음 항목을 입력해 주세요.\n\n'+miss3.join('\n'));
         return false;
       }
       return true;
@@ -583,7 +564,6 @@
   function refreshRegNextButtons(){
     var b1=document.getElementById('regBtnNext1');
     var b2=document.getElementById('regBtnNext2');
-    var b3=document.getElementById('regBtnNext3');
     if(b1){
       var ok1=isRegStep1Complete();
       b1.disabled=!ok1;
@@ -593,11 +573,6 @@
       var ok2=isRegStep2Complete();
       b2.disabled=!ok2;
       b2.setAttribute('aria-disabled',ok2?'false':'true');
-    }
-    if(b3){
-      var ok3=isRegStep3Complete();
-      b3.disabled=!ok3;
-      b3.setAttribute('aria-disabled',ok3?'false':'true');
     }
   }
   function selectRound(el){
@@ -658,23 +633,26 @@
   function goRegStep(n){
     var cur=typeof window.regCurrentStep==='number'?window.regCurrentStep:1;
     if(n>cur&&!validateRegForward(cur,true))return;
-    for(let i=1;i<=4;i++)document.getElementById('regStep'+i).style.display='none';
+    for(let i=1;i<=3;i++){
+      var pane=document.getElementById('regStep'+i);
+      if(pane)pane.style.display='none';
+    }
     document.getElementById('regStep'+n).style.display='block';
     window.regCurrentStep=n;
     updateRBar(n);
-    if(n===3)initRegisterStep3Photo();
-    if(n===4)fillConfirm();
+    if(n===2)initRegisterStep3Photo();
+    if(n===3)fillConfirm();
     refreshRegNextButtons();
     window.scrollTo({top:0,behavior:'smooth'});
   }
   function updateRBar(n){
-    for(let i=1;i<=4;i++){
+    for(let i=1;i<=3;i++){
       const num=document.getElementById('s'+i),lbl=document.getElementById('sl'+i);
       if(i<n){num.classList.add('done');num.classList.remove('active');num.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';}
       else if(i===n){num.classList.add('active');num.classList.remove('done');num.textContent=i;}
       else{num.classList.remove('active','done');num.textContent=i;}
       lbl.classList.toggle('active',i===n);
-      if(i<4)document.getElementById('ln'+i).classList.toggle('done',i<n);
+      if(i<3)document.getElementById('ln'+i).classList.toggle('done',i<n);
     }
   }
   function selectTextById(id){
@@ -705,7 +683,7 @@
     if(cImg&&cPh&&prev&&registerHasPhotoPreview()){
       cImg.src=prev.src;
       cImg.classList.add('show');
-      cPh.textContent='위 사진이 접수·수험표에 사용됩니다. 수정하려면 [이전]으로 돌아가 3단계에서 변경하세요.';
+      cPh.textContent='위 사진이 접수·수험표에 사용됩니다. 수정하려면 [이전]으로 돌아가 증명사진 항목에서 변경하세요.';
       cPh.style.display='block';
     }else if(cImg&&cPh){
       cImg.removeAttribute('src');

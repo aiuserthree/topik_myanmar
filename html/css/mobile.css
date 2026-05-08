@@ -1047,12 +1047,12 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
     z-index:80;
   }
 
-  /* 시험접수 3단계: sticky 이전/다음 바 위로 응시급수 카드 하단이 가려지지 않도록 스크롤 여유 */
-  #regStep3{
+  /* 시험접수 2단계(정보·사진·급수): sticky 이전/다음 바 위로 카드 하단이 가려지지 않도록 스크롤 여유 */
+  #regStep2{
     padding-bottom:calc(88px + env(safe-area-inset-bottom));
   }
-  /* 시험접수 4단계: 하단 안내 카드·내용이 sticky 이전/접수완료 바에 가리지 않도록 */
-  #regStep4{
+  /* 시험접수 3단계(최종확인): 하단 안내 카드·내용이 sticky 이전/접수완료 바에 가리지 않도록 */
+  #regStep3{
     padding-bottom:calc(88px + env(safe-area-inset-bottom));
   }
   .form-actions .btn-prev,
@@ -1067,7 +1067,7 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
 
   div[style*="text-align:right"] .btn-next{max-width:100% !important;width:100%;}
 
-  /* 4단계: 이전 + 접수완료 한 줄 (btn-final을 form-actions 안에 둠) */
+  /* 3단계(최종확인): 이전 + 접수완료 한 줄 (btn-final을 form-actions 안에 둠) */
   .form-actions .btn-final{
     flex:1 1 auto;
     width:auto !important;
