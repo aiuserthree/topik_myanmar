@@ -409,6 +409,12 @@
       <span class="sb-icon"><svg class="icon" width="16" height="16"><use href="#ic-info"/></svg></span>FAQ 관리
     </button>
     <div class="sb-section">시스템</div>
+    <button type="button" class="sb-link" onclick="showPanel('members',this)">
+      <span class="sb-icon"><svg class="icon" width="16" height="16"><use href="#ic-users"/></svg></span>회원 관리
+    </button>
+    <button type="button" class="sb-link" onclick="showPanel('terms',this)">
+      <span class="sb-icon"><svg class="icon" width="16" height="16"><use href="#ic-rules"/></svg></span>약관 관리
+    </button>
     <button class="sb-link" type="button" onclick="confirmOpenPublicSite()">
       <span class="sb-icon"><svg class="icon" width="16" height="16"><use href="#ic-globe"/></svg></span>사이트 보기
     </button>
@@ -698,6 +704,129 @@
       </div>
     </div>
 
+    <!-- ── 회원 관리 패널 ── -->
+    <div id="panel-members" style="display:none;">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="s-label">전체 회원</div>
+            <div class="stat-icon navy"><svg class="icon" width="20" height="20" color="var(--navy)"><use href="#ic-users"/></svg></div>
+          </div>
+          <div class="s-num">1,248</div>
+          <div class="s-sub">누적 가입자</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-top">
+            <div class="s-label">신규 가입 (7일)</div>
+            <div class="stat-icon green"><svg class="icon" width="20" height="20" color="#10b981"><use href="#ic-signup"/></svg></div>
+          </div>
+          <div class="s-num">23</div>
+          <div class="s-sub">최근 7일 신규</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-top">
+            <div class="s-label">정지</div>
+            <div class="stat-icon red"><svg class="icon" width="20" height="20" color="var(--red)"><use href="#ic-lock"/></svg></div>
+          </div>
+          <div class="s-num">5</div>
+          <div class="s-sub">계정 정지 중</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-top">
+            <div class="s-label">탈퇴 대기</div>
+            <div class="stat-icon gold"><svg class="icon" width="20" height="20" color="var(--gold)"><use href="#ic-clock"/></svg></div>
+          </div>
+          <div class="s-num">8</div>
+          <div class="s-sub">처리 대기 중</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <h2><svg class="icon" width="16" height="16" color="var(--navy)"><use href="#ic-users"/></svg>회원 목록</h2>
+          <div class="panel-actions">
+            <button type="button" class="btn btn-gray" onclick="memberDownloadCSV()">
+              <svg class="icon" width="13" height="13"><use href="#ic-download"/></svg>엑셀 다운로드(CSV)
+            </button>
+          </div>
+        </div>
+        <div class="filter-bar" style="flex-wrap:wrap;gap:8px;">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button type="button" class="filter-chip active" onclick="memberFilterChip(this,'all')">전체 <span style="margin-left:3px;font-size:10px;opacity:.8">1,248</span></button>
+            <button type="button" class="filter-chip" onclick="memberFilterChip(this,'active')">활성 <span style="margin-left:3px;font-size:10px;opacity:.8">1,235</span></button>
+            <button type="button" class="filter-chip" onclick="memberFilterChip(this,'suspended')">정지 <span style="margin-left:3px;font-size:10px;opacity:.8">5</span></button>
+            <button type="button" class="filter-chip" onclick="memberFilterChip(this,'pending')">탈퇴 대기 <span style="margin-left:3px;font-size:10px;opacity:.8">8</span></button>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+            <input type="date" id="memberDateFrom" style="padding:6px 10px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:12px;font-family:inherit;" title="가입일 시작"/>
+            <span style="font-size:12px;color:var(--gray-text);">~</span>
+            <input type="date" id="memberDateTo" style="padding:6px 10px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:12px;font-family:inherit;" title="가입일 종료"/>
+          </div>
+          <div class="search-mini" style="margin-left:auto;">
+            <input type="text" id="memberSearchInput" placeholder="이메일·이름 검색" oninput="memberApplyFilter()"/>
+            <button type="button"><svg class="icon" width="14" height="14"><use href="#ic-search"/></svg></button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="data-table" id="memberTable">
+            <thead><tr>
+              <th style="width:40px;">번호</th>
+              <th>한글 성명</th>
+              <th>영문 성명</th>
+              <th>이메일(아이디)</th>
+              <th>가입일</th>
+              <th>최근 로그인</th>
+              <th>상태</th>
+              <th>관리</th>
+            </tr></thead>
+            <tbody id="memberTableBody"></tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <span id="memberCountLabel" style="font-size:12px;color:var(--gray-text);">총 10명</span>
+          <div class="pagination" id="memberPagination"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 약관 관리 패널 ── -->
+    <div id="panel-terms" style="display:none;">
+      <div class="panel">
+        <div class="panel-header">
+          <h2><svg class="icon" width="16" height="16" color="var(--navy)"><use href="#ic-rules"/></svg>약관 관리</h2>
+          <div class="panel-actions">
+            <button type="button" class="btn btn-gray" onclick="openConsentHistory()">
+              <svg class="icon" width="13" height="13"><use href="#ic-eye"/></svg>동의 이력 조회
+            </button>
+            <button type="button" class="btn btn-navy" onclick="openTermsForm('new')">
+              <svg class="icon" width="13" height="13"><use href="#ic-plus"/></svg>약관 등록(신규 버전)
+            </button>
+          </div>
+        </div>
+        <div style="border-bottom:1px solid var(--gray-light);padding:0 20px;display:flex;gap:0;overflow-x:auto;">
+          <button type="button" class="terms-tab active" onclick="switchTermsTab(this,'service')" style="padding:12px 18px;font-size:13px;font-weight:700;border:none;background:none;cursor:pointer;color:var(--navy);border-bottom:2px solid var(--navy);white-space:nowrap;font-family:inherit;">이용약관 동의</button>
+          <button type="button" class="terms-tab" onclick="switchTermsTab(this,'privacy')" style="padding:12px 18px;font-size:13px;font-weight:700;border:none;background:none;cursor:pointer;color:var(--gray-text);border-bottom:2px solid transparent;white-space:nowrap;font-family:inherit;">개인정보 수집 및 이용에 관한 동의</button>
+          <button type="button" class="terms-tab" onclick="switchTermsTab(this,'consignment')" style="padding:12px 18px;font-size:13px;font-weight:700;border:none;background:none;cursor:pointer;color:var(--gray-text);border-bottom:2px solid transparent;white-space:nowrap;font-family:inherit;">개인정보 취급 위탁 동의</button>
+          <button type="button" class="terms-tab" onclick="switchTermsTab(this,'marketing')" style="padding:12px 18px;font-size:13px;font-weight:700;border:none;background:none;cursor:pointer;color:var(--gray-text);border-bottom:2px solid transparent;white-space:nowrap;font-family:inherit;">마케팅수신동의 <span style="font-size:11px;font-weight:600;color:var(--gray-text);">(선택)</span></button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="data-table" id="termsTable">
+            <thead><tr>
+              <th>버전</th>
+              <th>상태</th>
+              <th>적용 시작일</th>
+              <th>적용 종료일</th>
+              <th>다국어</th>
+              <th>작성자</th>
+              <th>작성일</th>
+              <th>동의자 수</th>
+              <th>관리</th>
+            </tr></thead>
+            <tbody id="termsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /page-content -->
 </div><!-- /main-wrap -->
 
@@ -925,6 +1054,478 @@
     <div class="modal-foot">
       <button type="button" class="btn btn-gray" onclick="closeRejectReasonModal()">취소</button>
       <button type="button" class="btn btn-red" onclick="submitRejectReason()">반려 처리</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 회원 상세 보기 모달 ── -->
+<div id="modalMemberDetail" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="memberDetailTitle">
+  <div class="modal-backdrop" onclick="closeMemberDetail()" aria-hidden="true"></div>
+  <div class="modal-dialog" style="max-width:min(900px,96vw);width:100%;">
+    <div class="modal-head">
+      <h3 id="memberDetailTitle">회원 상세</h3>
+      <button type="button" class="modal-close" onclick="closeMemberDetail()" aria-label="닫기"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></button>
+    </div>
+    <div class="modal-body" style="padding:0;">
+      <div style="display:grid;grid-template-columns:260px 1fr;min-height:400px;">
+        <!-- 좌: 기본 정보 -->
+        <div style="padding:20px;border-right:1px solid var(--gray-light);background:#fafbfc;">
+          <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#dbeafe,#bfdbfe);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:28px;color:var(--navy);font-weight:700;" id="memberDetailAvatar">김</div>
+          <div style="text-align:center;margin-bottom:16px;">
+            <div style="font-size:15px;font-weight:700;color:var(--navy);" id="memberDetailNameKo">—</div>
+            <div style="font-size:12px;color:var(--gray-text);margin-top:2px;" id="memberDetailNameEn">—</div>
+            <div style="margin-top:6px;" id="memberDetailStatusBadge"><span class="sb sb-approved">활성</span></div>
+          </div>
+          <table style="width:100%;font-size:12px;border-collapse:collapse;">
+            <tr><td style="color:var(--gray-text);padding:5px 0;width:70px;font-weight:600;">성별</td><td id="memberDetailGender" style="color:#1a1a2e;">—</td></tr>
+            <tr><td style="color:var(--gray-text);padding:5px 0;font-weight:600;">생년월일</td><td id="memberDetailDob" style="color:#1a1a2e;">—</td></tr>
+            <tr><td style="color:var(--gray-text);padding:5px 0;font-weight:600;">국적</td><td id="memberDetailNationality" style="color:#1a1a2e;">—</td></tr>
+            <tr><td style="color:var(--gray-text);padding:5px 0;font-weight:600;">이메일</td><td id="memberDetailEmail" style="color:#1a1a2e;word-break:break-all;">—</td></tr>
+            <tr><td style="color:var(--gray-text);padding:5px 0;font-weight:600;">연락처</td><td id="memberDetailPhone" style="color:#1a1a2e;">—</td></tr>
+            <tr><td style="color:var(--gray-text);padding:5px 0;font-weight:600;">가입일</td><td id="memberDetailJoinDate" style="color:#1a1a2e;">—</td></tr>
+            <tr><td style="color:var(--gray-text);padding:5px 0;font-weight:600;">최근 로그인</td><td id="memberDetailLastLogin" style="color:#1a1a2e;">—</td></tr>
+            <tr><td style="color:var(--gray-text);padding:5px 0;font-weight:600;">약관 버전</td><td id="memberDetailTermsVer" style="color:#1a1a2e;">—</td></tr>
+          </table>
+        </div>
+        <!-- 우: 탭 -->
+        <div style="display:flex;flex-direction:column;">
+          <div style="display:flex;border-bottom:1px solid var(--gray-light);padding:0 16px;">
+            <button type="button" class="member-detail-tab active" onclick="switchMemberDetailTab(this,'consent')" style="padding:10px 14px;font-size:12px;font-weight:700;border:none;background:none;cursor:pointer;color:var(--navy);border-bottom:2px solid var(--navy);font-family:inherit;">약관 동의 이력</button>
+            <button type="button" class="member-detail-tab" onclick="switchMemberDetailTab(this,'exam')" style="padding:10px 14px;font-size:12px;font-weight:700;border:none;background:none;cursor:pointer;color:var(--gray-text);border-bottom:2px solid transparent;font-family:inherit;">접수 이력</button>
+            <button type="button" class="member-detail-tab" onclick="switchMemberDetailTab(this,'log')" style="padding:10px 14px;font-size:12px;font-weight:700;border:none;background:none;cursor:pointer;color:var(--gray-text);border-bottom:2px solid transparent;font-family:inherit;">활동 로그</button>
+          </div>
+          <div style="flex:1;overflow-y:auto;padding:16px;">
+            <div id="memberDetailTabConsent">
+              <table class="data-table" style="font-size:12px;">
+                <thead><tr><th>약관 종류</th><th>버전</th><th>필수</th><th>동의</th><th>동의 일시</th></tr></thead>
+                <tbody>
+                  <tr><td style="font-size:11px;">이용약관 동의</td><td>v1.1</td><td><span class="sb sb-approved">필수</span></td><td><span class="sb sb-approved">동의</span></td><td id="memberDetailConsentDate1">2026-01-05 09:12:03</td></tr>
+                  <tr><td style="font-size:11px;">개인정보 수집 및 이용에 관한 동의</td><td>v1.0</td><td><span class="sb sb-approved">필수</span></td><td><span class="sb sb-approved">동의</span></td><td id="memberDetailConsentDate2">2026-01-05 09:12:04</td></tr>
+                  <tr><td style="font-size:11px;">개인정보 취급 위탁 동의</td><td>v1.0</td><td><span class="sb sb-approved">필수</span></td><td><span class="sb sb-approved">동의</span></td><td>2026-01-05 09:12:05</td></tr>
+                  <tr><td style="font-size:11px;">마케팅수신동의</td><td>v1.0</td><td><span class="sb sb-cancelled">선택</span></td><td><span class="sb sb-cancelled">미동의</span></td><td>—</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="memberDetailTabExam" style="display:none;">
+              <table class="data-table" style="font-size:12px;">
+                <thead><tr><th>회차</th><th>급수</th><th>수험번호</th><th>상태</th></tr></thead>
+                <tbody id="memberDetailExamBody"></tbody>
+              </table>
+            </div>
+            <div id="memberDetailTabLog" style="display:none;">
+              <table class="data-table" style="font-size:12px;">
+                <thead><tr><th>일시</th><th>이벤트</th><th>IP</th></tr></thead>
+                <tbody id="memberDetailLogBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-gray" onclick="closeMemberDetail();openMemberEdit(currentMemberIdx)">수정</button>
+      <button type="button" class="btn btn-gray" onclick="closeMemberDetail();openPasswordReset(currentMemberIdx)">비밀번호 초기화</button>
+      <button type="button" class="btn btn-red" onclick="closeMemberDetail();openMemberSuspend(currentMemberIdx)">정지</button>
+      <button type="button" class="btn btn-gray" onclick="closeMemberDetail()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 회원 정보 수정 모달 ── -->
+<div id="modalMemberEdit" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="memberEditTitle">
+  <div class="modal-backdrop" onclick="closeMemberEdit()" aria-hidden="true"></div>
+  <div class="modal-dialog" style="max-width:min(600px,96vw);width:100%;">
+    <div class="modal-head">
+      <h3 id="memberEditTitle">회원 정보 수정</h3>
+      <button type="button" class="modal-close" onclick="closeMemberEdit()" aria-label="닫기"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="notice-form-wrap" style="padding:0;background:transparent;border:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">한글 성명 <span style="color:var(--red);">*</span></label>
+            <input type="text" id="memberEditNameKo" placeholder="홍길동"/>
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">영문 성명 (FAMILY GIVEN) <span style="color:var(--red);">*</span></label>
+            <input type="text" id="memberEditNameEn" placeholder="HONG GILDONG"/>
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">성별 <span style="color:var(--red);">*</span></label>
+            <select id="memberEditGender" style="width:100%;padding:9px 14px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-family:inherit;background:white;">
+              <option value="남">남</option>
+              <option value="여">여</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">생년월일 <span style="color:var(--red);">*</span></label>
+            <input type="date" id="memberEditDob"/>
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">국적 <span style="color:var(--red);">*</span></label>
+            <select id="memberEditNationality" style="width:100%;padding:9px 14px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-family:inherit;background:white;">
+              <option>미얀마</option>
+              <option>대한민국</option>
+              <option>기타</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">연락처 <span style="color:var(--red);">*</span></label>
+            <input type="tel" id="memberEditPhone" placeholder="+95-9-000-0000"/>
+          </div>
+        </div>
+        <div style="margin-top:12px;">
+          <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">이메일(아이디)</label>
+          <input type="email" id="memberEditEmail" placeholder="example@email.com" style="background:#f8fafc;color:var(--gray-text);" readonly/>
+          <p style="font-size:11px;color:var(--gray-text);margin:4px 0 0;">이메일 변경은 본인 인증 후 별도 처리됩니다.</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-gray" onclick="closeMemberEdit()">취소</button>
+      <button type="button" class="btn btn-navy" onclick="submitMemberEdit()">
+        <svg class="icon" width="13" height="13"><use href="#ic-check"/></svg>저장
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 회원 정지 confirm 모달 ── -->
+<div id="modalMemberSuspend" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="memberSuspendTitle">
+  <div class="modal-backdrop" onclick="closeMemberSuspend()" aria-hidden="true"></div>
+  <div class="modal-dialog" style="max-width:min(480px,96vw);width:100%;">
+    <div class="modal-head">
+      <h3 id="memberSuspendTitle">회원 정지</h3>
+      <button type="button" class="modal-close" onclick="closeMemberSuspend()" aria-label="닫기"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;align-items:center;gap:12px;padding:14px;background:#fff5f5;border-radius:10px;margin-bottom:16px;">
+        <svg class="icon" width="28" height="28" color="var(--red)"><use href="#ic-alert"/></svg>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--red);">이 회원을 정지하시겠습니까?</div>
+          <div style="font-size:12px;color:var(--gray-text);margin-top:2px;" id="memberSuspendTarget">—</div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">정지 사유 <span style="color:var(--red);">*</span></label>
+        <select id="memberSuspendReason" style="width:100%;padding:9px 14px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-family:inherit;background:white;">
+          <option value="">선택하세요</option>
+          <option>부정 가입</option>
+          <option>부정 접수</option>
+          <option>약관 위반</option>
+          <option>기타</option>
+        </select>
+      </div>
+      <div style="margin-bottom:12px;" id="memberSuspendEtcWrap" style="display:none;">
+        <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">상세 사유</label>
+        <textarea class="reject-reason-textarea" id="memberSuspendEtc" placeholder="기타 사유를 입력하세요"></textarea>
+      </div>
+      <div>
+        <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">정지 기간 <span style="color:var(--red);">*</span></label>
+        <select id="memberSuspendDuration" style="width:100%;padding:9px 14px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-family:inherit;background:white;">
+          <option>7일</option>
+          <option>30일</option>
+          <option>무기한</option>
+        </select>
+      </div>
+      <p style="font-size:12px;color:var(--gray-text);margin:12px 0 0;line-height:1.55;">정지 기간 동안 로그인·접수가 차단됩니다. 사유는 회원에게 안내 메일로 전송됩니다.</p>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-gray" onclick="closeMemberSuspend()">취소</button>
+      <button type="button" class="btn btn-red" onclick="submitMemberSuspend()">
+        <svg class="icon" width="13" height="13"><use href="#ic-lock"/></svg>정지
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 회원 탈퇴 confirm 모달 ── -->
+<div id="modalMemberWithdraw" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="memberWithdrawTitle">
+  <div class="modal-backdrop" onclick="closeMemberWithdraw()" aria-hidden="true"></div>
+  <div class="modal-dialog" style="max-width:min(480px,96vw);width:100%;">
+    <div class="modal-head">
+      <h3 id="memberWithdrawTitle">회원 탈퇴 처리</h3>
+      <button type="button" class="modal-close" onclick="closeMemberWithdraw()" aria-label="닫기"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;align-items:center;gap:12px;padding:14px;background:#fff5f5;border-radius:10px;margin-bottom:16px;">
+        <svg class="icon" width="28" height="28" color="var(--red)"><use href="#ic-alert"/></svg>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--red);">이 회원을 탈퇴 처리하시겠습니까?</div>
+          <div style="font-size:12px;color:var(--gray-text);margin-top:2px;" id="memberWithdrawTarget">—</div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">처리 방식 <span style="color:var(--red);">*</span></label>
+        <label style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;cursor:pointer;">
+          <input type="radio" name="withdrawMode" value="anonymize" checked style="margin-top:2px;"/>
+          <div>
+            <div style="font-size:13px;font-weight:600;">익명화 (권장)</div>
+            <div style="font-size:11px;color:var(--gray-text);">PII 비식별화 후 통계 보존</div>
+          </div>
+        </label>
+        <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;">
+          <input type="radio" name="withdrawMode" value="delete" style="margin-top:2px;"/>
+          <div>
+            <div style="font-size:13px;font-weight:600;">즉시 삭제</div>
+            <div style="font-size:11px;color:var(--gray-text);">90일 유예 후 영구 삭제</div>
+          </div>
+        </label>
+      </div>
+      <p style="font-size:12px;color:var(--gray-text);margin:8px 0 0;line-height:1.55;">탈퇴된 계정의 이메일은 30일간 재가입이 제한됩니다.</p>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-gray" onclick="closeMemberWithdraw()">취소</button>
+      <button type="button" class="btn btn-red" onclick="submitMemberWithdraw()">
+        <svg class="icon" width="13" height="13"><use href="#ic-trash"/></svg>탈퇴
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 비밀번호 초기화 모달 ── -->
+<div id="modalPasswordReset" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="passwordResetTitle">
+  <div class="modal-backdrop" onclick="closePasswordReset()" aria-hidden="true"></div>
+  <div class="modal-dialog" style="max-width:min(480px,96vw);width:100%;">
+    <div class="modal-head">
+      <h3 id="passwordResetTitle">비밀번호 초기화</h3>
+      <button type="button" class="modal-close" onclick="closePasswordReset()" aria-label="닫기"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:var(--gray-text);padding:10px 12px;background:#f0f4ff;border-radius:8px;margin-bottom:14px;" id="passwordResetTarget">대상 회원: —</div>
+      <div style="margin-bottom:14px;">
+        <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:8px;">처리 방식 <span style="color:var(--red);">*</span></label>
+        <label style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;cursor:pointer;">
+          <input type="radio" name="pwResetMode" value="temp" checked style="margin-top:2px;"/>
+          <div>
+            <div style="font-size:13px;font-weight:600;">임시 비밀번호 발급</div>
+            <div style="font-size:11px;color:var(--gray-text);">8자리 자동 생성, 다음 로그인 시 강제 변경</div>
+          </div>
+        </label>
+        <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;">
+          <input type="radio" name="pwResetMode" value="mail" style="margin-top:2px;"/>
+          <div>
+            <div style="font-size:13px;font-weight:600;">재설정 메일 링크 발송</div>
+            <div style="font-size:11px;color:var(--gray-text);">1회용 링크, 24시간 유효</div>
+          </div>
+        </label>
+      </div>
+      <div>
+        <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">사유 (audit용) <span style="color:var(--red);">*</span></label>
+        <textarea class="reject-reason-textarea" id="passwordResetReason" placeholder="비밀번호 초기화 사유를 입력하세요" style="min-height:72px;"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-gray" onclick="closePasswordReset()">취소</button>
+      <button type="button" class="btn btn-navy" onclick="submitPasswordReset()">
+        <svg class="icon" width="13" height="13"><use href="#ic-lock"/></svg>실행
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 약관 등록/수정 모달 ── -->
+<div id="modalTermsForm" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="termsFormTitle">
+  <div class="modal-backdrop" onclick="closeTermsForm()" aria-hidden="true"></div>
+  <div class="modal-dialog" style="max-width:min(800px,96vw);width:100%;">
+    <div class="modal-head">
+      <h3 id="termsFormTitle">약관 등록</h3>
+      <button type="button" class="modal-close" onclick="closeTermsForm()" aria-label="닫기"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="notice-form-wrap" style="padding:0;background:transparent;border:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">약관 종류 <span style="color:var(--red);">*</span></label>
+            <select id="termsFormType" style="width:100%;padding:9px 14px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-family:inherit;background:white;">
+              <option value="service">이용약관 동의</option>
+              <option value="privacy">개인정보 수집 및 이용에 관한 동의</option>
+              <option value="consignment">개인정보 취급 위탁 동의</option>
+              <option value="marketing">마케팅수신동의 (선택)</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">버전 <span style="color:var(--red);">*</span></label>
+            <input type="text" id="termsFormVersion" placeholder="예: v1.1"/>
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">적용 시작일 <span style="color:var(--red);">*</span></label>
+            <input type="date" id="termsFormStartDate"/>
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">적용 종료일</label>
+            <input type="date" id="termsFormEndDate"/>
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">필수 여부</label>
+            <select id="termsFormRequired" style="width:100%;padding:9px 14px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-family:inherit;background:white;">
+              <option value="1">필수</option>
+              <option value="0">선택</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">개정 요지</label>
+            <input type="text" id="termsFormSummary" placeholder="주요 변경 내용 요약"/>
+          </div>
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">본문 <span style="color:var(--red);">*</span></label>
+          <div style="display:flex;gap:4px;margin-bottom:6px;">
+            <button type="button" class="filter-chip active" id="termsLangKo" onclick="switchTermsLang('ko')" style="font-size:11px;">한국어</button>
+            <button type="button" class="filter-chip" id="termsLangMy" onclick="switchTermsLang('my')" style="font-size:11px;">미얀마어</button>
+            <button type="button" class="filter-chip" id="termsLangEn" onclick="switchTermsLang('en')" style="font-size:11px;">영어</button>
+          </div>
+          <textarea class="reject-reason-textarea" id="termsFormBodyKo" placeholder="이용약관 한국어 본문을 입력하세요..." style="min-height:160px;"></textarea>
+          <textarea class="reject-reason-textarea" id="termsFormBodyMy" placeholder="မြန်မာဘာသာ အကြောင်းအရာ ထည့်သွင်းပါ..." style="min-height:160px;display:none;"></textarea>
+          <textarea class="reject-reason-textarea" id="termsFormBodyEn" placeholder="Enter terms content in English..." style="min-height:160px;display:none;"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-gray" onclick="closeTermsForm()">취소</button>
+      <button type="button" class="btn btn-gray" onclick="submitTermsForm('draft')">
+        <svg class="icon" width="13" height="13"><use href="#ic-edit"/></svg>임시 저장
+      </button>
+      <button type="button" class="btn btn-navy" onclick="submitTermsForm('scheduled')">
+        <svg class="icon" width="13" height="13"><use href="#ic-check"/></svg>등록
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 약관 미리보기 모달 ── -->
+<div id="modalTermsPreview" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="termsPreviewTitle">
+  <div class="modal-backdrop" onclick="closeTermsPreview()" aria-hidden="true"></div>
+  <div class="modal-dialog" style="max-width:min(640px,96vw);width:100%;">
+    <div class="modal-head">
+      <h3 id="termsPreviewTitle">약관 미리보기</h3>
+      <div style="display:flex;gap:4px;margin-left:auto;margin-right:12px;">
+        <button type="button" class="filter-chip active" id="previewLangKo" onclick="switchPreviewLang('ko')" style="font-size:11px;padding:3px 10px;">KO</button>
+        <button type="button" class="filter-chip" id="previewLangMy" onclick="switchPreviewLang('my')" style="font-size:11px;padding:3px 10px;">MY</button>
+        <button type="button" class="filter-chip" id="previewLangEn" onclick="switchPreviewLang('en')" style="font-size:11px;padding:3px 10px;">EN</button>
+      </div>
+      <button type="button" class="modal-close" onclick="closeTermsPreview()" aria-label="닫기"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div style="border:1.5px solid var(--gray-light);border-radius:10px;padding:20px;max-height:380px;overflow-y:auto;background:white;font-size:13px;line-height:1.8;" id="termsPreviewBody">
+        약관 본문이 여기에 표시됩니다.
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:12px;padding:10px;background:#f0f4ff;border-radius:8px;">
+        <input type="checkbox" id="previewConsentCheck" disabled/>
+        <label for="previewConsentCheck" style="font-size:13px;font-weight:600;color:var(--navy);">[필수] 본 약관에 동의합니다. <span style="font-size:11px;color:var(--gray-text);">(미리보기 — 읽기 전용)</span></label>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-gray" onclick="closeTermsPreview()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 약관 게시 confirm 모달 ── -->
+<div id="modalTermsPublish" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="termsPublishTitle">
+  <div class="modal-backdrop" onclick="closeTermsPublish()" aria-hidden="true"></div>
+  <div class="modal-dialog" style="max-width:min(460px,96vw);width:100%;">
+    <div class="modal-head">
+      <h3 id="termsPublishTitle">약관 게시</h3>
+      <button type="button" class="modal-close" onclick="closeTermsPublish()" aria-label="닫기"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px;">이 버전을 게시하시겠습니까?</div>
+      <div style="font-size:13px;padding:10px 12px;background:#f0f4ff;border-radius:8px;margin-bottom:14px;" id="termsPublishTarget">—</div>
+      <ul style="font-size:12px;color:var(--gray-text);margin:0;padding-left:16px;line-height:1.8;">
+        <li>게시 시점부터 FO 회원가입 STEP3에 본 버전이 노출됩니다.</li>
+        <li>직전 게시중 버전은 자동 <strong>폐지</strong> 처리됩니다.</li>
+      </ul>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="termsPublishReConsent"/>
+        <label for="termsPublishReConsent" style="font-size:12px;color:var(--navy);font-weight:600;">기존 회원에게 재동의 요청 (향후 알림 모듈 연동)</label>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-gray" onclick="closeTermsPublish()">취소</button>
+      <button type="button" class="btn btn-navy" onclick="submitTermsPublish()">
+        <svg class="icon" width="13" height="13"><use href="#ic-check"/></svg>게시
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 약관 폐지 confirm 모달 ── -->
+<div id="modalTermsRetire" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="termsRetireTitle">
+  <div class="modal-backdrop" onclick="closeTermsRetire()" aria-hidden="true"></div>
+  <div class="modal-dialog" style="max-width:min(460px,96vw);width:100%;">
+    <div class="modal-head">
+      <h3 id="termsRetireTitle">약관 폐지</h3>
+      <button type="button" class="modal-close" onclick="closeTermsRetire()" aria-label="닫기"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;align-items:center;gap:10px;padding:12px;background:#fff5f5;border-radius:10px;margin-bottom:14px;">
+        <svg class="icon" width="22" height="22" color="var(--red)"><use href="#ic-alert"/></svg>
+        <div style="font-size:14px;font-weight:700;color:var(--red);">이 버전을 폐지하시겠습니까?</div>
+      </div>
+      <div style="font-size:13px;padding:10px 12px;background:#fafbfc;border-radius:8px;margin-bottom:12px;" id="termsRetireTarget">—</div>
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">폐지 사유 <span style="color:var(--red);">*</span></label>
+        <textarea class="reject-reason-textarea" id="termsRetireReason" placeholder="폐지 사유를 입력하세요" style="min-height:80px;"></textarea>
+      </div>
+      <ul style="font-size:12px;color:var(--gray-text);margin:0;padding-left:16px;line-height:1.8;">
+        <li>폐지 후 FO에서는 더 이상 노출되지 않습니다.</li>
+        <li>동의 이력은 그대로 보존됩니다.</li>
+      </ul>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-gray" onclick="closeTermsRetire()">취소</button>
+      <button type="button" class="btn btn-red" onclick="submitTermsRetire()">
+        <svg class="icon" width="13" height="13"><use href="#ic-trash"/></svg>폐지
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 동의 이력 조회 모달 ── -->
+<div id="modalConsentHistory" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="consentHistoryTitle">
+  <div class="modal-backdrop" onclick="closeConsentHistory()" aria-hidden="true"></div>
+  <div class="modal-dialog" style="max-width:min(960px,96vw);width:100%;">
+    <div class="modal-head">
+      <h3 id="consentHistoryTitle">약관 동의 이력</h3>
+      <button type="button" class="modal-close" onclick="closeConsentHistory()" aria-label="닫기"><svg class="icon" width="18" height="18"><use href="#ic-x"/></svg></button>
+    </div>
+    <div class="modal-body" style="padding:16px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center;">
+        <select id="consentFilterType" style="padding:7px 10px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:12px;font-family:inherit;">
+          <option value="">약관 종류 전체</option>
+          <option value="service">이용약관 동의</option>
+          <option value="privacy">개인정보 수집 및 이용에 관한 동의</option>
+          <option value="consignment">개인정보 취급 위탁 동의</option>
+          <option value="marketing">마케팅수신동의</option>
+        </select>
+        <select id="consentFilterVersion" style="padding:7px 10px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:12px;font-family:inherit;">
+          <option value="">버전 전체</option>
+          <option>v1.0</option>
+          <option>v1.1</option>
+        </select>
+        <input type="date" id="consentDateFrom" style="padding:7px 10px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:12px;font-family:inherit;" title="시작일"/>
+        <span style="font-size:12px;color:var(--gray-text);">~</span>
+        <input type="date" id="consentDateTo" style="padding:7px 10px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:12px;font-family:inherit;" title="종료일"/>
+        <div class="search-mini" style="margin-left:auto;">
+          <input type="text" placeholder="이메일·이름 검색" style="width:160px;"/>
+          <button type="button"><svg class="icon" width="14" height="14"><use href="#ic-search"/></svg></button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;max-height:380px;overflow-y:auto;">
+        <table class="data-table" style="font-size:12px;">
+          <thead><tr>
+            <th>회원(마스킹)</th><th>약관 종류</th><th>버전</th><th>필수/선택</th><th>동의</th><th>동의 일시</th><th>IP</th>
+          </tr></thead>
+          <tbody id="consentHistoryBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-gray" onclick="downloadConsentCSV()">
+        <svg class="icon" width="13" height="13"><use href="#ic-download"/></svg>CSV 다운로드
+      </button>
+      <button type="button" class="btn btn-navy" onclick="closeConsentHistory()">닫기</button>
     </div>
   </div>
 </div>
@@ -1896,16 +2497,20 @@
     if(clickedBtn) clickedBtn.classList.add('active');
     const icons = {
       dashboard:'ic-chart', applicants:'ic-users',
-      rounds:'ic-calendar', notices:'ic-notice', faq:'ic-info'
+      rounds:'ic-calendar', notices:'ic-notice', faq:'ic-info',
+      members:'ic-users', terms:'ic-rules'
     };
     const labels = {
       dashboard:'대시보드', applicants:'접수자 목록',
-      rounds:'회차 관리', notices:'공지사항 관리', faq:'FAQ 관리'
+      rounds:'회차 관리', notices:'공지사항 관리', faq:'FAQ 관리',
+      members:'회원 관리', terms:'약관 관리'
     };
     var icn=icons[name]||'ic-users';
     var lbl=labels[name]||'접수자 목록';
     document.getElementById('page-title').innerHTML =
       `<svg class="icon" width="18" height="18" color="var(--navy)"><use href="#${icn}"/></svg>${lbl}`;
+    if(name==='members') initMemberPanel();
+    if(name==='terms') initTermsPanel();
     closeAdminSidebar();
   }
   document.addEventListener('keydown',function(e){
@@ -2649,6 +3254,488 @@
     renderNoticeAdminTable();
     renderFaqAdminTable();
   });
+
+  /* ════════════════════════════════════
+     회원 관리 — 데이터 & 기능
+  ════════════════════════════════════ */
+  var MEMBER_DATA = [
+    {no:1,nameKo:'김민준',nameEn:'KIM MIN JUN',gender:'남',dob:'1995-03-15',nationality:'대한민국',email:'kim***@gmail.com',phone:'010-****-1234',joinDate:'2026-01-05',lastLogin:'2026-05-17',termsVer:'v1.0',status:'active'},
+    {no:2,nameKo:'아웅 테',nameEn:'AUNG THE',gender:'남',dob:'1998-07-22',nationality:'미얀마',email:'aung***@gmail.com',phone:'+95-9-****-5678',joinDate:'2026-01-12',lastLogin:'2026-05-15',termsVer:'v1.0',status:'active'},
+    {no:3,nameKo:'수 수 라',nameEn:'SU SU LA',gender:'여',dob:'2000-11-03',nationality:'미얀마',email:'susu***@yahoo.com',phone:'+95-9-****-8812',joinDate:'2026-01-19',lastLogin:'2026-05-16',termsVer:'v1.0',status:'active'},
+    {no:4,nameKo:'박지현',nameEn:'PARK JI HYUN',gender:'여',dob:'1997-05-28',nationality:'대한민국',email:'park***@naver.com',phone:'010-****-9900',joinDate:'2026-02-01',lastLogin:'2026-04-22',termsVer:'v1.0',status:'suspended'},
+    {no:5,nameKo:'마 칼라야',nameEn:'MA KALAYA',gender:'여',dob:'2001-08-14',nationality:'미얀마',email:'maka***@gmail.com',phone:'+95-9-****-3341',joinDate:'2026-02-08',lastLogin:'2026-05-10',termsVer:'v1.0',status:'active'},
+    {no:6,nameKo:'이재훈',nameEn:'LEE JAE HOON',gender:'남',dob:'1993-12-20',nationality:'대한민국',email:'lee***@hanmail.net',phone:'010-****-7755',joinDate:'2026-02-15',lastLogin:'2026-05-12',termsVer:'v1.0',status:'pending'},
+    {no:7,nameKo:'윈 나잉',nameEn:'WIN NAING',gender:'남',dob:'1999-04-07',nationality:'미얀마',email:'win***@gmail.com',phone:'+95-9-****-6622',joinDate:'2026-03-01',lastLogin:'2026-05-14',termsVer:'v1.0',status:'active'},
+    {no:8,nameKo:'정수연',nameEn:'JUNG SU YEON',gender:'여',dob:'1996-09-30',nationality:'대한민국',email:'jung***@gmail.com',phone:'010-****-4401',joinDate:'2026-03-10',lastLogin:'2026-05-18',termsVer:'v1.0',status:'active'},
+    {no:9,nameKo:'에이 밍',nameEn:'EI MYINT',gender:'여',dob:'2002-01-25',nationality:'미얀마',email:'ei***@gmail.com',phone:'+95-9-****-9987',joinDate:'2026-03-22',lastLogin:'2026-05-11',termsVer:'v1.0',status:'active'},
+    {no:10,nameKo:'최동현',nameEn:'CHOI DONG HYUN',gender:'남',dob:'1994-06-18',nationality:'대한민국',email:'choi***@naver.com',phone:'010-****-2200',joinDate:'2026-04-05',lastLogin:'2026-05-17',termsVer:'v1.0',status:'pending'},
+  ];
+  var currentMemberFilter='all';
+  var currentMemberIdx=0;
+  var memberInited=false;
+
+  function initMemberPanel(){
+    if(memberInited)return;
+    memberInited=true;
+    renderMemberTable();
+  }
+
+  function memberFilterChip(btn,filter){
+    document.querySelectorAll('#panel-members .filter-chip').forEach(c=>c.classList.remove('active'));
+    btn.classList.add('active');
+    currentMemberFilter=filter;
+    renderMemberTable();
+  }
+
+  function memberApplyFilter(){renderMemberTable();}
+
+  function renderMemberTable(){
+    var q=(document.getElementById('memberSearchInput')||{}).value||'';
+    q=q.toLowerCase();
+    var data=MEMBER_DATA.filter(function(m){
+      if(currentMemberFilter!=='all'&&m.status!==currentMemberFilter)return false;
+      if(q&&!(m.nameKo.includes(q)||m.nameEn.toLowerCase().includes(q)||m.email.toLowerCase().includes(q)||m.phone.includes(q)))return false;
+      return true;
+    });
+    var sb=document.getElementById('memberTableBody');
+    if(!sb)return;
+    sb.innerHTML='';
+    data.forEach(function(m,i){
+      var stCls={active:'sb-approved',suspended:'sb-rejected',pending:'sb-review'}[m.status]||'sb-cancelled';
+      var stLbl={active:'활성',suspended:'정지',pending:'탈퇴 대기'}[m.status]||m.status;
+      var idx=MEMBER_DATA.indexOf(m);
+      sb.innerHTML+=`<tr>
+        <td>${m.no}</td>
+        <td><strong>${m.nameKo}</strong></td>
+        <td style="font-size:12px;color:var(--gray-text);">${m.nameEn}</td>
+        <td style="font-size:12px;">${m.email}</td>
+        <td style="font-size:12px;">${m.joinDate}</td>
+        <td style="font-size:12px;">${m.lastLogin}</td>
+        <td><span class="sb ${stCls}">${stLbl}</span></td>
+        <td>
+          <div class="action-btns">
+            <button class="ab-view" onclick="openMemberDetail(${idx})">보기</button>
+            <button class="ab-view" onclick="openMemberEdit(${idx})">수정</button>
+            <button class="ab-reject" onclick="openMemberSuspend(${idx})">정지</button>
+            <button class="ab-reject" onclick="openMemberWithdraw(${idx})">탈퇴</button>
+          </div>
+        </td>
+      </tr>`;
+    });
+    var lbl=document.getElementById('memberCountLabel');
+    if(lbl)lbl.textContent='총 '+data.length+'명';
+  }
+
+  function memberDownloadCSV(){
+    openConfirmModal({
+      title:'회원 목록 다운로드',
+      message:'현재 목록을 CSV 파일로 저장합니다.\n(이메일·연락처·생년월일은 마스킹 상태로 내려받습니다.)',
+      confirmLabel:'다운로드',
+      onConfirm:function(){
+        var csv='\uFEFF번호,한글 성명,영문 성명,성별,생년월일,국적,이메일,연락처,가입일,최근 로그인,약관 버전,상태\n';
+        MEMBER_DATA.forEach(function(m){
+          csv+=`${m.no},${m.nameKo},${m.nameEn},${m.gender},${m.dob},${m.nationality},${m.email},${m.phone},${m.joinDate},${m.lastLogin},${m.termsVer},${m.status}\n`;
+        });
+        var a=document.createElement('a');
+        a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+        a.download='members_'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'.csv';
+        a.click();
+      }
+    });
+  }
+
+  /* 회원 상세 */
+  function openMemberDetail(idx){
+    currentMemberIdx=idx;
+    var m=MEMBER_DATA[idx];
+    if(!m)return;
+    var modal=document.getElementById('modalMemberDetail');
+    document.getElementById('memberDetailTitle').textContent='회원 상세 — MEM-'+String(m.no).padStart(4,'0');
+    document.getElementById('memberDetailAvatar').textContent=m.nameKo.charAt(0);
+    document.getElementById('memberDetailNameKo').textContent=m.nameKo;
+    document.getElementById('memberDetailNameEn').textContent=m.nameEn;
+    var stCls={active:'sb-approved',suspended:'sb-rejected',pending:'sb-review'}[m.status]||'sb-cancelled';
+    var stLbl={active:'활성',suspended:'정지',pending:'탈퇴 대기'}[m.status]||m.status;
+    document.getElementById('memberDetailStatusBadge').innerHTML='<span class="sb '+stCls+'">'+stLbl+'</span>';
+    document.getElementById('memberDetailGender').textContent=m.gender;
+    document.getElementById('memberDetailDob').textContent=m.dob;
+    document.getElementById('memberDetailNationality').textContent=m.nationality;
+    document.getElementById('memberDetailEmail').textContent=m.email;
+    document.getElementById('memberDetailPhone').textContent=m.phone;
+    document.getElementById('memberDetailJoinDate').textContent=m.joinDate;
+    document.getElementById('memberDetailLastLogin').textContent=m.lastLogin;
+    document.getElementById('memberDetailTermsVer').textContent=m.termsVer;
+    document.getElementById('memberDetailConsentDate1').textContent=m.joinDate+' 09:12:03';
+    document.getElementById('memberDetailConsentDate2').textContent=m.joinDate+' 09:12:04';
+    var examBody=document.getElementById('memberDetailExamBody');
+    examBody.innerHTML=idx<3?'<tr><td colspan="4" style="text-align:center;color:var(--gray-text);">접수 이력이 없습니다.</td></tr>':
+      `<tr><td>제98회</td><td>TOPIK I</td><td>MM-98-${String(m.no).padStart(4,'0')}</td><td><span class="sb sb-approved">접수 완료</span></td></tr>`;
+    var logBody=document.getElementById('memberDetailLogBody');
+    logBody.innerHTML=`<tr><td>${m.joinDate} 09:12:01</td><td>회원가입</td><td>203.x.x.x</td></tr>
+      <tr><td>${m.lastLogin} 14:30:22</td><td>로그인</td><td>203.x.x.x</td></tr>`;
+    switchMemberDetailTab(document.querySelector('.member-detail-tab'),'consent');
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden','false');
+  }
+  function closeMemberDetail(){
+    var m=document.getElementById('modalMemberDetail');
+    m.classList.remove('is-open'); m.setAttribute('aria-hidden','true');
+  }
+  function switchMemberDetailTab(btn,tab){
+    document.querySelectorAll('.member-detail-tab').forEach(function(b){
+      b.style.color='var(--gray-text)'; b.style.borderBottom='2px solid transparent';
+    });
+    btn.style.color='var(--navy)'; btn.style.borderBottom='2px solid var(--navy)';
+    ['consent','exam','log'].forEach(function(t){
+      var el=document.getElementById('memberDetailTab'+t.charAt(0).toUpperCase()+t.slice(1));
+      if(el)el.style.display=t===tab?'block':'none';
+    });
+  }
+
+  /* 회원 수정 */
+  function openMemberEdit(idx){
+    currentMemberIdx=idx;
+    var m=MEMBER_DATA[idx];
+    if(!m)return;
+    document.getElementById('memberEditNameKo').value=m.nameKo;
+    document.getElementById('memberEditNameEn').value=m.nameEn;
+    document.getElementById('memberEditGender').value=m.gender;
+    document.getElementById('memberEditDob').value=m.dob;
+    document.getElementById('memberEditNationality').value=m.nationality;
+    document.getElementById('memberEditPhone').value=m.phone;
+    document.getElementById('memberEditEmail').value=m.email;
+    var modal=document.getElementById('modalMemberEdit');
+    modal.classList.add('is-open'); modal.setAttribute('aria-hidden','false');
+  }
+  function closeMemberEdit(){
+    var m=document.getElementById('modalMemberEdit');
+    m.classList.remove('is-open'); m.setAttribute('aria-hidden','true');
+  }
+  function submitMemberEdit(){
+    var m=MEMBER_DATA[currentMemberIdx];
+    if(m){
+      m.nameKo=document.getElementById('memberEditNameKo').value||m.nameKo;
+      m.nameEn=document.getElementById('memberEditNameEn').value||m.nameEn;
+      m.gender=document.getElementById('memberEditGender').value;
+      m.dob=document.getElementById('memberEditDob').value||m.dob;
+      m.nationality=document.getElementById('memberEditNationality').value;
+      m.phone=document.getElementById('memberEditPhone').value||m.phone;
+    }
+    closeMemberEdit();
+    renderMemberTable();
+    alert('수정되었습니다.');
+  }
+
+  /* 회원 정지 */
+  function openMemberSuspend(idx){
+    currentMemberIdx=idx;
+    var m=MEMBER_DATA[idx];
+    if(!m)return;
+    document.getElementById('memberSuspendTarget').textContent=m.nameKo+' ('+m.email+')';
+    document.getElementById('memberSuspendReason').value='';
+    var modal=document.getElementById('modalMemberSuspend');
+    modal.classList.add('is-open'); modal.setAttribute('aria-hidden','false');
+  }
+  function closeMemberSuspend(){
+    var m=document.getElementById('modalMemberSuspend');
+    m.classList.remove('is-open'); m.setAttribute('aria-hidden','true');
+  }
+  function submitMemberSuspend(){
+    var reason=document.getElementById('memberSuspendReason').value;
+    if(!reason){alert('정지 사유를 선택해 주세요.');return;}
+    if(MEMBER_DATA[currentMemberIdx])MEMBER_DATA[currentMemberIdx].status='suspended';
+    closeMemberSuspend();
+    renderMemberTable();
+    alert('정지 처리되었습니다.');
+  }
+
+  /* 회원 탈퇴 */
+  function openMemberWithdraw(idx){
+    currentMemberIdx=idx;
+    var m=MEMBER_DATA[idx];
+    if(!m)return;
+    document.getElementById('memberWithdrawTarget').textContent=m.nameKo+' ('+m.email+')';
+    var modal=document.getElementById('modalMemberWithdraw');
+    modal.classList.add('is-open'); modal.setAttribute('aria-hidden','false');
+  }
+  function closeMemberWithdraw(){
+    var m=document.getElementById('modalMemberWithdraw');
+    m.classList.remove('is-open'); m.setAttribute('aria-hidden','true');
+  }
+  function submitMemberWithdraw(){
+    if(MEMBER_DATA[currentMemberIdx])MEMBER_DATA[currentMemberIdx].status='pending';
+    closeMemberWithdraw();
+    renderMemberTable();
+    alert('탈퇴 처리되었습니다.');
+  }
+
+  /* 비밀번호 초기화 */
+  function openPasswordReset(idx){
+    currentMemberIdx=idx;
+    var m=MEMBER_DATA[idx];
+    if(!m)return;
+    document.getElementById('passwordResetTarget').textContent='대상 회원: '+m.nameKo+' ('+m.email+')';
+    document.getElementById('passwordResetReason').value='';
+    var modal=document.getElementById('modalPasswordReset');
+    modal.classList.add('is-open'); modal.setAttribute('aria-hidden','false');
+  }
+  function closePasswordReset(){
+    var m=document.getElementById('modalPasswordReset');
+    m.classList.remove('is-open'); m.setAttribute('aria-hidden','true');
+  }
+  function submitPasswordReset(){
+    var reason=document.getElementById('passwordResetReason').value.trim();
+    if(!reason){alert('사유를 입력해 주세요.');return;}
+    var mode=document.querySelector('input[name="pwResetMode"]:checked');
+    var modeVal=mode?mode.value:'temp';
+    closePasswordReset();
+    alert(modeVal==='temp'?'임시 비밀번호가 발급되었습니다.':'재설정 메일 링크가 발송되었습니다.');
+  }
+
+  /* ════════════════════════════════════
+     약관 관리 — 데이터 & 기능
+  ════════════════════════════════════ */
+  var TERMS_DATA = {
+    service:[
+      {ver:'v1.1',status:'active',startDate:'2026-03-01',endDate:'—',langs:{ko:true,my:true,en:true},author:'슈퍼관리자',createdAt:'2026-02-20',consentCount:1187,body:'제1조 (목적) 본 약관은 TOPIK Myanmar 서비스 이용에 관한 기본 사항을 규정합니다.\n\n제2조 (정의) "서비스"란 온라인 TOPIK 시험 접수 및 관련 부가 서비스를 의미합니다.\n\n제3조 (약관의 효력) 본 약관은 서비스 화면에 게시하거나 기타 방법으로 회원에게 공지함으로써 효력이 발생합니다.'},
+      {ver:'v1.0',status:'retired',startDate:'2026-01-01',endDate:'2026-02-28',langs:{ko:true,my:false,en:true},author:'슈퍼관리자',createdAt:'2025-12-20',consentCount:61,body:'제1조 (목적) 본 약관은 TOPIK Myanmar 서비스 이용에 관한 기본 사항을 규정합니다.'},
+    ],
+    privacy:[
+      {ver:'v1.0',status:'active',startDate:'2026-01-01',endDate:'—',langs:{ko:true,my:true,en:false},author:'슈퍼관리자',createdAt:'2025-12-20',consentCount:1248,body:'[개인정보 수집 및 이용에 관한 동의]\n\n수집 항목: 성명, 생년월일, 국적, 이메일, 연락처\n수집 목적: TOPIK 시험 접수 및 결과 통보\n보유 기간: 회원 탈퇴 후 30일'},
+    ],
+    consignment:[
+      {ver:'v1.0',status:'active',startDate:'2026-01-01',endDate:'—',langs:{ko:true,my:true,en:false},author:'슈퍼관리자',createdAt:'2025-12-20',consentCount:1248,body:'[개인정보 취급 위탁 동의]\n\n위탁업체: 주미얀마 대한민국 대사관 지정 운영사\n위탁 목적: TOPIK 시험 운영 및 결과 처리\n보유 기간: 위탁 계약 종료 시까지'},
+    ],
+    marketing:[
+      {ver:'v1.0',status:'draft',startDate:'2026-06-01',endDate:'—',langs:{ko:true,my:false,en:false},author:'콘텐츠관리자',createdAt:'2026-05-10',consentCount:0,body:'[마케팅수신동의 (선택)]\n\n수신 내용: 시험 일정 안내, 이벤트 소식\n수신 방법: 이메일, SMS\n동의는 거부하셔도 서비스 이용에 불이익이 없습니다.'},
+    ],
+  };
+  var currentTermsType='service';
+  var currentTermsVerIdx=0;
+  var termsInited=false;
+
+  function initTermsPanel(){
+    if(termsInited)return;
+    termsInited=true;
+    renderTermsTable('service');
+    renderConsentHistoryBody();
+  }
+
+  function switchTermsTab(btn,type){
+    document.querySelectorAll('.terms-tab').forEach(function(b){
+      b.style.color='var(--gray-text)'; b.style.borderBottom='2px solid transparent';
+    });
+    btn.style.color='var(--navy)'; btn.style.borderBottom='2px solid var(--navy)';
+    currentTermsType=type;
+    renderTermsTable(type);
+  }
+
+  function renderTermsTable(type){
+    var data=TERMS_DATA[type]||[];
+    var tb=document.getElementById('termsTableBody');
+    if(!tb)return;
+    tb.innerHTML='';
+    if(!data.length){
+      tb.innerHTML='<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--gray-text);">등록된 약관이 없습니다.</td></tr>';
+      return;
+    }
+    data.forEach(function(t,i){
+      var stCls={active:'sb-approved',draft:'sb-pending',scheduled:'sb-review',retired:'sb-cancelled'}[t.status]||'sb-cancelled';
+      var stLbl={active:'게시중',draft:'작성중',scheduled:'게시예정',retired:'폐지'}[t.status]||t.status;
+      var langHtml=(t.langs.ko?'<span style="color:var(--navy);font-weight:700;">KO</span>':'<span style="color:var(--gray-light);">KO</span>')+' '+
+        (t.langs.my?'<span style="color:var(--navy);font-weight:700;">MY</span>':'<span style="color:var(--gray-light);">MY</span>')+' '+
+        (t.langs.en?'<span style="color:var(--navy);font-weight:700;">EN</span>':'<span style="color:var(--gray-light);">EN</span>');
+      var canEdit=t.status==='draft'||t.status==='scheduled';
+      var canPublish=t.status==='draft';
+      var canRetire=t.status==='active'||t.status==='scheduled';
+      tb.innerHTML+=`<tr>
+        <td><strong>${t.ver}</strong></td>
+        <td><span class="sb ${stCls}">${stLbl}</span></td>
+        <td style="font-size:12px;">${t.startDate}</td>
+        <td style="font-size:12px;">${t.endDate}</td>
+        <td style="font-size:12px;letter-spacing:2px;">${langHtml}</td>
+        <td style="font-size:12px;">${t.author}</td>
+        <td style="font-size:12px;">${t.createdAt}</td>
+        <td style="font-size:12px;">${t.status==='active'?t.consentCount.toLocaleString()+'명':'—'}</td>
+        <td>
+          <div class="action-btns">
+            <button class="ab-view" onclick="openTermsPreview('${type}',${i})">미리보기</button>
+            ${canEdit?`<button class="ab-view" onclick="openTermsForm('edit','${type}',${i})">수정</button>`:''}
+            ${canPublish?`<button class="ab-approve" onclick="openTermsPublish('${type}',${i})">게시</button>`:''}
+            ${canRetire?`<button class="ab-reject" onclick="openTermsRetire('${type}',${i})">폐지</button>`:''}
+          </div>
+        </td>
+      </tr>`;
+    });
+  }
+
+  /* 약관 등록/수정 */
+  function openTermsForm(mode,type,verIdx){
+    document.getElementById('termsFormTitle').textContent=mode==='edit'?'약관 수정':'약관 등록(신규 버전)';
+    if(type)document.getElementById('termsFormType').value=type;
+    if(mode==='edit'&&type!=null&&verIdx!=null){
+      var t=(TERMS_DATA[type]||[])[verIdx];
+      if(t){
+        document.getElementById('termsFormVersion').value=t.ver;
+        document.getElementById('termsFormVersion').readOnly=true;
+        document.getElementById('termsFormStartDate').value=t.startDate==='—'?'':t.startDate;
+        document.getElementById('termsFormBodyKo').value=t.body||'';
+      }
+    } else {
+      document.getElementById('termsFormVersion').value='';
+      document.getElementById('termsFormVersion').readOnly=false;
+      document.getElementById('termsFormStartDate').value='';
+      document.getElementById('termsFormBodyKo').value='';
+    }
+    switchTermsLang('ko');
+    var modal=document.getElementById('modalTermsForm');
+    modal.classList.add('is-open'); modal.setAttribute('aria-hidden','false');
+  }
+  function closeTermsForm(){
+    var m=document.getElementById('modalTermsForm');
+    m.classList.remove('is-open'); m.setAttribute('aria-hidden','true');
+  }
+  function switchTermsLang(lang){
+    ['ko','my','en'].forEach(function(l){
+      var ta=document.getElementById('termsFormBody'+l.charAt(0).toUpperCase()+l.slice(1));
+      var btn=document.getElementById('termsLang'+l.charAt(0).toUpperCase()+l.slice(1));
+      if(ta)ta.style.display=l===lang?'block':'none';
+      if(btn){btn.classList.toggle('active',l===lang);}
+    });
+  }
+  function submitTermsForm(action){
+    var type=document.getElementById('termsFormType').value;
+    var ver=document.getElementById('termsFormVersion').value.trim();
+    var body=document.getElementById('termsFormBodyKo').value.trim();
+    var startDate=document.getElementById('termsFormStartDate').value;
+    if(!ver){alert('버전을 입력해 주세요.');return;}
+    if(!body){alert('본문(한국어)을 입력해 주세요.');return;}
+    var status=action==='scheduled'?'scheduled':'draft';
+    if(!TERMS_DATA[type])TERMS_DATA[type]=[];
+    TERMS_DATA[type].unshift({ver:ver,status:status,startDate:startDate||'—',endDate:'—',langs:{ko:true,my:false,en:false},author:'슈퍼관리자',createdAt:new Date().toISOString().slice(0,10),consentCount:0,body:body});
+    closeTermsForm();
+    renderTermsTable(currentTermsType);
+    alert(action==='scheduled'?'등록되었습니다.':'임시 저장되었습니다.');
+  }
+
+  /* 약관 미리보기 */
+  function openTermsPreview(type,verIdx){
+    var t=(TERMS_DATA[type]||[])[verIdx];
+    if(!t)return;
+    document.getElementById('termsPreviewTitle').textContent='약관 미리보기 — '+{service:'이용약관 동의',privacy:'개인정보 수집 및 이용에 관한 동의',consignment:'개인정보 취급 위탁 동의',marketing:'마케팅수신동의'}[type]+' '+t.ver;
+    document.getElementById('termsPreviewBody').textContent=t.body||'(본문 없음)';
+    switchPreviewLang('ko');
+    var modal=document.getElementById('modalTermsPreview');
+    modal.classList.add('is-open'); modal.setAttribute('aria-hidden','false');
+  }
+  function closeTermsPreview(){
+    var m=document.getElementById('modalTermsPreview');
+    m.classList.remove('is-open'); m.setAttribute('aria-hidden','true');
+  }
+  function switchPreviewLang(lang){
+    ['ko','my','en'].forEach(function(l){
+      var btn=document.getElementById('previewLang'+l.charAt(0).toUpperCase()+l.slice(1));
+      if(btn)btn.classList.toggle('active',l===lang);
+    });
+  }
+
+  /* 약관 게시 */
+  function openTermsPublish(type,verIdx){
+    currentTermsType=type;
+    currentTermsVerIdx=verIdx;
+    var t=(TERMS_DATA[type]||[])[verIdx];
+    if(!t)return;
+    var typeLbl={service:'이용약관 동의',privacy:'개인정보 수집 및 이용에 관한 동의',consignment:'개인정보 취급 위탁 동의',marketing:'마케팅수신동의'}[type];
+    document.getElementById('termsPublishTarget').textContent=typeLbl+' '+t.ver+' / 적용 시작일: '+t.startDate;
+    var modal=document.getElementById('modalTermsPublish');
+    modal.classList.add('is-open'); modal.setAttribute('aria-hidden','false');
+  }
+  function closeTermsPublish(){
+    var m=document.getElementById('modalTermsPublish');
+    m.classList.remove('is-open'); m.setAttribute('aria-hidden','true');
+  }
+  function submitTermsPublish(){
+    var data=TERMS_DATA[currentTermsType]||[];
+    data.forEach(function(t){if(t.status==='active'){t.status='retired';t.endDate=new Date().toISOString().slice(0,10);}});
+    if(data[currentTermsVerIdx])data[currentTermsVerIdx].status='active';
+    closeTermsPublish();
+    renderTermsTable(currentTermsType);
+    alert('게시되었습니다.');
+  }
+
+  /* 약관 폐지 */
+  function openTermsRetire(type,verIdx){
+    currentTermsType=type;
+    currentTermsVerIdx=verIdx;
+    var t=(TERMS_DATA[type]||[])[verIdx];
+    if(!t)return;
+    var typeLbl={service:'이용약관 동의',privacy:'개인정보 수집 및 이용에 관한 동의',consignment:'개인정보 취급 위탁 동의',marketing:'마케팅수신동의'}[type];
+    document.getElementById('termsRetireTarget').textContent=typeLbl+' '+t.ver;
+    document.getElementById('termsRetireReason').value='';
+    var modal=document.getElementById('modalTermsRetire');
+    modal.classList.add('is-open'); modal.setAttribute('aria-hidden','false');
+  }
+  function closeTermsRetire(){
+    var m=document.getElementById('modalTermsRetire');
+    m.classList.remove('is-open'); m.setAttribute('aria-hidden','true');
+  }
+  function submitTermsRetire(){
+    var reason=document.getElementById('termsRetireReason').value.trim();
+    if(!reason){alert('폐지 사유를 입력해 주세요.');return;}
+    var data=TERMS_DATA[currentTermsType]||[];
+    if(data[currentTermsVerIdx]){data[currentTermsVerIdx].status='retired';data[currentTermsVerIdx].endDate=new Date().toISOString().slice(0,10);}
+    closeTermsRetire();
+    renderTermsTable(currentTermsType);
+    alert('폐지 처리되었습니다.');
+  }
+
+  /* 동의 이력 */
+  var CONSENT_HISTORY_DATA=[
+    {member:'kim***@gmail.com',nameKo:'김민준',type:'이용약관 동의',ver:'v1.1',required:'필수',consented:'동의',date:'2026-01-05 09:12:03',ip:'203.x.x.1'},
+    {member:'aung***@gmail.com',nameKo:'아웅 테',type:'이용약관 동의',ver:'v1.1',required:'필수',consented:'동의',date:'2026-01-12 11:30:44',ip:'119.x.x.2'},
+    {member:'susu***@yahoo.com',nameKo:'수 수 라',type:'개인정보 수집 및 이용에 관한 동의',ver:'v1.0',required:'필수',consented:'동의',date:'2026-01-19 08:55:10',ip:'119.x.x.3'},
+    {member:'park***@naver.com',nameKo:'박지현',type:'마케팅수신동의',ver:'v1.0',required:'선택',consented:'미동의',date:'—',ip:'—'},
+    {member:'maka***@gmail.com',nameKo:'마 칼라야',type:'개인정보 취급 위탁 동의',ver:'v1.0',required:'필수',consented:'동의',date:'2026-02-08 15:22:01',ip:'119.x.x.5'},
+    {member:'win***@gmail.com',nameKo:'윈 나잉',type:'개인정보 수집 및 이용에 관한 동의',ver:'v1.0',required:'필수',consented:'동의',date:'2026-03-01 10:10:30',ip:'119.x.x.7'},
+  ];
+  function renderConsentHistoryBody(){
+    var tb=document.getElementById('consentHistoryBody');
+    if(!tb)return;
+    tb.innerHTML='';
+    CONSENT_HISTORY_DATA.forEach(function(r){
+      var reqCls=r.required==='필수'?'sb-approved':'sb-cancelled';
+      var conCls=r.consented==='동의'?'sb-approved':'sb-cancelled';
+      tb.innerHTML+=`<tr>
+        <td style="font-size:12px;">${r.member}<br><span style="color:var(--gray-text);font-size:11px;">${r.nameKo}</span></td>
+        <td style="font-size:12px;">${r.type}</td>
+        <td style="font-size:12px;">${r.ver}</td>
+        <td><span class="sb ${reqCls}">${r.required}</span></td>
+        <td><span class="sb ${conCls}">${r.consented}</span></td>
+        <td style="font-size:12px;">${r.date}</td>
+        <td style="font-size:12px;">${r.ip}</td>
+      </tr>`;
+    });
+  }
+  function openConsentHistory(){
+    renderConsentHistoryBody();
+    var modal=document.getElementById('modalConsentHistory');
+    modal.classList.add('is-open'); modal.setAttribute('aria-hidden','false');
+  }
+  function closeConsentHistory(){
+    var m=document.getElementById('modalConsentHistory');
+    m.classList.remove('is-open'); m.setAttribute('aria-hidden','true');
+  }
+  function downloadConsentCSV(){
+    var csv='\uFEFF회원,약관 종류,버전,필수/선택,동의,동의 일시,IP\n';
+    CONSENT_HISTORY_DATA.forEach(function(r){
+      csv+=`${r.member},${r.type},${r.ver},${r.required},${r.consented},${r.date},${r.ip}\n`;
+    });
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+    a.download='consent_history_'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'.csv';
+    a.click();
+    closeConsentHistory();
+  }
 </script>
 <script src="js/admin-mobile.js"></script>
 </body>
