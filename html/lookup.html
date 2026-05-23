@@ -39,6 +39,8 @@
     .result-box{margin-top:22px;padding:20px;border-radius:12px;background:#f0fdf4;border:1.5px solid #86efac;display:none;}
     .result-box.show{display:block;}
     .result-box.err{background:#fff7ed;border-color:#fdba74;}
+    .result-box.pending{background:#eff6ff;border-color:#93c5fd;}
+    .pending-lead{font-size:14px;line-height:1.65;margin-bottom:14px;color:#1e3a5f;font-weight:500;}
     .result-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.06);font-size:14px;}
     .result-row:last-child{border-bottom:none;}
     .result-k{color:var(--gray-text);}
@@ -130,6 +132,13 @@
       <div class="result-row"><span class="result-k" data-i18n="res_level">급수</span><span class="result-v" id="lk-level"></span></div>
       <div class="result-row"><span class="result-k" data-i18n="res_venue">시험장</span><span class="result-v" id="lk-venue"></span></div>
     </div>
+    <div class="result-box pending" id="lk-pending">
+      <p class="pending-lead" id="lk-pending-lead" data-i18n="lookup_pending_lead"></p>
+      <div class="result-row"><span class="result-k" data-i18n="res_exam">수험번호</span><span class="result-v" style="font-size:18px;color:var(--gray-text);" id="lk-exam-pend"></span></div>
+      <div class="result-row"><span class="result-k" data-i18n="res_round">회차</span><span class="result-v" id="lk-round-p"></span></div>
+      <div class="result-row"><span class="result-k" data-i18n="res_level">급수</span><span class="result-v" id="lk-level-p"></span></div>
+      <div class="result-row"><span class="result-k" data-i18n="res_venue">시험장</span><span class="result-v" id="lk-venue-p"></span></div>
+    </div>
     <div class="result-box err" id="lk-bad">
       <p id="lk-bad-msg" style="font-size:14px;line-height:1.65;"></p>
     </div>
@@ -151,7 +160,8 @@
   var DEMO = [
     { en: "MA THIDA", birth: "19950315", exam: "MM-97-1041", roundKo: "제97회 TOPIK", roundEn: "97th TOPIK", level: "TOPIK II", venue: "Yangon" },
     { en: "HONG GILDONG", birth: "19900101", exam: "MM-98-0001", roundKo: "제98회 TOPIK", roundEn: "98th TOPIK", level: "TOPIK I", venue: "Yangon" },
-    { en: "LEE JIMIN", birth: "20020815", exam: "MM-98-0142", roundKo: "제98회 TOPIK", roundEn: "98th TOPIK", level: "TOPIK I", venue: "Yangon" }
+    { en: "LEE JIMIN", birth: "20020815", exam: "MM-98-0142", roundKo: "제98회 TOPIK", roundEn: "98th TOPIK", level: "TOPIK I", venue: "Yangon" },
+    { en: "PARK MINJU", birth: "19981225", exam: null, roundKo: "제98회 TOPIK", roundEn: "98th TOPIK", level: "TOPIK II", venue: "Yangon" }
   ];
 
   function normBirth(s) {
@@ -169,8 +179,10 @@
     var name = normName(document.getElementById("lk-name").value);
     var birth = normBirth(document.getElementById("lk-birth").value);
     var ok = document.getElementById("lk-ok");
+    var pend = document.getElementById("lk-pending");
     var bad = document.getElementById("lk-bad");
     ok.classList.remove("show");
+    pend.classList.remove("show");
     bad.classList.remove("show");
     if (!name || birth.length < 8) {
       bad.classList.add("show");
@@ -185,11 +197,21 @@
       document.getElementById("lk-bad-msg").textContent = TMI18N.t(lang, "msg_notfound");
       return;
     }
-    document.getElementById("lk-exam").textContent = hit.exam;
-    document.getElementById("lk-round").textContent = lang === "en" ? hit.roundEn : hit.roundKo;
-    document.getElementById("lk-level").textContent = hit.level;
-    document.getElementById("lk-venue").textContent = hit.venue;
-    ok.classList.add("show");
+    if (hit.exam) {
+      document.getElementById("lk-exam").textContent = hit.exam;
+      document.getElementById("lk-round").textContent = lang === "en" ? hit.roundEn : hit.roundKo;
+      document.getElementById("lk-level").textContent = hit.level;
+      document.getElementById("lk-venue").textContent = hit.venue;
+      ok.classList.add("show");
+      return;
+    }
+    document.getElementById("lk-exam-pend").textContent = TMI18N.t(lang, "res_exam_pending");
+    document.getElementById("lk-round-p").textContent = lang === "en" ? hit.roundEn : hit.roundKo;
+    document.getElementById("lk-level-p").textContent = hit.level;
+    document.getElementById("lk-venue-p").textContent = hit.venue;
+    var lead = document.getElementById("lk-pending-lead");
+    lead.textContent = TMI18N.t(lang, "lookup_pending_lead");
+    pend.classList.add("show");
   }
 
   document.addEventListener("DOMContentLoaded", function () {

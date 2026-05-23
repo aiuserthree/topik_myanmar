@@ -355,6 +355,32 @@
 
   let cur=1;
   function normSignupEmail(s){return String(s||'').trim().toLowerCase();}
+  /** 기존 회원(로컬 저장 프로필)과 동일 가입 여부 판별용 정규화 */
+  function normSignupNameKr(s){return String(s||'').replace(/\s+/g,' ').trim();}
+  function normSignupPhoneDigits(s){return String(s||'').replace(/\D/g,'');}
+  /** 생년월일 문자열을 YYYYMMDD 8자리로 통일해 비교 */
+  function normSignupBirthCompact(s){
+    var d=String(s||'').replace(/\D/g,'');
+    return d.length>=8?d.slice(0,8):'';
+  }
+  /**
+   * 로컬에 저장된 회원 프로필(tm_profile_v1)과
+   * 한글 성명·생년월일·연락처가 모두 같으면 true (신규 가입 불가).
+   */
+  function isSignupDuplicateExistingMember(){
+    if(!window.TMProfile||typeof TMProfile.load!=='function')return false;
+    var stored=TMProfile.load();
+    if(!stored)return false;
+    var nameIn=normSignupNameKr(document.getElementById('nameKr').value);
+    var birthIn=normSignupBirthCompact(document.getElementById('birthdate').value);
+    var phoneIn=normSignupPhoneDigits(document.getElementById('phone').value);
+    if(!nameIn||!birthIn||!phoneIn)return false;
+    var nameSt=normSignupNameKr(stored.nameKr);
+    var birthSt=normSignupBirthCompact(stored.birthdate||'');
+    var phoneSt=normSignupPhoneDigits(stored.phone||'');
+    if(!nameSt||!birthSt||!phoneSt)return false;
+    return nameIn===nameSt&&birthIn===birthSt&&phoneIn===phoneSt;
+  }
   function isValidSignupEmail(value){
     var v=String(value||'').trim();
     if(!v)return false;
@@ -572,7 +598,13 @@
     btn.setAttribute('aria-disabled',ok?'false':'true');
   }
   function goStep(n){
-    if(n>cur&&!validateStep(cur))return;
+    if(n>cur){
+      if(!validateStep(cur))return;
+      if(cur===1&&n===2&&isSignupDuplicateExistingMember()){
+        alert('이미 가입된 회원입니다.\n\n입력하신 한글 성명, 생년월일, 연락처가 기존 회원 정보와 모두 일치합니다.\n로그인 페이지에서 로그인해 주세요.');
+        return;
+      }
+    }
     document.getElementById('page'+cur).style.display='none';
     document.getElementById('page'+n).style.display='block';
     updateBar(n); cur=n;
