@@ -77,6 +77,39 @@
     font-variant-numeric: tabular-nums;
   }
 
+  @media (max-width: 599px) {
+    .app-card { position: relative; }
+    .app-head {
+      display: block;
+      position: relative;
+      flex-wrap: nowrap;
+    }
+    .app-head .lt {
+      min-width: 0;
+      padding-right: 112px;
+    }
+    .app-head .lt h3 {
+      display: block;
+      line-height: 1.35;
+    }
+    .app-head .rt {
+      position: static;
+      display: block;
+      margin-top: 6px;
+    }
+    .app-head .rt .status {
+      position: absolute;
+      top: 16px;
+      right: 18px;
+      z-index: 1;
+      white-space: nowrap;
+    }
+    .app-head .rt .apply-n {
+      display: block;
+      text-align: left;
+    }
+  }
+
   .app-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;

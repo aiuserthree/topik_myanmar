@@ -1365,6 +1365,23 @@ button,a.btn,.hamburger,.sb-menu-btn,.faq-q,.filter-chip,.p-btn,
     min-height:46px;font-size:14px;border-radius:12px;
   }
   .user-info h3{font-size:15.5px;line-height:1.35;}
+  .reg-card-header{
+    position:relative;
+    display:block;
+    flex-wrap:nowrap;
+  }
+  .reg-card-header h3{
+    padding-right:108px;
+    flex-wrap:wrap;
+    line-height:1.35;
+  }
+  .reg-card-header .status-badge{
+    position:absolute;
+    top:18px;
+    right:22px;
+    z-index:1;
+    white-space:nowrap;
+  }
   .detail-grid{grid-template-columns:1fr 1fr !important;gap:10px;}
   .detail-item{padding:10px 12px !important;border-radius:10px;}
   .detail-item .di-label{font-size:11px;}
