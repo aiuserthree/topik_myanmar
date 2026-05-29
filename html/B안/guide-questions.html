@@ -1,0 +1,1355 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="ko"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1">&lt;meta name="description" content="TOPIK Ⅰ·Ⅱ 영역별 문항 수, 시험 시간, 배점 구성 안내"&gt;</p>
+<p class="p1">&lt;title&gt;문항 구성 | TOPIK Myanmar&lt;/title&gt;</p>
+<p class="p1">&lt;link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"&gt;</p>
+<p class="p1">&lt;style&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">   </span>DESIGN TOKENS</p>
+<p class="p1">=================================================== */</p>
+<p class="p1">:root {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--primary: <span class="Apple-converted-space">      </span>#1a3a6b;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--primary-dark:<span class="Apple-converted-space">  </span>#122a52;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--primary-light: #e8eef7;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--accent:<span class="Apple-converted-space">        </span>#c8232c;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--accent-light:<span class="Apple-converted-space">  </span>#fdf0f0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--neutral-50:<span class="Apple-converted-space">    </span>#f8f9fb;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--neutral-100: <span class="Apple-converted-space">  </span>#f1f3f7;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--neutral-200: <span class="Apple-converted-space">  </span>#e2e6ef;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--neutral-300: <span class="Apple-converted-space">  </span>#c8cdd8;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--neutral-400: <span class="Apple-converted-space">  </span>#9099aa;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--neutral-500: <span class="Apple-converted-space">  </span>#636b7a;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--neutral-600: <span class="Apple-converted-space">  </span>#464d5c;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--neutral-700: <span class="Apple-converted-space">  </span>#2d3340;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--neutral-800: <span class="Apple-converted-space">  </span>#1a1e28;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--white: <span class="Apple-converted-space">        </span>#ffffff;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--radius-sm:<span class="Apple-converted-space">  </span>6px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--radius-md:<span class="Apple-converted-space">  </span>10px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--radius-lg:<span class="Apple-converted-space">  </span>16px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--radius-xl:<span class="Apple-converted-space">  </span>24px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--shadow-sm:<span class="Apple-converted-space">  </span>0 1px 4px rgba(0,0,0,.07);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--shadow-md:<span class="Apple-converted-space">  </span>0 4px 16px rgba(0,0,0,.10);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--shadow-lg:<span class="Apple-converted-space">  </span>0 8px 32px rgba(0,0,0,.14);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--font-base:<span class="Apple-converted-space">  </span>'Noto Sans KR', sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--ease: <span class="Apple-converted-space">      </span>cubic-bezier(.4,0,.2,1);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--header-h: <span class="Apple-converted-space">  </span>64px;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">   </span>RESET &amp; BASE</p>
+<p class="p1">=================================================== */</p>
+<p class="p1">*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }</p>
+<p class="p1">html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }</p>
+<p class="p1">body {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-family: var(--font-base);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-700);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background: var(--white);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>line-height: 1.6;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>-webkit-font-smoothing: antialiased;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding-top: var(--header-h);</p>
+<p class="p1">}</p>
+<p class="p1">a { color: inherit; text-decoration: none; }</p>
+<p class="p1">ul, ol { list-style: none; }</p>
+<p class="p1">button { cursor: pointer; border: none; background: none; font-family: inherit; }</p>
+<p class="p1">img { max-width: 100%; display: block; }</p>
+<p class="p2"><br></p>
+<p class="p1">.container {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>max-width: 1100px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin: 0 auto;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 0 20px;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">   </span>GNB</p>
+<p class="p1">=================================================== */</p>
+<p class="p1">.gnb {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>position: fixed;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>top: 0; left: 0; right: 0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>z-index: 1000;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background: var(--white);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-bottom: 1px solid var(--neutral-200);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>height: var(--header-h);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>align-items: center;</p>
+<p class="p1">}</p>
+<p class="p1">.gnb-inner {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>justify-content: space-between;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>max-width: 1100px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin: 0 auto;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 0 20px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap: 12px;</p>
+<p class="p1">}</p>
+<p class="p1">.gnb-logo {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>flex-shrink: 0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>text-decoration: none;</p>
+<p class="p1">}</p>
+<p class="p1">.gnb-logo-mark {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>width: 32px; height: 32px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background: var(--primary);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: var(--radius-sm);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>justify-content: center;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--white);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 700;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 13px;</p>
+<p class="p1">}</p>
+<p class="p1">.gnb-logo-text { line-height: 1.2; }</p>
+<p class="p1">.gnb-logo-text strong { display: block; font-size: 14px; font-weight: 700; color: var(--primary); }</p>
+<p class="p1">.gnb-logo-text span<span class="Apple-converted-space">  </span>{ font-size: 10px; color: var(--neutral-500); }</p>
+<p class="p2"><br></p>
+<p class="p1">.gnb-nav { display: flex; align-items: center; gap: 2px; }</p>
+<p class="p1">.gnb-menu { position: relative; }</p>
+<p class="p1">.gnb-menu-btn {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap: 4px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 8px 13px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 500;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-600);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: var(--radius-sm);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>transition: .2s var(--ease);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>white-space: nowrap;</p>
+<p class="p1">}</p>
+<p class="p1">.gnb-menu-btn:hover,</p>
+<p class="p1">.gnb-menu-btn.is-active { color: var(--primary); background: var(--primary-light); }</p>
+<p class="p1">.gnb-menu-btn svg { width: 14px; height: 14px; transition: transform .2s var(--ease); flex-shrink: 0; }</p>
+<p class="p1">.gnb-menu:hover .gnb-menu-btn svg { transform: rotate(180deg); }</p>
+<p class="p2"><br></p>
+<p class="p1">.gnb-dropdown {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>position: absolute;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>top: calc(100% + 8px); left: 0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>min-width: 172px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background: var(--white);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border: 1px solid var(--neutral-200);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: var(--radius-md);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>box-shadow: var(--shadow-md);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>opacity: 0; visibility: hidden;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>transform: translateY(-6px);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>transition: .18s var(--ease);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>z-index: 200;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>overflow: hidden;</p>
+<p class="p1">}</p>
+<p class="p1">.gnb-menu:hover .gnb-dropdown { opacity: 1; visibility: visible; transform: translateY(0); }</p>
+<p class="p1">.gnb-dropdown a {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: block;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 10px 16px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 13.5px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-600);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>transition: .15s var(--ease);</p>
+<p class="p1">}</p>
+<p class="p1">.gnb-dropdown a:hover<span class="Apple-converted-space">  </span>{ color: var(--primary); background: var(--primary-light); }</p>
+<p class="p1">.gnb-dropdown a.is-current { color: var(--primary); background: var(--primary-light); font-weight: 600; }</p>
+<p class="p2"><br></p>
+<p class="p1">.gnb-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }</p>
+<p class="p1">.lang-toggle {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border: 1px solid var(--neutral-200);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>overflow: hidden;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 500;</p>
+<p class="p1">}</p>
+<p class="p1">.lang-toggle button { padding: 4px 9px; color: var(--neutral-500); transition: .15s var(--ease); }</p>
+<p class="p1">.lang-toggle button.is-active { background: var(--primary); color: var(--white); }</p>
+<p class="p2"><br></p>
+<p class="p1">.btn {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: inline-flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>justify-content: center;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap: 6px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 8px 16px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 13px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 600;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: var(--radius-sm);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>transition: .2s var(--ease);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>white-space: nowrap;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>text-decoration: none;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border: none;</p>
+<p class="p1">}</p>
+<p class="p1">.btn-ghost<span class="Apple-converted-space">  </span>{ color: var(--neutral-600); border: 1px solid var(--neutral-200); background: transparent; }</p>
+<p class="p1">.btn-ghost:hover { border-color: var(--primary); color: var(--primary); }</p>
+<p class="p1">.btn-solid<span class="Apple-converted-space">  </span>{ background: var(--primary); color: var(--white); border: 1px solid var(--primary); }</p>
+<p class="p1">.btn-solid:hover { background: var(--primary-dark); }</p>
+<p class="p1">.btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }</p>
+<p class="p1">.btn-outline:hover { background: var(--primary-light); }</p>
+<p class="p1">.btn-lg { padding: 12px 24px; font-size: 14px; border-radius: var(--radius-md); }</p>
+<p class="p2"><br></p>
+<p class="p1">.gnb-hamburger { display: none; flex-direction: column; gap: 5px; padding: 8px; }</p>
+<p class="p1">.gnb-hamburger span { display: block; width: 22px; height: 2px; background: var(--neutral-700); border-radius: 2px; transition: .2s var(--ease); }</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">   </span>MOBILE DRAWER</p>
+<p class="p1">=================================================== */</p>
+<p class="p1">.drawer-overlay {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>position: fixed; inset: 0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background: rgba(0,0,0,.46);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>z-index: 1999;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>opacity: 0; visibility: hidden;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>transition: .25s var(--ease);</p>
+<p class="p1">}</p>
+<p class="p1">.drawer-overlay.is-show { opacity: 1; visibility: visible; }</p>
+<p class="p1">.mobile-drawer {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>position: fixed;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>top: 0; right: 0; bottom: 0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>width: 82%; max-width: 320px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background: var(--white);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>z-index: 2000;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>transform: translateX(100%);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>transition: .28s var(--ease);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>box-shadow: var(--shadow-lg);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>flex-direction: column;</p>
+<p class="p1">}</p>
+<p class="p1">.mobile-drawer.is-open { transform: translateX(0); }</p>
+<p class="p1">.drawer-head {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>justify-content: space-between;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 16px 20px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-bottom: 1px solid var(--neutral-100);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>flex-shrink: 0;</p>
+<p class="p1">}</p>
+<p class="p1">.drawer-close-btn {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>width: 32px; height: 32px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: 50%;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border: 1px solid var(--neutral-200);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex; align-items: center; justify-content: center;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-500);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 17px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>cursor: pointer;</p>
+<p class="p1">}</p>
+<p class="p1">.drawer-body { flex: 1; overflow-y: auto; }</p>
+<p class="p1">.drawer-group { border-bottom: 1px solid var(--neutral-100); }</p>
+<p class="p1">.drawer-group-title {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 14px 20px 6px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 10.5px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 700;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-400);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>letter-spacing: .1em;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>text-transform: uppercase;</p>
+<p class="p1">}</p>
+<p class="p1">.drawer-link {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: block;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 10px 20px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 500;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-600);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>transition: .15s var(--ease);</p>
+<p class="p1">}</p>
+<p class="p1">.drawer-link:hover,</p>
+<p class="p1">.drawer-link.is-current { color: var(--primary); background: var(--primary-light); }</p>
+<p class="p1">.drawer-lang {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap: 6px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 14px 20px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-top: 1px solid var(--neutral-100);</p>
+<p class="p1">}</p>
+<p class="p1">.drawer-lang button {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>flex: 1;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 500;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: var(--radius-sm);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border: 1px solid var(--neutral-200);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-500);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>transition: .15s var(--ease);</p>
+<p class="p1">}</p>
+<p class="p1">.drawer-lang button.is-active { background: var(--primary); color: var(--white); border-color: var(--primary); }</p>
+<p class="p1">.drawer-foot {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 14px 20px 20px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>flex-direction: column;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-top: 1px solid var(--neutral-100);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>flex-shrink: 0;</p>
+<p class="p1">}</p>
+<p class="p1">.drawer-foot .btn { justify-content: center; }</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">   </span>PAGE HERO</p>
+<p class="p1">=================================================== */</p>
+<p class="p1">.page-hero {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background: linear-gradient(135deg, var(--primary) 0%, #0d2550 100%);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--white);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 44px 0 38px;</p>
+<p class="p1">}</p>
+<p class="p1">.breadcrumb {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap: 6px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: rgba(255,255,255,.5);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin-bottom: 14px;</p>
+<p class="p1">}</p>
+<p class="p1">.breadcrumb a { color: rgba(255,255,255,.5); transition: .15s var(--ease); }</p>
+<p class="p1">.breadcrumb a:hover { color: rgba(255,255,255,.85); }</p>
+<p class="p1">.breadcrumb .sep { color: rgba(255,255,255,.25); }</p>
+<p class="p1">.breadcrumb .cur { color: rgba(255,255,255,.85); }</p>
+<p class="p1">.page-hero-label {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 11px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 600;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>letter-spacing: .12em;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>text-transform: uppercase;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: rgba(255,255,255,.55);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin-bottom: 8px;</p>
+<p class="p1">}</p>
+<p class="p1">.page-hero-title { font-size: clamp(22px,4vw,30px); font-weight: 700; margin-bottom: 8px; }</p>
+<p class="p1">.page-hero-desc<span class="Apple-converted-space">  </span>{ font-size: 14px; color: rgba(255,255,255,.68); line-height: 1.65; max-width: 560px; }</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">   </span>SUB NAV</p>
+<p class="p1">=================================================== */</p>
+<p class="p1">.sub-nav {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background: var(--white);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-bottom: 1px solid var(--neutral-200);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>position: sticky;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>top: var(--header-h);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>z-index: 100;</p>
+<p class="p1">}</p>
+<p class="p1">.sub-nav-inner {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>max-width: 1100px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin: 0 auto;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 0 20px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>overflow-x: auto;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>-webkit-overflow-scrolling: touch;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>scrollbar-width: none;</p>
+<p class="p1">}</p>
+<p class="p1">.sub-nav-inner::-webkit-scrollbar { display: none; }</p>
+<p class="p1">.sub-nav-link {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>flex-shrink: 0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 14px 16px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 13.5px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 500;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-500);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-bottom: 2px solid transparent;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>transition: .18s var(--ease);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>white-space: nowrap;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>text-decoration: none;</p>
+<p class="p1">}</p>
+<p class="p1">.sub-nav-link:hover { color: var(--primary); }</p>
+<p class="p1">.sub-nav-link.is-active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">   </span>CONTENT LAYOUT</p>
+<p class="p1">=================================================== */</p>
+<p class="p1">.content-wrap {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: grid;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>grid-template-columns: 1fr 248px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap: 40px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 44px 0 64px;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">   </span>SECTION CARDS</p>
+<p class="p1">=================================================== */</p>
+<p class="p1">.info-card {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background: var(--white);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border: 1px solid var(--neutral-200);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: var(--radius-lg);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 28px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin-bottom: 20px;</p>
+<p class="p1">}</p>
+<p class="p1">.info-card:last-of-type { margin-bottom: 0; }</p>
+<p class="p1">.info-card-title {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 17px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 700;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-800);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin-bottom: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding-bottom: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-bottom: 1px solid var(--neutral-100);</p>
+<p class="p1">}</p>
+<p class="p1">.info-card p {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-600);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>line-height: 1.8;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin-bottom: 10px;</p>
+<p class="p1">}</p>
+<p class="p1">.info-card p:last-child { margin-bottom: 0; }</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">   </span>LEVEL HEADER BANNER</p>
+<p class="p1">=================================================== */</p>
+<p class="p1">.level-banner {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 18px 22px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: var(--radius-md);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin-bottom: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--white);</p>
+<p class="p1">}</p>
+<p class="p1">.level-banner.blue { background: linear-gradient(135deg, #1a3a6b, #2557a0); }</p>
+<p class="p1">.level-banner.red<span class="Apple-converted-space">  </span>{ background: linear-gradient(135deg, #b01e26, #d93545); }</p>
+<p class="p1">.level-banner-badge {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>flex-shrink: 0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>width: 52px; height: 52px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: 50%;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background: rgba(255,255,255,.18);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex; align-items: center; justify-content: center;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 17px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 700;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>letter-spacing: -.5px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border: 2px solid rgba(255,255,255,.3);</p>
+<p class="p1">}</p>
+<p class="p1">.level-banner-info {}</p>
+<p class="p1">.level-banner-title { font-size: 18px; font-weight: 700; line-height: 1.2; margin-bottom: 3px; }</p>
+<p class="p1">.level-banner-sub <span class="Apple-converted-space">  </span>{ font-size: 13px; color: rgba(255,255,255,.72); }</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">   </span>STAT PILLS<span class="Apple-converted-space">  </span>(시간 · 만점 · 총 문항)</p>
+<p class="p1">=================================================== */</p>
+<p class="p1">.stat-pills {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>flex-wrap: wrap;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin-bottom: 20px;</p>
+<p class="p1">}</p>
+<p class="p1">.stat-pill {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 10px 16px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: var(--radius-md);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border: 1px solid var(--neutral-200);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background: var(--neutral-50);</p>
+<p class="p1">}</p>
+<p class="p1">.stat-pill-num<span class="Apple-converted-space">  </span>{ font-size: 22px; font-weight: 700; line-height: 1; }</p>
+<p class="p1">.stat-pill-num.blue { color: var(--primary); }</p>
+<p class="p1">.stat-pill-num.red<span class="Apple-converted-space">  </span>{ color: var(--accent);<span class="Apple-converted-space">  </span>}</p>
+<p class="p1">.stat-pill-label { font-size: 12px; color: var(--neutral-500); line-height: 1.35; }</p>
+<p class="p1">.stat-pill-label strong { display: block; font-size: 13px; color: var(--neutral-700); font-weight: 600; }</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">   </span>QUESTION TABLE</p>
+<p class="p1">=================================================== */</p>
+<p class="p1">.q-table-wrap { overflow-x: auto; }</p>
+<p class="p1">.q-table {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-collapse: collapse;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 13.5px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>min-width: 360px;</p>
+<p class="p1">}</p>
+<p class="p1">.q-table caption {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 11px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-400);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>text-align: left;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin-bottom: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>caption-side: top;</p>
+<p class="p1">}</p>
+<p class="p1">.q-table thead tr { background: var(--neutral-800); }</p>
+<p class="p1">.q-table thead th {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 11px 16px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 600;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: rgba(255,255,255,.85);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>letter-spacing: .03em;</p>
+<p class="p1">}</p>
+<p class="p1">.q-table thead th:first-child { border-radius: var(--radius-sm) 0 0 0; text-align: left; }</p>
+<p class="p1">.q-table thead th:last-child<span class="Apple-converted-space">  </span>{ border-radius: 0 var(--radius-sm) 0 0; }</p>
+<p class="p1">.q-table tbody tr { border-bottom: 1px solid var(--neutral-100); transition: background .15s; }</p>
+<p class="p1">.q-table tbody tr:hover { background: var(--neutral-50); }</p>
+<p class="p1">.q-table tbody tr.total-row { background: var(--neutral-100); font-weight: 700; }</p>
+<p class="p1">.q-table tbody td {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 12px 16px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-700);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>text-align: center;</p>
+<p class="p1">}</p>
+<p class="p1">.q-table tbody td:first-child { text-align: left; font-weight: 600; color: var(--neutral-800); }</p>
+<p class="p1">.q-table tbody .area-cell {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: inline-flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap: 6px;</p>
+<p class="p1">}</p>
+<p class="p1">.area-dot {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>width: 8px; height: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: 50%;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>flex-shrink: 0;</p>
+<p class="p1">}</p>
+<p class="p1">.area-dot.listen { background: #2557a0; }</p>
+<p class="p1">.area-dot.write<span class="Apple-converted-space">  </span>{ background: #c8232c; }</p>
+<p class="p1">.area-dot.read <span class="Apple-converted-space">  </span>{ background: #1a7a4a; }</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">   </span>DONUT VISUAL (문항 비율 시각화)</p>
+<p class="p1">=================================================== */</p>
+<p class="p1">.donut-section {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: grid;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>grid-template-columns: 1fr 1fr;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin-top: 4px;</p>
+<p class="p1">}</p>
+<p class="p1">.donut-card {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border: 1px solid var(--neutral-200);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: var(--radius-lg);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background: var(--white);</p>
+<p class="p1">}</p>
+<p class="p1">.donut-card-title {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 13px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 700;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-800);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin-bottom: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap: 8px;</p>
+<p class="p1">}</p>
+<p class="p1">.donut-card-badge {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 10.5px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 2px 8px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 600;</p>
+<p class="p1">}</p>
+<p class="p1">.donut-card-badge.blue { background: var(--primary-light); color: var(--primary); }</p>
+<p class="p1">.donut-card-badge.red<span class="Apple-converted-space">  </span>{ background: var(--accent-light);<span class="Apple-converted-space">  </span>color: var(--accent);<span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1">/* bar-style ratio chart */</p>
+<p class="p1">.ratio-bars { display: flex; flex-direction: column; gap: 10px; }</p>
+<p class="p1">.ratio-row<span class="Apple-converted-space">  </span>{ display: flex; align-items: center; gap: 10px; }</p>
+<p class="p1">.ratio-label {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>width: 40px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 600;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-700);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>flex-shrink: 0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>text-align: right;</p>
+<p class="p1">}</p>
+<p class="p1">.ratio-track {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>flex: 1;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>height: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background: var(--neutral-100);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: 5px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>overflow: hidden;</p>
+<p class="p1">}</p>
+<p class="p1">.ratio-fill {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>height: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: 5px;</p>
+<p class="p1">}</p>
+<p class="p1">.ratio-fill.listen { background: #2557a0; }</p>
+<p class="p1">.ratio-fill.write<span class="Apple-converted-space">  </span>{ background: #c8232c; }</p>
+<p class="p1">.ratio-fill.read <span class="Apple-converted-space">  </span>{ background: #1a7a4a; }</p>
+<p class="p1">.ratio-val {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>width: 36px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-500);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>flex-shrink: 0;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">   </span>COMPARE TABLE<span class="Apple-converted-space">  </span>(Ⅰ vs Ⅱ 비교)</p>
+<p class="p1">=================================================== */</p>
+<p class="p1">.compare-table-wrap { overflow-x: auto; }</p>
+<p class="p1">.compare-table {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-collapse: collapse;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 13.5px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>min-width: 400px;</p>
+<p class="p1">}</p>
+<p class="p1">.compare-table th, .compare-table td {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 12px 16px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-bottom: 1px solid var(--neutral-100);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>text-align: center;</p>
+<p class="p1">}</p>
+<p class="p1">.compare-table thead tr { background: var(--neutral-800); }</p>
+<p class="p1">.compare-table thead th { color: rgba(255,255,255,.85); font-size: 12px; font-weight: 600; }</p>
+<p class="p1">.compare-table thead th:first-child { border-radius: var(--radius-sm) 0 0 0; text-align: left; }</p>
+<p class="p1">.compare-table thead th:last-child<span class="Apple-converted-space">  </span>{ border-radius: 0 var(--radius-sm) 0 0; }</p>
+<p class="p1">.compare-table tbody td:first-child { text-align: left; color: var(--neutral-500); font-size: 13px; }</p>
+<p class="p1">.compare-table .val-blue { color: var(--primary); font-weight: 700; }</p>
+<p class="p1">.compare-table .val-red<span class="Apple-converted-space">  </span>{ color: var(--accent);<span class="Apple-converted-space">  </span>font-weight: 700; }</p>
+<p class="p1">.compare-table .highlight { background: var(--neutral-50); }</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">   </span>CALLOUT BOX</p>
+<p class="p1">=================================================== */</p>
+<p class="p1">.callout {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 14px 16px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: var(--radius-md);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 13.5px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>line-height: 1.65;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin-top: 16px;</p>
+<p class="p1">}</p>
+<p class="p1">.callout.info {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background: var(--primary-light);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border: 1px solid rgba(26,58,107,.12);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--primary);</p>
+<p class="p1">}</p>
+<p class="p1">.callout.warn {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background: #fef9ec;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border: 1px solid #f5d97a;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: #7a5a00;</p>
+<p class="p1">}</p>
+<p class="p1">.callout-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">   </span>CTA ROW</p>
+<p class="p1">=================================================== */</p>
+<p class="p1">.cta-row {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>flex-wrap: wrap;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin-top: 24px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding-top: 24px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-top: 1px solid var(--neutral-100);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">   </span>SIDEBAR</p>
+<p class="p1">=================================================== */</p>
+<p class="p1">.aside-card {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background: var(--neutral-50);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border: 1px solid var(--neutral-200);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: var(--radius-lg);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 18px 16px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin-bottom: 14px;</p>
+<p class="p1">}</p>
+<p class="p1">.aside-card:last-child { margin-bottom: 0; }</p>
+<p class="p1">.aside-card-title {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 700;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-500);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>letter-spacing: .07em;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>text-transform: uppercase;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin-bottom: 10px;</p>
+<p class="p1">}</p>
+<p class="p1">.aside-nav-list { display: flex; flex-direction: column; gap: 2px; }</p>
+<p class="p1">.aside-nav-link {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: block;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 9px 12px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 13.5px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 500;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-600);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: var(--radius-sm);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>transition: .15s var(--ease);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>text-decoration: none;</p>
+<p class="p1">}</p>
+<p class="p1">.aside-nav-link:hover { color: var(--primary); background: var(--primary-light); }</p>
+<p class="p1">.aside-nav-link.is-current { color: var(--primary); background: var(--primary-light); font-weight: 600; }</p>
+<p class="p1">.aside-ext-link {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: block;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 9px 12px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 13px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: var(--radius-sm);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin-bottom: 6px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>transition: .15s var(--ease);</p>
+<p class="p1">}</p>
+<p class="p1">.aside-ext-link:last-child { margin-bottom: 0; }</p>
+<p class="p1">.aside-ext-link.primary-link { color: var(--primary); background: var(--primary-light); }</p>
+<p class="p1">.aside-ext-link.neutral-link { color: var(--neutral-600); background: var(--white); border: 1px solid var(--neutral-200); }</p>
+<p class="p1">.aside-ext-link:hover { opacity: .8; }</p>
+<p class="p1">.aside-notice {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding: 12px 14px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background: var(--accent-light);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border: 1px solid rgba(200,35,44,.12);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius: var(--radius-md);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size: 12.5px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color: var(--accent);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>line-height: 1.6;</p>
+<p class="p1">}</p>
+<p class="p1">.aside-notice strong { display: block; font-weight: 700; margin-bottom: 2px; }</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">   </span>FOOTER</p>
+<p class="p1">=================================================== */</p>
+<p class="p1">.footer { background: var(--neutral-800); color: rgba(255,255,255,.65); padding: 40px 0 24px; }</p>
+<p class="p1">.footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 28px; }</p>
+<p class="p1">.footer-brand strong { display: block; font-size: 14px; font-weight: 700; color: var(--white); margin-bottom: 6px; }</p>
+<p class="p1">.footer-brand p { font-size: 12px; line-height: 1.75; }</p>
+<p class="p1">.footer-ext { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }</p>
+<p class="p1">.footer-ext a { font-size: 12px; color: rgba(255,255,255,.45); transition: .15s var(--ease); }</p>
+<p class="p1">.footer-ext a:hover { color: var(--white); }</p>
+<p class="p1">.footer-bottom {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-top: 1px solid rgba(255,255,255,.08);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>padding-top: 18px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>justify-content: space-between;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>flex-wrap: wrap;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap: 10px;</p>
+<p class="p1">}</p>
+<p class="p1">.footer-copy { font-size: 11px; color: rgba(255,255,255,.3); }</p>
+<p class="p1">.footer-policy { display: flex; gap: 14px; }</p>
+<p class="p1">.footer-policy a { font-size: 11px; color: rgba(255,255,255,.35); transition: .15s var(--ease); }</p>
+<p class="p1">.footer-policy a:hover { color: rgba(255,255,255,.7); }</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">   </span>RESPONSIVE</p>
+<p class="p1">=================================================== */</p>
+<p class="p1">@media (max-width: 900px) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.content-wrap { grid-template-columns: 1fr; gap: 28px; padding: 32px 0 48px; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.content-aside { order: -1; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.aside-nav-list { flex-direction: row; flex-wrap: wrap; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.donut-section { grid-template-columns: 1fr; }</p>
+<p class="p1">}</p>
+<p class="p1">@media (max-width: 768px) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.gnb-nav,</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.gnb-actions .btn-ghost,</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.gnb-actions .btn-solid,</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.lang-toggle { display: none; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.gnb-hamburger { display: flex; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.footer-grid { grid-template-columns: 1fr; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.footer-ext { align-items: flex-start; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.stat-pills { gap: 8px; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.stat-pill { flex: 1 1 calc(50% - 4px); }</p>
+<p class="p1">}</p>
+<p class="p1">@media (max-width: 480px) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.cta-row { flex-direction: column; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.cta-row .btn { justify-content: center; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.stat-pill { flex: 1 1 100%; }</p>
+<p class="p1">}</p>
+<p class="p1">&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">     </span>GNB</p>
+<p class="p1">=================================================== --&gt;</p>
+<p class="p1">&lt;header class="gnb" role="banner"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="gnb-inner"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="index.html" class="gnb-logo" aria-label="TOPIK Myanmar 홈으로"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-logo-mark"&gt;TK&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-logo-text"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;strong&gt;TOPIK Myanmar&lt;/strong&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;span&gt;한국어능력시험&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/a&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;nav class="gnb-nav" role="navigation" aria-label="주요 메뉴"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="gnb-menu-btn is-active" aria-haspopup="true"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>TOPIK 안내</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-overview.html"&gt;시험 개요&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-intro.html"&gt;시험 소개&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-questions.html" class="is-current" aria-current="page"&gt;문항 구성&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-evaluation.html"&gt;평가 기준&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="gnb-menu-btn" aria-haspopup="true"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>TOPIK 규정</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="rules-notice.html"&gt;유의 사항&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="rules-answer.html"&gt;답안 작성 요령&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="rules-fee.html"&gt;응시료 규정&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="rules-id.html"&gt;신분증 규정&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="gnb-menu-btn" aria-haspopup="true"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>TOPIK 접수</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="apply-howto.html"&gt;접수 방법&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="register.html"&gt;시험 접수&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="mypage.html"&gt;접수 확인&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="admit-card.html"&gt;수험표 출력&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="gnb-menu-btn" aria-haspopup="true"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>게시판</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="notice.html"&gt;공지사항&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="refund-correction.html"&gt;환불·정보정정신청&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="qna.html"&gt;문의게시판&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="faq.html"&gt;FAQ&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/nav&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="gnb-actions"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="lang-toggle" role="group" aria-label="언어 선택"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="is-active" onclick="setLang('ko')"&gt;KO&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button onclick="setLang('my')"&gt;MY&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button onclick="setLang('en')"&gt;EN&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="login.html"<span class="Apple-converted-space">  </span>class="btn btn-ghost"&gt;로그인&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="signup.html" class="btn btn-solid"&gt;회원가입&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="gnb-hamburger" id="js-hamburger"</p>
+<p class="p1"><span class="Apple-converted-space">            </span>aria-label="메뉴 열기" aria-expanded="false" aria-controls="js-drawer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="drawer-overlay" id="js-overlay"&gt;&lt;/div&gt;</p>
+<p class="p1">&lt;div class="mobile-drawer" id="js-drawer" role="dialog" aria-modal="true" aria-label="모바일 메뉴"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-head"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="gnb-logo"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-logo-mark"&gt;TK&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-logo-text"&gt;&lt;strong&gt;TOPIK Myanmar&lt;/strong&gt;&lt;span&gt;한국어능력시험&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="drawer-close-btn" id="js-drawer-close" aria-label="메뉴 닫기"&gt;✕&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-body"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="drawer-group-title"&gt;TOPIK 안내&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="guide-overview.html" <span class="Apple-converted-space">  </span>class="drawer-link"&gt;시험 개요&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="guide-intro.html"<span class="Apple-converted-space">      </span>class="drawer-link"&gt;시험 소개&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="guide-questions.html"<span class="Apple-converted-space">  </span>class="drawer-link is-current" aria-current="page"&gt;문항 구성&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="guide-evaluation.html" class="drawer-link"&gt;평가 기준&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="drawer-group-title"&gt;TOPIK 규정&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="rules-notice.html"<span class="Apple-converted-space">  </span>class="drawer-link"&gt;유의 사항&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="rules-answer.html"<span class="Apple-converted-space">  </span>class="drawer-link"&gt;답안 작성 요령&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="rules-fee.html" <span class="Apple-converted-space">    </span>class="drawer-link"&gt;응시료 규정&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="rules-id.html"<span class="Apple-converted-space">      </span>class="drawer-link"&gt;신분증 규정&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="drawer-group-title"&gt;TOPIK 접수&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="apply-howto.html" class="drawer-link"&gt;접수 방법&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="register.html"<span class="Apple-converted-space">    </span>class="drawer-link"&gt;시험 접수&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="mypage.html"<span class="Apple-converted-space">      </span>class="drawer-link"&gt;접수 확인&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="admit-card.html"<span class="Apple-converted-space">  </span>class="drawer-link"&gt;수험표 출력&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="drawer-group-title"&gt;게시판&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="notice.html"<span class="Apple-converted-space">            </span>class="drawer-link"&gt;공지사항&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="refund-correction.html" class="drawer-link"&gt;환불·정보정정신청&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="qna.html" <span class="Apple-converted-space">              </span>class="drawer-link"&gt;문의게시판&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="faq.html" <span class="Apple-converted-space">              </span>class="drawer-link"&gt;FAQ&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-lang" role="group" aria-label="언어 선택"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="is-active" onclick="setLang('ko')"&gt;한국어&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button onclick="setLang('my')"&gt;မြန်မာ&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button onclick="setLang('en')"&gt;English&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-foot"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="login.html"<span class="Apple-converted-space">  </span>class="btn btn-outline"&gt;로그인&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="signup.html" class="btn btn-solid"&gt;회원가입&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">     </span>PAGE HERO</p>
+<p class="p1">=================================================== --&gt;</p>
+<p class="p1">&lt;div class="page-hero"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;nav class="breadcrumb" aria-label="경로"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="index.html"&gt;홈&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="sep"&gt;›&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span&gt;TOPIK 안내&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="sep"&gt;›&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="cur"&gt;문항 구성&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/nav&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="page-hero-label"&gt;TOPIK 안내&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;h1 class="page-hero-title"&gt;문항 구성&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;p class="page-hero-desc"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>TOPIK Ⅰ과 TOPIK Ⅱ의 영역별 문항 수, 시험 시간, 배점 구성을 상세히 안내합니다.</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- SUB NAV --&gt;</p>
+<p class="p1">&lt;div class="sub-nav" role="navigation" aria-label="TOPIK 안내 하위 메뉴"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="sub-nav-inner"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="guide-overview.html" <span class="Apple-converted-space">  </span>class="sub-nav-link"&gt;시험 개요&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="guide-intro.html"<span class="Apple-converted-space">      </span>class="sub-nav-link"&gt;시험 소개&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="guide-questions.html"<span class="Apple-converted-space">  </span>class="sub-nav-link is-active" aria-current="page"&gt;문항 구성&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="guide-evaluation.html" class="sub-nav-link"&gt;평가 기준&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- ===================================================</p>
+<p class="p1"><span class="Apple-converted-space">     </span>MAIN CONTENT</p>
+<p class="p1">=================================================== --&gt;</p>
+<p class="p1">&lt;div class="container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="content-wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;main class="content-main"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 개요 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="info-card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2 class="info-card-title"&gt;시험 구성 개요&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;p&gt;TOPIK은 응시 수준에 따라 &lt;strong&gt;TOPIK Ⅰ(초급)&lt;/strong&gt;과 &lt;strong&gt;TOPIK Ⅱ(중·고급)&lt;/strong&gt;으로 구분되며, 각 수준별로 시험 영역과 문항 수, 시험 시간이 다르게 구성됩니다. 두 수준 모두 당일 동시 접수 및 응시가 가능합니다.&lt;/p&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- 비교 요약 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="compare-table-wrap" style="margin-top:18px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;table class="compare-table"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;caption&gt;TOPIK Ⅰ · Ⅱ 기본 구성 비교&lt;/caption&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;th scope="col"&gt;구분&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;th scope="col"&gt;TOPIK Ⅰ&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;th scope="col"&gt;TOPIK Ⅱ&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;tbody&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;대상 수준&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td class="val-blue"&gt;초급 (1~2급)&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td class="val-red"&gt;중·고급 (3~6급)&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr class="highlight"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;시험 영역&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td class="val-blue"&gt;듣기 · 읽기&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td class="val-red"&gt;듣기 · 쓰기 · 읽기&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;총 문항 수&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td class="val-blue"&gt;70문항&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td class="val-red"&gt;104문항&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr class="highlight"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;시험 시간&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td class="val-blue"&gt;100분&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td class="val-red"&gt;180분&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;총 배점&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td class="val-blue"&gt;200점&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td class="val-red"&gt;300점&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/tbody&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/table&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- TOPIK Ⅰ 상세 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="info-card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2 class="info-card-title"&gt;TOPIK Ⅰ — 초급 상세 구성&lt;/h2&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="level-banner blue"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="level-banner-badge"&gt;Ⅰ&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="level-banner-info"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="level-banner-title"&gt;TOPIK Ⅰ · 초급&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="level-banner-sub"&gt;총 70문항 · 100분 · 200점 만점 · 1~2급 인정&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- 통계 Pills --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="stat-pills"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="stat-pill"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="stat-pill-num blue"&gt;70&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="stat-pill-label"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;strong&gt;총 문항 수&lt;/strong&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>문항</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="stat-pill"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="stat-pill-num blue"&gt;100&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="stat-pill-label"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;strong&gt;시험 시간&lt;/strong&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>분</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="stat-pill"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="stat-pill-num blue"&gt;200&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="stat-pill-label"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;strong&gt;총 배점&lt;/strong&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>점 만점</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- 영역별 구성표 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="q-table-wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;table class="q-table"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;caption&gt;TOPIK Ⅰ 영역별 구성 (출처: 국립국제교육원)&lt;/caption&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;th scope="col"&gt;영역&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;th scope="col"&gt;문항 수&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;th scope="col"&gt;문항 유형&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;th scope="col"&gt;시험 시간&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;th scope="col"&gt;배점&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;tbody&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;span class="area-cell"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;span class="area-dot listen"&gt;&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>듣기</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;30문항&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;객관식 4지선다&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;40분&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;100점&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;span class="area-cell"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;span class="area-dot read"&gt;&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>읽기</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;40문항&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;객관식 4지선다&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;60분&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;100점&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr class="total-row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;합계&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;70문항&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;—&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;100분&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;200점&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/tbody&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/table&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- 비율 시각화 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style="margin-top:18px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style="font-size:12px;font-weight:600;color:var(--neutral-500);margin-bottom:10px"&gt;문항 비율&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="ratio-bars"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="ratio-row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;span class="ratio-label"&gt;듣기&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="ratio-track"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="ratio-fill listen" style="width:42.8%"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;span class="ratio-val"&gt;30문항&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="ratio-row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;span class="ratio-label"&gt;읽기&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="ratio-track"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="ratio-fill read" style="width:57.1%"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;span class="ratio-val"&gt;40문항&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="callout info"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="callout-icon"&gt;ℹ&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;span&gt;TOPIK Ⅰ의 모든 문항은 &lt;strong&gt;객관식(4지선다)&lt;/strong&gt;으로 구성됩니다. 별도의 주관식(서술형) 문항은 없습니다.&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- TOPIK Ⅱ 상세 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="info-card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2 class="info-card-title"&gt;TOPIK Ⅱ — 중·고급 상세 구성&lt;/h2&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="level-banner red"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="level-banner-badge"&gt;Ⅱ&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="level-banner-info"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="level-banner-title"&gt;TOPIK Ⅱ · 중·고급&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="level-banner-sub"&gt;총 104문항 · 180분 · 300점 만점 · 3~6급 인정&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="stat-pills"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="stat-pill"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="stat-pill-num red"&gt;104&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="stat-pill-label"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;strong&gt;총 문항 수&lt;/strong&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>문항</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="stat-pill"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="stat-pill-num red"&gt;180&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="stat-pill-label"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;strong&gt;시험 시간&lt;/strong&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>분</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="stat-pill"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="stat-pill-num red"&gt;300&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="stat-pill-label"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;strong&gt;총 배점&lt;/strong&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>점 만점</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="q-table-wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;table class="q-table"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;caption&gt;TOPIK Ⅱ 영역별 구성 (출처: 국립국제교육원)&lt;/caption&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;th scope="col"&gt;영역&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;th scope="col"&gt;문항 수&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;th scope="col"&gt;문항 유형&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;th scope="col"&gt;시험 시간&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;th scope="col"&gt;배점&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;tbody&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;span class="area-cell"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;span class="area-dot listen"&gt;&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>듣기</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;50문항&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;객관식 4지선다&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;60분&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;100점&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;span class="area-cell"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;span class="area-dot write"&gt;&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>쓰기</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;4문항&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;단답형 2 + 작문 2&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;50분&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;100점&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;span class="area-cell"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;span class="area-dot read"&gt;&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>읽기</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;50문항&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;객관식 4지선다&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;70분&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;100점&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr class="total-row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;합계&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;104문항&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;—&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;180분&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;td&gt;300점&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/tbody&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/table&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style="margin-top:18px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style="font-size:12px;font-weight:600;color:var(--neutral-500);margin-bottom:10px"&gt;문항 비율&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="ratio-bars"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="ratio-row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;span class="ratio-label"&gt;듣기&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="ratio-track"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="ratio-fill listen" style="width:48%"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;span class="ratio-val"&gt;50문항&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="ratio-row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;span class="ratio-label"&gt;쓰기&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="ratio-track"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="ratio-fill write" style="width:3.8%"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;span class="ratio-val"&gt;4문항&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="ratio-row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;span class="ratio-label"&gt;읽기&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="ratio-track"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="ratio-fill read" style="width:48%"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;span class="ratio-val"&gt;50문항&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="callout warn"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="callout-icon"&gt;⚠&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;span&gt;쓰기 영역의 &lt;strong&gt;작문(2문항)&lt;/strong&gt;은 원고지 답안지에 직접 작성하며, 수정테이프·수정액 사용이 금지됩니다. 컴퓨터용 사인펜으로 OMR 답안지를 마킹하는 다른 영역과 유의사항이 다릅니다.&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 시험 당일 진행 순서 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="info-card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2 class="info-card-title"&gt;시험 당일 진행 순서&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;p style="margin-bottom:18px"&gt;TOPIK Ⅰ·Ⅱ를 동시 응시하는 경우 아래 순서로 시험이 진행됩니다.&lt;/p&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style="display:flex;flex-direction:column;gap:0"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style="display:flex;gap:16px;padding-bottom:20px;position:relative"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="width:36px;height:36px;border-radius:50%;background:var(--primary);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;position:relative;z-index:1"&gt;1&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="width:2px;flex:1;background:var(--neutral-200);margin-top:4px"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style="padding-top:6px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="font-size:14px;font-weight:700;color:var(--neutral-800);margin-bottom:3px"&gt;입실 완료&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="font-size:13px;color:var(--neutral-500)"&gt;시험 시작 30분 전까지 입실 · 신분증 및 수험표 지참&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style="display:flex;gap:16px;padding-bottom:20px;position:relative"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="width:36px;height:36px;border-radius:50%;background:var(--primary);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;position:relative;z-index:1"&gt;2&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="width:2px;flex:1;background:var(--neutral-200);margin-top:4px"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style="padding-top:6px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="font-size:14px;font-weight:700;color:var(--neutral-800);margin-bottom:3px"&gt;TOPIK Ⅰ 시험&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="font-size:13px;color:var(--neutral-500)"&gt;듣기(40분) → 읽기(60분) · 총 100분&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style="display:flex;gap:16px;padding-bottom:20px;position:relative"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="width:36px;height:36px;border-radius:50%;background:var(--neutral-300);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;position:relative;z-index:1"&gt;3&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="width:2px;flex:1;background:var(--neutral-200);margin-top:4px"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style="padding-top:6px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="font-size:14px;font-weight:700;color:var(--neutral-800);margin-bottom:3px"&gt;휴식&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="font-size:13px;color:var(--neutral-500)"&gt;TOPIK Ⅰ·Ⅱ 사이 휴식 시간 (시험장 안내에 따름)&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style="display:flex;gap:16px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700"&gt;4&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style="padding-top:6px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="font-size:14px;font-weight:700;color:var(--neutral-800);margin-bottom:3px"&gt;TOPIK Ⅱ 시험&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="font-size:13px;color:var(--neutral-500)"&gt;듣기(60분) → 쓰기(50분) → 읽기(70분) · 총 180분&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- CTA --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="cta-row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="guide-evaluation.html" class="btn btn-solid btn-lg"&gt;평가 기준 보기&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="rules-answer.html" <span class="Apple-converted-space">    </span>class="btn btn-outline btn-lg"&gt;답안 작성 요령&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="register.html" <span class="Apple-converted-space">        </span>class="btn btn-ghost btn-lg"&gt;시험 접수하기&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/main&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- SIDEBAR --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;aside class="content-aside"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="aside-card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="aside-card-title"&gt;TOPIK 안내&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;nav class="aside-nav-list" aria-label="TOPIK 안내 메뉴"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-overview.html" <span class="Apple-converted-space">  </span>class="aside-nav-link"&gt;시험 개요&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-intro.html"<span class="Apple-converted-space">      </span>class="aside-nav-link"&gt;시험 소개&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-questions.html"<span class="Apple-converted-space">  </span>class="aside-nav-link is-current" aria-current="page"&gt;문항 구성&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-evaluation.html" class="aside-nav-link"&gt;평가 기준&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/nav&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="aside-card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="aside-card-title"&gt;외부 링크&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://topik.go.kr" target="_blank" rel="noopener noreferrer" class="aside-ext-link primary-link"&gt;TOPIK 본부 (topik.go.kr) ↗&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://niied.go.kr" target="_blank" rel="noopener noreferrer" class="aside-ext-link neutral-link"&gt;국립국제교육원 (NIIED) ↗&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="aside-card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="aside-notice"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;strong&gt;접수 기간 확인&lt;/strong&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>현재 제 99회 접수가 진행 중입니다.</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style="margin-top:10px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="register.html" class="btn btn-solid" style="width:100%;justify-content:center"&gt;시험 접수하기&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/aside&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- FOOTER --&gt;</p>
+<p class="p1">&lt;footer class="footer" role="contentinfo"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="footer-grid"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="footer-brand"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;strong&gt;주미얀마 대한민국 대사관&lt;/strong&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;p&gt;Embassy of the Republic of Korea in Myanmar&lt;br&gt;한국어능력시험(TOPIK) 공식 접수 사이트&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="footer-ext"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://topik.go.kr"<span class="Apple-converted-space">          </span>target="_blank" rel="noopener noreferrer"&gt;TOPIK 본부 (topik.go.kr)&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://niied.go.kr"<span class="Apple-converted-space">          </span>target="_blank" rel="noopener noreferrer"&gt;국립국제교육원 (NIIED)&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://www.mofa.go.kr/mm-ko" target="_blank" rel="noopener noreferrer"&gt;대사관 공식 웹사이트&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="footer-bottom"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="footer-copy"&gt;© 2025–2026 Embassy of the Republic of Korea in Myanmar. All rights reserved.&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="footer-policy"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="#"&gt;개인정보처리방침&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="#"&gt;이용약관&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/footer&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">const hamburger <span class="Apple-converted-space">  </span>= document.getElementById('js-hamburger');</p>
+<p class="p1">const drawer<span class="Apple-converted-space">      </span>= document.getElementById('js-drawer');</p>
+<p class="p1">const overlay <span class="Apple-converted-space">    </span>= document.getElementById('js-overlay');</p>
+<p class="p1">const drawerClose = document.getElementById('js-drawer-close');</p>
+<p class="p2"><br></p>
+<p class="p1">function openDrawer() {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>drawer.classList.add('is-open');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>overlay.classList.add('is-show');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>hamburger.setAttribute('aria-expanded', 'true');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.body.style.overflow = 'hidden';</p>
+<p class="p1">}</p>
+<p class="p1">function closeDrawer() {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>drawer.classList.remove('is-open');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>overlay.classList.remove('is-show');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>hamburger.setAttribute('aria-expanded', 'false');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.body.style.overflow = '';</p>
+<p class="p1">}</p>
+<p class="p1">hamburger.addEventListener('click', openDrawer);</p>
+<p class="p1">drawerClose.addEventListener('click', closeDrawer);</p>
+<p class="p1">overlay.addEventListener('click', closeDrawer);</p>
+<p class="p1">document.addEventListener('keydown', e =&gt; { if (e.key === 'Escape') closeDrawer(); });</p>
+<p class="p2"><br></p>
+<p class="p1">function setLang(code) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>try { localStorage.setItem('tm_lang', code); } catch(e) {}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('.lang-toggle button, .drawer-lang button').forEach(btn =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const hit = btn.getAttribute('onclick')?.includes(`'${code}'`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>btn.classList.toggle('is-active', !!hit);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1">}</p>
+<p class="p1">try { setLang(localStorage.getItem('tm_lang') || 'ko'); } catch(e) {}</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>

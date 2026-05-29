@@ -79,14 +79,14 @@
     <section class="tab-pane active" data-tab="basic">
 
       <h2 class="h3" style="margin-bottom: 12px;">증명사진</h2>
-      <div class="photo-section">
+      <div class="photo-section" id="profilePhotoZone">
         <div class="ph-prev">현재 사진</div>
         <div style="flex:1;">
           <p style="font-size: 13.5px; color: var(--text-2);">시험 접수 시 자동 사용됩니다.</p>
           <p class="body-sm" style="margin-top: 4px;">새 사진 등록 시 진행 중인 접수 건에도 즉시 반영되며, BO 사진 심사가 재실행됩니다.</p>
           <div style="margin-top: 10px; display:flex; gap: 6px;">
-            <button class="btn btn-secondary btn-sm">파일 선택</button>
-            <button class="btn btn-text btn-sm">규격 안내</button>
+            <button class="btn btn-secondary btn-sm" type="button" data-photo-select>파일 선택</button>
+            <button class="btn btn-text btn-sm" type="button" data-photo-spec>규격 안내</button>
           </div>
         </div>
       </div>
@@ -201,7 +201,13 @@
 </div>
 
 <script src="assets/common.js"></script>
+<script src="assets/photo-upload.js"></script>
 <script>
+  var profilePhotoCtrl = TPKMPhoto.bind({
+    zone: document.getElementById('profilePhotoZone'),
+    placeholder: '현재 사진'
+  });
+
   document.querySelectorAll('.profile-tabs button').forEach(b => {
     b.addEventListener('click', () => {
       document.querySelectorAll('.profile-tabs button').forEach(x => x.classList.remove('active'));

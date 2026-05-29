@@ -5,6 +5,7 @@
   var PROTECTED = {
     "register.html": true,
     "mypage.html": true,
+    "mypage-profile.html": true,
     "board-refund.html": true,
     "board-inquiry.html": true,
   };
@@ -95,6 +96,7 @@
       page === "register.html" ||
       page === "register-complete.html" ||
       page === "mypage.html" ||
+      page === "mypage-profile.html" ||
       page === "admit.html" ||
       page === "lookup.html"
     )
@@ -106,7 +108,12 @@
       page === "board-inquiry.html"
     )
       return "board";
-    if (page === "login.html" || page === "signup.html" || page === "signup-complete.html")
+    if (
+      page === "login.html" ||
+      page === "signup.html" ||
+      page === "signup-complete.html" ||
+      page === "mypage-profile.html"
+    )
       return "";
     return "";
   }

@@ -50,6 +50,11 @@
     .profile-form-actions{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;}
     .profile-photo-row{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap;}
     .profile-photo-thumb{width:72px;height:96px;border:1.5px solid var(--gray-light);border-radius:8px;background:#f8fafc;object-fit:cover;}
+    .profile-check-row{margin-top:14px;padding:12px 14px;background:#f8fafc;border:1px solid var(--gray-light);border-radius:10px;}
+    .profile-check-row label{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:#334155;cursor:pointer;line-height:1.5;}
+    .profile-check-row input{margin-top:3px;flex-shrink:0;accent-color:var(--navy);}
+    .pw-change-banner{display:none;margin-bottom:16px;padding:12px 14px;background:#fff8e1;border:1px solid #fde68a;border-radius:10px;font-size:12.5px;color:#92400e;line-height:1.6;}
+    .pw-change-banner.is-visible{display:block;}
     .exam-reveal-note{margin-top:10px;padding:10px 12px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:8px;color:#1e40af;font-size:12px;line-height:1.55;}
     /* Reg Cards */
     .reg-card{background:white;border-radius:12px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px;}
@@ -209,71 +214,13 @@
         <span><svg class="icon" width="13" height="13"><use href="#ic-phone"/></svg>+95-9-1234567</span>
       </p>
     </div>
-    <button type="button" class="btn-profile" onclick="toggleProfileEdit(true)">
+    <a href="mypage-profile.html" class="btn-profile">
       <svg class="icon" width="14" height="14"><use href="#ic-edit"/></svg>내정보 수정
-    </button>
+    </a>
     <a href="register.html" class="btn-new">
       <svg class="icon" width="14" height="14"><use href="#ic-plus"/></svg>새 접수하기
     </a>
   </div>
-
-  <section class="profile-edit-panel" id="profileEditPanel" aria-label="내정보 수정">
-    <h2><svg class="icon" width="18" height="18"><use href="#ic-user"/></svg>내정보 수정</h2>
-    <div class="profile-form-grid">
-      <div><label for="pfNameKo">한글 성명</label><input type="text" id="pfNameKo"/></div>
-      <div><label for="pfNameEn">영문 성명</label><input type="text" id="pfNameEn"/></div>
-      <div><label for="pfBirth">생년월일</label><input type="date" id="pfBirth"/></div>
-      <div><label for="pfGender">성별</label><select id="pfGender"><option value="M">남성</option><option value="F">여성</option></select></div>
-      <div><label for="pfNationality">국적</label><select id="pfNationality"><option value="MM">미얀마 (Myanmar)</option><option value="KR">대한민국</option><option value="OTHER">기타</option></select></div>
-      <div><label for="pfPhone">연락처</label><input type="tel" id="pfPhone"/></div>
-      <div><label for="pfEmail">이메일</label><input type="email" id="pfEmail"/></div>
-    </div>
-    <div class="profile-photo-row">
-      <img class="profile-photo-thumb" id="pfPhotoPreview" alt="등록된 증명사진 미리보기"/>
-      <div>
-        <label for="pfPhoto" style="font-size:12px;font-weight:700;color:var(--navy);display:block;margin-bottom:6px;">증명사진 재등록</label>
-        <input type="file" id="pfPhoto" accept="image/jpeg,image/jpg" onchange="previewProfilePhoto(event)"/>
-        <p style="font-size:11px;color:var(--gray-text);margin-top:5px;">JPG, 200KB~2MB 권장. 변경 시 현재 접수 건 사진도 함께 갱신됩니다.</p>
-      </div>
-    </div>
-    <div class="profile-form-actions">
-      <button type="button" class="btn-admit" onclick="saveProfileEdit()"><svg class="icon" width="14" height="14"><use href="#ic-check"/></svg>저장</button>
-      <button type="button" class="btn-cancel" onclick="toggleProfileEdit(false)"><svg class="icon" width="14" height="14"><use href="#ic-x"/></svg>닫기</button>
-    </div>
-
-    <!-- 비밀번호 변경 (구글 가입 회원은 숨김) -->
-    <div id="pwChangeSection" style="margin-top:20px;border-top:1px solid var(--gray-light);padding-top:18px;">
-      <h2 style="font-size:15px;"><svg class="icon" width="15" height="15"><use href="#ic-lock"/></svg>비밀번호 변경</h2>
-      <div class="profile-form-grid" style="margin-top:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));">
-        <div>
-          <label for="pfPwCurrent">현재 비밀번호</label>
-          <input type="password" id="pfPwCurrent" placeholder="현재 비밀번호"/>
-        </div>
-        <div>
-          <label for="pfPwNew">새 비밀번호</label>
-          <input type="password" id="pfPwNew" placeholder="8자 이상, 영문+숫자+특수문자"/>
-        </div>
-        <div>
-          <label for="pfPwConfirm">새 비밀번호 확인</label>
-          <input type="password" id="pfPwConfirm" placeholder="새 비밀번호 재입력"/>
-        </div>
-      </div>
-      <div style="margin-top:12px;">
-        <button type="button" class="btn-admit" onclick="changePw()"><svg class="icon" width="14" height="14"><use href="#ic-check"/></svg>비밀번호 변경</button>
-      </div>
-    </div>
-
-    <!-- 회원 탈퇴 -->
-    <div style="margin-top:20px;border-top:1px solid #fecaca;padding-top:16px;">
-      <h2 style="font-size:15px;color:#b91c1c;"><svg class="icon" width="15" height="15"><use href="#ic-trash"/></svg>회원 탈퇴</h2>
-      <p style="font-size:12px;color:#6b7280;margin-top:6px;line-height:1.6;">탈퇴 시 모든 접수 내역 및 계정 정보가 삭제됩니다. 진행 중인 접수 건이 있을 경우 탈퇴가 제한됩니다.</p>
-      <div style="margin-top:10px;">
-        <button type="button" class="btn-cancel" style="border-color:#fecaca;color:#b91c1c;" onclick="doWithdraw()">
-          <svg class="icon" width="14" height="14"><use href="#ic-trash"/></svg>회원 탈퇴하기
-        </button>
-      </div>
-    </div>
-  </section>
 
   <!-- 동적 접수 내역 (RegStore localStorage) -->
   <div id="dynamicRegList"></div>
@@ -495,7 +442,7 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     if (window.TMI18N) TMI18N.boot();
-    initProfileEdit();
+    initUserCard();
     applyExamRevealPolicy();
     mypageApplyRejectReasonsFromAdmin();
     renderDynamicRegList();
@@ -509,16 +456,8 @@
 </script>
 <script>
   var FO_REJECT_MAP_KEY='tm_fo_reject_map_v1';
-  var PROFILE_RESYNC_KEY='tm_profile_photo_resync_v1';
   var EXAM_REVEAL_KEY='tm_exam_reveal_at_v1';
-  var pendingProfilePhoto=null;
-  function toggleProfileEdit(open){
-    var p=document.getElementById('profileEditPanel');
-    if(!p)return;
-    p.classList.toggle('is-open',!!open);
-    if(open)initProfileEdit();
-  }
-  function initProfileEdit(){
+  function initUserCard(){
     var profile=(window.TMProfile&&TMProfile.load&&TMProfile.load())||{
       nameKr:'홍길동',
       nameKo:'홍길동',
@@ -526,23 +465,15 @@
       birthdate:'1990-01-01',
       gender:'M',
       nationality:'MM',
+      firstLang:'MM',
       phone:'+95-9-1234567',
-      email:'hong@example.com'
+      email:'hong@example.com',
+      occupation:'',
+      motive:'',
+      purpose:'',
+      marketingConsent:false
     };
     var nameKo=profile.nameKo||profile.nameKr||'홍길동';
-    setVal('pfNameKo',nameKo);
-    setVal('pfNameEn',profile.nameEn||'HONG GILDONG');
-    setVal('pfBirth',normalizeDateInput(profile.birthdate||profile.birth||'1990-01-01'));
-    setVal('pfGender',profile.gender||'M');
-    setVal('pfNationality',profile.nationality||'MM');
-    setVal('pfPhone',profile.phone||'+95-9-1234567');
-    setVal('pfEmail',profile.email||'hong@example.com');
-    var img=document.getElementById('pfPhotoPreview');
-    var photo=window.TMProfile&&TMProfile.loadSignupPhoto&&TMProfile.loadSignupPhoto();
-    if(img){
-      if(photo){img.src=photo;img.style.display='block';}
-      else{img.removeAttribute('src');img.style.display='none';}
-    }
     var card=document.querySelector('.user-card');
     if(card){
       var title=card.querySelector('.user-info h3');
@@ -554,62 +485,6 @@
       if(phone)phone.innerHTML='<svg class="icon" width="13" height="13"><use href="#ic-phone"/></svg>'+(profile.phone||'+95-9-1234567');
       if(avatar)avatar.textContent=nameKo.charAt(0)||'홍';
     }
-  }
-  function setVal(id,val){
-    var el=document.getElementById(id);
-    if(el)el.value=val||'';
-  }
-  function normalizeDateInput(value){
-    var s=String(value||'').trim();
-    if(/^\d{8}$/.test(s))return s.slice(0,4)+'-'+s.slice(4,6)+'-'+s.slice(6,8);
-    if(/^\d{4}[./-]\d{2}[./-]\d{2}$/.test(s))return s.replace(/[./]/g,'-');
-    return '1990-01-01';
-  }
-  function previewProfilePhoto(ev){
-    var file=ev&&ev.target&&ev.target.files&&ev.target.files[0];
-    if(!file)return;
-    if(!/jpe?g$/i.test(file.name||'')&&!/^image\/jpeg$/i.test(file.type||'')){
-      alert('증명사진은 JPG 파일을 권장합니다.');
-      ev.target.value='';
-      return;
-    }
-    if(file.size<200*1024||file.size>2*1024*1024){
-      alert('사진 용량은 200KB~2MB 범위를 권장합니다. 프로토타입에서는 계속 미리보기만 제공합니다.');
-    }
-    var reader=new FileReader();
-    reader.onload=function(){
-      pendingProfilePhoto=String(reader.result||'');
-      var img=document.getElementById('pfPhotoPreview');
-      if(img){img.src=pendingProfilePhoto;img.style.display='block';}
-    };
-    reader.readAsDataURL(file);
-  }
-  function saveProfileEdit(){
-    if(!window.TMProfile){alert('프로필 저장 모듈을 불러오지 못했습니다.');return;}
-    var profile=TMProfile.load()||{};
-    profile.nameKo=document.getElementById('pfNameKo').value.trim();
-    profile.nameKr=profile.nameKo;
-    profile.nameEn=document.getElementById('pfNameEn').value.trim();
-    profile.birthdate=document.getElementById('pfBirth').value;
-    profile.gender=document.getElementById('pfGender').value;
-    profile.nationality=document.getElementById('pfNationality').value;
-    profile.phone=document.getElementById('pfPhone').value.trim();
-    profile.email=document.getElementById('pfEmail').value.trim();
-    profile.updatedAt=new Date().toISOString();
-    TMProfile.save(profile);
-    if(pendingProfilePhoto&&TMProfile.saveSignupPhoto(pendingProfilePhoto)){
-      try{
-        localStorage.setItem(PROFILE_RESYNC_KEY,JSON.stringify({
-          at:new Date().toISOString(),
-          status:'photo_review_pending',
-          message:'마이페이지 사진 변경: 진행 중인 접수 건에 즉시 반영, BO 사진 심사 재실행'
-        }));
-      }catch(e){}
-      pendingProfilePhoto=null;
-    }
-    initProfileEdit();
-    toggleProfileEdit(false);
-    alert('내정보가 저장되었습니다. 진행 중인 접수 건에도 변경 내용이 반영되는 것으로 처리했습니다.');
   }
   function applyExamRevealPolicy(){
     var configured='';
@@ -752,58 +627,6 @@
   }
   function escapeMp(s){var d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML;}
 
-  function changePw(){
-    var cur=document.getElementById('pfPwCurrent');
-    var nw=document.getElementById('pfPwNew');
-    var cf=document.getElementById('pfPwConfirm');
-    if(!cur||!nw||!cf)return;
-    if(!cur.value.trim()){alert('현재 비밀번호를 입력해 주세요.');return;}
-    if(nw.value.length<8){alert('새 비밀번호는 8자 이상이어야 합니다.');return;}
-    if(!/[a-zA-Z]/.test(nw.value)||!/[0-9]/.test(nw.value)){alert('영문과 숫자를 포함해야 합니다.');return;}
-    if(nw.value!==cf.value){alert('새 비밀번호와 확인이 일치하지 않습니다.');return;}
-    var prof=window.TMProfile&&TMProfile.load();
-    if(prof){
-      // 현재 비밀번호 검증
-      if(prof.password&&prof.password!==cur.value){
-        alert('현재 비밀번호가 일치하지 않습니다.');
-        return;
-      }
-      prof.password=nw.value;
-      prof.pwChangedAt=new Date().toISOString();
-      TMProfile.save(prof);
-    }
-    cur.value='';nw.value='';cf.value='';
-    alert('비밀번호가 성공적으로 변경되었습니다.');
-  }
-
-  function doWithdraw(){
-    // 진행 중 접수 건 확인 (s-pending, s-review, s-photo-rejected 등)
-    var activeBadges=document.querySelectorAll('.status-badge.s-pending,.status-badge.s-review,.status-badge.s-photo-rejected,.status-badge.s-unpaid');
-    if(activeBadges.length>0){
-      alert('진행 중인 접수 건이 있어 탈퇴할 수 없습니다.\n먼저 접수를 취소하거나 처리 완료 후 다시 시도해 주세요.');
-      return;
-    }
-    var confirmed=confirm('정말 탈퇴하시겠습니까?\n\n모든 계정 정보, 접수 내역, 마이페이지 데이터가 삭제됩니다.\n이 작업은 되돌릴 수 없습니다.');
-    if(!confirmed)return;
-    var double=prompt('탈퇴를 확인하려면 "탈퇴합니다"를 입력하세요.');
-    if(double!=='탈퇴합니다'){alert('탈퇴가 취소되었습니다.');return;}
-    try{
-      if(window.TMProfile){TMProfile.save({});if(TMProfile.saveSignupPhoto)TMProfile.saveSignupPhoto(null);}
-      localStorage.removeItem('tm_topik_profile_v1');
-      localStorage.removeItem('tm_topik_signup_photo_v1');
-    }catch(e){}
-    alert('탈퇴 처리가 완료되었습니다. 이용해 주셔서 감사합니다.');
-    window.location.href='index.html';
-  }
-
-  // 구글 가입 회원은 비밀번호 변경 섹션 숨김
-  (function(){
-    var prof=window.TMProfile&&TMProfile.load&&TMProfile.load();
-    if(prof&&prof.googleSignup){
-      var sec=document.getElementById('pwChangeSection');
-      if(sec)sec.style.display='none';
-    }
-  })();
 </script>
 </body>
 </html>

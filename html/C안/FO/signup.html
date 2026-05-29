@@ -293,14 +293,14 @@
 
       <div class="form-row">
         <label class="label">증명사진 <span class="req">*</span></label>
-        <div class="photo-upload">
+        <div class="photo-upload" id="signupPhotoZone">
           <div class="photo-preview">사진<br>미리보기</div>
           <div class="photo-info">
             <h4>여권용 정면 증명사진</h4>
             <p>JPG·PNG, 3:4 비율 (35×45mm 권장), 200KB ~ 2MB. 6개월 이내 촬영본을 사용해 주세요.</p>
             <div class="photo-actions">
-              <button class="btn btn-secondary btn-sm" type="button">파일 선택</button>
-              <button class="btn btn-text btn-sm" type="button">규격 안내</button>
+              <button class="btn btn-secondary btn-sm" type="button" data-photo-select>파일 선택</button>
+              <button class="btn btn-text btn-sm" type="button" data-photo-spec>규격 안내</button>
             </div>
           </div>
         </div>
@@ -377,7 +377,13 @@
 </div>
 
 <script src="assets/common.js"></script>
+<script src="assets/photo-upload.js"></script>
 <script>
+  var signupPhotoCtrl = TPKMPhoto.bind({
+    zone: document.getElementById('signupPhotoZone'),
+    placeholder: '사진<br>미리보기'
+  });
+
   // Step navigation
   const steps = document.querySelectorAll('.step-pane');
   const indi  = document.querySelectorAll('.steps .step');

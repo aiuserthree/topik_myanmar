@@ -96,10 +96,23 @@
     .signup-photo-side ul{list-style:none;font-size:11px;color:#555;display:flex;flex-direction:column;gap:5px;margin-bottom:10px;}
     .signup-photo-side li{display:flex;align-items:center;gap:5px;}
     .btn-signup-photo{padding:8px 14px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;}
+    .pw-field-wrap{position:relative;}
+    .pw-field-wrap input{padding-right:40px;}
+    .pw-toggle-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;padding:4px;cursor:pointer;color:var(--gray-text);display:flex;}
+    .pw-strength{margin-top:8px;}
+    .pw-strength-track{height:4px;background:var(--gray-light);border-radius:4px;overflow:hidden;}
+    .pw-strength-bar{height:100%;width:0;border-radius:4px;transition:width .25s,background .25s;}
+    .pw-strength-bar.weak{background:#ef4444;}
+    .pw-strength-bar.medium{background:#f59e0b;}
+    .pw-strength-bar.strong{background:#10b981;}
+    .pw-strength-label{font-size:11px;color:var(--gray-text);margin-top:4px;min-height:16px;}
+    .verify-timer{font-size:12px;font-weight:600;color:var(--navy);margin-top:8px;}
+    .verify-timer.expired{color:var(--red);}
     @media(max-width:600px){.form-row{grid-template-columns:1fr;}}
   </style>
   <link rel="stylesheet" href="css/mobile.css"/>
   <script src="js/profile-store.js"></script>
+  <script src="js/account-password.js"></script>
 <script src="js/fo-nav.js"></script>
   <!-- ════ SVG ICON SPRITE (공통 적용) ════ -->
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
@@ -178,7 +191,7 @@
       <div class="step-line" id="line1"></div>
       <div class="step">
         <div class="step-num" id="step2-num">2</div>
-        <div class="step-label" id="step2-lbl">기본 정보</div>
+        <div class="step-label" id="step2-lbl">계정 설정</div>
       </div>
       <div class="step-line" id="line2"></div>
       <div class="step">
@@ -233,6 +246,7 @@
                 <div class="form-group" style="margin-bottom:0;">
                   <label style="font-size:12px;">인증코드 (6자리)</label>
                   <input type="text" id="signupEmailCode" placeholder="000000" maxlength="8" inputmode="numeric" autocomplete="one-time-code"/>
+                  <div class="verify-timer" id="signupVerifyTimer" aria-live="polite"></div>
                 </div>
                 <div class="verify-btn-row">
                   <button type="button" class="btn-verify-ok" id="signupEmailVerifyBtn">
@@ -371,12 +385,19 @@
             </div>
             <div class="form-group">
               <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-lock"/></svg>비밀번호 <span class="req">*</span></label>
-              <input type="password" id="pw" placeholder="영문+숫자+특수문자 8자 이상"/>
+              <div class="pw-field-wrap">
+                <input type="password" id="pw" placeholder="영문+숫자+특수문자 8자 이상" autocomplete="new-password"/>
+                <button type="button" class="pw-toggle-btn" id="signupPwToggle" aria-label="비밀번호 표시"><svg class="icon" width="16" height="16"><use href="#ic-eye"/></svg></button>
+              </div>
+              <div class="pw-strength"><div class="pw-strength-track"><div class="pw-strength-bar" id="signupPwStrengthBar"></div></div><div class="pw-strength-label" id="signupPwStrengthLabel"></div></div>
               <div class="error-msg" id="err-pw"><svg class="icon" width="12" height="12"><use href="#ic-alert"/></svg><span class="err-txt">영문·숫자·특수문자를 각각 포함하여 8자 이상 입력해 주세요.</span></div>
             </div>
             <div class="form-group">
               <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-lock"/></svg>비밀번호 확인 <span class="req">*</span></label>
-              <input type="password" id="pwConfirm" placeholder="비밀번호 재입력"/>
+              <div class="pw-field-wrap">
+                <input type="password" id="pwConfirm" placeholder="비밀번호 재입력" autocomplete="new-password"/>
+                <button type="button" class="pw-toggle-btn" id="signupPwConfirmToggle" aria-label="비밀번호 표시"><svg class="icon" width="16" height="16"><use href="#ic-eye"/></svg></button>
+              </div>
               <div class="error-msg" id="err-pwConfirm"><svg class="icon" width="12" height="12"><use href="#ic-alert"/></svg><span class="err-txt">비밀번호가 일치하지 않습니다.</span></div>
             </div>
           </div>
@@ -437,7 +458,7 @@
           </div>
           <div class="check-group">
             <input type="checkbox" id="terms3" class="term-check"/>
-            <label for="terms3">시험 관련 안내 이메일 수신 동의 (선택)</label>
+            <label for="terms3">마케팅·시험 안내 수신 동의 (선택)</label>
           </div>
         </div>
         <div class="two-btns">
@@ -452,8 +473,9 @@
 
 <script>
   var SIGNUP_EMAIL_VERIFY_KEY='tm_signup_email_verify_v1';
-  var SIGNUP_CODE_TTL_MS=10*60*1000;
-  var PW_COMPLEX_MSG='영문·숫자·특수문자를 각각 포함하여 8자 이상 입력해 주세요.';
+  var SIGNUP_CODE_TTL_MS=5*60*1000;
+  var signupVerifyTimerId=null;
+  var PW_COMPLEX_MSG=(window.TMAccountPw&&TMAccountPw.MSG)||'영문·숫자·특수문자를 각각 포함하여 8자 이상 입력해 주세요.';
   var signupPhotoDataUrl='';
   var isGoogleSignupUser=false; // 구글 간편가입 여부
   var googleEmail='';
@@ -514,12 +536,38 @@
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
   }
   function isValidSignupPassword(value){
+    if(window.TMAccountPw&&TMAccountPw.isValid)return TMAccountPw.isValid(value);
     var p=String(value||'');
     if(p.length<8)return false;
     if(!/[A-Za-z]/.test(p))return false;
     if(!/\d/.test(p))return false;
     if(!/[^A-Za-z0-9]/.test(p))return false;
     return true;
+  }
+  function stopSignupVerifyTimer(){
+    if(signupVerifyTimerId){clearInterval(signupVerifyTimerId);signupVerifyTimerId=null;}
+    var el=document.getElementById('signupVerifyTimer');
+    if(el){el.textContent='';el.classList.remove('expired');}
+  }
+  function startSignupVerifyTimer(expMs){
+    stopSignupVerifyTimer();
+    var el=document.getElementById('signupVerifyTimer');
+    if(!el)return;
+    function tick(){
+      var left=Math.max(0,expMs-Date.now());
+      var m=Math.floor(left/60000);
+      var s=Math.floor((left%60000)/1000);
+      if(left<=0){
+        el.textContent='인증 코드가 만료되었습니다. 재발송을 눌러주세요.';
+        el.classList.add('expired');
+        stopSignupVerifyTimer();
+        return;
+      }
+      el.textContent='남은 시간 '+m+':'+String(s).padStart(2,'0');
+      el.classList.remove('expired');
+    }
+    tick();
+    signupVerifyTimerId=setInterval(tick,1000);
   }
   function showSignupFieldErr(inputEl, errId, show, errText){
     if(inputEl){
@@ -594,6 +642,7 @@
     document.getElementById('signupEmailVerifiedBadge').classList.remove('show');
     document.getElementById('signupEmailCode').value='';
     document.getElementById('signupDemoCode').textContent='';
+    stopSignupVerifyTimer();
     clearSignupEmailVerify();
   }
   function onSignupEmailInput(){
@@ -603,13 +652,14 @@
     document.getElementById('signupDemoCode').textContent='';
     clearSignupEmailVerify();
     refreshSignupEmailError();
+    refreshSignupStep1Next();
     refreshSignupStep2Next();
   }
   function sendSignupEmailCode(){
     var el=document.getElementById('email');
     var v=el.value.trim();
-    if(!v){showSignupFieldErr(el,'err-email',true,'아이디(이메일 주소)를 입력해 주세요.');refreshSignupStep2Next();return;}
-    if(!isValidSignupEmail(v)){showSignupFieldErr(el,'err-email',true,'유효한 이메일 주소가 아닙니다.');refreshSignupStep2Next();return;}
+    if(!v){showSignupFieldErr(el,'err-email',true,'아이디(이메일 주소)를 입력해 주세요.');refreshSignupStep1Next();return;}
+    if(!isValidSignupEmail(v)){showSignupFieldErr(el,'err-email',true,'유효한 이메일 주소가 아닙니다.');refreshSignupStep1Next();return;}
     showSignupFieldErr(el,'err-email',false);
     var code=String(Math.floor(100000+Math.random()*900000));
     setSignupEmailVerify({
@@ -622,7 +672,8 @@
     document.getElementById('signupVerifyPanel').classList.add('show');
     document.getElementById('signupEmailVerifiedBadge').classList.remove('show');
     document.getElementById('signupEmailCode').value='';
-    refreshSignupStep2Next();
+    startSignupVerifyTimer(Date.now()+SIGNUP_CODE_TTL_MS);
+    refreshSignupStep1Next();
     alert('인증코드가 이메일로 발송되었습니다.\n\n※ 프로토타입: 실제 메일 대신 화면의 데모 코드를 입력한 뒤 [인증 확인]을 눌러 주세요.');
   }
   function confirmSignupEmailCode(){
@@ -633,10 +684,10 @@
     if(normSignupEmail(d.email)!==curE){
       alert('이메일이 변경되었습니다. 인증코드를 다시 발송해 주세요.');
       resetSignupEmailVerificationUI();
-      refreshSignupStep2Next();
+      refreshSignupStep1Next();
       return;
     }
-    if(Date.now()>d.exp){alert('인증코드가 만료되었습니다. 재발송해 주세요.');return;}
+    if(Date.now()>d.exp){alert('인증코드가 만료되었습니다. 재발송해 주세요.');refreshSignupStep1Next();return;}
     var entered=String(document.getElementById('signupEmailCode').value||'').replace(/\s/g,'');
     if(entered!==String(d.code)){alert('인증코드가 올바르지 않습니다.');return;}
     d.verified=true;
@@ -644,7 +695,8 @@
     setSignupEmailVerify(d);
     document.getElementById('signupVerifyPanel').classList.remove('show');
     document.getElementById('signupEmailVerifiedBadge').classList.add('show');
-    refreshSignupStep2Next();
+    stopSignupVerifyTimer();
+    refreshSignupStep1Next();
     alert('이메일 인증이 완료되었습니다.');
   }
 
@@ -687,7 +739,7 @@
       img.style.display='block';
       document.getElementById('signupPhIcon').style.display='none';
       document.getElementById('signupPhText').style.display='none';
-      refreshSignupStep1Next();
+      refreshSignupStep2Next();
     };
     reader.readAsDataURL(file);
   }
@@ -854,6 +906,7 @@
         phone:document.getElementById('phone').value.trim(),
         email:joinEmail,
         password:isGoogleSignupUser?'':(document.getElementById('pw')?document.getElementById('pw').value:''),
+        pwChangedAt:isGoogleSignupUser?null:new Date().toISOString(),
         googleSignup:isGoogleSignupUser,
         firstLang:document.getElementById('firstLang')?document.getElementById('firstLang').value:'',
         occupation:document.getElementById('occupation')?document.getElementById('occupation').value:'',
@@ -872,8 +925,22 @@
     window.location.href='signup-complete.html?email='+encodeURIComponent(joinEmail);
   }
 
+  function restoreSignupEmailVerifiedUI(){
+    if(isGoogleSignupUser)return;
+    if(!isSignupEmailVerified())return;
+    var panel=document.getElementById('signupVerifyPanel');
+    var badge=document.getElementById('signupEmailVerifiedBadge');
+    if(panel)panel.classList.remove('show');
+    if(badge)badge.classList.add('show');
+  }
+  restoreSignupEmailVerifiedUI();
   refreshSignupStep1Next();
   refreshSignupStep2Next();
+  if(window.TMAccountPw){
+    TMAccountPw.bindToggle(document.getElementById('signupPwToggle'),document.getElementById('pw'));
+    TMAccountPw.bindToggle(document.getElementById('signupPwConfirmToggle'),document.getElementById('pwConfirm'));
+    TMAccountPw.bindStrengthMeter(document.getElementById('pw'),document.getElementById('signupPwStrengthBar'),document.getElementById('signupPwStrengthLabel'));
+  }
 
   // URL 파라미터에서 구글 가입 진행 감지 (login.html에서 넘어온 경우)
   (function(){

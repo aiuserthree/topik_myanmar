@@ -367,6 +367,7 @@
 </div>
 
 <script src="js/profile-store.js"></script>
+<script src="js/account-password.js"></script>
 <script src="js/fo-nav.js"></script>
 <script>
   var PW_VERIFY_KEY='tm_pw_email_verify_v1';
@@ -650,7 +651,11 @@
     }
     var n1=document.getElementById('pwResetNew1').value;
     var n2=document.getElementById('pwResetNew2').value;
-    if(n1.length<8){
+    if(window.TMAccountPw&&!TMAccountPw.isValid(n1)){
+      alert(TMAccountPw.MSG);
+      return;
+    }
+    if(!window.TMAccountPw&&n1.length<8){
       alert('새 비밀번호는 8자 이상이어야 합니다.');
       return;
     }
