@@ -1240,9 +1240,9 @@
               <th style="width:80px;">유형</th>
               <th style="width:80px;">대상 ID</th>
               <th style="width:80px;">액션</th>
-              <th>이전 값(요약)</th>
-              <th>이후 값(요약)</th>
-              <th style="width:80px;">상세</th>
+              <th style="width:180px;">이전 값</th>
+              <th style="width:180px;">이후 값</th>
+              <th style="width:60px;">상세</th>
             </tr></thead>
             <tbody id="auditLogBody"></tbody>
           </table>
@@ -4868,15 +4868,17 @@
   /* ════════════════════════════════════════
      관리자 처리 이력
   ════════════════════════════════════════ */
-  var AUDIT_LOG_KEY='topik_mm_audit_v2';
+  var AUDIT_LOG_KEY='topik_mm_audit_v3';
 
   var AUDIT_SEED=[
-    {at:'2026.05.28 14:22',by:'admin',ip:'192.168.1.1',type:'접수자',target:'142',action:'승인',before:'{"status":"review"}',after:'{"status":"approved"}',memo:''},
-    {at:'2026.05.28 13:10',by:'staff01',ip:'192.168.1.5',type:'접수자',target:'141',action:'반려',before:'{"status":"review"}',after:'{"status":"rejected"}',memo:'사진 규격 미준수'},
-    {at:'2026.05.28 11:00',by:'admin',ip:'192.168.1.1',type:'공지',target:'notice_3',action:'생성',before:'{}',after:'{"title":"제98회 접수 안내","category":"reg"}',memo:''},
-    {at:'2026.05.27 16:30',by:'admin',ip:'192.168.1.1',type:'환불·정정',target:'rf_seed_1',action:'상태변경(review)',before:'{"status":"received"}',after:'{"status":"review"}',memo:''},
-    {at:'2026.05.27 09:15',by:'staff01',ip:'192.168.1.5',type:'문의',target:'iq_seed_1',action:'답변(공개)',before:'{"adminReply":""}',after:'{"adminReply":"네, 동시 접수 가능합니다."}',memo:''},
-    {at:'2026.05.26 10:00',by:'admin',ip:'192.168.1.1',type:'관리자계정',target:'staff01',action:'생성',before:'{}',after:'{"username":"staff01","role":"normal"}',memo:''},
+    {at:'2026.05.28 14:22',by:'admin',ip:'192.168.1.1',type:'접수자',target:'142',action:'승인',before:'{"status":"심사중","memo":""}',after:'{"status":"승인","memo":"서류 확인 완료"}',memo:''},
+    {at:'2026.05.28 13:10',by:'staff01',ip:'192.168.1.5',type:'접수자',target:'141',action:'반려',before:'{"status":"심사중","memo":""}',after:'{"status":"반려","memo":"사진 규격 미준수"}',memo:'사진 규격 미준수'},
+    {at:'2026.05.28 11:00',by:'admin',ip:'192.168.1.1',type:'공지',target:'notice_3',action:'생성',before:'{}',after:'{"title":"제98회 접수 안내","category":"접수","status":"게시"}',memo:''},
+    {at:'2026.05.27 16:30',by:'admin',ip:'192.168.1.1',type:'환불·정정',target:'rf_seed_1',action:'수정',before:'{"status":"접수","담당자":""}',after:'{"status":"검토중","담당자":"admin"}',memo:''},
+    {at:'2026.05.27 09:15',by:'staff01',ip:'192.168.1.5',type:'문의',target:'iq_seed_1',action:'답변',before:'{"adminReply":"","status":"미답변"}',after:'{"adminReply":"네, 동시 접수 가능합니다.","status":"답변완료"}',memo:''},
+    {at:'2026.05.26 10:00',by:'admin',ip:'192.168.1.1',type:'관리자계정',target:'staff01',action:'생성',before:'{}',after:'{"username":"staff01","role":"일반","status":"활성"}',memo:''},
+    {at:'2026.05.26 09:30',by:'admin',ip:'192.168.1.1',type:'회원',target:'usr_001',action:'수정',before:'{"name":"김민수","email":"old@email.com"}',after:'{"name":"김민수","email":"new@email.com"}',memo:'이메일 변경 요청'},
+    {at:'2026.05.25 15:00',by:'staff01',ip:'192.168.1.5',type:'회차',target:'round_98',action:'수정',before:'{"regStart":"2026-06-01","regEnd":"2026-06-15"}',after:'{"regStart":"2026-06-03","regEnd":"2026-06-17"}',memo:'접수 기간 2일 연장'},
   ];
 
   function pushAudit(entry){
@@ -4910,6 +4912,43 @@
     renderAuditLog();
   }
 
+  /* JSON diff 값을 사람이 읽기 쉬운 요약 문자열로 변환 (테이블용 한 줄) */
+  function fmtDiffSummary(jsonStr){
+    if(!jsonStr||jsonStr==='{}'||jsonStr==='{}') return '—';
+    try{
+      var obj=JSON.parse(jsonStr);
+      var keys=Object.keys(obj);
+      if(!keys.length) return '—';
+      return keys.map(function(k){
+        var v=obj[k];
+        if(v===null||v===undefined) v='null';
+        var vs=String(v);
+        if(vs.length>20) vs=vs.slice(0,20)+'…';
+        return k+': '+vs;
+      }).join(' / ');
+    }catch(e){
+      var s=String(jsonStr);
+      return s.length>50?s.slice(0,50)+'…':s;
+    }
+  }
+
+  /* JSON diff 값을 상세 패널용 HTML(줄바꿈 key: value)으로 변환 */
+  function fmtDiffFull(jsonStr){
+    if(!jsonStr||jsonStr==='{}') return '(없음)';
+    try{
+      var obj=JSON.parse(jsonStr);
+      var keys=Object.keys(obj);
+      if(!keys.length) return '(없음)';
+      return keys.map(function(k){
+        var v=obj[k];
+        if(v===null||v===undefined) v='null';
+        return escapeHtml(k)+': '+escapeHtml(String(v));
+      }).join('\n');
+    }catch(e){
+      return escapeHtml(String(jsonStr));
+    }
+  }
+
   function renderAuditLog(){
     var tb=document.getElementById('auditLogBody');
     var empty=document.getElementById('auditEmptyMsg');
@@ -4941,8 +4980,8 @@
     if(empty)empty.style.display='none';
 
     tb.innerHTML=list.slice(0,100).map(function(r,i){
-      var bef=r.before?r.before.slice(0,40)+(r.before.length>40?'…':''):'—';
-      var aft=r.after?r.after.slice(0,40)+(r.after.length>40?'…':''):'—';
+      var bef=fmtDiffSummary(r.before);
+      var aft=fmtDiffSummary(r.after);
       return '<tr>'
         +'<td style="white-space:nowrap;">'+escapeHtml(r.at)+'</td>'
         +'<td>'+escapeHtml(r.by||'—')+'</td>'
@@ -4950,8 +4989,8 @@
         +'<td><span class="sb sb-pending" style="font-size:10px;">'+escapeHtml(r.type||'—')+'</span></td>'
         +'<td style="font-size:12px;">'+escapeHtml(r.target||'—')+'</td>'
         +'<td style="font-weight:600;font-size:12px;">'+escapeHtml(r.action||'—')+'</td>'
-        +'<td style="font-size:11px;color:var(--gray-text);font-family:monospace;">'+escapeHtml(bef)+'</td>'
-        +'<td style="font-size:11px;color:#065f46;font-family:monospace;">'+escapeHtml(aft)+'</td>'
+        +'<td style="font-size:11px;color:#b91c1c;font-family:monospace;max-width:160px;white-space:pre-wrap;">'+escapeHtml(bef)+'</td>'
+        +'<td style="font-size:11px;color:#065f46;font-family:monospace;max-width:160px;white-space:pre-wrap;">'+escapeHtml(aft)+'</td>'
         +'<td><button type="button" class="btn btn-gray" style="font-size:11px;padding:3px 10px;" onclick="openAuditDetail('+i+')">상세</button></td>'
         +'</tr>';
     }).join('');
@@ -4990,12 +5029,12 @@
 
       +'<div class="detail-section">'
       +'<div class="detail-section-title" style="color:#b91c1c;">이전 값 (Before)</div>'
-      +'<div class="diff-block diff-before">'+escapeHtml(r.before||'(없음)')+'</div>'
+      +'<div class="diff-block diff-before">'+fmtDiffFull(r.before)+'</div>'
       +'</div>'
 
       +'<div class="detail-section">'
       +'<div class="detail-section-title" style="color:#065f46;">이후 값 (After)</div>'
-      +'<div class="diff-block diff-after">'+escapeHtml(r.after||'(없음)')+'</div>'
+      +'<div class="diff-block diff-after">'+fmtDiffFull(r.after)+'</div>'
       +'</div>'
 
       +(panelLink?'<div class="detail-section"><button type="button" class="btn btn-navy" onclick="'+panelLink+'">'
