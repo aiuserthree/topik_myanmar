@@ -2,6 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "outputDirectory": ".",
   "routes": [
-    { "src": "/", "dest": "/index.html" }
+    { "src": "/(.*)", "dest": "/html/A안/$1" },
+    { "src": "/", "dest": "/html/A안/index.html" }
   ]
 }
