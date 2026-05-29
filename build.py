@@ -1,9 +1,18 @@
 #!/usr/bin/env python3
 import shutil, os, pathlib
 
-src = pathlib.Path("html/A안")
-dst = pathlib.Path("public")
+# Find the A안 directory dynamically (handles encoding issues)
+html_dir = pathlib.Path("html")
+src = None
+for d in html_dir.iterdir():
+    if d.is_dir() and d.name.startswith("A"):
+        src = d
+        break
 
+if src is None:
+    raise RuntimeError(f"Could not find A안 directory in html/. Found: {list(html_dir.iterdir())}")
+
+dst = pathlib.Path("public")
 if dst.exists():
     shutil.rmtree(dst)
 
