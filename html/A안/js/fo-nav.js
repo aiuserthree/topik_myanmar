@@ -164,16 +164,10 @@
   function buildAuthHtml() {
     var profile = global.TMProfile && TMProfile.load();
     if (isLoggedIn() && profile) {
-      var name = profile.nameKo || profile.nameEn || profile.email || "회원";
       return (
         '<a href="mypage.html" class="btn btn-outline tm-auth-mypage">' +
         iconSvg("ic-mypage") +
-        '<span data-i18n="nav_mypage">마이페이지</span></a>' +
-        '<span class="hdr-user-name" title="' +
-        name.replace(/"/g, "&quot;") +
-        '">' +
-        name +
-        "</span>" +
+        '</a>' +
         '<button type="button" class="btn btn-outline tm-logout-btn">' +
         iconSvg("ic-logout") +
         '<span data-i18n="nav_logout">로그아웃</span></button>'
