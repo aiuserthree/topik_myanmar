@@ -17,7 +17,7 @@
       '<li>연예인·타인 사진이 아닌 본인 사진</li>' +
       '<li>시험 당일 신분증과 동일인 식별 가능</li>' +
     '</ul>' +
-    '<p class="photo-spec-note">부적합 사진은 BO 사진 심사에서 반려될 수 있습니다. 접수 단계에서는 사진 변경이 불가하므로 가입·수정 시 신중히 등록해 주세요.</p>';
+    '<p class="photo-spec-note">부적합 사진은 사진 심사에서 반려될 수 있습니다. 접수 단계에서는 사진 변경이 불가하므로 가입·수정 시 신중히 등록해 주세요.</p>';
 
   function ensureSpecModal() {
     if (document.getElementById(SPEC_MODAL_ID)) return;
