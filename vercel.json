@@ -1,8 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "outputDirectory": ".",
-  "routes": [
-    { "src": "/(.*)", "dest": "/html/A안/$1" },
-    { "src": "/", "dest": "/html/A안/index.html" }
-  ]
+  "buildCommand": "python3 build.py",
+  "outputDirectory": "public"
 }
