@@ -36,8 +36,9 @@ TYPE_LABEL = {
 ALIGN_TOP = Alignment(wrap_text=True, vertical="top", horizontal="left")
 ALIGN_CENTER = Alignment(wrap_text=True, vertical="center", horizontal="center")
 
-UNIT_TEST = (date(2026, 7, 17), date(2026, 7, 23))
-INTEG_TEST = (date(2026, 7, 24), date(2026, 7, 30))
+# 오픈 2026-07-10(금) 기준 — 단위테스트(5BD) → 통합테스트(5BD) → 오픈
+UNIT_TEST  = (date(2026, 6, 25), date(2026, 7,  1))   # 6/25(목) ~ 7/01(수)
+INTEG_TEST = (date(2026, 7,  2), date(2026, 7,  8))   # 7/02(목) ~ 7/08(수)
 
 
 def _row_kind(page_no: str) -> str:

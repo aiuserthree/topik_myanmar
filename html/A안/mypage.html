@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>접수 확인 — TOPIK Myanmar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+Myanmar:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--red:#CD2E3A;--navy:#003478;--gold:#C8963E;--gray-bg:#f4f6f9;--gray-light:#e8ecf0;--gray-text:#6b7280;--shadow:0 2px 12px rgba(0,0,0,0.08);}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--gray-bg);color:#1a1a2e;}
+    svg.icon{display:inline-block;vertical-align:middle;flex-shrink:0;}
+    header{background:var(--navy);position:sticky;top:0;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+    .header-main{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;max-width:1200px;margin:0 auto;}
+    .logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
+    .logo-text .main{font-size:18px;font-weight:700;color:white;}
+    .logo-text .sub{font-size:11px;color:#aab8cc;}
+    nav{display:flex;gap:2px;}
+    nav a{color:#dce8f5;text-decoration:none;padding:8px 13px;border-radius:6px;font-size:13.5px;font-weight:500;transition:all .2s;display:flex;align-items:center;gap:6px;}
+    nav a:hover,nav a.active{background:rgba(255,255,255,0.12);color:white;}
+    .header-actions{display:flex;gap:8px;}
+    .btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .btn-outline{border:1.5px solid #aab8cc;color:#dce8f5;background:transparent;}
+    .btn-outline:hover{border-color:white;color:white;}
+    /* Page Hero */
+    .page-hero{background:linear-gradient(135deg,var(--navy),#002060);color:white;padding:40px 24px;}
+    .page-hero-inner{max-width:1200px;margin:0 auto;}
+    .breadcrumb{font-size:12px;color:#aab8cc;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+    .breadcrumb a{color:#aab8cc;text-decoration:none;}
+    .page-hero h1{font-size:clamp(20px,3.5vw,30px);font-weight:700;display:flex;align-items:center;gap:10px;}
+    /* Content */
+    .content{max-width:1200px;margin:0 auto;padding:32px 24px;}
+    /* User Card */
+    .user-card{background:white;border-radius:12px;box-shadow:var(--shadow);padding:22px 24px;margin-bottom:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+    .user-avatar{width:54px;height:54px;background:linear-gradient(135deg,var(--navy),#4a7fd4);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px;flex-shrink:0;}
+    .user-info h3{font-size:16px;font-weight:700;color:var(--navy);}
+    .user-info p{font-size:13px;color:var(--gray-text);margin-top:4px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+    .user-info p span{display:flex;align-items:center;gap:4px;}
+    .btn-new{margin-left:auto;padding:9px 18px;background:var(--red);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .2s;}
+    .btn-new:hover{background:#b02530;}
+    .btn-profile{padding:9px 16px;background:white;color:var(--navy);border:1.5px solid var(--navy);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .2s;}
+    .btn-profile:hover{background:#f0f4ff;}
+    .profile-edit-panel{display:none;background:white;border-radius:12px;box-shadow:var(--shadow);padding:22px 24px;margin:-8px 0 24px;border:1px solid #dbe4f0;}
+    .profile-edit-panel.is-open{display:block;}
+    .profile-edit-panel h2{font-size:17px;color:var(--navy);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+    .profile-edit-panel .profile-note{font-size:12px;color:#475569;line-height:1.6;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 12px;margin-bottom:16px;}
+    .profile-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;}
+    .profile-form-grid label{font-size:12px;font-weight:700;color:var(--navy);display:block;margin-bottom:5px;}
+    .profile-form-grid input,.profile-form-grid select{width:100%;padding:10px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-family:inherit;font-size:13px;background:#fff;}
+    .profile-form-actions{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;}
+    .profile-photo-row{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap;}
+    .profile-photo-thumb{width:72px;height:96px;border:1.5px solid var(--gray-light);border-radius:8px;background:#f8fafc;object-fit:cover;}
+    .exam-reveal-note{margin-top:10px;padding:10px 12px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:8px;color:#1e40af;font-size:12px;line-height:1.55;}
+    /* Reg Cards */
+    .reg-card{background:white;border-radius:12px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px;}
+    .reg-card-header{padding:18px 22px;border-bottom:1px solid var(--gray-light);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+    .reg-card-header h3{font-size:15px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:8px;}
+    /* Status Badges — 7종 */
+    .status-badge{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:5px;}
+    .s-pending{background:#dbeafe;color:#1d4ed8;}          /* 접수완료 */
+    .s-review{background:#fef3c7;color:#b45309;}           /* 사진심사중 */
+    .s-photo-rejected{background:#ffedd5;color:#9a3412;}   /* 사진반려 */
+    .s-approved{background:#d1fae5;color:#065f46;}         /* 승인완료 */
+    .s-rejected{background:#fee2e2;color:#b91c1c;}         /* 반려 */
+    .s-cancelled{background:#f3f4f6;color:#6b7280;}        /* 취소 */
+    .s-unable{background:#fce7f3;color:#9d174d;}           /* 응시불가 */
+    .s-unpaid{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;} /* 미납 */
+    /* Card Body */
+    .reg-card-body{padding:20px 22px;}
+    .detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:16px;}
+    .detail-item .di-label{font-size:11px;color:var(--gray-text);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;display:flex;align-items:center;gap:4px;}
+    .detail-item .di-value{font-size:14px;font-weight:600;color:#1a1a2e;}
+    .detail-item .di-value.highlight{color:var(--red);font-size:16px;}
+    /* Notice Box */
+    .info-notice{background:#fff8e1;border:1px solid var(--gold);border-radius:8px;padding:12px 15px;font-size:12px;color:#7a5800;display:flex;align-items:flex-start;gap:8px;line-height:1.6;}
+    .reject-reason-panel{margin-top:14px;padding:14px 16px;border-radius:10px;border:1px solid #fecaca;background:#fef2f2;color:#7f1d1d;font-size:13px;line-height:1.6;}
+    .reject-reason-panel .rr-title{font-size:11px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+    .reject-reason-panel .rr-body{font-weight:600;color:#450a0a;white-space:pre-wrap;}
+    /* Card Footer */
+    .reg-card-footer{padding:14px 22px;background:#fafbfc;border-top:1px solid var(--gray-light);display:flex;gap:10px;flex-wrap:wrap;}
+    .btn-admit{padding:9px 18px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .2s;}
+    .btn-admit:hover{background:#002060;}
+    .btn-cancel{padding:9px 18px;background:white;color:var(--red);border:1.5px solid var(--red);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .2s;}
+    .btn-cancel:hover:not(:disabled){background:#fff0f1;}
+    .btn-cancel:disabled{opacity:.4;cursor:not-allowed;}
+    .btn-receipt{padding:9px 16px;background:white;color:var(--navy);border:1.5px solid var(--navy);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:inherit;}
+    .btn-receipt:hover{background:#f0f4ff;}
+    #receiptA{margin-top:18px;padding:18px;border:2px dashed var(--gray-light);border-radius:10px;background:#fafbfc;}
+    #receiptA h4{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px;}
+    #receiptA .rp-row{font-size:13px;padding:6px 0;border-bottom:1px solid var(--gray-light);display:flex;justify-content:space-between;gap:12px;}
+    #receiptA .rp-note{font-size:11px;color:var(--gray-text);margin-top:12px;line-height:1.5;}
+    #receiptA + .info-notice{margin-top:22px;}
+    @media print{
+      header,footer,.page-hero,.user-card,.content > .reg-card ~ .reg-card,.info-notice,.reg-card-footer{display:none!important;}
+      .content{padding:16px;max-width:100%;}
+      #receiptA{border:none;background:white;}
+    }
+    /* Footer */
+    footer{background:#1a2a4a;color:#aab8cc;padding:32px 24px;margin-top:0;}
+    .footer-bottom{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:12px;}
+  </style>
+  <link rel="stylesheet" href="css/mobile.css?v=20260510"/>
+  <!-- ════ SVG ICON SPRITE (공통 적용) ════ -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></symbol>
+    <symbol id="ic-guide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></symbol>
+    <symbol id="ic-rules" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></symbol>
+    <symbol id="ic-register" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+    <symbol id="ic-mypage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="ic-notice" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></symbol>
+    <symbol id="ic-login" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></symbol>
+    <symbol id="ic-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+    <symbol id="ic-signup" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></symbol>
+    <symbol id="ic-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+    <symbol id="ic-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+    <symbol id="ic-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 11 12 15 16 11"/><path d="M5 3h14v6a7 7 0 01-14 0V3z"/><path d="M8 19v2m8-2v2m-7 0h6"/><path d="M5 3H2v3a3 3 0 003 3m14-6h3v3a3 3 0 01-3 3"/></symbol>
+    <symbol id="ic-cert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></symbol>
+    <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></symbol>
+    <symbol id="ic-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+    <symbol id="ic-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></symbol>
+    <symbol id="ic-email" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></symbol>
+    <symbol id="ic-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></symbol>
+    <symbol id="ic-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="ic-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></symbol>
+    <symbol id="ic-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></symbol>
+    <symbol id="ic-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="ic-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></symbol>
+    <symbol id="ic-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></symbol>
+    <symbol id="ic-print" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
+    <symbol id="ic-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+    <symbol id="ic-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></symbol>
+    <symbol id="ic-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+    <symbol id="ic-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></symbol>
+    <symbol id="ic-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></symbol>
+    <symbol id="ic-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></symbol>
+    <symbol id="ic-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></symbol>
+    <symbol id="ic-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></symbol>
+    <symbol id="ic-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+    <symbol id="ic-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></symbol>
+    <symbol id="ic-ticket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 010 6v2a2 2 0 002 2h16a2 2 0 002-2v-2a3 3 0 010-6V7a2 2 0 00-2-2H4a2 2 0 00-2 2v2z"/><line x1="9" y1="3" x2="9" y2="21"/></symbol>
+    <symbol id="ic-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="ic-arrow-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+    <symbol id="ic-chev-d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></symbol>
+    <symbol id="ic-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+    <symbol id="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+    <symbol id="ic-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+    <symbol id="ic-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></symbol>
+    <symbol id="ic-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+    <symbol id="ic-topik-logo" viewBox="0 0 44 44"><rect width="44" height="44" rx="8" fill="#CD2E3A"/><text x="22" y="17" text-anchor="middle" fill="white" font-size="9" font-weight="700" font-family="sans-serif">TOPIK</text><line x1="8" y1="21" x2="36" y2="21" stroke="white" stroke-width="1.2" opacity="0.5"/><text x="22" y="33" text-anchor="middle" fill="white" font-size="8" font-weight="600" font-family="sans-serif">MYANMAR</text><circle cx="22" cy="27" r="0" fill="none"/></symbol>
+  </svg>
+</head>
+<body>
+
+<header>
+  <div class="header-main">
+    <div class="header-main-bg" aria-hidden="true"></div>
+    <a href="index.html" class="logo">
+      <svg width="44" height="44"><use href="#ic-topik-logo"/></svg>
+      <div class="logo-text"><div class="main">TOPIK Myanmar</div><div class="sub">တိုပစ် မြန်မာ</div></div>
+    </a>
+    <nav id="mainNav">
+      <a href="guide.html"><svg class="icon" width="15" height="15"><use href="#ic-guide"/></svg><span data-i18n="nav_guide">TOPIK 안내</span></a>
+      <a href="rules.html"><svg class="icon" width="15" height="15"><use href="#ic-rules"/></svg><span data-i18n="nav_rules">시험 규정</span></a>
+      <a href="register.html"><svg class="icon" width="15" height="15"><use href="#ic-register"/></svg><span data-i18n="nav_register">시험 접수</span></a>
+      <a href="mypage.html" class="active"><svg class="icon" width="15" height="15"><use href="#ic-mypage"/></svg><span data-i18n="nav_mypage">접수 확인</span></a>
+      <a href="notice.html"><svg class="icon" width="15" height="15"><use href="#ic-notice"/></svg><span data-i18n="nav_notice">공지사항</span></a>
+      <a href="faq.html"><svg class="icon" width="15" height="15"><use href="#ic-info"/></svg><span data-i18n="nav_faq">FAQ</span></a>
+      <a href="lookup.html"><svg class="icon" width="15" height="15"><use href="#ic-search"/></svg><span data-i18n="nav_lookup">수험번호 조회</span></a>
+    </nav>
+    <div class="header-actions">
+      <div class="hdr-lang-pc lang-switch">
+        <svg class="icon" width="13" height="13"><use href="#ic-globe"/></svg>
+        <select class="tm-lang-select" aria-label="언어 선택">
+          <option value="ko">한국어</option>
+          <option value="my">မြန်မာ</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+      <a href="login.html" class="btn btn-outline"><svg class="icon" width="14" height="14"><use href="#ic-logout"/></svg><span data-i18n="nav_logout">로그아웃</span></a>
+    </div>
+    <button type="button" class="hamburger" aria-label="메뉴 열기" aria-expanded="false">
+      <svg width="22" height="22"><use href="#ic-menu"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="breadcrumb">
+      <svg class="icon" width="12" height="12"><use href="#ic-mypage"/></svg>
+      <a href="index.html">홈</a> › 접수 확인
+    </div>
+    <h1>
+      <svg class="icon" width="26" height="26" color="#fff"><use href="#ic-mypage"/></svg>
+      접수 확인 / 취소
+    </h1>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- 사용자 정보 카드 -->
+  <div class="user-card">
+    <div class="user-avatar">홍</div>
+    <div class="user-info">
+      <h3>홍길동 (HONG GILDONG)</h3>
+      <p>
+        <span><svg class="icon" width="13" height="13"><use href="#ic-email"/></svg>hong@example.com</span>
+        <span><svg class="icon" width="13" height="13"><use href="#ic-phone"/></svg>+95-9-1234567</span>
+      </p>
+    </div>
+    <button type="button" class="btn-profile" onclick="toggleProfileEdit(true)">
+      <svg class="icon" width="14" height="14"><use href="#ic-edit"/></svg>내정보 수정
+    </button>
+    <a href="register.html" class="btn-new">
+      <svg class="icon" width="14" height="14"><use href="#ic-plus"/></svg>새 접수하기
+    </a>
+  </div>
+
+  <section class="profile-edit-panel" id="profileEditPanel" aria-label="내정보 수정">
+    <h2><svg class="icon" width="18" height="18"><use href="#ic-user"/></svg>내정보 수정</h2>
+    <p class="profile-note">
+      고객사 0527 기준으로 성명, 생년월일, 성별, 국적을 본 화면에서 직접 수정할 수 있습니다.
+      사진을 변경하면 진행 중인 접수 건에도 즉시 반영되고 BO 사진 심사 대기 상태로 재등록되는 것으로 localStorage에 기록합니다.
+    </p>
+    <div class="profile-form-grid">
+      <div><label for="pfNameKo">한글 성명</label><input type="text" id="pfNameKo"/></div>
+      <div><label for="pfNameEn">영문 성명</label><input type="text" id="pfNameEn"/></div>
+      <div><label for="pfBirth">생년월일</label><input type="date" id="pfBirth"/></div>
+      <div><label for="pfGender">성별</label><select id="pfGender"><option value="M">남성</option><option value="F">여성</option></select></div>
+      <div><label for="pfNationality">국적</label><select id="pfNationality"><option value="MM">미얀마 (Myanmar)</option><option value="KR">대한민국</option><option value="OTHER">기타</option></select></div>
+      <div><label for="pfPhone">연락처</label><input type="tel" id="pfPhone"/></div>
+      <div><label for="pfEmail">이메일</label><input type="email" id="pfEmail"/></div>
+    </div>
+    <div class="profile-photo-row">
+      <img class="profile-photo-thumb" id="pfPhotoPreview" alt="등록된 증명사진 미리보기"/>
+      <div>
+        <label for="pfPhoto" style="font-size:12px;font-weight:700;color:var(--navy);display:block;margin-bottom:6px;">증명사진 재등록</label>
+        <input type="file" id="pfPhoto" accept="image/jpeg,image/jpg" onchange="previewProfilePhoto(event)"/>
+        <p style="font-size:11px;color:var(--gray-text);margin-top:5px;">JPG, 200KB~2MB 권장. 변경 시 현재 접수 건 사진도 함께 갱신됩니다.</p>
+      </div>
+    </div>
+    <div class="profile-form-actions">
+      <button type="button" class="btn-admit" onclick="saveProfileEdit()"><svg class="icon" width="14" height="14"><use href="#ic-check"/></svg>저장</button>
+      <button type="button" class="btn-cancel" onclick="toggleProfileEdit(false)"><svg class="icon" width="14" height="14"><use href="#ic-x"/></svg>닫기</button>
+    </div>
+
+    <!-- 비밀번호 변경 (구글 가입 회원은 숨김) -->
+    <div id="pwChangeSection" style="margin-top:20px;border-top:1px solid var(--gray-light);padding-top:18px;">
+      <h2 style="font-size:15px;"><svg class="icon" width="15" height="15"><use href="#ic-lock"/></svg>비밀번호 변경</h2>
+      <div class="profile-form-grid" style="margin-top:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));">
+        <div>
+          <label for="pfPwCurrent">현재 비밀번호</label>
+          <input type="password" id="pfPwCurrent" placeholder="현재 비밀번호"/>
+        </div>
+        <div>
+          <label for="pfPwNew">새 비밀번호</label>
+          <input type="password" id="pfPwNew" placeholder="8자 이상, 영문+숫자+특수문자"/>
+        </div>
+        <div>
+          <label for="pfPwConfirm">새 비밀번호 확인</label>
+          <input type="password" id="pfPwConfirm" placeholder="새 비밀번호 재입력"/>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <button type="button" class="btn-admit" onclick="changePw()"><svg class="icon" width="14" height="14"><use href="#ic-check"/></svg>비밀번호 변경</button>
+      </div>
+    </div>
+
+    <!-- 회원 탈퇴 -->
+    <div style="margin-top:20px;border-top:1px solid #fecaca;padding-top:16px;">
+      <h2 style="font-size:15px;color:#b91c1c;"><svg class="icon" width="15" height="15"><use href="#ic-trash"/></svg>회원 탈퇴</h2>
+      <p style="font-size:12px;color:#6b7280;margin-top:6px;line-height:1.6;">탈퇴 시 모든 접수 내역 및 계정 정보가 삭제됩니다. 진행 중인 접수 건이 있을 경우 탈퇴가 제한됩니다.</p>
+      <div style="margin-top:10px;">
+        <button type="button" class="btn-cancel" style="border-color:#fecaca;color:#b91c1c;" onclick="doWithdraw()">
+          <svg class="icon" width="14" height="14"><use href="#ic-trash"/></svg>회원 탈퇴하기
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 동적 접수 내역 (RegStore localStorage) -->
+  <div id="dynamicRegList"></div>
+
+  <!-- ▼ 정적 데모 접수 카드(아래) — RegStore 데이터가 있으면 자동 숨김 -->
+  <div id="staticRegistrations">
+
+  <!-- 접수 내역 1 — 접수완료(검토중) -->
+  <div class="reg-card">
+    <div class="reg-card-header">
+      <h3>
+        <svg class="icon" width="16" height="16" color="var(--navy)"><use href="#ic-register"/></svg>
+        제98회 TOPIK — 접수 내역
+      </h3>
+      <span class="status-badge s-pending">
+        <svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>접수완료
+      </span>
+    </div>
+    <div class="reg-card-body">
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-register"/></svg>회차</div>
+          <div class="di-value">제98회 TOPIK</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>응시 급수</div>
+          <div class="di-value">TOPIK I (초급)</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>시험일</div>
+          <div class="di-value">2026.05.17 (토)</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-pin"/></svg>시험장</div>
+          <div class="di-value">양곤 시험장 (추후 확정)</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>접수일</div>
+          <div class="di-value">2026.04.02</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-ticket"/></svg>접수번호</div>
+          <div class="di-value">TM-2026-98-0041</div>
+        </div>
+      </div>
+      <div id="receiptA">
+        <h4><svg class="icon" width="16" height="16" color="var(--navy)"><use href="#ic-cert"/></svg> 접수 확인증 (인쇄용)</h4>
+        <div class="rp-row"><span>회차</span><strong>제98회 TOPIK</strong></div>
+        <div class="rp-row"><span>접수번호</span><strong>TM-2026-98-0041</strong></div>
+        <div class="rp-row"><span>응시 급수</span><strong>TOPIK I (초급)</strong></div>
+        <div class="rp-row"><span>접수일</span><strong>2026.04.02</strong></div>
+        <div class="rp-row"><span>수납</span><strong>대기(현장 수납 후 확정)</strong></div>
+        <p class="rp-note">본 확인증은 접수 사실 확인용입니다. 공식 시험 정보는 <a href="https://www.topik.go.kr/" target="_blank" rel="noopener noreferrer">topik.go.kr</a>을 참고하세요.</p>
+      </div>
+      <div class="info-notice">
+        <svg class="icon" width="15" height="15" color="var(--gold)" style="flex-shrink:0;margin-top:1px;"><use href="#ic-alert"/></svg>
+        <span>관리자 검토 중입니다. 심사 결과는 접수 확인 페이지에서 계속 확인해 주세요.</span>
+      </div>
+    </div>
+    <div class="reg-card-footer">
+      <button type="button" class="btn-receipt" onclick="window.print()">
+        <svg class="icon" width="14" height="14"><use href="#ic-print"/></svg>접수 확인증 출력
+      </button>
+      <button class="btn-cancel" onclick="cancelReg(this)">
+        <svg class="icon" width="14" height="14"><use href="#ic-x"/></svg>접수 취소
+      </button>
+    </div>
+  </div>
+
+  <!-- 접수 내역 — 반려 (관리자 사유는 동일 브라우저 localStorage 연동, 접수번호 138) -->
+  <div class="reg-card" data-sync-reject-applicant-no="138">
+    <div class="reg-card-header">
+      <h3>
+        <svg class="icon" width="16" height="16" color="var(--navy)"><use href="#ic-register"/></svg>
+        제98회 TOPIK — 접수 내역
+      </h3>
+      <span class="status-badge s-rejected">
+        <svg class="icon" width="11" height="11"><use href="#ic-x"/></svg>반려
+      </span>
+    </div>
+    <div class="reg-card-body">
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-register"/></svg>회차</div>
+          <div class="di-value">제98회 TOPIK</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>응시 급수</div>
+          <div class="di-value">TOPIK I (초급)</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>시험일</div>
+          <div class="di-value">2026.05.17 (토)</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>접수일</div>
+          <div class="di-value">2026.04.01</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-ticket"/></svg>접수번호</div>
+          <div class="di-value">138</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>수납</div>
+          <div class="di-value">—</div>
+        </div>
+      </div>
+      <div class="reject-reason-panel" role="region" aria-label="반려 사유">
+        <div class="rr-title"><svg class="icon" width="13" height="13"><use href="#ic-alert"/></svg>반려 사유</div>
+        <div class="rr-body" data-reject-reason-slot="">증명사진 규격 미준수(배경·밝기 기준). 재촬영 후 재제출 바랍니다.</div>
+      </div>
+      <div class="info-notice" style="margin-top:14px;border-color:#fecaca;background:#fff;">
+        <svg class="icon" width="15" height="15" color="#b91c1c" style="flex-shrink:0;margin-top:1px;"><use href="#ic-info"/></svg>
+        <span>반려된 접수는 공지된 기한 내 증빙을 수정한 뒤 <strong>재접수</strong>해 주세요. 수험번호는 부여되지 않습니다.</span>
+      </div>
+    </div>
+    <div class="reg-card-footer">
+      <a href="register.html" class="btn-admit">
+        <svg class="icon" width="14" height="14"><use href="#ic-register"/></svg>재접수하기
+      </a>
+      <button type="button" class="btn-cancel" disabled>
+        <svg class="icon" width="14" height="14"><use href="#ic-x"/></svg>반려 건 취소 불가
+      </button>
+    </div>
+  </div>
+
+  <!-- 접수 내역 2 — 승인완료 -->
+  <div class="reg-card">
+    <div class="reg-card-header">
+      <h3>
+        <svg class="icon" width="16" height="16" color="var(--navy)"><use href="#ic-register"/></svg>
+        제97회 TOPIK — 접수 내역
+      </h3>
+      <span class="status-badge s-approved">
+        <svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>승인완료
+      </span>
+    </div>
+    <div class="reg-card-body">
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-register"/></svg>회차</div>
+          <div class="di-value">제97회 TOPIK</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>응시 급수</div>
+          <div class="di-value">TOPIK II (중고급)</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>시험일</div>
+          <div class="di-value">2026.02.16 (일)</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-pin"/></svg>시험장</div>
+          <div class="di-value">양곤 시험장 A동 3층</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-ticket"/></svg>접수번호</div>
+          <div class="di-value">TM-2026-97-0023</div>
+        </div>
+        <div class="detail-item" data-exam-number-wrap data-reveal-at="2026-06-01">
+          <div class="di-label"><svg class="icon" width="11" height="11"><use href="#ic-ticket"/></svg>수험번호</div>
+          <div class="di-value highlight" data-exam-number="0250018011041">0250018011041</div>
+        </div>
+      </div>
+      <div class="exam-reveal-note" data-exam-reveal-note>
+        수험번호가 부여되어도 정해진 노출일 전에는 접수 확인 페이지에 표시하지 않습니다.
+      </div>
+    </div>
+    <div class="reg-card-footer">
+      <a href="admit.html" class="btn-admit">
+        <svg class="icon" width="14" height="14"><use href="#ic-link"/></svg>수험표 출력 안내
+      </a>
+      <button class="btn-cancel" disabled>
+        <svg class="icon" width="14" height="14"><use href="#ic-x"/></svg>취소 기간 종료
+      </button>
+    </div>
+  </div>
+  </div><!-- /#staticRegistrations -->
+
+</div>
+
+<!-- ══ 접수 취소 0526 모달 ══ -->
+<div id="regCancelModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:white;border-radius:14px;max-width:480px;width:100%;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.3);">
+    <div style="padding:18px 22px;border-bottom:1px solid var(--gray-light);display:flex;justify-content:space-between;align-items:center;">
+      <h3 style="font-size:16px;font-weight:700;color:var(--red);margin:0;">접수 취소 확인</h3>
+      <button type="button" onclick="closeRegCancelModal()" style="background:none;border:none;cursor:pointer;color:var(--gray-text);font-size:22px;line-height:1;">×</button>
+    </div>
+    <div style="padding:20px 22px;">
+      <p id="regCancelTarget" style="font-size:14px;color:#1a1a2e;margin-bottom:14px;line-height:1.6;"></p>
+      <div style="background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:12px 14px;font-size:12px;color:#92400e;line-height:1.7;margin-bottom:14px;">
+        <strong>안내 (0526)</strong><br/>
+        ① <strong>오프라인 수납 전</strong>: 접수 취소가 가능하며 별도 환불 절차가 없습니다.<br/>
+        ② <strong>오프라인 수납 후</strong>: 본 화면에서 직접 취소가 불가합니다. 환불은 <a href="board-refund.html" style="color:var(--navy);font-weight:700;">환불·정보정정신청 게시판</a>을 이용해 주세요.
+      </div>
+      <div style="margin-bottom:6px;">
+        <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">취소 사유 (선택)</label>
+        <textarea id="regCancelReason" rows="2" style="width:100%;padding:10px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;" placeholder="취소 사유를 간단히 입력해 주세요."></textarea>
+      </div>
+    </div>
+    <div style="padding:14px 22px;background:#fafbfc;border-top:1px solid var(--gray-light);display:flex;gap:8px;justify-content:flex-end;">
+      <button type="button" class="btn-profile" onclick="closeRegCancelModal()" style="background:var(--gray-light);color:#374151;border:none;">유지</button>
+      <button type="button" class="btn-cancel" onclick="confirmRegCancel()">취소 처리</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-bottom">
+    <span>© 2026 TOPIK Myanmar. All rights reserved.</span>
+    <span>운영: 주미얀마 대한민국 대사관</span>
+  </div>
+</footer>
+
+<script src="js/i18n.js?v=20260506"></script>
+<script src="js/profile-store.js"></script>
+<script src="js/fo-nav.js"></script>
+<script src="js/mobile-nav.js?v=20260506" defer></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.TMI18N) TMI18N.boot();
+    initProfileEdit();
+    applyExamRevealPolicy();
+    mypageApplyRejectReasonsFromAdmin();
+    renderDynamicRegList();
+  });
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState==='visible'){
+      mypageApplyRejectReasonsFromAdmin();
+      renderDynamicRegList();
+    }
+  });
+</script>
+<script>
+  var FO_REJECT_MAP_KEY='tm_fo_reject_map_v1';
+  var PROFILE_RESYNC_KEY='tm_profile_photo_resync_v1';
+  var EXAM_REVEAL_KEY='tm_exam_reveal_at_v1';
+  var pendingProfilePhoto=null;
+  function toggleProfileEdit(open){
+    var p=document.getElementById('profileEditPanel');
+    if(!p)return;
+    p.classList.toggle('is-open',!!open);
+    if(open)initProfileEdit();
+  }
+  function initProfileEdit(){
+    var profile=(window.TMProfile&&TMProfile.load&&TMProfile.load())||{
+      nameKr:'홍길동',
+      nameKo:'홍길동',
+      nameEn:'HONG GILDONG',
+      birthdate:'1990-01-01',
+      gender:'M',
+      nationality:'MM',
+      phone:'+95-9-1234567',
+      email:'hong@example.com'
+    };
+    var nameKo=profile.nameKo||profile.nameKr||'홍길동';
+    setVal('pfNameKo',nameKo);
+    setVal('pfNameEn',profile.nameEn||'HONG GILDONG');
+    setVal('pfBirth',normalizeDateInput(profile.birthdate||profile.birth||'1990-01-01'));
+    setVal('pfGender',profile.gender||'M');
+    setVal('pfNationality',profile.nationality||'MM');
+    setVal('pfPhone',profile.phone||'+95-9-1234567');
+    setVal('pfEmail',profile.email||'hong@example.com');
+    var img=document.getElementById('pfPhotoPreview');
+    var photo=window.TMProfile&&TMProfile.loadSignupPhoto&&TMProfile.loadSignupPhoto();
+    if(img){
+      if(photo){img.src=photo;img.style.display='block';}
+      else{img.removeAttribute('src');img.style.display='none';}
+    }
+    var card=document.querySelector('.user-card');
+    if(card){
+      var title=card.querySelector('.user-info h3');
+      var mail=card.querySelector('.user-info p span:first-child');
+      var phone=card.querySelector('.user-info p span:nth-child(2)');
+      var avatar=card.querySelector('.user-avatar');
+      if(title)title.textContent=nameKo+' ('+(profile.nameEn||'HONG GILDONG')+')';
+      if(mail)mail.innerHTML='<svg class="icon" width="13" height="13"><use href="#ic-email"/></svg>'+(profile.email||'hong@example.com');
+      if(phone)phone.innerHTML='<svg class="icon" width="13" height="13"><use href="#ic-phone"/></svg>'+(profile.phone||'+95-9-1234567');
+      if(avatar)avatar.textContent=nameKo.charAt(0)||'홍';
+    }
+  }
+  function setVal(id,val){
+    var el=document.getElementById(id);
+    if(el)el.value=val||'';
+  }
+  function normalizeDateInput(value){
+    var s=String(value||'').trim();
+    if(/^\d{8}$/.test(s))return s.slice(0,4)+'-'+s.slice(4,6)+'-'+s.slice(6,8);
+    if(/^\d{4}[./-]\d{2}[./-]\d{2}$/.test(s))return s.replace(/[./]/g,'-');
+    return '1990-01-01';
+  }
+  function previewProfilePhoto(ev){
+    var file=ev&&ev.target&&ev.target.files&&ev.target.files[0];
+    if(!file)return;
+    if(!/jpe?g$/i.test(file.name||'')&&!/^image\/jpeg$/i.test(file.type||'')){
+      alert('증명사진은 JPG 파일을 권장합니다.');
+      ev.target.value='';
+      return;
+    }
+    if(file.size<200*1024||file.size>2*1024*1024){
+      alert('사진 용량은 200KB~2MB 범위를 권장합니다. 프로토타입에서는 계속 미리보기만 제공합니다.');
+    }
+    var reader=new FileReader();
+    reader.onload=function(){
+      pendingProfilePhoto=String(reader.result||'');
+      var img=document.getElementById('pfPhotoPreview');
+      if(img){img.src=pendingProfilePhoto;img.style.display='block';}
+    };
+    reader.readAsDataURL(file);
+  }
+  function saveProfileEdit(){
+    if(!window.TMProfile){alert('프로필 저장 모듈을 불러오지 못했습니다.');return;}
+    var profile=TMProfile.load()||{};
+    profile.nameKo=document.getElementById('pfNameKo').value.trim();
+    profile.nameKr=profile.nameKo;
+    profile.nameEn=document.getElementById('pfNameEn').value.trim();
+    profile.birthdate=document.getElementById('pfBirth').value;
+    profile.gender=document.getElementById('pfGender').value;
+    profile.nationality=document.getElementById('pfNationality').value;
+    profile.phone=document.getElementById('pfPhone').value.trim();
+    profile.email=document.getElementById('pfEmail').value.trim();
+    profile.updatedAt=new Date().toISOString();
+    TMProfile.save(profile);
+    if(pendingProfilePhoto&&TMProfile.saveSignupPhoto(pendingProfilePhoto)){
+      try{
+        localStorage.setItem(PROFILE_RESYNC_KEY,JSON.stringify({
+          at:new Date().toISOString(),
+          status:'photo_review_pending',
+          message:'마이페이지 사진 변경: 진행 중인 접수 건에 즉시 반영, BO 사진 심사 재실행'
+        }));
+      }catch(e){}
+      pendingProfilePhoto=null;
+    }
+    initProfileEdit();
+    toggleProfileEdit(false);
+    alert('내정보가 저장되었습니다. 진행 중인 접수 건에도 변경 내용이 반영되는 것으로 처리했습니다.');
+  }
+  function applyExamRevealPolicy(){
+    var configured='';
+    try{configured=localStorage.getItem(EXAM_REVEAL_KEY)||'';}catch(e){}
+    document.querySelectorAll('[data-exam-number-wrap]').forEach(function(wrap){
+      var revealAt=configured||wrap.getAttribute('data-reveal-at')||'';
+      var numEl=wrap.querySelector('[data-exam-number]');
+      var note=wrap.closest('.reg-card-body').querySelector('[data-exam-reveal-note]');
+      if(!numEl)return;
+      var original=numEl.getAttribute('data-exam-number')||numEl.textContent;
+      var canShow=!revealAt||new Date(revealAt+'T00:00:00')<=new Date();
+      if(canShow){
+        numEl.textContent=original;
+        if(note)note.textContent='수험번호 노출일이 도달하여 접수 확인 페이지에서 확인할 수 있습니다. 수험표는 TOPIK 홈페이지에서 출력합니다.';
+      }else{
+        numEl.textContent='노출 예정일 전';
+        if(note)note.textContent='수험번호는 부여되었지만 '+revealAt+' 이후 접수 확인 페이지에서 표시됩니다. 수험표 출력은 TOPIK 홈페이지 안내를 이용해 주세요.';
+      }
+    });
+  }
+  function mypageApplyRejectReasonsFromAdmin(){
+    try{
+      var map=JSON.parse(localStorage.getItem(FO_REJECT_MAP_KEY)||'{}');
+      document.querySelectorAll('.reg-card[data-sync-reject-applicant-no]').forEach(function(card){
+        var no=card.getAttribute('data-sync-reject-applicant-no');
+        if(!no)return;
+        var txt=map[no];
+        var el=card.querySelector('[data-reject-reason-slot]');
+        if(el&&txt!=null&&String(txt).trim()!==''){
+          el.textContent=String(txt).trim();
+        }
+      });
+    }catch(err){}
+  }
+  /* 정적 카드용 (구 기능) */
+  function cancelReg(btn){
+    var card=btn.closest('.reg-card');
+    var title=(card.querySelector('h3')||{}).textContent||'';
+    openRegCancelModal({mode:'static',btn:btn,title:title.trim()});
+  }
+  /* 동적 카드용 (TPKM_FO_4_3_3, 0526) */
+  function cancelDynamicReg(id){
+    var rec=findDynamicRegById(id); if(!rec)return;
+    if(rec.paid){
+      alert('이미 오프라인 수납이 완료된 접수는 본 화면에서 취소할 수 없습니다.\n환불·정정신청 게시판을 통해 신청해 주세요.');
+      window.location.href='board-refund.html';
+      return;
+    }
+    openRegCancelModal({mode:'dynamic',id:id,title:rec.roundName+' / '+rec.level});
+  }
+  var _regCancelCtx=null;
+  function openRegCancelModal(ctx){
+    _regCancelCtx=ctx;
+    document.getElementById('regCancelTarget').innerHTML='<strong>'+(ctx.title||'')+'</strong> 접수를 취소하시겠습니까?';
+    document.getElementById('regCancelReason').value='';
+    document.getElementById('regCancelModal').style.display='flex';
+  }
+  function closeRegCancelModal(){
+    document.getElementById('regCancelModal').style.display='none';
+    _regCancelCtx=null;
+  }
+  function confirmRegCancel(){
+    var ctx=_regCancelCtx; if(!ctx)return;
+    var reason=(document.getElementById('regCancelReason').value||'').trim();
+    if(ctx.mode==='static'&&ctx.btn){
+      var card=ctx.btn.closest('.reg-card');
+      var badge=card.querySelector('.status-badge');
+      badge.className='status-badge s-cancelled';
+      badge.innerHTML='<svg class="icon" width="11" height="11"><use href="#ic-x"/></svg>취소됨';
+      ctx.btn.disabled=true;
+      ctx.btn.innerHTML='<svg class="icon" width="14" height="14"><use href="#ic-x"/></svg>취소 완료';
+      var admit=card.querySelector('.btn-admit');
+      if(admit){admit.style.opacity='.3';admit.style.pointerEvents='none';}
+    }else if(ctx.mode==='dynamic'){
+      var KEY='topik_mm_reglist_v1';
+      try{
+        var arr=JSON.parse(localStorage.getItem(KEY)||'[]');
+        arr=arr.map(function(r){if(r.id===ctx.id){r.status='cancelled';r.cancelable=false;r.cancelReason=reason;r.cancelDate=new Date().toISOString().slice(0,10);}return r;});
+        localStorage.setItem(KEY,JSON.stringify(arr));
+      }catch(e){}
+      renderDynamicRegList();
+    }
+    closeRegCancelModal();
+    alert('접수가 취소되었습니다.');
+  }
+  function findDynamicRegById(id){
+    try{
+      var arr=JSON.parse(localStorage.getItem('topik_mm_reglist_v1')||'[]');
+      for(var i=0;i<arr.length;i++)if(arr[i].id===id)return arr[i];
+    }catch(e){}
+    return null;
+  }
+  function statusBadgeHtml(status,paid){
+    // 7종 — 접수완료 / 사진심사중 / 수납대기 / 승인완료 / 수험번호부여 / 반려 / 취소됨 (TPKM_FO_4_3_1)
+    if(status==='cancelled')return '<span class="status-badge s-cancelled"><svg class="icon" width="11" height="11"><use href="#ic-x"/></svg>취소됨</span>';
+    if(status==='rejected')return '<span class="status-badge s-rejected"><svg class="icon" width="11" height="11"><use href="#ic-x"/></svg>반려</span>';
+    if(status==='exam-numbered')return '<span class="status-badge s-approved"><svg class="icon" width="11" height="11"><use href="#ic-ticket"/></svg>수험번호 부여</span>';
+    if(status==='approved')return '<span class="status-badge s-approved"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>승인완료</span>';
+    if(status==='review')return '<span class="status-badge s-review"><svg class="icon" width="11" height="11"><use href="#ic-image"/></svg>사진심사중</span>';
+    if(!paid)return '<span class="status-badge s-unpaid"><svg class="icon" width="11" height="11"><use href="#ic-alert"/></svg>수납대기</span>';
+    return '<span class="status-badge s-pending"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>접수완료</span>';
+  }
+  function renderDynamicRegList(){
+    var box=document.getElementById('dynamicRegList');
+    var staticBox=document.getElementById('staticRegistrations');
+    if(!box)return;
+    var arr=[];
+    try{var s=localStorage.getItem('topik_mm_reglist_v1'); if(s){var p=JSON.parse(s);if(Array.isArray(p))arr=p;}}catch(e){}
+    if(!arr.length){
+      box.innerHTML='';
+      if(staticBox)staticBox.style.display='';
+      return;
+    }
+    if(staticBox)staticBox.style.display='none';
+    box.innerHTML=arr.map(function(r){
+      var stHtml=statusBadgeHtml(r.status,r.paid);
+      var cancelBtn=(r.status==='cancelled'||r.status==='rejected'||r.status==='exam-numbered')
+        ?'<button type="button" class="btn-cancel" disabled><svg class="icon" width="14" height="14"><use href="#ic-x"/></svg>취소 불가</button>'
+        :'<button type="button" class="btn-cancel" onclick="cancelDynamicReg(\''+r.id+'\')"><svg class="icon" width="14" height="14"><use href="#ic-x"/></svg>접수 취소</button>';
+      return '<div class="reg-card"><div class="reg-card-header">'
+        +'<h3><svg class="icon" width="16" height="16" color="var(--navy)"><use href="#ic-register"/></svg>'+escapeMp(r.roundName)+' — 접수 내역</h3>'
+        +stHtml
+        +'</div><div class="reg-card-body"><div class="detail-grid">'
+        +'<div class="detail-item"><div class="di-label">회차</div><div class="di-value">'+escapeMp(r.roundName)+'</div></div>'
+        +'<div class="detail-item"><div class="di-label">응시 급수</div><div class="di-value">'+escapeMp(r.level)+'</div></div>'
+        +'<div class="detail-item"><div class="di-label">시험일</div><div class="di-value">'+escapeMp(r.examDate||'—')+'</div></div>'
+        +'<div class="detail-item"><div class="di-label">시험장</div><div class="di-value">'+escapeMp(r.venue||'—')+'</div></div>'
+        +'<div class="detail-item"><div class="di-label">접수일</div><div class="di-value">'+escapeMp(r.regDate||'—')+'</div></div>'
+        +'<div class="detail-item"><div class="di-label">수납</div><div class="di-value">'+(r.paid?'수납완료':'<span style="color:#c2410c;font-weight:700;">수납대기</span>')+'</div></div>'
+        +(r.examNo?'<div class="detail-item" data-exam-number-wrap><div class="di-label">수험번호</div><div class="di-value highlight" data-exam-number="'+escapeMp(r.examNo)+'">'+escapeMp(r.examNo)+'</div></div>':'')
+        +'</div>'
+        +(r.status==='rejected'&&r.rejectReason?'<div class="reject-reason-panel"><div class="rr-title">반려 사유</div><div class="rr-body">'+escapeMp(r.rejectReason)+'</div></div>':'')
+        +(r.status==='cancelled'&&r.cancelReason?'<div class="info-notice" style="margin-top:14px;"><strong>취소 사유:</strong> '+escapeMp(r.cancelReason)+'</div>':'')
+        +'</div><div class="reg-card-footer">'
+        +'<button type="button" class="btn-receipt" onclick="window.print()"><svg class="icon" width="14" height="14"><use href="#ic-print"/></svg>접수 확인증 출력</button>'
+        +(r.status==='approved'||r.status==='exam-numbered'?'<a href="admit.html" class="btn-admit"><svg class="icon" width="14" height="14"><use href="#ic-link"/></svg>수험표 출력 안내</a>':'')
+        +cancelBtn
+        +'</div></div>';
+    }).join('');
+  }
+  function escapeMp(s){var d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML;}
+
+  function changePw(){
+    var cur=document.getElementById('pfPwCurrent');
+    var nw=document.getElementById('pfPwNew');
+    var cf=document.getElementById('pfPwConfirm');
+    if(!cur||!nw||!cf)return;
+    if(!cur.value.trim()){alert('현재 비밀번호를 입력해 주세요.');return;}
+    if(nw.value.length<8){alert('새 비밀번호는 8자 이상이어야 합니다.');return;}
+    if(!/[a-zA-Z]/.test(nw.value)||!/[0-9]/.test(nw.value)){alert('영문과 숫자를 포함해야 합니다.');return;}
+    if(nw.value!==cf.value){alert('새 비밀번호와 확인이 일치하지 않습니다.');return;}
+    var prof=window.TMProfile&&TMProfile.load();
+    if(prof){
+      // 현재 비밀번호 검증
+      if(prof.password&&prof.password!==cur.value){
+        alert('현재 비밀번호가 일치하지 않습니다.');
+        return;
+      }
+      prof.password=nw.value;
+      prof.pwChangedAt=new Date().toISOString();
+      TMProfile.save(prof);
+    }
+    cur.value='';nw.value='';cf.value='';
+    alert('비밀번호가 성공적으로 변경되었습니다.');
+  }
+
+  function doWithdraw(){
+    // 진행 중 접수 건 확인 (s-pending, s-review, s-photo-rejected 등)
+    var activeBadges=document.querySelectorAll('.status-badge.s-pending,.status-badge.s-review,.status-badge.s-photo-rejected,.status-badge.s-unpaid');
+    if(activeBadges.length>0){
+      alert('진행 중인 접수 건이 있어 탈퇴할 수 없습니다.\n먼저 접수를 취소하거나 처리 완료 후 다시 시도해 주세요.');
+      return;
+    }
+    var confirmed=confirm('정말 탈퇴하시겠습니까?\n\n모든 계정 정보, 접수 내역, 마이페이지 데이터가 삭제됩니다.\n이 작업은 되돌릴 수 없습니다.');
+    if(!confirmed)return;
+    var double=prompt('탈퇴를 확인하려면 "탈퇴합니다"를 입력하세요.');
+    if(double!=='탈퇴합니다'){alert('탈퇴가 취소되었습니다.');return;}
+    try{
+      if(window.TMProfile){TMProfile.save({});if(TMProfile.saveSignupPhoto)TMProfile.saveSignupPhoto(null);}
+      localStorage.removeItem('tm_topik_profile_v1');
+      localStorage.removeItem('tm_topik_signup_photo_v1');
+    }catch(e){}
+    alert('탈퇴 처리가 완료되었습니다. 이용해 주셔서 감사합니다.');
+    window.location.href='index.html';
+  }
+
+  // 구글 가입 회원은 비밀번호 변경 섹션 숨김
+  (function(){
+    var prof=window.TMProfile&&TMProfile.load&&TMProfile.load();
+    if(prof&&prof.googleSignup){
+      var sec=document.getElementById('pwChangeSection');
+      if(sec)sec.style.display='none';
+    }
+  })();
+</script>
+</body>
+</html>

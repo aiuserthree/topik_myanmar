@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>문의게시판 — TOPIK Myanmar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--red:#CD2E3A;--navy:#003478;--gray-bg:#f4f6f9;--gray-light:#e8ecf0;--shadow:0 2px 12px rgba(0,0,0,0.08);}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--gray-bg);}
+    header{background:var(--navy);position:sticky;top:0;z-index:1000;}
+    .header-main{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;max-width:1200px;margin:0 auto;position:relative;}
+    .header-main-bg{position:absolute;inset:0;background:rgba(0,52,120,.82);z-index:0;}
+    .header-main > :not(.header-main-bg){position:relative;z-index:1;}
+    .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;font-weight:700;}
+    .page-hero{background:linear-gradient(135deg,var(--navy),#002060);color:#fff;padding:36px 24px;}
+    .content{max-width:1200px;margin:0 auto;padding:28px 24px;}
+    .board-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+    .board-toolbar select,.board-toolbar input{padding:8px 12px;border:1.5px solid var(--gray-light);border-radius:8px;}
+    .btn{padding:8px 16px;border-radius:8px;font-weight:600;border:none;cursor:pointer;font-family:inherit;}
+    .btn-navy{background:var(--navy);color:#fff;}
+    .btn-red{background:var(--red);color:#fff;margin-left:auto;}
+    .board-wrap{background:#fff;border-radius:12px;box-shadow:var(--shadow);}
+    .board-head,.board-row{display:grid;grid-template-columns:56px 1fr 110px;}
+    .board-head{background:var(--navy);color:#fff;font-size:12px;font-weight:700;}
+    .board-head div,.board-row div{padding:12px 14px;}
+    .board-row{border-bottom:1px solid var(--gray-light);cursor:pointer;}
+    #writeView{display:none;background:#fff;border-radius:12px;padding:24px;box-shadow:var(--shadow);}
+    #writeView label{display:block;font-size:13px;font-weight:600;margin:12px 0 6px;}
+    #writeView input,#writeView select,#writeView textarea{width:100%;padding:10px;border:1.5px solid var(--gray-light);border-radius:8px;font-family:inherit;}
+    footer{background:#1a2a4a;color:#aab8cc;padding:24px;text-align:center;font-size:12px;}
+  </style>
+  <style>
+    /* 댓글/대댓글 */
+    .comments-section{margin-top:20px;border-top:2px solid var(--gray-light);padding-top:16px;}
+    .cm-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+    .cm-count{background:var(--navy);color:white;border-radius:10px;font-size:11px;padding:1px 8px;}
+    .cm-list{display:flex;flex-direction:column;gap:12px;margin-bottom:16px;}
+    .cm-empty{font-size:13px;color:var(--gray-text);text-align:center;padding:16px 0;}
+    .cm-item{background:#f8fafc;border:1px solid var(--gray-light);border-radius:10px;padding:12px 14px;}
+    .cm-reply{background:#fff;border-left:3px solid var(--navy);margin-left:24px;border-radius:0 8px 8px 0;}
+    .cm-meta{display:flex;gap:10px;margin-bottom:6px;align-items:center;}
+    .cm-author{font-size:12px;font-weight:700;color:var(--navy);}
+    .cm-date{font-size:11px;color:var(--gray-text);}
+    .cm-body{font-size:13px;color:#333;line-height:1.6;white-space:pre-wrap;}
+    .cm-reply-btn{margin-top:8px;font-size:11px;color:var(--navy);background:none;border:1px solid #ccd5e0;border-radius:6px;padding:3px 10px;cursor:pointer;font-family:inherit;}
+    .cm-reply-btn:hover{background:#f0f4ff;}
+    .cm-replies{margin-top:10px;display:flex;flex-direction:column;gap:8px;}
+    .cm-reply-form{margin-top:8px;}
+    .cm-write{margin-top:4px;}
+    .cm-input{width:100%;padding:10px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;}
+    .cm-input:focus{outline:none;border-color:var(--navy);}
+    .cm-submit-btn{padding:8px 18px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+    .cm-cancel-btn{padding:8px 14px;background:#f0f4ff;color:var(--navy);border:1px solid #ccd5e0;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;}
+  </style>
+  <link rel="stylesheet" href="css/mobile.css?v=20260528"/>
+</head>
+<body data-board="inquiry">
+<header>
+  <div class="header-main">
+    <div class="header-main-bg" aria-hidden="true"></div>
+    <a href="index.html" class="logo">
+      <svg width="36" height="36" style="flex-shrink:0"><use href="#ic-topik-logo"/></svg>
+      <div class="logo-text"><div class="main" style="font-size:16px;font-weight:700;color:#fff">TOPIK Myanmar</div><div class="sub" style="font-size:10px;color:#aab8cc">တိုပစ် မြန်မာ</div></div>
+    </a>
+    <nav id="mainNav"></nav>
+    <div class="header-actions">
+      <div class="hdr-lang-pc lang-switch">
+        <select class="tm-lang-select" aria-label="언어"><option value="ko">한국어</option><option value="my">မြန်မာ</option><option value="en">English</option></select>
+      </div>
+    </div>
+    <button type="button" class="hamburger" aria-label="메뉴"><svg width="22" height="22"><use href="#ic-menu"/></svg></button>
+  </div>
+</header>
+<div class="page-hero"><div class="page-hero-inner" style="max-width:1200px;margin:0 auto"><h1>문의게시판</h1></div></div>
+<div class="content">
+  <div class="board-toolbar">
+    <select id="visFilter"><option value="">전체</option><option value="general">일반</option><option value="secret">비밀</option></select>
+    <select id="catFilter"><option value="">카테고리</option><option value="reg">접수</option><option value="exam">시험</option><option value="etc">기타</option></select>
+    <select id="statusFilter"><option value="">상태</option><option value="pending">답변대기</option><option value="answered">답변완료</option></select>
+    <input id="boardSearch" placeholder="검색"/>
+    <button class="btn btn-red" id="btnWrite" type="button">글쓰기</button>
+  </div>
+  <div class="board-wrap"><div class="board-head"><div>번호</div><div>제목</div><div>날짜</div></div><div id="boardList"></div></div>
+  <div id="detailView" style="display:none;margin-top:16px"></div>
+  <div id="writeView">
+    <h2 style="color:var(--navy);margin-bottom:12px">문의 작성</h2>
+    <form id="writeForm">
+      <label>카테고리</label><select id="wCategory"><option value="reg">접수</option><option value="exam">시험</option><option value="etc">기타</option></select>
+      <label>공개 범위</label>
+      <div style="display:flex;gap:14px;padding:10px 14px;background:white;border:1px solid #e8ecf0;border-radius:8px;">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:600;">
+          <input type="radio" name="wVisibilityRadio" value="general" checked onchange="document.getElementById('wVisibility').value=this.value;document.getElementById('wInqSecretPwRow').style.display='none';"/>
+          <span>일반 (공개)</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:600;">
+          <input type="radio" name="wVisibilityRadio" value="secret" onchange="document.getElementById('wVisibility').value=this.value;document.getElementById('wInqSecretPwRow').style.display='block';"/>
+          <span>비밀 (작성자·관리자만)</span>
+        </label>
+      </div>
+      <input type="hidden" id="wVisibility" value="general"/>
+      <label>제목</label><input id="wTitle" required/>
+      <label>내용</label><textarea id="wBody" required></textarea>
+      <!-- 첨부 0526 -->
+      <label>첨부파일 (jpg/png/pdf · 최대 5개)</label>
+      <input type="file" id="wAttachments" multiple accept="image/jpeg,image/png,application/pdf" style="border:1px solid #e8ecf0;border-radius:8px;padding:10px;font-size:13px;background:white;"/>
+      <div id="wInqSecretPwRow" style="display:none;">
+        <label>비밀번호 (4자 이상)</label><input type="password" id="wSecretPw" minlength="4"/>
+      </div>
+      <button type="submit" class="btn btn-navy">등록</button>
+      <button type="button" class="btn" id="writeCancel">취소</button>
+    </form>
+  </div>
+</div>
+<footer>© 2026 TOPIK Myanmar</footer>
+<script src="js/svg-sprite.js"></script>
+<script src="js/profile-store.js"></script>
+<script src="js/board-store.js"></script>
+<script src="js/board-page.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/fo-nav.js"></script>
+<script src="js/mobile-nav.js" defer></script>
+</body>
+</html>
