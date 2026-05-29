@@ -1,821 +1,763 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.6">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="TOPIK 등급별 합격 점수, 채점 방식, 성적 인정 기간 안내">
+<title>평가 기준 | TOPIK Myanmar</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+ --primary:  #1a3a6b;
+ --primary-dark: #122a52;
+ --primary-light: #e8eef7;
+ --accent: #c8232c;
+ --accent-light: #fdf0f0;
+ --neutral-50: #f8f9fb;
+ --neutral-100:  #f1f3f7;
+ --neutral-200:  #e2e6ef;
+ --neutral-300:  #c8cdd8;
+ --neutral-400:  #9099aa;
+ --neutral-500:  #636b7a;
+ --neutral-600:  #464d5c;
+ --neutral-700:  #2d3340;
+ --neutral-800:  #1a1e28;
+ --white:  #ffffff;
+ --radius-sm: 6px;
+ --radius-md: 10px;
+ --radius-lg: 16px;
+ --shadow-sm: 0 1px 4px rgba(0,0,0,.07);
+ --shadow-md: 0 4px 16px rgba(0,0,0,.10);
+ --shadow-lg: 0 8px 32px rgba(0,0,0,.14);
+ --font-base: 'Noto Sans KR', sans-serif;
+ --ease:  cubic-bezier(.4,0,.2,1);
+ --header-h:  64px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+ font-family: var(--font-base);
+ font-size: 15px;
+ color: var(--neutral-700);
+ background: var(--white);
+ line-height: 1.6;
+ -webkit-font-smoothing: antialiased;
+ padding-top: var(--header-h);
+}
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+.container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+/* GNB — guide-questions.html 과 동일 */
+.gnb { position: fixed; top:0; left:0; right:0; z-index:1000; background:var(--white); border-bottom:1px solid var(--neutral-200); height:var(--header-h); display:flex; align-items:center; }
+.gnb-inner { display:flex; align-items:center; justify-content:space-between; width:100%; max-width:1100px; margin:0 auto; padding:0 20px; gap:12px; }
+.gnb-logo { display:flex; align-items:center; gap:10px; flex-shrink:0; text-decoration:none; }
+.gnb-logo-mark { width:32px; height:32px; background:var(--primary); border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; color:var(--white); font-weight:700; font-size:13px; }
+.gnb-logo-text { line-height:1.2; }
+.gnb-logo-text strong { display:block; font-size:14px; font-weight:700; color:var(--primary); }
+.gnb-logo-text span { font-size:10px; color:var(--neutral-500); }
+.gnb-nav { display:flex; align-items:center; gap:2px; }
+.gnb-menu { position:relative; }
+.gnb-menu-btn { display:flex; align-items:center; gap:4px; padding:8px 13px; font-size:14px; font-weight:500; color:var(--neutral-600); border-radius:var(--radius-sm); transition:.2s var(--ease); white-space:nowrap; }
+.gnb-menu-btn:hover, .gnb-menu-btn.is-active { color:var(--primary); background:var(--primary-light); }
+.gnb-menu-btn svg { width:14px; height:14px; transition:transform .2s var(--ease); flex-shrink:0; }
+.gnb-menu:hover .gnb-menu-btn svg { transform:rotate(180deg); }
+.gnb-dropdown { position:absolute; top:calc(100% + 8px); left:0; min-width:172px; background:var(--white); border:1px solid var(--neutral-200); border-radius:var(--radius-md); box-shadow:var(--shadow-md); opacity:0; visibility:hidden; transform:translateY(-6px); transition:.18s var(--ease); z-index:200; overflow:hidden; }
+.gnb-menu:hover .gnb-dropdown { opacity:1; visibility:visible; transform:translateY(0); }
+.gnb-dropdown a { display:block; padding:10px 16px; font-size:13.5px; color:var(--neutral-600); transition:.15s var(--ease); }
+.gnb-dropdown a:hover { color:var(--primary); background:var(--primary-light); }
+.gnb-dropdown a.is-current { color:var(--primary); background:var(--primary-light); font-weight:600; }
+.gnb-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.lang-toggle { display:flex; border:1px solid var(--neutral-200); border-radius:20px; overflow:hidden; font-size:12px; font-weight:500; }
+.lang-toggle button { padding:4px 9px; color:var(--neutral-500); transition:.15s var(--ease); }
+.lang-toggle button.is-active { background:var(--primary); color:var(--white); }
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:8px 16px; font-size:13px; font-weight:600; border-radius:var(--radius-sm); transition:.2s var(--ease); cursor:pointer; white-space:nowrap; text-decoration:none; border:none; }
+.btn-ghost { color:var(--neutral-600); border:1px solid var(--neutral-200); background:transparent; }
+.btn-ghost:hover { border-color:var(--primary); color:var(--primary); }
+.btn-solid { background:var(--primary); color:var(--white); border:1px solid var(--primary); }
+.btn-solid:hover { background:var(--primary-dark); }
+.btn-outline { background:transparent; color:var(--primary); border:1.5px solid var(--primary); }
+.btn-outline:hover { background:var(--primary-light); }
+.btn-lg { padding:12px 24px; font-size:14px; border-radius:var(--radius-md); }
+.gnb-hamburger { display:none; flex-direction:column; gap:5px; padding:8px; }
+.gnb-hamburger span { display:block; width:22px; height:2px; background:var(--neutral-700); border-radius:2px; transition:.2s var(--ease); }
+/* Drawer */
+.drawer-overlay { position:fixed; inset:0; background:rgba(0,0,0,.46); z-index:1999; opacity:0; visibility:hidden; transition:.25s var(--ease); }
+.drawer-overlay.is-show { opacity:1; visibility:visible; }
+.mobile-drawer { position:fixed; top:0; right:0; bottom:0; width:82%; max-width:320px; background:var(--white); z-index:2000; transform:translateX(100%); transition:.28s var(--ease); box-shadow:var(--shadow-lg); display:flex; flex-direction:column; }
+.mobile-drawer.is-open { transform:translateX(0); }
+.drawer-head { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--neutral-100); flex-shrink:0; }
+.drawer-close-btn { width:32px; height:32px; border-radius:50%; border:1px solid var(--neutral-200); display:flex; align-items:center; justify-content:center; color:var(--neutral-500); font-size:17px; cursor:pointer; }
+.drawer-body { flex:1; overflow-y:auto; }
+.drawer-group { border-bottom:1px solid var(--neutral-100); }
+.drawer-group-title { padding:14px 20px 6px; font-size:10.5px; font-weight:700; color:var(--neutral-400); letter-spacing:.1em; text-transform:uppercase; }
+.drawer-link { display:block; padding:10px 20px; font-size:14px; font-weight:500; color:var(--neutral-600); transition:.15s var(--ease); }
+.drawer-link:hover, .drawer-link.is-current { color:var(--primary); background:var(--primary-light); }
+.drawer-lang { display:flex; gap:6px; padding:14px 20px; border-top:1px solid var(--neutral-100); }
+.drawer-lang button { flex:1; padding:8px; font-size:12px; font-weight:500; border-radius:var(--radius-sm); border:1px solid var(--neutral-200); color:var(--neutral-500); transition:.15s var(--ease); }
+.drawer-lang button.is-active { background:var(--primary); color:var(--white); border-color:var(--primary); }
+.drawer-foot { padding:14px 20px 20px; display:flex; flex-direction:column; gap:8px; border-top:1px solid var(--neutral-100); flex-shrink:0; }
+.drawer-foot .btn { justify-content:center; }
+/* Page hero / sub-nav */
+.page-hero { background:linear-gradient(135deg,var(--primary) 0%,#0d2550 100%); color:var(--white); padding:44px 0 38px; }
+.breadcrumb { display:flex; align-items:center; gap:6px; font-size:12px; color:rgba(255,255,255,.5); margin-bottom:14px; }
+.breadcrumb a { color:rgba(255,255,255,.5); }
+.breadcrumb a:hover { color:rgba(255,255,255,.85); }
+.breadcrumb .sep { color:rgba(255,255,255,.25); }
+.breadcrumb .cur { color:rgba(255,255,255,.85); }
+.page-hero-label { font-size:11px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.55); margin-bottom:8px; }
+.page-hero-title { font-size:clamp(22px,4vw,30px); font-weight:700; margin-bottom:8px; }
+.page-hero-desc { font-size:14px; color:rgba(255,255,255,.68); line-height:1.65; max-width:560px; }
+.sub-nav { background:var(--white); border-bottom:1px solid var(--neutral-200); position:sticky; top:var(--header-h); z-index:100; }
+.sub-nav-inner { display:flex; max-width:1100px; margin:0 auto; padding:0 20px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.sub-nav-inner::-webkit-scrollbar { display:none; }
+.sub-nav-link { flex-shrink:0; padding:14px 16px; font-size:13.5px; font-weight:500; color:var(--neutral-500); border-bottom:2px solid transparent; transition:.18s var(--ease); white-space:nowrap; text-decoration:none; }
+.sub-nav-link:hover { color:var(--primary); }
+.sub-nav-link.is-active { color:var(--primary); border-bottom-color:var(--primary); font-weight:600; }
+/* Content */
+.content-wrap { display:grid; grid-template-columns:1fr 248px; gap:40px; padding:44px 0 64px; }
+.info-card { background:var(--white); border:1px solid var(--neutral-200); border-radius:var(--radius-lg); padding:28px; margin-bottom:20px; }
+.info-card:last-of-type { margin-bottom:0; }
+.info-card-title { font-size:17px; font-weight:700; color:var(--neutral-800); margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid var(--neutral-100); }
+.info-card p { font-size:14px; color:var(--neutral-600); line-height:1.8; margin-bottom:10px; }
+.info-card p:last-child { margin-bottom:0; }
+/* Aside */
+.aside-card { background:var(--neutral-50); border:1px solid var(--neutral-200); border-radius:var(--radius-lg); padding:18px 16px; margin-bottom:14px; }
+.aside-card:last-child { margin-bottom:0; }
+.aside-card-title { font-size:12px; font-weight:700; color:var(--neutral-500); letter-spacing:.07em; text-transform:uppercase; margin-bottom:10px; }
+.aside-nav-list { display:flex; flex-direction:column; gap:2px; }
+.aside-nav-link { display:block; padding:9px 12px; font-size:13.5px; font-weight:500; color:var(--neutral-600); border-radius:var(--radius-sm); transition:.15s var(--ease); text-decoration:none; }
+.aside-nav-link:hover { color:var(--primary); background:var(--primary-light); }
+.aside-nav-link.is-current { color:var(--primary); background:var(--primary-light); font-weight:600; }
+.aside-ext-link { display:block; padding:9px 12px; font-size:13px; border-radius:var(--radius-sm); margin-bottom:6px; transition:.15s var(--ease); }
+.aside-ext-link:last-child { margin-bottom:0; }
+.aside-ext-link.primary-link { color:var(--primary); background:var(--primary-light); }
+.aside-ext-link.neutral-link { color:var(--neutral-600); background:var(--white); border:1px solid var(--neutral-200); }
+.aside-notice { padding:12px 14px; background:var(--accent-light); border:1px solid rgba(200,35,44,.12); border-radius:var(--radius-md); font-size:12.5px; color:var(--accent); line-height:1.6; }
+.aside-notice strong { display:block; font-weight:700; margin-bottom:2px; }
+/* Footer */
+.footer { background:var(--neutral-800); color:rgba(255,255,255,.65); padding:40px 0 24px; }
+.footer-grid { display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-bottom:28px; }
+.footer-brand strong { display:block; font-size:14px; font-weight:700; color:var(--white); margin-bottom:6px; }
+.footer-brand p { font-size:12px; line-height:1.75; }
+.footer-ext { display:flex; flex-direction:column; gap:6px; align-items:flex-end; }
+.footer-ext a { font-size:12px; color:rgba(255,255,255,.45); transition:.15s var(--ease); }
+.footer-ext a:hover { color:var(--white); }
+.footer-bottom { border-top:1px solid rgba(255,255,255,.08); padding-top:18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+.footer-copy { font-size:11px; color:rgba(255,255,255,.3); }
+.footer-policy { display:flex; gap:14px; }
+.footer-policy a { font-size:11px; color:rgba(255,255,255,.35); transition:.15s var(--ease); }
+.footer-policy a:hover { color:rgba(255,255,255,.7); }
+/* ===================================================
+ PAGE-SPECIFIC : 평가 기준
+=================================================== */
+/* 등급 카드 그리드 */
+.grade-grid {
+ display: grid;
+ grid-template-columns: 1fr 1fr;
+ gap: 16px;
+}
+/* 개별 등급 카드 */
+.grade-card {
+ border-radius: var(--radius-lg);
+ overflow: hidden;
+ border: 1px solid var(--neutral-200);
+ transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+}
+.grade-card:hover {
+ transform: translateY(-3px);
+ box-shadow: var(--shadow-md);
+}
+.grade-card-head {
+ padding: 16px 20px;
+ color: var(--white);
+ display: flex;
+ align-items: center;
+ gap: 14px;
+}
+.grade-card-head.g1 { background: linear-gradient(135deg,#2557a0,#3a78cc); }
+.grade-card-head.g2 { background: linear-gradient(135deg,#1a3a6b,#2557a0); }
+.grade-card-head.g3 { background: linear-gradient(135deg,#b45300,#d97706); }
+.grade-card-head.g4 { background: linear-gradient(135deg,#b07d00,#d4a017); }
+.grade-card-head.g5 { background: linear-gradient(135deg,#166534,#16a34a); }
+.grade-card-head.g6 { background: linear-gradient(135deg,#6d28d9,#7c3aed); }
+.grade-num-circle {
+ width: 44px; height: 44px;
+ border-radius: 50%;
+ background: rgba(255,255,255,.2);
+ border: 2px solid rgba(255,255,255,.35);
+ display: flex; align-items: center; justify-content: center;
+ font-size: 20px;
+ font-weight: 700;
+ flex-shrink: 0;
+}
+.grade-card-head-info {}
+.grade-card-head-title { font-size: 15px; font-weight: 700; line-height: 1.2; }
+.grade-card-head-sub  { font-size: 12px; color: rgba(255,255,255,.72); }
+.grade-card-body {
+ padding: 16px 20px;
+ background: var(--white);
+}
+.grade-score-label {
+ font-size: 11px;
+ font-weight: 600;
+ color: var(--neutral-400);
+ letter-spacing: .07em;
+ text-transform: uppercase;
+ margin-bottom: 6px;
+}
+.grade-score-range {
+ font-size: 22px;
+ font-weight: 700;
+ color: var(--neutral-800);
+ line-height: 1.1;
+ margin-bottom: 10px;
+}
+.grade-score-unit { font-size: 13px; font-weight: 400; color: var(--neutral-400); }
+/* 점수 진행 바 */
+.grade-bar-track {
+ height: 6px;
+ background: var(--neutral-100);
+ border-radius: 3px;
+ overflow: hidden;
+}
+.grade-bar-fill { height: 100%; border-radius: 3px; }
+.grade-bar-fill.g1 { background: #3a78cc; }
+.grade-bar-fill.g2 { background: #1a3a6b; }
+.grade-bar-fill.g3 { background: #d97706; }
+.grade-bar-fill.g4 { background: #d4a017; }
+.grade-bar-fill.g5 { background: #16a34a; }
+.grade-bar-fill.g6 { background: #7c3aed; }
+/* 섹션 구분 라벨 */
+.level-divider {
+ display: flex;
+ align-items: center;
+ gap: 12px;
+ margin: 24px 0 16px;
+ font-size: 13px;
+ font-weight: 700;
+ color: var(--neutral-500);
+}
+.level-divider::before,
+.level-divider::after {
+ content: '';
+ flex: 1;
+ height: 1px;
+ background: var(--neutral-200);
+}
+.level-divider-badge {
+ padding: 3px 12px;
+ border-radius: 12px;
+ font-size: 12px;
+ font-weight: 700;
+}
+.level-divider-badge.blue { background: var(--primary-light); color: var(--primary); }
+.level-divider-badge.red { background: var(--accent-light); color: var(--accent); }
+/* 채점 방식 아이템 */
+.scoring-list {
+ display: flex;
+ flex-direction: column;
+ gap: 12px;
+}
+.scoring-item {
+ display: flex;
+ gap: 14px;
+ padding: 14px 16px;
+ background: var(--neutral-50);
+ border-radius: var(--radius-md);
+ border: 1px solid var(--neutral-100);
+}
+.scoring-icon {
+ width: 36px; height: 36px;
+ border-radius: var(--radius-sm);
+ display: flex; align-items: center; justify-content: center;
+ font-size: 16px;
+ flex-shrink: 0;
+ background: var(--white);
+ border: 1px solid var(--neutral-200);
+}
+.scoring-info-title { font-size: 13.5px; font-weight: 700; color: var(--neutral-800); margin-bottom: 3px; }
+.scoring-info-desc { font-size: 13px; color: var(--neutral-500); line-height: 1.55; }
+/* 성적 인정 기간 배너 */
+.validity-banner {
+ display: flex;
+ align-items: center;
+ gap: 20px;
+ padding: 22px 24px;
+ background: var(--primary-light);
+ border-radius: var(--radius-lg);
+ border: 1px solid rgba(26,58,107,.12);
+}
+.validity-main { text-align: center; flex-shrink: 0; }
+.validity-num { font-size: 48px; font-weight: 700; color: var(--primary); line-height: 1; }
+.validity-unit { font-size: 14px; font-weight: 600; color: var(--primary); }
+.validity-body { font-size: 13.5px; color: var(--neutral-600); line-height: 1.75; }
+.validity-body strong { color: var(--neutral-800); }
+/* callout */
+.callout { display:flex; gap:12px; padding:14px 16px; border-radius:var(--radius-md); font-size:13.5px; line-height:1.65; margin-top:16px; }
+.callout.info { background:var(--primary-light); border:1px solid rgba(26,58,107,.12); color:var(--primary); }
+.callout.warn { background:#fef9ec; border:1px solid #f5d97a; color:#7a5a00; }
+.callout-icon { flex-shrink:0; font-size:16px; margin-top:1px; }
+/* cta */
+.cta-row { display:flex; flex-wrap:wrap; gap:12px; margin-top:24px; padding-top:24px; border-top:1px solid var(--neutral-100); }
+/* Responsive */
+@media (max-width:900px) {
+ .content-wrap { grid-template-columns:1fr; gap:28px; padding:32px 0 48px; }
+ .content-aside{display:none}
+ .aside-nav-list { flex-direction:row; flex-wrap:wrap; }
+ .grade-grid { grid-template-columns:1fr; }
+}
+@media (max-width:768px) {
+ .gnb-nav, .gnb-actions .btn-ghost, .gnb-actions .btn-solid, .lang-toggle { display:none; }
+ .gnb-hamburger { display:flex; }
+ .footer-grid { grid-template-columns:1fr; }
+ .footer-ext { align-items:flex-start; }
+ .validity-banner { flex-direction:column; align-items:flex-start; gap:12px; }
+}
+@media (max-width:480px) {
+ .cta-row { flex-direction:column; }
+ .cta-row .btn { justify-content:center; }
+}
+</style>
+ <link rel="stylesheet" href="css/layout-mobile.css">
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="ko"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1">&lt;meta name="description" content="TOPIK 등급별 합격 점수, 채점 방식, 성적 인정 기간 안내"&gt;</p>
-<p class="p1">&lt;title&gt;평가 기준 | TOPIK Myanmar&lt;/title&gt;</p>
-<p class="p1">&lt;link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"&gt;</p>
-<p class="p1">&lt;style&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">:root {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--primary: <span class="Apple-converted-space">      </span>#1a3a6b;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--primary-dark:<span class="Apple-converted-space">  </span>#122a52;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--primary-light: #e8eef7;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--accent:<span class="Apple-converted-space">        </span>#c8232c;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--accent-light:<span class="Apple-converted-space">  </span>#fdf0f0;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--neutral-50:<span class="Apple-converted-space">    </span>#f8f9fb;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--neutral-100: <span class="Apple-converted-space">  </span>#f1f3f7;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--neutral-200: <span class="Apple-converted-space">  </span>#e2e6ef;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--neutral-300: <span class="Apple-converted-space">  </span>#c8cdd8;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--neutral-400: <span class="Apple-converted-space">  </span>#9099aa;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--neutral-500: <span class="Apple-converted-space">  </span>#636b7a;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--neutral-600: <span class="Apple-converted-space">  </span>#464d5c;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--neutral-700: <span class="Apple-converted-space">  </span>#2d3340;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--neutral-800: <span class="Apple-converted-space">  </span>#1a1e28;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--white: <span class="Apple-converted-space">        </span>#ffffff;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--radius-sm:<span class="Apple-converted-space">  </span>6px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--radius-md:<span class="Apple-converted-space">  </span>10px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--radius-lg:<span class="Apple-converted-space">  </span>16px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--shadow-sm:<span class="Apple-converted-space">  </span>0 1px 4px rgba(0,0,0,.07);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--shadow-md:<span class="Apple-converted-space">  </span>0 4px 16px rgba(0,0,0,.10);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--shadow-lg:<span class="Apple-converted-space">  </span>0 8px 32px rgba(0,0,0,.14);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--font-base:<span class="Apple-converted-space">  </span>'Noto Sans KR', sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--ease: <span class="Apple-converted-space">      </span>cubic-bezier(.4,0,.2,1);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--header-h: <span class="Apple-converted-space">  </span>64px;</p>
-<p class="p1">}</p>
-<p class="p1">*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }</p>
-<p class="p1">html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }</p>
-<p class="p1">body {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-family: var(--font-base);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-size: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-700);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>background: var(--white);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>line-height: 1.6;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>-webkit-font-smoothing: antialiased;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>padding-top: var(--header-h);</p>
-<p class="p1">}</p>
-<p class="p1">a { color: inherit; text-decoration: none; }</p>
-<p class="p1">ul { list-style: none; }</p>
-<p class="p1">button { cursor: pointer; border: none; background: none; font-family: inherit; }</p>
-<p class="p1">.container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 20px; }</p>
-<p class="p2"><br></p>
-<p class="p1">/* GNB — guide-questions.html 과 동일 */</p>
-<p class="p1">.gnb { position: fixed; top:0; left:0; right:0; z-index:1000; background:var(--white); border-bottom:1px solid var(--neutral-200); height:var(--header-h); display:flex; align-items:center; }</p>
-<p class="p1">.gnb-inner { display:flex; align-items:center; justify-content:space-between; width:100%; max-width:1100px; margin:0 auto; padding:0 20px; gap:12px; }</p>
-<p class="p1">.gnb-logo { display:flex; align-items:center; gap:10px; flex-shrink:0; text-decoration:none; }</p>
-<p class="p1">.gnb-logo-mark { width:32px; height:32px; background:var(--primary); border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; color:var(--white); font-weight:700; font-size:13px; }</p>
-<p class="p1">.gnb-logo-text { line-height:1.2; }</p>
-<p class="p1">.gnb-logo-text strong { display:block; font-size:14px; font-weight:700; color:var(--primary); }</p>
-<p class="p1">.gnb-logo-text span { font-size:10px; color:var(--neutral-500); }</p>
-<p class="p1">.gnb-nav { display:flex; align-items:center; gap:2px; }</p>
-<p class="p1">.gnb-menu { position:relative; }</p>
-<p class="p1">.gnb-menu-btn { display:flex; align-items:center; gap:4px; padding:8px 13px; font-size:14px; font-weight:500; color:var(--neutral-600); border-radius:var(--radius-sm); transition:.2s var(--ease); white-space:nowrap; }</p>
-<p class="p1">.gnb-menu-btn:hover, .gnb-menu-btn.is-active { color:var(--primary); background:var(--primary-light); }</p>
-<p class="p1">.gnb-menu-btn svg { width:14px; height:14px; transition:transform .2s var(--ease); flex-shrink:0; }</p>
-<p class="p1">.gnb-menu:hover .gnb-menu-btn svg { transform:rotate(180deg); }</p>
-<p class="p1">.gnb-dropdown { position:absolute; top:calc(100% + 8px); left:0; min-width:172px; background:var(--white); border:1px solid var(--neutral-200); border-radius:var(--radius-md); box-shadow:var(--shadow-md); opacity:0; visibility:hidden; transform:translateY(-6px); transition:.18s var(--ease); z-index:200; overflow:hidden; }</p>
-<p class="p1">.gnb-menu:hover .gnb-dropdown { opacity:1; visibility:visible; transform:translateY(0); }</p>
-<p class="p1">.gnb-dropdown a { display:block; padding:10px 16px; font-size:13.5px; color:var(--neutral-600); transition:.15s var(--ease); }</p>
-<p class="p1">.gnb-dropdown a:hover { color:var(--primary); background:var(--primary-light); }</p>
-<p class="p1">.gnb-dropdown a.is-current { color:var(--primary); background:var(--primary-light); font-weight:600; }</p>
-<p class="p1">.gnb-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }</p>
-<p class="p1">.lang-toggle { display:flex; border:1px solid var(--neutral-200); border-radius:20px; overflow:hidden; font-size:12px; font-weight:500; }</p>
-<p class="p1">.lang-toggle button { padding:4px 9px; color:var(--neutral-500); transition:.15s var(--ease); }</p>
-<p class="p1">.lang-toggle button.is-active { background:var(--primary); color:var(--white); }</p>
-<p class="p1">.btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:8px 16px; font-size:13px; font-weight:600; border-radius:var(--radius-sm); transition:.2s var(--ease); cursor:pointer; white-space:nowrap; text-decoration:none; border:none; }</p>
-<p class="p1">.btn-ghost { color:var(--neutral-600); border:1px solid var(--neutral-200); background:transparent; }</p>
-<p class="p1">.btn-ghost:hover { border-color:var(--primary); color:var(--primary); }</p>
-<p class="p1">.btn-solid { background:var(--primary); color:var(--white); border:1px solid var(--primary); }</p>
-<p class="p1">.btn-solid:hover { background:var(--primary-dark); }</p>
-<p class="p1">.btn-outline { background:transparent; color:var(--primary); border:1.5px solid var(--primary); }</p>
-<p class="p1">.btn-outline:hover { background:var(--primary-light); }</p>
-<p class="p1">.btn-lg { padding:12px 24px; font-size:14px; border-radius:var(--radius-md); }</p>
-<p class="p1">.gnb-hamburger { display:none; flex-direction:column; gap:5px; padding:8px; }</p>
-<p class="p1">.gnb-hamburger span { display:block; width:22px; height:2px; background:var(--neutral-700); border-radius:2px; transition:.2s var(--ease); }</p>
-<p class="p2"><br></p>
-<p class="p1">/* Drawer */</p>
-<p class="p1">.drawer-overlay { position:fixed; inset:0; background:rgba(0,0,0,.46); z-index:1999; opacity:0; visibility:hidden; transition:.25s var(--ease); }</p>
-<p class="p1">.drawer-overlay.is-show { opacity:1; visibility:visible; }</p>
-<p class="p1">.mobile-drawer { position:fixed; top:0; right:0; bottom:0; width:82%; max-width:320px; background:var(--white); z-index:2000; transform:translateX(100%); transition:.28s var(--ease); box-shadow:var(--shadow-lg); display:flex; flex-direction:column; }</p>
-<p class="p1">.mobile-drawer.is-open { transform:translateX(0); }</p>
-<p class="p1">.drawer-head { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--neutral-100); flex-shrink:0; }</p>
-<p class="p1">.drawer-close-btn { width:32px; height:32px; border-radius:50%; border:1px solid var(--neutral-200); display:flex; align-items:center; justify-content:center; color:var(--neutral-500); font-size:17px; cursor:pointer; }</p>
-<p class="p1">.drawer-body { flex:1; overflow-y:auto; }</p>
-<p class="p1">.drawer-group { border-bottom:1px solid var(--neutral-100); }</p>
-<p class="p1">.drawer-group-title { padding:14px 20px 6px; font-size:10.5px; font-weight:700; color:var(--neutral-400); letter-spacing:.1em; text-transform:uppercase; }</p>
-<p class="p1">.drawer-link { display:block; padding:10px 20px; font-size:14px; font-weight:500; color:var(--neutral-600); transition:.15s var(--ease); }</p>
-<p class="p1">.drawer-link:hover, .drawer-link.is-current { color:var(--primary); background:var(--primary-light); }</p>
-<p class="p1">.drawer-lang { display:flex; gap:6px; padding:14px 20px; border-top:1px solid var(--neutral-100); }</p>
-<p class="p1">.drawer-lang button { flex:1; padding:8px; font-size:12px; font-weight:500; border-radius:var(--radius-sm); border:1px solid var(--neutral-200); color:var(--neutral-500); transition:.15s var(--ease); }</p>
-<p class="p1">.drawer-lang button.is-active { background:var(--primary); color:var(--white); border-color:var(--primary); }</p>
-<p class="p1">.drawer-foot { padding:14px 20px 20px; display:flex; flex-direction:column; gap:8px; border-top:1px solid var(--neutral-100); flex-shrink:0; }</p>
-<p class="p1">.drawer-foot .btn { justify-content:center; }</p>
-<p class="p2"><br></p>
-<p class="p1">/* Page hero / sub-nav */</p>
-<p class="p1">.page-hero { background:linear-gradient(135deg,var(--primary) 0%,#0d2550 100%); color:var(--white); padding:44px 0 38px; }</p>
-<p class="p1">.breadcrumb { display:flex; align-items:center; gap:6px; font-size:12px; color:rgba(255,255,255,.5); margin-bottom:14px; }</p>
-<p class="p1">.breadcrumb a { color:rgba(255,255,255,.5); }</p>
-<p class="p1">.breadcrumb a:hover { color:rgba(255,255,255,.85); }</p>
-<p class="p1">.breadcrumb .sep { color:rgba(255,255,255,.25); }</p>
-<p class="p1">.breadcrumb .cur { color:rgba(255,255,255,.85); }</p>
-<p class="p1">.page-hero-label { font-size:11px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.55); margin-bottom:8px; }</p>
-<p class="p1">.page-hero-title { font-size:clamp(22px,4vw,30px); font-weight:700; margin-bottom:8px; }</p>
-<p class="p1">.page-hero-desc<span class="Apple-converted-space">  </span>{ font-size:14px; color:rgba(255,255,255,.68); line-height:1.65; max-width:560px; }</p>
-<p class="p1">.sub-nav { background:var(--white); border-bottom:1px solid var(--neutral-200); position:sticky; top:var(--header-h); z-index:100; }</p>
-<p class="p1">.sub-nav-inner { display:flex; max-width:1100px; margin:0 auto; padding:0 20px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }</p>
-<p class="p1">.sub-nav-inner::-webkit-scrollbar { display:none; }</p>
-<p class="p1">.sub-nav-link { flex-shrink:0; padding:14px 16px; font-size:13.5px; font-weight:500; color:var(--neutral-500); border-bottom:2px solid transparent; transition:.18s var(--ease); white-space:nowrap; text-decoration:none; }</p>
-<p class="p1">.sub-nav-link:hover { color:var(--primary); }</p>
-<p class="p1">.sub-nav-link.is-active { color:var(--primary); border-bottom-color:var(--primary); font-weight:600; }</p>
-<p class="p2"><br></p>
-<p class="p1">/* Content */</p>
-<p class="p1">.content-wrap { display:grid; grid-template-columns:1fr 248px; gap:40px; padding:44px 0 64px; }</p>
-<p class="p1">.info-card { background:var(--white); border:1px solid var(--neutral-200); border-radius:var(--radius-lg); padding:28px; margin-bottom:20px; }</p>
-<p class="p1">.info-card:last-of-type { margin-bottom:0; }</p>
-<p class="p1">.info-card-title { font-size:17px; font-weight:700; color:var(--neutral-800); margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid var(--neutral-100); }</p>
-<p class="p1">.info-card p { font-size:14px; color:var(--neutral-600); line-height:1.8; margin-bottom:10px; }</p>
-<p class="p1">.info-card p:last-child { margin-bottom:0; }</p>
-<p class="p2"><br></p>
-<p class="p1">/* Aside */</p>
-<p class="p1">.aside-card { background:var(--neutral-50); border:1px solid var(--neutral-200); border-radius:var(--radius-lg); padding:18px 16px; margin-bottom:14px; }</p>
-<p class="p1">.aside-card:last-child { margin-bottom:0; }</p>
-<p class="p1">.aside-card-title { font-size:12px; font-weight:700; color:var(--neutral-500); letter-spacing:.07em; text-transform:uppercase; margin-bottom:10px; }</p>
-<p class="p1">.aside-nav-list { display:flex; flex-direction:column; gap:2px; }</p>
-<p class="p1">.aside-nav-link { display:block; padding:9px 12px; font-size:13.5px; font-weight:500; color:var(--neutral-600); border-radius:var(--radius-sm); transition:.15s var(--ease); text-decoration:none; }</p>
-<p class="p1">.aside-nav-link:hover { color:var(--primary); background:var(--primary-light); }</p>
-<p class="p1">.aside-nav-link.is-current { color:var(--primary); background:var(--primary-light); font-weight:600; }</p>
-<p class="p1">.aside-ext-link { display:block; padding:9px 12px; font-size:13px; border-radius:var(--radius-sm); margin-bottom:6px; transition:.15s var(--ease); }</p>
-<p class="p1">.aside-ext-link:last-child { margin-bottom:0; }</p>
-<p class="p1">.aside-ext-link.primary-link { color:var(--primary); background:var(--primary-light); }</p>
-<p class="p1">.aside-ext-link.neutral-link { color:var(--neutral-600); background:var(--white); border:1px solid var(--neutral-200); }</p>
-<p class="p1">.aside-notice { padding:12px 14px; background:var(--accent-light); border:1px solid rgba(200,35,44,.12); border-radius:var(--radius-md); font-size:12.5px; color:var(--accent); line-height:1.6; }</p>
-<p class="p1">.aside-notice strong { display:block; font-weight:700; margin-bottom:2px; }</p>
-<p class="p2"><br></p>
-<p class="p1">/* Footer */</p>
-<p class="p1">.footer { background:var(--neutral-800); color:rgba(255,255,255,.65); padding:40px 0 24px; }</p>
-<p class="p1">.footer-grid { display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-bottom:28px; }</p>
-<p class="p1">.footer-brand strong { display:block; font-size:14px; font-weight:700; color:var(--white); margin-bottom:6px; }</p>
-<p class="p1">.footer-brand p { font-size:12px; line-height:1.75; }</p>
-<p class="p1">.footer-ext { display:flex; flex-direction:column; gap:6px; align-items:flex-end; }</p>
-<p class="p1">.footer-ext a { font-size:12px; color:rgba(255,255,255,.45); transition:.15s var(--ease); }</p>
-<p class="p1">.footer-ext a:hover { color:var(--white); }</p>
-<p class="p1">.footer-bottom { border-top:1px solid rgba(255,255,255,.08); padding-top:18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }</p>
-<p class="p1">.footer-copy { font-size:11px; color:rgba(255,255,255,.3); }</p>
-<p class="p1">.footer-policy { display:flex; gap:14px; }</p>
-<p class="p1">.footer-policy a { font-size:11px; color:rgba(255,255,255,.35); transition:.15s var(--ease); }</p>
-<p class="p1">.footer-policy a:hover { color:rgba(255,255,255,.7); }</p>
-<p class="p2"><br></p>
-<p class="p1">/* ===================================================</p>
-<p class="p1"><span class="Apple-converted-space">   </span>PAGE-SPECIFIC : 평가 기준</p>
-<p class="p1">=================================================== */</p>
-<p class="p2"><br></p>
-<p class="p1">/* 등급 카드 그리드 */</p>
-<p class="p1">.grade-grid {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>display: grid;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>grid-template-columns: 1fr 1fr;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>gap: 16px;</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">/* 개별 등급 카드 */</p>
-<p class="p1">.grade-card {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border-radius: var(--radius-lg);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>overflow: hidden;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border: 1px solid var(--neutral-200);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>transition: transform .2s var(--ease), box-shadow .2s var(--ease);</p>
-<p class="p1">}</p>
-<p class="p1">.grade-card:hover {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>transform: translateY(-3px);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>box-shadow: var(--shadow-md);</p>
-<p class="p1">}</p>
-<p class="p1">.grade-card-head {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>padding: 16px 20px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>color: var(--white);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>gap: 14px;</p>
-<p class="p1">}</p>
-<p class="p1">.grade-card-head.g1<span class="Apple-converted-space">  </span>{ background: linear-gradient(135deg,#2557a0,#3a78cc); }</p>
-<p class="p1">.grade-card-head.g2<span class="Apple-converted-space">  </span>{ background: linear-gradient(135deg,#1a3a6b,#2557a0); }</p>
-<p class="p1">.grade-card-head.g3<span class="Apple-converted-space">  </span>{ background: linear-gradient(135deg,#b45300,#d97706); }</p>
-<p class="p1">.grade-card-head.g4<span class="Apple-converted-space">  </span>{ background: linear-gradient(135deg,#b07d00,#d4a017); }</p>
-<p class="p1">.grade-card-head.g5<span class="Apple-converted-space">  </span>{ background: linear-gradient(135deg,#166534,#16a34a); }</p>
-<p class="p1">.grade-card-head.g6<span class="Apple-converted-space">  </span>{ background: linear-gradient(135deg,#6d28d9,#7c3aed); }</p>
-<p class="p2"><br></p>
-<p class="p1">.grade-num-circle {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>width: 44px; height: 44px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border-radius: 50%;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>background: rgba(255,255,255,.2);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border: 2px solid rgba(255,255,255,.35);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>display: flex; align-items: center; justify-content: center;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-size: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 700;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>flex-shrink: 0;</p>
-<p class="p1">}</p>
-<p class="p1">.grade-card-head-info {}</p>
-<p class="p1">.grade-card-head-title { font-size: 15px; font-weight: 700; line-height: 1.2; }</p>
-<p class="p1">.grade-card-head-sub <span class="Apple-converted-space">  </span>{ font-size: 12px; color: rgba(255,255,255,.72); }</p>
-<p class="p2"><br></p>
-<p class="p1">.grade-card-body {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>padding: 16px 20px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>background: var(--white);</p>
-<p class="p1">}</p>
-<p class="p1">.grade-score-label {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-size: 11px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 600;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-400);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>letter-spacing: .07em;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>text-transform: uppercase;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>margin-bottom: 6px;</p>
-<p class="p1">}</p>
-<p class="p1">.grade-score-range {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-size: 22px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 700;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-800);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>line-height: 1.1;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>margin-bottom: 10px;</p>
-<p class="p1">}</p>
-<p class="p1">.grade-score-unit { font-size: 13px; font-weight: 400; color: var(--neutral-400); }</p>
-<p class="p2"><br></p>
-<p class="p1">/* 점수 진행 바 */</p>
-<p class="p1">.grade-bar-track {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>height: 6px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>background: var(--neutral-100);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border-radius: 3px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>overflow: hidden;</p>
-<p class="p1">}</p>
-<p class="p1">.grade-bar-fill { height: 100%; border-radius: 3px; }</p>
-<p class="p1">.grade-bar-fill.g1 { background: #3a78cc; }</p>
-<p class="p1">.grade-bar-fill.g2 { background: #1a3a6b; }</p>
-<p class="p1">.grade-bar-fill.g3 { background: #d97706; }</p>
-<p class="p1">.grade-bar-fill.g4 { background: #d4a017; }</p>
-<p class="p1">.grade-bar-fill.g5 { background: #16a34a; }</p>
-<p class="p1">.grade-bar-fill.g6 { background: #7c3aed; }</p>
-<p class="p2"><br></p>
-<p class="p1">/* 섹션 구분 라벨 */</p>
-<p class="p1">.level-divider {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>gap: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>margin: 24px 0 16px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-size: 13px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 700;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>color: var(--neutral-500);</p>
-<p class="p1">}</p>
-<p class="p1">.level-divider::before,</p>
-<p class="p1">.level-divider::after {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>content: '';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>flex: 1;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>height: 1px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>background: var(--neutral-200);</p>
-<p class="p1">}</p>
-<p class="p1">.level-divider-badge {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>padding: 3px 12px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border-radius: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-size: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-weight: 700;</p>
-<p class="p1">}</p>
-<p class="p1">.level-divider-badge.blue { background: var(--primary-light); color: var(--primary); }</p>
-<p class="p1">.level-divider-badge.red<span class="Apple-converted-space">  </span>{ background: var(--accent-light);<span class="Apple-converted-space">  </span>color: var(--accent);<span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1">/* 채점 방식 아이템 */</p>
-<p class="p1">.scoring-list {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>flex-direction: column;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>gap: 12px;</p>
-<p class="p1">}</p>
-<p class="p1">.scoring-item {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>gap: 14px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>padding: 14px 16px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>background: var(--neutral-50);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border-radius: var(--radius-md);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border: 1px solid var(--neutral-100);</p>
-<p class="p1">}</p>
-<p class="p1">.scoring-icon {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>width: 36px; height: 36px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border-radius: var(--radius-sm);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>display: flex; align-items: center; justify-content: center;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-size: 16px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>flex-shrink: 0;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>background: var(--white);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border: 1px solid var(--neutral-200);</p>
-<p class="p1">}</p>
-<p class="p1">.scoring-info-title { font-size: 13.5px; font-weight: 700; color: var(--neutral-800); margin-bottom: 3px; }</p>
-<p class="p1">.scoring-info-desc<span class="Apple-converted-space">  </span>{ font-size: 13px; color: var(--neutral-500); line-height: 1.55; }</p>
-<p class="p2"><br></p>
-<p class="p1">/* 성적 인정 기간 배너 */</p>
-<p class="p1">.validity-banner {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>gap: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>padding: 22px 24px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>background: var(--primary-light);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border-radius: var(--radius-lg);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border: 1px solid rgba(26,58,107,.12);</p>
-<p class="p1">}</p>
-<p class="p1">.validity-main { text-align: center; flex-shrink: 0; }</p>
-<p class="p1">.validity-num<span class="Apple-converted-space">  </span>{ font-size: 48px; font-weight: 700; color: var(--primary); line-height: 1; }</p>
-<p class="p1">.validity-unit { font-size: 14px; font-weight: 600; color: var(--primary); }</p>
-<p class="p1">.validity-body { font-size: 13.5px; color: var(--neutral-600); line-height: 1.75; }</p>
-<p class="p1">.validity-body strong { color: var(--neutral-800); }</p>
-<p class="p2"><br></p>
-<p class="p1">/* callout */</p>
-<p class="p1">.callout { display:flex; gap:12px; padding:14px 16px; border-radius:var(--radius-md); font-size:13.5px; line-height:1.65; margin-top:16px; }</p>
-<p class="p1">.callout.info { background:var(--primary-light); border:1px solid rgba(26,58,107,.12); color:var(--primary); }</p>
-<p class="p1">.callout.warn { background:#fef9ec; border:1px solid #f5d97a; color:#7a5a00; }</p>
-<p class="p1">.callout-icon { flex-shrink:0; font-size:16px; margin-top:1px; }</p>
-<p class="p2"><br></p>
-<p class="p1">/* cta */</p>
-<p class="p1">.cta-row { display:flex; flex-wrap:wrap; gap:12px; margin-top:24px; padding-top:24px; border-top:1px solid var(--neutral-100); }</p>
-<p class="p2"><br></p>
-<p class="p1">/* Responsive */</p>
-<p class="p1">@media (max-width:900px) {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.content-wrap { grid-template-columns:1fr; gap:28px; padding:32px 0 48px; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.content-aside { order:-1; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.aside-nav-list { flex-direction:row; flex-wrap:wrap; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.grade-grid { grid-template-columns:1fr; }</p>
-<p class="p1">}</p>
-<p class="p1">@media (max-width:768px) {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.gnb-nav, .gnb-actions .btn-ghost, .gnb-actions .btn-solid, .lang-toggle { display:none; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.gnb-hamburger { display:flex; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.footer-grid { grid-template-columns:1fr; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.footer-ext { align-items:flex-start; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.validity-banner { flex-direction:column; align-items:flex-start; gap:12px; }</p>
-<p class="p1">}</p>
-<p class="p1">@media (max-width:480px) {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.cta-row { flex-direction:column; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.cta-row .btn { justify-content:center; }</p>
-<p class="p1">}</p>
-<p class="p1">&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- GNB --&gt;</p>
-<p class="p1">&lt;header class="gnb" role="banner"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="gnb-inner"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="index.html" class="gnb-logo" aria-label="TOPIK Myanmar 홈으로"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-logo-mark"&gt;TK&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-logo-text"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;strong&gt;TOPIK Myanmar&lt;/strong&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;span&gt;한국어능력시험&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;nav class="gnb-nav" role="navigation" aria-label="주요 메뉴"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="gnb-menu-btn is-active" aria-haspopup="true"&gt;TOPIK 안내 &lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-overview.html"&gt;시험 개요&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-intro.html"&gt;시험 소개&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-questions.html"&gt;문항 구성&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-evaluation.html" class="is-current" aria-current="page"&gt;평가 기준&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="gnb-menu-btn" aria-haspopup="true"&gt;TOPIK 규정 &lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="rules-notice.html"&gt;유의 사항&lt;/a&gt;&lt;a href="rules-answer.html"&gt;답안 작성 요령&lt;/a&gt;&lt;a href="rules-fee.html"&gt;응시료 규정&lt;/a&gt;&lt;a href="rules-id.html"&gt;신분증 규정&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="gnb-menu-btn" aria-haspopup="true"&gt;TOPIK 접수 &lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="apply-howto.html"&gt;접수 방법&lt;/a&gt;&lt;a href="register.html"&gt;시험 접수&lt;/a&gt;&lt;a href="mypage.html"&gt;접수 확인&lt;/a&gt;&lt;a href="admit-card.html"&gt;수험표 출력&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="gnb-menu-btn" aria-haspopup="true"&gt;게시판 &lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="notice.html"&gt;공지사항&lt;/a&gt;&lt;a href="refund-correction.html"&gt;환불·정보정정신청&lt;/a&gt;&lt;a href="qna.html"&gt;문의게시판&lt;/a&gt;&lt;a href="faq.html"&gt;FAQ&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/nav&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="gnb-actions"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="lang-toggle" role="group" aria-label="언어 선택"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="is-active" onclick="setLang('ko')"&gt;KO&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button onclick="setLang('my')"&gt;MY&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button onclick="setLang('en')"&gt;EN&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="login.html"<span class="Apple-converted-space">  </span>class="btn btn-ghost"&gt;로그인&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="signup.html" class="btn btn-solid"&gt;회원가입&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="gnb-hamburger" id="js-hamburger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="js-drawer"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/header&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="drawer-overlay" id="js-overlay"&gt;&lt;/div&gt;</p>
-<p class="p1">&lt;div class="mobile-drawer" id="js-drawer" role="dialog" aria-modal="true" aria-label="모바일 메뉴"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-head"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="gnb-logo"&gt;&lt;div class="gnb-logo-mark"&gt;TK&lt;/div&gt;&lt;div class="gnb-logo-text"&gt;&lt;strong&gt;TOPIK Myanmar&lt;/strong&gt;&lt;span&gt;한국어능력시험&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="drawer-close-btn" id="js-drawer-close" aria-label="메뉴 닫기"&gt;✕&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-body"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;&lt;div class="drawer-group-title"&gt;TOPIK 안내&lt;/div&gt;&lt;a href="guide-overview.html" class="drawer-link"&gt;시험 개요&lt;/a&gt;&lt;a href="guide-intro.html" class="drawer-link"&gt;시험 소개&lt;/a&gt;&lt;a href="guide-questions.html" class="drawer-link"&gt;문항 구성&lt;/a&gt;&lt;a href="guide-evaluation.html" class="drawer-link is-current" aria-current="page"&gt;평가 기준&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;&lt;div class="drawer-group-title"&gt;TOPIK 규정&lt;/div&gt;&lt;a href="rules-notice.html" class="drawer-link"&gt;유의 사항&lt;/a&gt;&lt;a href="rules-answer.html" class="drawer-link"&gt;답안 작성 요령&lt;/a&gt;&lt;a href="rules-fee.html" class="drawer-link"&gt;응시료 규정&lt;/a&gt;&lt;a href="rules-id.html" class="drawer-link"&gt;신분증 규정&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;&lt;div class="drawer-group-title"&gt;TOPIK 접수&lt;/div&gt;&lt;a href="apply-howto.html" class="drawer-link"&gt;접수 방법&lt;/a&gt;&lt;a href="register.html" class="drawer-link"&gt;시험 접수&lt;/a&gt;&lt;a href="mypage.html" class="drawer-link"&gt;접수 확인&lt;/a&gt;&lt;a href="admit-card.html" class="drawer-link"&gt;수험표 출력&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;&lt;div class="drawer-group-title"&gt;게시판&lt;/div&gt;&lt;a href="notice.html" class="drawer-link"&gt;공지사항&lt;/a&gt;&lt;a href="refund-correction.html" class="drawer-link"&gt;환불·정보정정신청&lt;/a&gt;&lt;a href="qna.html" class="drawer-link"&gt;문의게시판&lt;/a&gt;&lt;a href="faq.html" class="drawer-link"&gt;FAQ&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-lang" role="group" aria-label="언어 선택"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="is-active" onclick="setLang('ko')"&gt;한국어&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button onclick="setLang('my')"&gt;မြန်မာ&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button onclick="setLang('en')"&gt;English&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-foot"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="login.html"<span class="Apple-converted-space">  </span>class="btn btn-outline"&gt;로그인&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="signup.html" class="btn btn-solid"&gt;회원가입&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- PAGE HERO --&gt;</p>
-<p class="p1">&lt;div class="page-hero"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;nav class="breadcrumb" aria-label="경로"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="index.html"&gt;홈&lt;/a&gt;&lt;span class="sep"&gt;›&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;span&gt;TOPIK 안내&lt;/span&gt;&lt;span class="sep"&gt;›&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="cur"&gt;평가 기준&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/nav&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="page-hero-label"&gt;TOPIK 안내&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;h1 class="page-hero-title"&gt;평가 기준&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;p class="page-hero-desc"&gt;등급별 합격 점수, 채점 방식, 성적 인정 기간 등 TOPIK 평가 기준을 상세히 안내합니다.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- SUB NAV --&gt;</p>
-<p class="p1">&lt;div class="sub-nav" role="navigation" aria-label="TOPIK 안내 하위 메뉴"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="sub-nav-inner"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="guide-overview.html" <span class="Apple-converted-space">  </span>class="sub-nav-link"&gt;시험 개요&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="guide-intro.html"<span class="Apple-converted-space">      </span>class="sub-nav-link"&gt;시험 소개&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="guide-questions.html"<span class="Apple-converted-space">  </span>class="sub-nav-link"&gt;문항 구성&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="guide-evaluation.html" class="sub-nav-link is-active" aria-current="page"&gt;평가 기준&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- CONTENT --&gt;</p>
-<p class="p1">&lt;div class="container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="content-wrap"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;main class="content-main"&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 1. 등급 체계 개요 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="info-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2 class="info-card-title"&gt;등급 체계 개요&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;p&gt;TOPIK은 취득 점수에 따라 &lt;strong&gt;1급~6급&lt;/strong&gt;을 인정하며, TOPIK Ⅰ은 1·2급, TOPIK Ⅱ는 3·4·5·6급을 부여합니다. 합격 최저 점수에 미달하는 경우 해당 시험의 급수가 인정되지 않습니다.&lt;/p&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- TOPIK Ⅰ 등급 카드 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="level-divider"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="level-divider-badge blue"&gt;TOPIK Ⅰ — 초급 · 200점 만점&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="grade-grid"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="grade-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grade-card-head g1"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-num-circle"&gt;1&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-card-head-info"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grade-card-head-title"&gt;1급&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grade-card-head-sub"&gt;초급 하&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grade-card-body"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-score-label"&gt;합격 기준 점수&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-score-range"&gt;80점 &lt;span class="grade-score-unit"&gt;이상 / 200점&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-bar-track"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grade-bar-fill g1" style="width:40%"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--neutral-400)"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;span&gt;80점&lt;/span&gt;&lt;span&gt;139점&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="margin-top:10px;font-size:12.5px;color:var(--neutral-500);line-height:1.55"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>자기 소개, 물건 사기 등 기초적인 의사소통 가능</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="grade-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grade-card-head g2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-num-circle"&gt;2&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-card-head-info"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grade-card-head-title"&gt;2급&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grade-card-head-sub"&gt;초급 상&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grade-card-body"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-score-label"&gt;합격 기준 점수&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-score-range"&gt;140점 &lt;span class="grade-score-unit"&gt;이상 / 200점&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-bar-track"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grade-bar-fill g2" style="width:70%"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--neutral-400)"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;span&gt;140점&lt;/span&gt;&lt;span&gt;200점&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="margin-top:10px;font-size:12.5px;color:var(--neutral-500);line-height:1.55"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>일상적인 생활 관련 주제를 이해하고 표현 가능</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- TOPIK Ⅱ 등급 카드 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="level-divider"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="level-divider-badge red"&gt;TOPIK Ⅱ — 중·고급 · 300점 만점&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="grade-grid"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="grade-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grade-card-head g3"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-num-circle"&gt;3&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-card-head-info"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grade-card-head-title"&gt;3급&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grade-card-head-sub"&gt;중급 하&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grade-card-body"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-score-label"&gt;합격 기준 점수&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-score-range"&gt;120점 &lt;span class="grade-score-unit"&gt;이상 / 300점&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-bar-track"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grade-bar-fill g3" style="width:40%"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--neutral-400)"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;span&gt;120점&lt;/span&gt;&lt;span&gt;149점&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="margin-top:10px;font-size:12.5px;color:var(--neutral-500);line-height:1.55"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>친숙한 사회적 주제의 문어·구어 텍스트 이해 가능</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="grade-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grade-card-head g4"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-num-circle"&gt;4&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-card-head-info"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grade-card-head-title"&gt;4급&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grade-card-head-sub"&gt;중급 상&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grade-card-body"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-score-label"&gt;합격 기준 점수&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-score-range"&gt;150점 &lt;span class="grade-score-unit"&gt;이상 / 300점&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-bar-track"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grade-bar-fill g4" style="width:50%"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--neutral-400)"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;span&gt;150점&lt;/span&gt;&lt;span&gt;189점&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="margin-top:10px;font-size:12.5px;color:var(--neutral-500);line-height:1.55"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>일반적 업무 수행에 필요한 언어 기능 보유</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="grade-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grade-card-head g5"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-num-circle"&gt;5&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-card-head-info"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grade-card-head-title"&gt;5급&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grade-card-head-sub"&gt;고급 하&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grade-card-body"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-score-label"&gt;합격 기준 점수&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-score-range"&gt;190점 &lt;span class="grade-score-unit"&gt;이상 / 300점&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-bar-track"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grade-bar-fill g5" style="width:63%"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--neutral-400)"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;span&gt;190점&lt;/span&gt;&lt;span&gt;229점&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="margin-top:10px;font-size:12.5px;color:var(--neutral-500);line-height:1.55"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>전문 분야의 연구·업무에 필요한 언어 기능 보유</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="grade-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grade-card-head g6"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-num-circle"&gt;6&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-card-head-info"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grade-card-head-title"&gt;6급&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grade-card-head-sub"&gt;고급 상&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grade-card-body"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-score-label"&gt;합격 기준 점수&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-score-range"&gt;230점 &lt;span class="grade-score-unit"&gt;이상 / 300점&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="grade-bar-track"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grade-bar-fill g6" style="width:76%"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--neutral-400)"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;span&gt;230점&lt;/span&gt;&lt;span&gt;300점&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style="margin-top:10px;font-size:12.5px;color:var(--neutral-500);line-height:1.55"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>모든 기능을 유창하고 정확하게 수행 가능</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- 점수 요약표 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style="margin-top:20px;overflow-x:auto"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:380px"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;caption style="font-size:11px;color:var(--neutral-400);text-align:left;margin-bottom:8px;caption-side:top"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>※ 합격 최저 점수 미만 취득 시 해당 시험 급수 미인정</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/caption&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;thead&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr style="background:var(--neutral-800)"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;th scope="col" style="padding:10px 16px;text-align:left;color:rgba(255,255,255,.85);font-size:12px;font-weight:600;border-radius:var(--radius-sm) 0 0 0"&gt;구분&lt;/th&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;th scope="col" style="padding:10px 16px;text-align:center;color:rgba(255,255,255,.85);font-size:12px;font-weight:600"&gt;급수&lt;/th&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;th scope="col" style="padding:10px 16px;text-align:center;color:rgba(255,255,255,.85);font-size:12px;font-weight:600"&gt;합격 최저 점수&lt;/th&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;th scope="col" style="padding:10px 16px;text-align:center;color:rgba(255,255,255,.85);font-size:12px;font-weight:600;border-radius:0 var(--radius-sm) 0 0"&gt;만점&lt;/th&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/thead&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;tbody&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr style="border-bottom:1px solid var(--neutral-100)"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;td rowspan="2" style="padding:11px 16px;font-weight:600;color:var(--primary);border-right:1px solid var(--neutral-100)"&gt;TOPIK Ⅰ&lt;/td&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;td style="padding:11px 16px;text-align:center;font-weight:600"&gt;1급&lt;/td&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;td style="padding:11px 16px;text-align:center;color:var(--primary);font-weight:700"&gt;80점&lt;/td&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;td rowspan="2" style="padding:11px 16px;text-align:center;color:var(--neutral-500);border-left:1px solid var(--neutral-100)"&gt;200점&lt;/td&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr style="border-bottom:1px solid var(--neutral-200);background:var(--neutral-50)"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;td style="padding:11px 16px;text-align:center;font-weight:600"&gt;2급&lt;/td&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;td style="padding:11px 16px;text-align:center;color:var(--primary);font-weight:700"&gt;140점&lt;/td&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr style="border-bottom:1px solid var(--neutral-100)"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;td rowspan="4" style="padding:11px 16px;font-weight:600;color:var(--accent);border-right:1px solid var(--neutral-100)"&gt;TOPIK Ⅱ&lt;/td&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;td style="padding:11px 16px;text-align:center;font-weight:600"&gt;3급&lt;/td&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;td style="padding:11px 16px;text-align:center;color:var(--accent);font-weight:700"&gt;120점&lt;/td&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;td rowspan="4" style="padding:11px 16px;text-align:center;color:var(--neutral-500);border-left:1px solid var(--neutral-100)"&gt;300점&lt;/td&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr style="border-bottom:1px solid var(--neutral-100);background:var(--neutral-50)"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;td style="padding:11px 16px;text-align:center;font-weight:600"&gt;4급&lt;/td&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;td style="padding:11px 16px;text-align:center;color:var(--accent);font-weight:700"&gt;150점&lt;/td&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr style="border-bottom:1px solid var(--neutral-100)"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;td style="padding:11px 16px;text-align:center;font-weight:600"&gt;5급&lt;/td&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;td style="padding:11px 16px;text-align:center;color:var(--accent);font-weight:700"&gt;190점&lt;/td&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;tr style="background:var(--neutral-50)"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;td style="padding:11px 16px;text-align:center;font-weight:600"&gt;6급&lt;/td&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;td style="padding:11px 16px;text-align:center;color:var(--accent);font-weight:700"&gt;230점&lt;/td&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/tr&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/tbody&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/table&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 2. 채점 방식 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="info-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2 class="info-card-title"&gt;채점 방식&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;p style="margin-bottom:16px"&gt;영역별 문항 유형에 따라 채점 방식이 다르게 적용됩니다.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="scoring-list"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="scoring-item"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="scoring-icon"&gt;✔&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="scoring-info-title"&gt;객관식 (4지선다)&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="scoring-info-desc"&gt;TOPIK Ⅰ 전 영역 및 TOPIK Ⅱ 듣기·읽기 영역에 적용됩니다. 정답은 하나이며, 오답 감점은 없습니다.&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="scoring-item"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="scoring-icon"&gt;✏&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="scoring-info-title"&gt;단답형 주관식&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="scoring-info-desc"&gt;TOPIK Ⅱ 쓰기 영역의 51~52번 문항에 해당합니다. 단어 또는 짧은 문장을 직접 작성합니다.&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="scoring-item"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="scoring-icon"&gt;📝&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="scoring-info-title"&gt;서술형 작문&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="scoring-info-desc"&gt;TOPIK Ⅱ 쓰기 영역의 53~54번 문항에 해당합니다. 원고지 답안지에 직접 작성하며, 내용·구성·언어 사용 등을 종합 평가합니다.&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="callout info" style="margin-top:16px"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="callout-icon"&gt;ℹ&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span&gt;쓰기 영역 서술형 작문은 &lt;strong&gt;자동 채점이 불가&lt;/strong&gt;하여 전문 채점관이 직접 평가합니다. 성적 발표까지 다소 시간이 소요될 수 있습니다.&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 3. 성적 인정 기간 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="info-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2 class="info-card-title"&gt;성적 인정 기간&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="validity-banner"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="validity-main"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="validity-num"&gt;2&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="validity-unit"&gt;년&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="validity-body"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>TOPIK 성적은 &lt;strong&gt;성적 발표일로부터 2년간 유효&lt;/strong&gt;합니다.&lt;br&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>유효 기간이 지난 성적은 각 기관에서 인정하지 않을 수 있으므로,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>활용 기관의 요구 조건을 반드시 미리 확인하시기 바랍니다.&lt;br&gt;&lt;br&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;strong&gt;예시:&lt;/strong&gt; 2025년 11월 14일 성적 발표 시 → 2027년 11월 13일까지 유효</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="callout warn" style="margin-top:16px"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="callout-icon"&gt;⚠&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span&gt;일부 기관(대학원, 취업비자 등)은 성적 유효 기간을 별도로 규정할 수 있습니다. 지원 기관에 직접 문의하여 확인하시기 바랍니다.&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- CTA --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="cta-row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="register.html" <span class="Apple-converted-space">    </span>class="btn btn-solid btn-lg"&gt;시험 접수하기&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="guide-questions.html" class="btn btn-outline btn-lg"&gt;문항 구성 보기&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="faq.html"<span class="Apple-converted-space">          </span>class="btn btn-ghost btn-lg"&gt;자주 묻는 질문&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/main&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- SIDEBAR --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;aside class="content-aside"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="aside-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="aside-card-title"&gt;TOPIK 안내&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;nav class="aside-nav-list" aria-label="TOPIK 안내 메뉴"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-overview.html" <span class="Apple-converted-space">  </span>class="aside-nav-link"&gt;시험 개요&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-intro.html"<span class="Apple-converted-space">      </span>class="aside-nav-link"&gt;시험 소개&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-questions.html"<span class="Apple-converted-space">  </span>class="aside-nav-link"&gt;문항 구성&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-evaluation.html" class="aside-nav-link is-current" aria-current="page"&gt;평가 기준&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/nav&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="aside-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="aside-card-title"&gt;외부 링크&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://topik.go.kr" target="_blank" rel="noopener noreferrer" class="aside-ext-link primary-link"&gt;TOPIK 본부 (topik.go.kr) ↗&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://niied.go.kr" target="_blank" rel="noopener noreferrer" class="aside-ext-link neutral-link"&gt;국립국제교육원 (NIIED) ↗&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="aside-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="aside-notice"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;strong&gt;접수 기간 확인&lt;/strong&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>현재 제 99회 접수가 진행 중입니다.</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style="margin-top:10px"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="register.html" class="btn btn-solid" style="width:100%;justify-content:center"&gt;시험 접수하기&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/aside&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- FOOTER --&gt;</p>
-<p class="p1">&lt;footer class="footer" role="contentinfo"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="footer-grid"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="footer-brand"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;strong&gt;주미얀마 대한민국 대사관&lt;/strong&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;p&gt;Embassy of the Republic of Korea in Myanmar&lt;br&gt;한국어능력시험(TOPIK) 공식 접수 사이트&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="footer-ext"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://topik.go.kr"<span class="Apple-converted-space">          </span>target="_blank" rel="noopener noreferrer"&gt;TOPIK 본부 (topik.go.kr)&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://niied.go.kr"<span class="Apple-converted-space">          </span>target="_blank" rel="noopener noreferrer"&gt;국립국제교육원 (NIIED)&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://www.mofa.go.kr/mm-ko" target="_blank" rel="noopener noreferrer"&gt;대사관 공식 웹사이트&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="footer-bottom"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="footer-copy"&gt;© 2025–2026 Embassy of the Republic of Korea in Myanmar. All rights reserved.&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="footer-policy"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="#"&gt;개인정보처리방침&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="#"&gt;이용약관&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/footer&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;script&gt;</p>
-<p class="p1">const hamburger <span class="Apple-converted-space">  </span>= document.getElementById('js-hamburger');</p>
-<p class="p1">const drawer<span class="Apple-converted-space">      </span>= document.getElementById('js-drawer');</p>
-<p class="p1">const overlay <span class="Apple-converted-space">    </span>= document.getElementById('js-overlay');</p>
-<p class="p1">const drawerClose = document.getElementById('js-drawer-close');</p>
-<p class="p2"><br></p>
-<p class="p1">function openDrawer() {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>drawer.classList.add('is-open');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>overlay.classList.add('is-show');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>hamburger.setAttribute('aria-expanded', 'true');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.body.style.overflow = 'hidden';</p>
-<p class="p1">}</p>
-<p class="p1">function closeDrawer() {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>drawer.classList.remove('is-open');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>overlay.classList.remove('is-show');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>hamburger.setAttribute('aria-expanded', 'false');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.body.style.overflow = '';</p>
-<p class="p1">}</p>
-<p class="p1">hamburger.addEventListener('click', openDrawer);</p>
-<p class="p1">drawerClose.addEventListener('click', closeDrawer);</p>
-<p class="p1">overlay.addEventListener('click', closeDrawer);</p>
-<p class="p1">document.addEventListener('keydown', e =&gt; { if (e.key === 'Escape') closeDrawer(); });</p>
-<p class="p2"><br></p>
-<p class="p1">function setLang(code) {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>try { localStorage.setItem('tm_lang', code); } catch(e) {}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('.lang-toggle button, .drawer-lang button').forEach(btn =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const hit = btn.getAttribute('onclick')?.includes(`'${code}'`);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>btn.classList.toggle('is-active', !!hit);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p1">}</p>
-<p class="p1">try { setLang(localStorage.getItem('tm_lang') || 'ko'); } catch(e) {}</p>
-<p class="p1">&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+<!-- GNB -->
+<header class="gnb" role="banner">
+ <div class="gnb-inner">
+ <a href="index.html" class="gnb-logo" aria-label="TOPIK Myanmar 홈으로">
+ <div class="gnb-logo-mark">TK</div>
+ <div class="gnb-logo-text">
+ <strong>TOPIK Myanmar</strong>
+ <span>한국어능력시험</span>
+ </div>
+ </a>
+ <nav class="gnb-nav" role="navigation" aria-label="주요 메뉴">
+ <div class="gnb-menu">
+ <button class="gnb-menu-btn is-active" aria-haspopup="true">TOPIK 안내 <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></button>
+ <div class="gnb-dropdown">
+ <a href="guide-overview.html">시험 개요</a>
+ <a href="guide-intro.html">시험 소개</a>
+ <a href="guide-questions.html">문항 구성</a>
+ <a href="guide-evaluation.html" class="is-current" aria-current="page">평가 기준</a>
+ </div>
+ </div>
+ <div class="gnb-menu">
+ <button class="gnb-menu-btn" aria-haspopup="true">TOPIK 규정 <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></button>
+ <div class="gnb-dropdown">
+ <a href="rules-notice.html">유의 사항</a><a href="rules-answer.html">답안 작성 요령</a><a href="rules-fee.html">응시료 규정</a><a href="rules-id.html">신분증 규정</a>
+ </div>
+ </div>
+ <div class="gnb-menu">
+ <button class="gnb-menu-btn" aria-haspopup="true">TOPIK 접수 <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></button>
+ <div class="gnb-dropdown">
+ <a href="apply-howto.html">접수 방법</a><a href="register.html">시험 접수</a><a href="mypage.html">접수 확인</a><a href="admit-card.html">수험표 출력</a>
+ </div>
+ </div>
+ <div class="gnb-menu">
+ <button class="gnb-menu-btn" aria-haspopup="true">게시판 <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></button>
+ <div class="gnb-dropdown">
+ <a href="notice.html">공지사항</a><a href="refund-correction.html">환불·정보정정신청</a><a href="qna.html">문의게시판</a><a href="faq.html">FAQ</a>
+ </div>
+ </div>
+ </nav>
+ <div class="gnb-actions">
+ <div class="lang-toggle" role="group" aria-label="언어 선택">
+ <button class="is-active" onclick="setLang('ko')">KO</button>
+ <button onclick="setLang('my')">MY</button>
+ <button onclick="setLang('en')">EN</button>
+ </div>
+ <a href="login.html" class="btn btn-ghost">로그인</a>
+ <a href="signup.html" class="btn btn-solid">회원가입</a>
+ </div>
+ <button class="gnb-hamburger" id="js-hamburger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="js-drawer">
+ <span></span><span></span><span></span>
+ </button>
+ </div>
+</header>
+<div class="drawer-overlay" id="js-overlay"></div>
+<div class="mobile-drawer" id="js-drawer" role="dialog" aria-modal="true" aria-label="모바일 메뉴">
+ <div class="drawer-head">
+ <div class="gnb-logo"><div class="gnb-logo-mark">TK</div><div class="gnb-logo-text"><strong>TOPIK Myanmar</strong><span>한국어능력시험</span></div></div>
+ <button class="drawer-close-btn" id="js-drawer-close" aria-label="메뉴 닫기">✕</button>
+ </div>
+ <div class="drawer-body">
+ <div class="drawer-group"><div class="drawer-group-title">TOPIK 안내</div><a href="guide-overview.html" class="drawer-link">시험 개요</a><a href="guide-intro.html" class="drawer-link">시험 소개</a><a href="guide-questions.html" class="drawer-link">문항 구성</a><a href="guide-evaluation.html" class="drawer-link is-current" aria-current="page">평가 기준</a></div>
+ <div class="drawer-group"><div class="drawer-group-title">TOPIK 규정</div><a href="rules-notice.html" class="drawer-link">유의 사항</a><a href="rules-answer.html" class="drawer-link">답안 작성 요령</a><a href="rules-fee.html" class="drawer-link">응시료 규정</a><a href="rules-id.html" class="drawer-link">신분증 규정</a></div>
+ <div class="drawer-group"><div class="drawer-group-title">TOPIK 접수</div><a href="apply-howto.html" class="drawer-link">접수 방법</a><a href="register.html" class="drawer-link">시험 접수</a><a href="mypage.html" class="drawer-link">접수 확인</a><a href="admit-card.html" class="drawer-link">수험표 출력</a></div>
+ <div class="drawer-group"><div class="drawer-group-title">게시판</div><a href="notice.html" class="drawer-link">공지사항</a><a href="refund-correction.html" class="drawer-link">환불·정보정정신청</a><a href="qna.html" class="drawer-link">문의게시판</a><a href="faq.html" class="drawer-link">FAQ</a></div>
+ </div>
+ <div class="drawer-lang" role="group" aria-label="언어 선택">
+ <button class="is-active" onclick="setLang('ko')">한국어</button>
+ <button onclick="setLang('my')">မြန်မာ</button>
+ <button onclick="setLang('en')">English</button>
+ </div>
+ <div class="drawer-foot">
+ <a href="login.html" class="btn btn-outline">로그인</a>
+ <a href="signup.html" class="btn btn-solid">회원가입</a>
+ </div>
+</div>
+<!-- PAGE HERO -->
+<div class="page-hero">
+ <div class="container">
+ <nav class="breadcrumb" aria-label="경로">
+ <a href="index.html">홈</a><span class="sep">›</span>
+ <span>TOPIK 안내</span><span class="sep">›</span>
+ <span class="cur">평가 기준</span>
+ </nav>
+ <div class="page-hero-label">TOPIK 안내</div>
+ <h1 class="page-hero-title">평가 기준</h1>
+ <p class="page-hero-desc">등급별 합격 점수, 채점 방식, 성적 인정 기간 등 TOPIK 평가 기준을 상세히 안내합니다.</p>
+ </div>
+</div>
+<!-- SUB NAV -->
+<div class="sub-nav" role="navigation" aria-label="TOPIK 안내 하위 메뉴">
+ <div class="sub-nav-inner">
+ <a href="guide-overview.html"  class="sub-nav-link">시험 개요</a>
+ <a href="guide-intro.html" class="sub-nav-link">시험 소개</a>
+ <a href="guide-questions.html" class="sub-nav-link">문항 구성</a>
+ <a href="guide-evaluation.html" class="sub-nav-link is-active" aria-current="page">평가 기준</a>
+ </div>
+</div>
+<!-- CONTENT -->
+<div class="container">
+ <div class="content-wrap">
+ <main class="content-main">
+
+ <!-- 1. 등급 체계 개요 -->
+ <div class="info-card">
+ <h2 class="info-card-title">등급 체계 개요</h2>
+ <p>TOPIK은 취득 점수에 따라 <strong>1급~6급</strong>을 인정하며, TOPIK Ⅰ은 1·2급, TOPIK Ⅱ는 3·4·5·6급을 부여합니다. 합격 최저 점수에 미달하는 경우 해당 시험의 급수가 인정되지 않습니다.</p>
+ <!-- TOPIK Ⅰ 등급 카드 -->
+ <div class="level-divider">
+ <span class="level-divider-badge blue">TOPIK Ⅰ — 초급 · 200점 만점</span>
+ </div>
+ <div class="grade-grid">
+ <div class="grade-card">
+ <div class="grade-card-head g1">
+ <div class="grade-num-circle">1</div>
+ <div class="grade-card-head-info">
+ <div class="grade-card-head-title">1급</div>
+ <div class="grade-card-head-sub">초급 하</div>
+ </div>
+ </div>
+ <div class="grade-card-body">
+ <div class="grade-score-label">합격 기준 점수</div>
+ <div class="grade-score-range">80점 <span class="grade-score-unit">이상 / 200점</span></div>
+ <div class="grade-bar-track">
+ <div class="grade-bar-fill g1" style="width:40%"></div>
+ </div>
+ <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--neutral-400)">
+ <span>80점</span><span>139점</span>
+ </div>
+ <div style="margin-top:10px;font-size:12.5px;color:var(--neutral-500);line-height:1.55">
+ 자기 소개, 물건 사기 등 기초적인 의사소통 가능
+ </div>
+ </div>
+ </div>
+ <div class="grade-card">
+ <div class="grade-card-head g2">
+ <div class="grade-num-circle">2</div>
+ <div class="grade-card-head-info">
+ <div class="grade-card-head-title">2급</div>
+ <div class="grade-card-head-sub">초급 상</div>
+ </div>
+ </div>
+ <div class="grade-card-body">
+ <div class="grade-score-label">합격 기준 점수</div>
+ <div class="grade-score-range">140점 <span class="grade-score-unit">이상 / 200점</span></div>
+ <div class="grade-bar-track">
+ <div class="grade-bar-fill g2" style="width:70%"></div>
+ </div>
+ <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--neutral-400)">
+ <span>140점</span><span>200점</span>
+ </div>
+ <div style="margin-top:10px;font-size:12.5px;color:var(--neutral-500);line-height:1.55">
+ 일상적인 생활 관련 주제를 이해하고 표현 가능
+ </div>
+ </div>
+ </div>
+ </div>
+ <!-- TOPIK Ⅱ 등급 카드 -->
+ <div class="level-divider">
+ <span class="level-divider-badge red">TOPIK Ⅱ — 중·고급 · 300점 만점</span>
+ </div>
+ <div class="grade-grid">
+ <div class="grade-card">
+ <div class="grade-card-head g3">
+ <div class="grade-num-circle">3</div>
+ <div class="grade-card-head-info">
+ <div class="grade-card-head-title">3급</div>
+ <div class="grade-card-head-sub">중급 하</div>
+ </div>
+ </div>
+ <div class="grade-card-body">
+ <div class="grade-score-label">합격 기준 점수</div>
+ <div class="grade-score-range">120점 <span class="grade-score-unit">이상 / 300점</span></div>
+ <div class="grade-bar-track">
+ <div class="grade-bar-fill g3" style="width:40%"></div>
+ </div>
+ <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--neutral-400)">
+ <span>120점</span><span>149점</span>
+ </div>
+ <div style="margin-top:10px;font-size:12.5px;color:var(--neutral-500);line-height:1.55">
+ 친숙한 사회적 주제의 문어·구어 텍스트 이해 가능
+ </div>
+ </div>
+ </div>
+ <div class="grade-card">
+ <div class="grade-card-head g4">
+ <div class="grade-num-circle">4</div>
+ <div class="grade-card-head-info">
+ <div class="grade-card-head-title">4급</div>
+ <div class="grade-card-head-sub">중급 상</div>
+ </div>
+ </div>
+ <div class="grade-card-body">
+ <div class="grade-score-label">합격 기준 점수</div>
+ <div class="grade-score-range">150점 <span class="grade-score-unit">이상 / 300점</span></div>
+ <div class="grade-bar-track">
+ <div class="grade-bar-fill g4" style="width:50%"></div>
+ </div>
+ <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--neutral-400)">
+ <span>150점</span><span>189점</span>
+ </div>
+ <div style="margin-top:10px;font-size:12.5px;color:var(--neutral-500);line-height:1.55">
+ 일반적 업무 수행에 필요한 언어 기능 보유
+ </div>
+ </div>
+ </div>
+ <div class="grade-card">
+ <div class="grade-card-head g5">
+ <div class="grade-num-circle">5</div>
+ <div class="grade-card-head-info">
+ <div class="grade-card-head-title">5급</div>
+ <div class="grade-card-head-sub">고급 하</div>
+ </div>
+ </div>
+ <div class="grade-card-body">
+ <div class="grade-score-label">합격 기준 점수</div>
+ <div class="grade-score-range">190점 <span class="grade-score-unit">이상 / 300점</span></div>
+ <div class="grade-bar-track">
+ <div class="grade-bar-fill g5" style="width:63%"></div>
+ </div>
+ <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--neutral-400)">
+ <span>190점</span><span>229점</span>
+ </div>
+ <div style="margin-top:10px;font-size:12.5px;color:var(--neutral-500);line-height:1.55">
+ 전문 분야의 연구·업무에 필요한 언어 기능 보유
+ </div>
+ </div>
+ </div>
+ <div class="grade-card">
+ <div class="grade-card-head g6">
+ <div class="grade-num-circle">6</div>
+ <div class="grade-card-head-info">
+ <div class="grade-card-head-title">6급</div>
+ <div class="grade-card-head-sub">고급 상</div>
+ </div>
+ </div>
+ <div class="grade-card-body">
+ <div class="grade-score-label">합격 기준 점수</div>
+ <div class="grade-score-range">230점 <span class="grade-score-unit">이상 / 300점</span></div>
+ <div class="grade-bar-track">
+ <div class="grade-bar-fill g6" style="width:76%"></div>
+ </div>
+ <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--neutral-400)">
+ <span>230점</span><span>300점</span>
+ </div>
+ <div style="margin-top:10px;font-size:12.5px;color:var(--neutral-500);line-height:1.55">
+ 모든 기능을 유창하고 정확하게 수행 가능
+ </div>
+ </div>
+ </div>
+ </div>
+ <!-- 점수 요약표 -->
+ <div style="margin-top:20px;overflow-x:auto">
+ <table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:380px">
+ <caption style="font-size:11px;color:var(--neutral-400);text-align:left;margin-bottom:8px;caption-side:top">
+ ※ 합격 최저 점수 미만 취득 시 해당 시험 급수 미인정
+ </caption>
+ <thead>
+ <tr style="background:var(--neutral-800)">
+ <th scope="col" style="padding:10px 16px;text-align:left;color:rgba(255,255,255,.85);font-size:12px;font-weight:600;border-radius:var(--radius-sm) 0 0 0">구분</th>
+ <th scope="col" style="padding:10px 16px;text-align:center;color:rgba(255,255,255,.85);font-size:12px;font-weight:600">급수</th>
+ <th scope="col" style="padding:10px 16px;text-align:center;color:rgba(255,255,255,.85);font-size:12px;font-weight:600">합격 최저 점수</th>
+ <th scope="col" style="padding:10px 16px;text-align:center;color:rgba(255,255,255,.85);font-size:12px;font-weight:600;border-radius:0 var(--radius-sm) 0 0">만점</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr style="border-bottom:1px solid var(--neutral-100)">
+ <td rowspan="2" style="padding:11px 16px;font-weight:600;color:var(--primary);border-right:1px solid var(--neutral-100)">TOPIK Ⅰ</td>
+ <td style="padding:11px 16px;text-align:center;font-weight:600">1급</td>
+ <td style="padding:11px 16px;text-align:center;color:var(--primary);font-weight:700">80점</td>
+ <td rowspan="2" style="padding:11px 16px;text-align:center;color:var(--neutral-500);border-left:1px solid var(--neutral-100)">200점</td>
+ </tr>
+ <tr style="border-bottom:1px solid var(--neutral-200);background:var(--neutral-50)">
+ <td style="padding:11px 16px;text-align:center;font-weight:600">2급</td>
+ <td style="padding:11px 16px;text-align:center;color:var(--primary);font-weight:700">140점</td>
+ </tr>
+ <tr style="border-bottom:1px solid var(--neutral-100)">
+ <td rowspan="4" style="padding:11px 16px;font-weight:600;color:var(--accent);border-right:1px solid var(--neutral-100)">TOPIK Ⅱ</td>
+ <td style="padding:11px 16px;text-align:center;font-weight:600">3급</td>
+ <td style="padding:11px 16px;text-align:center;color:var(--accent);font-weight:700">120점</td>
+ <td rowspan="4" style="padding:11px 16px;text-align:center;color:var(--neutral-500);border-left:1px solid var(--neutral-100)">300점</td>
+ </tr>
+ <tr style="border-bottom:1px solid var(--neutral-100);background:var(--neutral-50)">
+ <td style="padding:11px 16px;text-align:center;font-weight:600">4급</td>
+ <td style="padding:11px 16px;text-align:center;color:var(--accent);font-weight:700">150점</td>
+ </tr>
+ <tr style="border-bottom:1px solid var(--neutral-100)">
+ <td style="padding:11px 16px;text-align:center;font-weight:600">5급</td>
+ <td style="padding:11px 16px;text-align:center;color:var(--accent);font-weight:700">190점</td>
+ </tr>
+ <tr style="background:var(--neutral-50)">
+ <td style="padding:11px 16px;text-align:center;font-weight:600">6급</td>
+ <td style="padding:11px 16px;text-align:center;color:var(--accent);font-weight:700">230점</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ </div>
+ <!-- 2. 채점 방식 -->
+ <div class="info-card">
+ <h2 class="info-card-title">채점 방식</h2>
+ <p style="margin-bottom:16px">영역별 문항 유형에 따라 채점 방식이 다르게 적용됩니다.</p>
+ <div class="scoring-list">
+ <div class="scoring-item">
+ <div class="scoring-icon">✔</div>
+ <div>
+ <div class="scoring-info-title">객관식 (4지선다)</div>
+ <div class="scoring-info-desc">TOPIK Ⅰ 전 영역 및 TOPIK Ⅱ 듣기·읽기 영역에 적용됩니다. 정답은 하나이며, 오답 감점은 없습니다.</div>
+ </div>
+ </div>
+ <div class="scoring-item">
+ <div class="scoring-icon">✏</div>
+ <div>
+ <div class="scoring-info-title">단답형 주관식</div>
+ <div class="scoring-info-desc">TOPIK Ⅱ 쓰기 영역의 51~52번 문항에 해당합니다. 단어 또는 짧은 문장을 직접 작성합니다.</div>
+ </div>
+ </div>
+ <div class="scoring-item">
+ <div class="scoring-icon">📝</div>
+ <div>
+ <div class="scoring-info-title">서술형 작문</div>
+ <div class="scoring-info-desc">TOPIK Ⅱ 쓰기 영역의 53~54번 문항에 해당합니다. 원고지 답안지에 직접 작성하며, 내용·구성·언어 사용 등을 종합 평가합니다.</div>
+ </div>
+ </div>
+ </div>
+ <div class="callout info" style="margin-top:16px">
+ <span class="callout-icon">ℹ</span>
+ <span>쓰기 영역 서술형 작문은 <strong>자동 채점이 불가</strong>하여 전문 채점관이 직접 평가합니다. 성적 발표까지 다소 시간이 소요될 수 있습니다.</span>
+ </div>
+ </div>
+ <!-- 3. 성적 인정 기간 -->
+ <div class="info-card">
+ <h2 class="info-card-title">성적 인정 기간</h2>
+ <div class="validity-banner">
+ <div class="validity-main">
+ <div class="validity-num">2</div>
+ <div class="validity-unit">년</div>
+ </div>
+ <div class="validity-body">
+ TOPIK 성적은 <strong>성적 발표일로부터 2년간 유효</strong>합니다.<br>
+ 유효 기간이 지난 성적은 각 기관에서 인정하지 않을 수 있으므로,
+ 활용 기관의 요구 조건을 반드시 미리 확인하시기 바랍니다.<br><br>
+ <strong>예시:</strong> 2025년 11월 14일 성적 발표 시 → 2027년 11월 13일까지 유효
+ </div>
+ </div>
+ <div class="callout warn" style="margin-top:16px">
+ <span class="callout-icon">⚠</span>
+ <span>일부 기관(대학원, 취업비자 등)은 성적 유효 기간을 별도로 규정할 수 있습니다. 지원 기관에 직접 문의하여 확인하시기 바랍니다.</span>
+ </div>
+ </div>
+ <!-- CTA -->
+ <div class="cta-row">
+ <a href="register.html"  class="btn btn-solid btn-lg">시험 접수하기</a>
+ <a href="guide-questions.html" class="btn btn-outline btn-lg">문항 구성 보기</a>
+ <a href="faq.html" class="btn btn-ghost btn-lg">자주 묻는 질문</a>
+ </div>
+ </main>
+ <!-- SIDEBAR -->
+ <aside class="content-aside">
+ <div class="aside-card">
+ <div class="aside-card-title">TOPIK 안내</div>
+ <nav class="aside-nav-list" aria-label="TOPIK 안내 메뉴">
+ <a href="guide-overview.html"  class="aside-nav-link">시험 개요</a>
+ <a href="guide-intro.html" class="aside-nav-link">시험 소개</a>
+ <a href="guide-questions.html" class="aside-nav-link">문항 구성</a>
+ <a href="guide-evaluation.html" class="aside-nav-link is-current" aria-current="page">평가 기준</a>
+ </nav>
+ </div>
+ <div class="aside-card">
+ <div class="aside-card-title">외부 링크</div>
+ <a href="https://topik.go.kr" target="_blank" rel="noopener noreferrer" class="aside-ext-link primary-link">TOPIK 본부 (topik.go.kr) ↗</a>
+ <a href="https://niied.go.kr" target="_blank" rel="noopener noreferrer" class="aside-ext-link neutral-link">국립국제교육원 (NIIED) ↗</a>
+ </div>
+ <div class="aside-card">
+ <div class="aside-notice">
+ <strong>접수 기간 확인</strong>
+ 현재 제 99회 접수가 진행 중입니다.
+ </div>
+ <div style="margin-top:10px">
+ <a href="register.html" class="btn btn-solid" style="width:100%;justify-content:center">시험 접수하기</a>
+ </div>
+ </div>
+ </aside>
+ </div>
+</div>
+<!-- FOOTER -->
+<footer class="footer" role="contentinfo">
+ <div class="container">
+ <div class="footer-grid">
+ <div class="footer-brand">
+ <strong>주미얀마 대한민국 대사관</strong>
+ <p>Embassy of the Republic of Korea in Myanmar<br>한국어능력시험(TOPIK) 공식 접수 사이트</p>
+ </div>
+ <div class="footer-ext">
+ <a href="https://topik.go.kr" target="_blank" rel="noopener noreferrer">TOPIK 본부 (topik.go.kr)</a>
+ <a href="https://niied.go.kr" target="_blank" rel="noopener noreferrer">국립국제교육원 (NIIED)</a>
+ <a href="https://www.mofa.go.kr/mm-ko" target="_blank" rel="noopener noreferrer">대사관 공식 웹사이트</a>
+ </div>
+ </div>
+ <div class="footer-bottom">
+ <span class="footer-copy">© 2025–2026 Embassy of the Republic of Korea in Myanmar. All rights reserved.</span>
+ <div class="footer-policy">
+ <a href="#">개인정보처리방침</a>
+ <a href="#">이용약관</a>
+ </div>
+ </div>
+ </div>
+</footer>
+<script>
+const hamburger  = document.getElementById('js-hamburger');
+const drawer = document.getElementById('js-drawer');
+const overlay  = document.getElementById('js-overlay');
+const drawerClose = document.getElementById('js-drawer-close');
+function openDrawer() {
+ drawer.classList.add('is-open');
+ overlay.classList.add('is-show');
+ hamburger.setAttribute('aria-expanded', 'true');
+ document.body.style.overflow = 'hidden';
+}
+function closeDrawer() {
+ drawer.classList.remove('is-open');
+ overlay.classList.remove('is-show');
+ hamburger.setAttribute('aria-expanded', 'false');
+ document.body.style.overflow = '';
+}
+hamburger.addEventListener('click', openDrawer);
+drawerClose.addEventListener('click', closeDrawer);
+overlay.addEventListener('click', closeDrawer);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+function setLang(code) {
+ try { localStorage.setItem('tm_lang', code); } catch(e) {}
+ document.querySelectorAll('.lang-toggle button, .drawer-lang button').forEach(btn => {
+ const hit = btn.getAttribute('onclick')?.includes(`'${code}'`);
+ btn.classList.toggle('is-active', !!hit);
+ });
+}
+try { setLang(localStorage.getItem('tm_lang') || 'ko'); } catch(e) {}
+</script>
 </body>
 </html>

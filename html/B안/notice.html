@@ -1,501 +1,459 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.6">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="TOPIK Myanmar 공지사항">
+<title>공지사항 | TOPIK Myanmar</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+ --primary:#1a3a6b;--primary-dark:#122a52;--primary-light:#e8eef7;
+ --accent:#c8232c;--accent-light:#fdf0f0;
+ --neutral-50:#f8f9fb;--neutral-100:#f1f3f7;--neutral-200:#e2e6ef;
+ --neutral-300:#c8cdd8;--neutral-400:#9099aa;--neutral-500:#636b7a;
+ --neutral-600:#464d5c;--neutral-700:#2d3340;--neutral-800:#1a1e28;
+ --white:#ffffff;
+ --radius-sm:6px;--radius-md:10px;--radius-lg:16px;
+ --shadow-sm:0 1px 4px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(0,0,0,.10);
+ --font-base:'Noto Sans KR',sans-serif;--ease:cubic-bezier(.4,0,.2,1);
+ --header-h:64px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--font-base);font-size:15px;color:var(--neutral-700);
+ background:var(--white);line-height:1.6;-webkit-font-smoothing:antialiased;padding-top:var(--header-h)}
+a{color:inherit;text-decoration:none}ul,ol{list-style:none}
+button{cursor:pointer;border:none;background:none;font-family:inherit}
+input{font-family:inherit}
+/* GNB */
+.gnb{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--white);
+ border-bottom:1px solid var(--neutral-200);height:var(--header-h);display:flex;align-items:center}
+.gnb-inner{display:flex;align-items:center;justify-content:space-between;
+ width:100%;max-width:1100px;margin:0 auto;padding:0 20px;gap:12px}
+.gnb-logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.gnb-logo-mark{width:32px;height:32px;background:var(--primary);border-radius:var(--radius-sm);
+ display:flex;align-items:center;justify-content:center;color:var(--white);font-weight:700;font-size:13px}
+.gnb-logo-text strong{display:block;font-size:14px;font-weight:700;color:var(--primary)}
+.gnb-logo-text span{font-size:10px;color:var(--neutral-500)}
+.gnb-nav{display:flex;align-items:center;gap:2px}
+.gnb-menu{position:relative}
+.gnb-menu-btn{display:flex;align-items:center;gap:4px;padding:8px 13px;font-size:14px;
+ font-weight:500;color:var(--neutral-600);border-radius:var(--radius-sm);transition:.2s var(--ease)}
+.gnb-menu-btn:hover,.gnb-menu-btn.is-active{color:var(--primary);background:var(--primary-light)}
+.gnb-menu-btn svg{width:14px;height:14px;transition:transform .2s var(--ease)}
+.gnb-menu:hover .gnb-menu-btn svg{transform:rotate(180deg)}
+.gnb-dropdown{position:absolute;top:calc(100% + 8px);left:0;min-width:172px;
+ background:var(--white);border:1px solid var(--neutral-200);border-radius:var(--radius-md);
+ box-shadow:var(--shadow-md);opacity:0;visibility:hidden;transform:translateY(-6px);
+ transition:.18s var(--ease);z-index:200;overflow:hidden}
+.gnb-menu:hover .gnb-dropdown{opacity:1;visibility:visible;transform:translateY(0)}
+.gnb-dropdown a{display:block;padding:10px 16px;font-size:13.5px;color:var(--neutral-600);transition:.15s var(--ease)}
+.gnb-dropdown a:hover{color:var(--primary);background:var(--primary-light)}
+.gnb-dropdown a.is-current{color:var(--primary);background:var(--primary-light);font-weight:600}
+.gnb-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.lang-toggle{display:flex;border:1px solid var(--neutral-200);border-radius:20px;overflow:hidden;font-size:12px;font-weight:500}
+.lang-toggle button{padding:4px 9px;color:var(--neutral-500);transition:.15s var(--ease)}
+.lang-toggle button.is-active{background:var(--primary);color:var(--white)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;
+ font-size:13px;font-weight:600;border-radius:var(--radius-sm);transition:.2s var(--ease);
+ cursor:pointer;white-space:nowrap;border:none}
+.btn-ghost{color:var(--neutral-600);border:1px solid var(--neutral-200);background:transparent}
+.btn-ghost:hover{border-color:var(--primary);color:var(--primary)}
+.btn-solid{background:var(--primary);color:var(--white);border:1px solid var(--primary)}
+.btn-solid:hover{background:var(--primary-dark)}
+.btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary)}
+.btn-outline:hover{background:var(--primary-light)}
+.gnb-hamburger{display:none;flex-direction:column;gap:5px;padding:8px}
+.gnb-hamburger span{display:block;width:22px;height:2px;background:var(--neutral-700);border-radius:2px}
+/* Drawer */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.46);z-index:1999;opacity:0;visibility:hidden;transition:.25s var(--ease)}
+.drawer-overlay.is-show{opacity:1;visibility:visible}
+.mobile-drawer{position:fixed;top:0;right:0;bottom:0;width:82%;max-width:320px;background:var(--white);
+ z-index:2000;transform:translateX(100%);transition:.28s var(--ease);box-shadow:var(--shadow-md);display:flex;flex-direction:column}
+.mobile-drawer.is-open{transform:translateX(0)}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--neutral-100);flex-shrink:0}
+.drawer-close-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--neutral-200);display:flex;align-items:center;justify-content:center;color:var(--neutral-500);font-size:17px}
+.drawer-body{flex:1;overflow-y:auto}
+.drawer-group{border-bottom:1px solid var(--neutral-100)}
+.drawer-group-title{padding:14px 20px 6px;font-size:10.5px;font-weight:700;color:var(--neutral-400);letter-spacing:.1em;text-transform:uppercase}
+.drawer-link{display:block;padding:10px 20px;font-size:14px;font-weight:500;color:var(--neutral-600);transition:.15s var(--ease)}
+.drawer-link:hover,.drawer-link.is-current{color:var(--primary);background:var(--primary-light)}
+.drawer-lang{display:flex;gap:6px;padding:14px 20px;border-top:1px solid var(--neutral-100)}
+.drawer-lang button{flex:1;padding:8px;font-size:12px;font-weight:500;border-radius:var(--radius-sm);border:1px solid var(--neutral-200);color:var(--neutral-500);transition:.15s var(--ease)}
+.drawer-lang button.is-active{background:var(--primary);color:var(--white);border-color:var(--primary)}
+.drawer-foot{padding:14px 20px 20px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--neutral-100);flex-shrink:0}
+.drawer-foot .btn{justify-content:center}
+/* Layout */
+.container{width:100%;max-width:1100px;margin:0 auto;padding:0 20px}
+/* Hero */
+.page-hero{background:linear-gradient(135deg,var(--primary) 0%,#0d2550 100%);color:var(--white);padding:44px 0 36px}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,.5);margin-bottom:14px}
+.breadcrumb a{color:rgba(255,255,255,.5);transition:.15s}
+.breadcrumb a:hover{color:rgba(255,255,255,.85)}
+.breadcrumb .sep{color:rgba(255,255,255,.25)}
+.breadcrumb .current{color:rgba(255,255,255,.85)}
+.page-hero-label{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:8px}
+.page-hero-title{font-size:clamp(22px,4vw,30px);font-weight:700;margin-bottom:6px}
+.page-hero-desc{font-size:14px;color:rgba(255,255,255,.65)}
+/* Sub Nav */
+.sub-nav{background:var(--white);border-bottom:1px solid var(--neutral-200);position:sticky;top:var(--header-h);z-index:100}
+.sub-nav-inner{display:flex;max-width:1100px;margin:0 auto;padding:0 20px;overflow-x:auto;scrollbar-width:none}
+.sub-nav-inner::-webkit-scrollbar{display:none}
+.sub-nav-link{flex-shrink:0;padding:14px 16px;font-size:13.5px;font-weight:500;color:var(--neutral-500);border-bottom:2px solid transparent;transition:.18s var(--ease);white-space:nowrap}
+.sub-nav-link:hover{color:var(--primary)}
+.sub-nav-link.is-active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}
+/* Content */
+.content-wrap{display:grid;grid-template-columns:1fr 240px;gap:40px;padding:40px 0 64px}
+/* ── 게시판 공통 ── */
+.board-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.board-count{font-size:13.5px;color:var(--neutral-500)}
+.board-count strong{color:var(--neutral-800);font-weight:700}
+.search-bar{display:flex;gap:0;border:1.5px solid var(--neutral-200);border-radius:var(--radius-md);overflow:hidden;background:var(--white)}
+.search-bar input{padding:9px 14px;font-size:13.5px;color:var(--neutral-700);border:none;outline:none;width:200px;background:transparent}
+.search-bar input::placeholder{color:var(--neutral-400)}
+.search-bar button{padding:9px 14px;background:var(--primary);color:var(--white);font-size:13px;font-weight:600;border:none;cursor:pointer;transition:.15s var(--ease);white-space:nowrap;font-family:inherit}
+.search-bar button:hover{background:var(--primary-dark)}
+/* 고정 공지 배너 */
+.pinned-notice{display:flex;align-items:center;gap:12px;padding:13px 18px;
+ background:var(--primary-light);border:1px solid rgba(26,58,107,.12);
+ border-radius:var(--radius-md);margin-bottom:4px;cursor:pointer;transition:.15s var(--ease)}
+.pinned-notice:hover{background:#dce8f5}
+.pinned-badge{flex-shrink:0;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;
+ background:var(--primary);color:var(--white)}
+.pinned-title{font-size:14px;font-weight:600;color:var(--primary);flex:1}
+.pinned-date{font-size:12px;color:var(--neutral-400);flex-shrink:0}
+/* 목록 테이블 */
+.notice-table{width:100%;border-collapse:collapse}
+.notice-table thead tr{border-bottom:2px solid var(--neutral-800)}
+.notice-table th{padding:11px 14px;text-align:left;font-size:12px;font-weight:700;color:var(--neutral-600)}
+.notice-table th.col-num{width:60px;text-align:center}
+.notice-table th.col-date{width:100px;text-align:center}
+.notice-table tbody tr{border-bottom:1px solid var(--neutral-100);cursor:pointer;transition:.15s var(--ease)}
+.notice-table tbody tr:hover{background:var(--neutral-50)}
+.notice-table td{padding:14px 14px;font-size:14px;color:var(--neutral-700)}
+.notice-table td.col-num{text-align:center;font-size:13px;color:var(--neutral-400)}
+.notice-table td.col-date{text-align:center;font-size:12.5px;color:var(--neutral-500)}
+.notice-table td.col-title{font-weight:500}
+.notice-table td.col-title:hover{color:var(--primary)}
+.new-badge{display:inline-block;padding:1px 6px;background:var(--accent);color:var(--white);
+ font-size:10px;font-weight:700;border-radius:3px;margin-left:6px;vertical-align:middle}
+/* 상세 뷰 */
+.detail-view{display:none}
+.detail-view.is-show{display:block}
+.list-view.is-hide{display:none}
+.detail-head{padding-bottom:18px;border-bottom:1px solid var(--neutral-200);margin-bottom:22px}
+.detail-category{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+ color:var(--primary);margin-bottom:8px}
+.detail-title{font-size:20px;font-weight:700;color:var(--neutral-800);line-height:1.35;margin-bottom:12px}
+.detail-meta{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--neutral-500)}
+.detail-meta span{display:flex;align-items:center;gap:5px}
+.detail-body{font-size:14.5px;color:var(--neutral-700);line-height:1.85;margin-bottom:28px}
+.detail-body p{margin-bottom:14px}
+.detail-body p:last-child{margin-bottom:0}
+.detail-body strong{color:var(--neutral-800)}
+.detail-body ul{padding-left:18px;margin-bottom:14px}
+.detail-body ul li{list-style:disc;margin-bottom:6px}
+.detail-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;
+ padding-top:20px;border-top:1px solid var(--neutral-200)}
+.detail-nav-item{display:flex;align-items:center;gap:10px;flex:1}
+.detail-nav-item.next{justify-content:flex-end;text-align:right}
+.detail-nav-label{font-size:11px;font-weight:700;color:var(--neutral-400);text-transform:uppercase;flex-shrink:0}
+.detail-nav-title{font-size:13.5px;color:var(--neutral-600);transition:.15s var(--ease);cursor:pointer}
+.detail-nav-title:hover{color:var(--primary)}
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;
+ color:var(--neutral-600);padding:8px 14px;border:1.5px solid var(--neutral-200);
+ border-radius:var(--radius-sm);transition:.15s var(--ease);cursor:pointer;margin-bottom:20px;background:transparent;font-family:inherit}
+.back-btn:hover{border-color:var(--primary);color:var(--primary)}
+/* 페이지네이션 */
+.pagination{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:28px}
+.page-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;
+ border-radius:var(--radius-sm);font-size:13.5px;font-weight:500;cursor:pointer;
+ border:1.5px solid var(--neutral-200);color:var(--neutral-600);transition:.15s var(--ease);background:transparent;font-family:inherit}
+.page-btn:hover{border-color:var(--primary);color:var(--primary)}
+.page-btn.is-active{background:var(--primary);color:var(--white);border-color:var(--primary)}
+.page-btn.arrow{font-size:15px}
+/* Sidebar */
+.aside-card{background:var(--neutral-50);border:1px solid var(--neutral-200);border-radius:var(--radius-lg);padding:18px 16px;margin-bottom:14px}
+.aside-card:last-child{margin-bottom:0}
+.aside-card-title{font-size:12px;font-weight:700;color:var(--neutral-500);letter-spacing:.07em;text-transform:uppercase;margin-bottom:10px}
+.aside-nav-list{display:flex;flex-direction:column;gap:2px}
+.aside-nav-link{display:block;padding:9px 12px;font-size:13.5px;font-weight:500;color:var(--neutral-600);border-radius:var(--radius-sm);transition:.15s var(--ease)}
+.aside-nav-link:hover{color:var(--primary);background:var(--primary-light)}
+.aside-nav-link.is-current{color:var(--primary);background:var(--primary-light);font-weight:600}
+.aside-recent-list{display:flex;flex-direction:column;gap:4px}
+.aside-recent-item{padding:8px 10px;border-radius:var(--radius-sm);cursor:pointer;transition:.15s var(--ease)}
+.aside-recent-item:hover{background:var(--primary-light)}
+.aside-recent-title{font-size:13px;color:var(--neutral-700);font-weight:500;line-height:1.4;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aside-recent-date{font-size:11.5px;color:var(--neutral-400)}
+/* Footer */
+.footer{background:var(--neutral-800);color:rgba(255,255,255,.65);padding:40px 0 24px}
+.footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:28px}
+.footer-brand strong{display:block;font-size:14px;font-weight:700;color:var(--white);margin-bottom:6px}
+.footer-brand p{font-size:12px;line-height:1.75}
+.footer-ext{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.footer-ext a{font-size:12px;color:rgba(255,255,255,.45);transition:.15s}
+.footer-ext a:hover{color:var(--white)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:18px;
+ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.footer-copy{font-size:11px;color:rgba(255,255,255,.3)}
+.footer-policy{display:flex;gap:14px}
+.footer-policy a{font-size:11px;color:rgba(255,255,255,.35);transition:.15s}
+.footer-policy a:hover{color:rgba(255,255,255,.7)}
+@media(max-width:900px){
+ .content-wrap{grid-template-columns:1fr;gap:28px;padding:28px 0 48px}
+ .content-aside{display:none}
+ .aside-nav-list{flex-direction:row;flex-wrap:wrap}
+}
+@media(max-width:768px){
+ .gnb-nav,.gnb-actions .btn-ghost,.gnb-actions .btn-solid,.lang-toggle{display:none}
+ .gnb-hamburger{display:flex}
+ .board-toolbar{flex-direction:column;align-items:flex-start}
+ .search-bar input{width:160px}
+ .notice-table th.col-num,.notice-table td.col-num,
+ .notice-table th.col-date,.notice-table td.col-date{display:none}
+ .footer-grid{grid-template-columns:1fr}
+ .footer-ext{align-items:flex-start}
+ .detail-title{font-size:17px}
+}
+</style>
+ <link rel="stylesheet" href="css/layout-mobile.css">
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="ko"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1">&lt;meta name="description" content="TOPIK Myanmar 공지사항"&gt;</p>
-<p class="p1">&lt;title&gt;공지사항 | TOPIK Myanmar&lt;/title&gt;</p>
-<p class="p1">&lt;link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"&gt;</p>
-<p class="p1">&lt;style&gt;</p>
-<p class="p1">:root{</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--primary:#1a3a6b;--primary-dark:#122a52;--primary-light:#e8eef7;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--accent:#c8232c;--accent-light:#fdf0f0;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--neutral-50:#f8f9fb;--neutral-100:#f1f3f7;--neutral-200:#e2e6ef;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--neutral-300:#c8cdd8;--neutral-400:#9099aa;--neutral-500:#636b7a;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--neutral-600:#464d5c;--neutral-700:#2d3340;--neutral-800:#1a1e28;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--white:#ffffff;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--radius-sm:6px;--radius-md:10px;--radius-lg:16px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--shadow-sm:0 1px 4px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(0,0,0,.10);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--font-base:'Noto Sans KR',sans-serif;--ease:cubic-bezier(.4,0,.2,1);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--header-h:64px;</p>
-<p class="p1">}</p>
-<p class="p1">*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}</p>
-<p class="p1">html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}</p>
-<p class="p1">body{font-family:var(--font-base);font-size:15px;color:var(--neutral-700);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>background:var(--white);line-height:1.6;-webkit-font-smoothing:antialiased;padding-top:var(--header-h)}</p>
-<p class="p1">a{color:inherit;text-decoration:none}ul,ol{list-style:none}</p>
-<p class="p1">button{cursor:pointer;border:none;background:none;font-family:inherit}</p>
-<p class="p1">input{font-family:inherit}</p>
-<p class="p2"><br></p>
-<p class="p1">/* GNB */</p>
-<p class="p1">.gnb{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--white);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border-bottom:1px solid var(--neutral-200);height:var(--header-h);display:flex;align-items:center}</p>
-<p class="p1">.gnb-inner{display:flex;align-items:center;justify-content:space-between;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>width:100%;max-width:1100px;margin:0 auto;padding:0 20px;gap:12px}</p>
-<p class="p1">.gnb-logo{display:flex;align-items:center;gap:10px;flex-shrink:0}</p>
-<p class="p1">.gnb-logo-mark{width:32px;height:32px;background:var(--primary);border-radius:var(--radius-sm);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>display:flex;align-items:center;justify-content:center;color:var(--white);font-weight:700;font-size:13px}</p>
-<p class="p1">.gnb-logo-text strong{display:block;font-size:14px;font-weight:700;color:var(--primary)}</p>
-<p class="p1">.gnb-logo-text span{font-size:10px;color:var(--neutral-500)}</p>
-<p class="p1">.gnb-nav{display:flex;align-items:center;gap:2px}</p>
-<p class="p1">.gnb-menu{position:relative}</p>
-<p class="p1">.gnb-menu-btn{display:flex;align-items:center;gap:4px;padding:8px 13px;font-size:14px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-weight:500;color:var(--neutral-600);border-radius:var(--radius-sm);transition:.2s var(--ease)}</p>
-<p class="p1">.gnb-menu-btn:hover,.gnb-menu-btn.is-active{color:var(--primary);background:var(--primary-light)}</p>
-<p class="p1">.gnb-menu-btn svg{width:14px;height:14px;transition:transform .2s var(--ease)}</p>
-<p class="p1">.gnb-menu:hover .gnb-menu-btn svg{transform:rotate(180deg)}</p>
-<p class="p1">.gnb-dropdown{position:absolute;top:calc(100% + 8px);left:0;min-width:172px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>background:var(--white);border:1px solid var(--neutral-200);border-radius:var(--radius-md);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>box-shadow:var(--shadow-md);opacity:0;visibility:hidden;transform:translateY(-6px);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>transition:.18s var(--ease);z-index:200;overflow:hidden}</p>
-<p class="p1">.gnb-menu:hover .gnb-dropdown{opacity:1;visibility:visible;transform:translateY(0)}</p>
-<p class="p1">.gnb-dropdown a{display:block;padding:10px 16px;font-size:13.5px;color:var(--neutral-600);transition:.15s var(--ease)}</p>
-<p class="p1">.gnb-dropdown a:hover{color:var(--primary);background:var(--primary-light)}</p>
-<p class="p1">.gnb-dropdown a.is-current{color:var(--primary);background:var(--primary-light);font-weight:600}</p>
-<p class="p1">.gnb-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}</p>
-<p class="p1">.lang-toggle{display:flex;border:1px solid var(--neutral-200);border-radius:20px;overflow:hidden;font-size:12px;font-weight:500}</p>
-<p class="p1">.lang-toggle button{padding:4px 9px;color:var(--neutral-500);transition:.15s var(--ease)}</p>
-<p class="p1">.lang-toggle button.is-active{background:var(--primary);color:var(--white)}</p>
-<p class="p1">.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-size:13px;font-weight:600;border-radius:var(--radius-sm);transition:.2s var(--ease);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>cursor:pointer;white-space:nowrap;border:none}</p>
-<p class="p1">.btn-ghost{color:var(--neutral-600);border:1px solid var(--neutral-200);background:transparent}</p>
-<p class="p1">.btn-ghost:hover{border-color:var(--primary);color:var(--primary)}</p>
-<p class="p1">.btn-solid{background:var(--primary);color:var(--white);border:1px solid var(--primary)}</p>
-<p class="p1">.btn-solid:hover{background:var(--primary-dark)}</p>
-<p class="p1">.btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary)}</p>
-<p class="p1">.btn-outline:hover{background:var(--primary-light)}</p>
-<p class="p1">.gnb-hamburger{display:none;flex-direction:column;gap:5px;padding:8px}</p>
-<p class="p1">.gnb-hamburger span{display:block;width:22px;height:2px;background:var(--neutral-700);border-radius:2px}</p>
-<p class="p1">/* Drawer */</p>
-<p class="p1">.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.46);z-index:1999;opacity:0;visibility:hidden;transition:.25s var(--ease)}</p>
-<p class="p1">.drawer-overlay.is-show{opacity:1;visibility:visible}</p>
-<p class="p1">.mobile-drawer{position:fixed;top:0;right:0;bottom:0;width:82%;max-width:320px;background:var(--white);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>z-index:2000;transform:translateX(100%);transition:.28s var(--ease);box-shadow:var(--shadow-md);display:flex;flex-direction:column}</p>
-<p class="p1">.mobile-drawer.is-open{transform:translateX(0)}</p>
-<p class="p1">.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--neutral-100);flex-shrink:0}</p>
-<p class="p1">.drawer-close-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--neutral-200);display:flex;align-items:center;justify-content:center;color:var(--neutral-500);font-size:17px}</p>
-<p class="p1">.drawer-body{flex:1;overflow-y:auto}</p>
-<p class="p1">.drawer-group{border-bottom:1px solid var(--neutral-100)}</p>
-<p class="p1">.drawer-group-title{padding:14px 20px 6px;font-size:10.5px;font-weight:700;color:var(--neutral-400);letter-spacing:.1em;text-transform:uppercase}</p>
-<p class="p1">.drawer-link{display:block;padding:10px 20px;font-size:14px;font-weight:500;color:var(--neutral-600);transition:.15s var(--ease)}</p>
-<p class="p1">.drawer-link:hover,.drawer-link.is-current{color:var(--primary);background:var(--primary-light)}</p>
-<p class="p1">.drawer-lang{display:flex;gap:6px;padding:14px 20px;border-top:1px solid var(--neutral-100)}</p>
-<p class="p1">.drawer-lang button{flex:1;padding:8px;font-size:12px;font-weight:500;border-radius:var(--radius-sm);border:1px solid var(--neutral-200);color:var(--neutral-500);transition:.15s var(--ease)}</p>
-<p class="p1">.drawer-lang button.is-active{background:var(--primary);color:var(--white);border-color:var(--primary)}</p>
-<p class="p1">.drawer-foot{padding:14px 20px 20px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--neutral-100);flex-shrink:0}</p>
-<p class="p1">.drawer-foot .btn{justify-content:center}</p>
-<p class="p2"><br></p>
-<p class="p1">/* Layout */</p>
-<p class="p1">.container{width:100%;max-width:1100px;margin:0 auto;padding:0 20px}</p>
-<p class="p2"><br></p>
-<p class="p1">/* Hero */</p>
-<p class="p1">.page-hero{background:linear-gradient(135deg,var(--primary) 0%,#0d2550 100%);color:var(--white);padding:44px 0 36px}</p>
-<p class="p1">.breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,.5);margin-bottom:14px}</p>
-<p class="p1">.breadcrumb a{color:rgba(255,255,255,.5);transition:.15s}</p>
-<p class="p1">.breadcrumb a:hover{color:rgba(255,255,255,.85)}</p>
-<p class="p1">.breadcrumb .sep{color:rgba(255,255,255,.25)}</p>
-<p class="p1">.breadcrumb .current{color:rgba(255,255,255,.85)}</p>
-<p class="p1">.page-hero-label{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:8px}</p>
-<p class="p1">.page-hero-title{font-size:clamp(22px,4vw,30px);font-weight:700;margin-bottom:6px}</p>
-<p class="p1">.page-hero-desc{font-size:14px;color:rgba(255,255,255,.65)}</p>
-<p class="p2"><br></p>
-<p class="p1">/* Sub Nav */</p>
-<p class="p1">.sub-nav{background:var(--white);border-bottom:1px solid var(--neutral-200);position:sticky;top:var(--header-h);z-index:100}</p>
-<p class="p1">.sub-nav-inner{display:flex;max-width:1100px;margin:0 auto;padding:0 20px;overflow-x:auto;scrollbar-width:none}</p>
-<p class="p1">.sub-nav-inner::-webkit-scrollbar{display:none}</p>
-<p class="p1">.sub-nav-link{flex-shrink:0;padding:14px 16px;font-size:13.5px;font-weight:500;color:var(--neutral-500);border-bottom:2px solid transparent;transition:.18s var(--ease);white-space:nowrap}</p>
-<p class="p1">.sub-nav-link:hover{color:var(--primary)}</p>
-<p class="p1">.sub-nav-link.is-active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}</p>
-<p class="p2"><br></p>
-<p class="p1">/* Content */</p>
-<p class="p1">.content-wrap{display:grid;grid-template-columns:1fr 240px;gap:40px;padding:40px 0 64px}</p>
-<p class="p2"><br></p>
-<p class="p1">/* ── 게시판 공통 ── */</p>
-<p class="p1">.board-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}</p>
-<p class="p1">.board-count{font-size:13.5px;color:var(--neutral-500)}</p>
-<p class="p1">.board-count strong{color:var(--neutral-800);font-weight:700}</p>
-<p class="p1">.search-bar{display:flex;gap:0;border:1.5px solid var(--neutral-200);border-radius:var(--radius-md);overflow:hidden;background:var(--white)}</p>
-<p class="p1">.search-bar input{padding:9px 14px;font-size:13.5px;color:var(--neutral-700);border:none;outline:none;width:200px;background:transparent}</p>
-<p class="p1">.search-bar input::placeholder{color:var(--neutral-400)}</p>
-<p class="p1">.search-bar button{padding:9px 14px;background:var(--primary);color:var(--white);font-size:13px;font-weight:600;border:none;cursor:pointer;transition:.15s var(--ease);white-space:nowrap;font-family:inherit}</p>
-<p class="p1">.search-bar button:hover{background:var(--primary-dark)}</p>
-<p class="p2"><br></p>
-<p class="p1">/* 고정 공지 배너 */</p>
-<p class="p1">.pinned-notice{display:flex;align-items:center;gap:12px;padding:13px 18px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>background:var(--primary-light);border:1px solid rgba(26,58,107,.12);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border-radius:var(--radius-md);margin-bottom:4px;cursor:pointer;transition:.15s var(--ease)}</p>
-<p class="p1">.pinned-notice:hover{background:#dce8f5}</p>
-<p class="p1">.pinned-badge{flex-shrink:0;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>background:var(--primary);color:var(--white)}</p>
-<p class="p1">.pinned-title{font-size:14px;font-weight:600;color:var(--primary);flex:1}</p>
-<p class="p1">.pinned-date{font-size:12px;color:var(--neutral-400);flex-shrink:0}</p>
-<p class="p2"><br></p>
-<p class="p1">/* 목록 테이블 */</p>
-<p class="p1">.notice-table{width:100%;border-collapse:collapse}</p>
-<p class="p1">.notice-table thead tr{border-bottom:2px solid var(--neutral-800)}</p>
-<p class="p1">.notice-table th{padding:11px 14px;text-align:left;font-size:12px;font-weight:700;color:var(--neutral-600)}</p>
-<p class="p1">.notice-table th.col-num{width:60px;text-align:center}</p>
-<p class="p1">.notice-table th.col-date{width:100px;text-align:center}</p>
-<p class="p1">.notice-table tbody tr{border-bottom:1px solid var(--neutral-100);cursor:pointer;transition:.15s var(--ease)}</p>
-<p class="p1">.notice-table tbody tr:hover{background:var(--neutral-50)}</p>
-<p class="p1">.notice-table td{padding:14px 14px;font-size:14px;color:var(--neutral-700)}</p>
-<p class="p1">.notice-table td.col-num{text-align:center;font-size:13px;color:var(--neutral-400)}</p>
-<p class="p1">.notice-table td.col-date{text-align:center;font-size:12.5px;color:var(--neutral-500)}</p>
-<p class="p1">.notice-table td.col-title{font-weight:500}</p>
-<p class="p1">.notice-table td.col-title:hover{color:var(--primary)}</p>
-<p class="p1">.new-badge{display:inline-block;padding:1px 6px;background:var(--accent);color:var(--white);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-size:10px;font-weight:700;border-radius:3px;margin-left:6px;vertical-align:middle}</p>
-<p class="p2"><br></p>
-<p class="p1">/* 상세 뷰 */</p>
-<p class="p1">.detail-view{display:none}</p>
-<p class="p1">.detail-view.is-show{display:block}</p>
-<p class="p1">.list-view.is-hide{display:none}</p>
-<p class="p1">.detail-head{padding-bottom:18px;border-bottom:1px solid var(--neutral-200);margin-bottom:22px}</p>
-<p class="p1">.detail-category{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>color:var(--primary);margin-bottom:8px}</p>
-<p class="p1">.detail-title{font-size:20px;font-weight:700;color:var(--neutral-800);line-height:1.35;margin-bottom:12px}</p>
-<p class="p1">.detail-meta{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--neutral-500)}</p>
-<p class="p1">.detail-meta span{display:flex;align-items:center;gap:5px}</p>
-<p class="p1">.detail-body{font-size:14.5px;color:var(--neutral-700);line-height:1.85;margin-bottom:28px}</p>
-<p class="p1">.detail-body p{margin-bottom:14px}</p>
-<p class="p1">.detail-body p:last-child{margin-bottom:0}</p>
-<p class="p1">.detail-body strong{color:var(--neutral-800)}</p>
-<p class="p1">.detail-body ul{padding-left:18px;margin-bottom:14px}</p>
-<p class="p1">.detail-body ul li{list-style:disc;margin-bottom:6px}</p>
-<p class="p1">.detail-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>padding-top:20px;border-top:1px solid var(--neutral-200)}</p>
-<p class="p1">.detail-nav-item{display:flex;align-items:center;gap:10px;flex:1}</p>
-<p class="p1">.detail-nav-item.next{justify-content:flex-end;text-align:right}</p>
-<p class="p1">.detail-nav-label{font-size:11px;font-weight:700;color:var(--neutral-400);text-transform:uppercase;flex-shrink:0}</p>
-<p class="p1">.detail-nav-title{font-size:13.5px;color:var(--neutral-600);transition:.15s var(--ease);cursor:pointer}</p>
-<p class="p1">.detail-nav-title:hover{color:var(--primary)}</p>
-<p class="p1">.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>color:var(--neutral-600);padding:8px 14px;border:1.5px solid var(--neutral-200);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border-radius:var(--radius-sm);transition:.15s var(--ease);cursor:pointer;margin-bottom:20px;background:transparent;font-family:inherit}</p>
-<p class="p1">.back-btn:hover{border-color:var(--primary);color:var(--primary)}</p>
-<p class="p2"><br></p>
-<p class="p1">/* 페이지네이션 */</p>
-<p class="p1">.pagination{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:28px}</p>
-<p class="p1">.page-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border-radius:var(--radius-sm);font-size:13.5px;font-weight:500;cursor:pointer;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border:1.5px solid var(--neutral-200);color:var(--neutral-600);transition:.15s var(--ease);background:transparent;font-family:inherit}</p>
-<p class="p1">.page-btn:hover{border-color:var(--primary);color:var(--primary)}</p>
-<p class="p1">.page-btn.is-active{background:var(--primary);color:var(--white);border-color:var(--primary)}</p>
-<p class="p1">.page-btn.arrow{font-size:15px}</p>
-<p class="p2"><br></p>
-<p class="p1">/* Sidebar */</p>
-<p class="p1">.aside-card{background:var(--neutral-50);border:1px solid var(--neutral-200);border-radius:var(--radius-lg);padding:18px 16px;margin-bottom:14px}</p>
-<p class="p1">.aside-card:last-child{margin-bottom:0}</p>
-<p class="p1">.aside-card-title{font-size:12px;font-weight:700;color:var(--neutral-500);letter-spacing:.07em;text-transform:uppercase;margin-bottom:10px}</p>
-<p class="p1">.aside-nav-list{display:flex;flex-direction:column;gap:2px}</p>
-<p class="p1">.aside-nav-link{display:block;padding:9px 12px;font-size:13.5px;font-weight:500;color:var(--neutral-600);border-radius:var(--radius-sm);transition:.15s var(--ease)}</p>
-<p class="p1">.aside-nav-link:hover{color:var(--primary);background:var(--primary-light)}</p>
-<p class="p1">.aside-nav-link.is-current{color:var(--primary);background:var(--primary-light);font-weight:600}</p>
-<p class="p1">.aside-recent-list{display:flex;flex-direction:column;gap:4px}</p>
-<p class="p1">.aside-recent-item{padding:8px 10px;border-radius:var(--radius-sm);cursor:pointer;transition:.15s var(--ease)}</p>
-<p class="p1">.aside-recent-item:hover{background:var(--primary-light)}</p>
-<p class="p1">.aside-recent-title{font-size:13px;color:var(--neutral-700);font-weight:500;line-height:1.4;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}</p>
-<p class="p1">.aside-recent-date{font-size:11.5px;color:var(--neutral-400)}</p>
-<p class="p2"><br></p>
-<p class="p1">/* Footer */</p>
-<p class="p1">.footer{background:var(--neutral-800);color:rgba(255,255,255,.65);padding:40px 0 24px}</p>
-<p class="p1">.footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:28px}</p>
-<p class="p1">.footer-brand strong{display:block;font-size:14px;font-weight:700;color:var(--white);margin-bottom:6px}</p>
-<p class="p1">.footer-brand p{font-size:12px;line-height:1.75}</p>
-<p class="p1">.footer-ext{display:flex;flex-direction:column;gap:6px;align-items:flex-end}</p>
-<p class="p1">.footer-ext a{font-size:12px;color:rgba(255,255,255,.45);transition:.15s}</p>
-<p class="p1">.footer-ext a:hover{color:var(--white)}</p>
-<p class="p1">.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:18px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}</p>
-<p class="p1">.footer-copy{font-size:11px;color:rgba(255,255,255,.3)}</p>
-<p class="p1">.footer-policy{display:flex;gap:14px}</p>
-<p class="p1">.footer-policy a{font-size:11px;color:rgba(255,255,255,.35);transition:.15s}</p>
-<p class="p1">.footer-policy a:hover{color:rgba(255,255,255,.7)}</p>
-<p class="p2"><br></p>
-<p class="p1">@media(max-width:900px){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.content-wrap{grid-template-columns:1fr;gap:28px;padding:28px 0 48px}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.content-aside{order:-1}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.aside-nav-list{flex-direction:row;flex-wrap:wrap}</p>
-<p class="p1">}</p>
-<p class="p1">@media(max-width:768px){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.gnb-nav,.gnb-actions .btn-ghost,.gnb-actions .btn-solid,.lang-toggle{display:none}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.gnb-hamburger{display:flex}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.board-toolbar{flex-direction:column;align-items:flex-start}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.search-bar input{width:160px}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.notice-table th.col-num,.notice-table td.col-num,</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.notice-table th.col-date,.notice-table td.col-date{display:none}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.footer-grid{grid-template-columns:1fr}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.footer-ext{align-items:flex-start}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.detail-title{font-size:17px}</p>
-<p class="p1">}</p>
-<p class="p1">&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- GNB --&gt;</p>
-<p class="p1">&lt;header class="gnb"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="gnb-inner"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="index.html" class="gnb-logo"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-logo-mark"&gt;TK&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-logo-text"&gt;&lt;strong&gt;TOPIK Myanmar&lt;/strong&gt;&lt;span&gt;한국어능력시험&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;nav class="gnb-nav"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;&lt;button class="gnb-menu-btn"&gt;TOPIK 안내&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;&lt;a href="guide-overview.html"&gt;시험 개요&lt;/a&gt;&lt;a href="guide-intro.html"&gt;시험 소개&lt;/a&gt;&lt;a href="guide-questions.html"&gt;문항 구성&lt;/a&gt;&lt;a href="guide-evaluation.html"&gt;평가 기준&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;&lt;button class="gnb-menu-btn"&gt;TOPIK 규정&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;&lt;a href="rules-notice.html"&gt;유의 사항&lt;/a&gt;&lt;a href="rules-answer.html"&gt;답안 작성 요령&lt;/a&gt;&lt;a href="rules-fee.html"&gt;응시료 규정&lt;/a&gt;&lt;a href="rules-id.html"&gt;신분증 규정&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;&lt;button class="gnb-menu-btn"&gt;TOPIK 접수&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;&lt;a href="apply-howto.html"&gt;접수 방법&lt;/a&gt;&lt;a href="register.html"&gt;시험 접수&lt;/a&gt;&lt;a href="mypage.html"&gt;접수 확인&lt;/a&gt;&lt;a href="admit-card.html"&gt;수험표 출력&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;&lt;button class="gnb-menu-btn is-active"&gt;게시판&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;&lt;a href="notice.html" class="is-current"&gt;공지사항&lt;/a&gt;&lt;a href="refund-correction.html"&gt;환불·정보정정신청&lt;/a&gt;&lt;a href="qna.html"&gt;문의게시판&lt;/a&gt;&lt;a href="faq.html"&gt;FAQ&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/nav&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="gnb-actions"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="lang-toggle"&gt;&lt;button class="is-active"&gt;KO&lt;/button&gt;&lt;button&gt;MY&lt;/button&gt;&lt;button&gt;EN&lt;/button&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="login.html" class="btn btn-ghost"&gt;로그인&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="signup.html" class="btn btn-solid"&gt;회원가입&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="gnb-hamburger" id="js-hamburger" aria-label="메뉴 열기" aria-expanded="false"&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/header&gt;</p>
-<p class="p1">&lt;div class="drawer-overlay" id="js-overlay"&gt;&lt;/div&gt;</p>
-<p class="p1">&lt;div class="mobile-drawer" id="js-drawer" role="dialog" aria-modal="true"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-head"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="gnb-logo"&gt;&lt;div class="gnb-logo-mark"&gt;TK&lt;/div&gt;&lt;div class="gnb-logo-text"&gt;&lt;strong&gt;TOPIK Myanmar&lt;/strong&gt;&lt;span&gt;한국어능력시험&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="drawer-close-btn" id="js-drawer-close"&gt;✕&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-body"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;&lt;div class="drawer-group-title"&gt;TOPIK 안내&lt;/div&gt;&lt;a href="guide-overview.html" class="drawer-link"&gt;시험 개요&lt;/a&gt;&lt;a href="guide-intro.html" class="drawer-link"&gt;시험 소개&lt;/a&gt;&lt;a href="guide-questions.html" class="drawer-link"&gt;문항 구성&lt;/a&gt;&lt;a href="guide-evaluation.html" class="drawer-link"&gt;평가 기준&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;&lt;div class="drawer-group-title"&gt;TOPIK 규정&lt;/div&gt;&lt;a href="rules-notice.html" class="drawer-link"&gt;유의 사항&lt;/a&gt;&lt;a href="rules-answer.html" class="drawer-link"&gt;답안 작성 요령&lt;/a&gt;&lt;a href="rules-fee.html" class="drawer-link"&gt;응시료 규정&lt;/a&gt;&lt;a href="rules-id.html" class="drawer-link"&gt;신분증 규정&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;&lt;div class="drawer-group-title"&gt;TOPIK 접수&lt;/div&gt;&lt;a href="apply-howto.html" class="drawer-link"&gt;접수 방법&lt;/a&gt;&lt;a href="register.html" class="drawer-link"&gt;시험 접수&lt;/a&gt;&lt;a href="mypage.html" class="drawer-link"&gt;접수 확인&lt;/a&gt;&lt;a href="admit-card.html" class="drawer-link"&gt;수험표 출력&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;&lt;div class="drawer-group-title"&gt;게시판&lt;/div&gt;&lt;a href="notice.html" class="drawer-link is-current"&gt;공지사항&lt;/a&gt;&lt;a href="refund-correction.html" class="drawer-link"&gt;환불·정보정정신청&lt;/a&gt;&lt;a href="qna.html" class="drawer-link"&gt;문의게시판&lt;/a&gt;&lt;a href="faq.html" class="drawer-link"&gt;FAQ&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-lang"&gt;&lt;button class="is-active"&gt;한국어&lt;/button&gt;&lt;button&gt;မြန်မာ&lt;/button&gt;&lt;button&gt;English&lt;/button&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-foot"&gt;&lt;a href="login.html" class="btn btn-outline"&gt;로그인&lt;/a&gt;&lt;a href="signup.html" class="btn btn-solid"&gt;회원가입&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- Hero --&gt;</p>
-<p class="p1">&lt;div class="page-hero"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;nav class="breadcrumb"&gt;&lt;a href="index.html"&gt;홈&lt;/a&gt;&lt;span class="sep"&gt;›&lt;/span&gt;&lt;span&gt;게시판&lt;/span&gt;&lt;span class="sep"&gt;›&lt;/span&gt;&lt;span class="current"&gt;공지사항&lt;/span&gt;&lt;/nav&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="page-hero-label"&gt;게시판&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;h1 class="page-hero-title"&gt;공지사항&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;p class="page-hero-desc"&gt;TOPIK Myanmar 시험 일정, 접수 안내 등 주요 공지사항을 확인하세요.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- Sub Nav --&gt;</p>
-<p class="p1">&lt;div class="sub-nav"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="sub-nav-inner"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="notice.html"<span class="Apple-converted-space">            </span>class="sub-nav-link is-active"&gt;공지사항&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="refund-correction.html" class="sub-nav-link"&gt;환불·정보정정신청&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="qna.html" <span class="Apple-converted-space">              </span>class="sub-nav-link"&gt;문의게시판&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="faq.html" <span class="Apple-converted-space">              </span>class="sub-nav-link"&gt;FAQ&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- Content --&gt;</p>
-<p class="p1">&lt;div class="container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="content-wrap"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;main class="content-main"&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- ── 목록 뷰 ── --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="list-view" id="js-list-view"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- 고정 공지 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="pinned-notice" onclick="showDetail(0)"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="pinned-badge"&gt;필독&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="pinned-title"&gt;제99회 TOPIK 미얀마 접수 안내 (2026.07.12 시행)&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="pinned-date"&gt;2026.04.28&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="pinned-notice" onclick="showDetail(1)" style="margin-bottom:16px"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="pinned-badge"&gt;필독&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="pinned-title"&gt;수험표 사진 규정 변경 안내 (2026년 적용)&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="pinned-date"&gt;2026.03.10&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- 툴바 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="board-toolbar"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="board-count"&gt;전체 &lt;strong&gt;24&lt;/strong&gt;건&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="search-bar"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;input type="text" placeholder="검색어 입력" aria-label="공지사항 검색"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button type="button"&gt;검색&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- 목록 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;table class="notice-table" role="table"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;thead&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;tr&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;th class="col-num"&gt;번호&lt;/th&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;th&gt;제목&lt;/th&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;th class="col-date"&gt;등록일&lt;/th&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/tr&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/thead&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;tbody id="js-notice-tbody"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;tr onclick="showDetail(2)"&gt;&lt;td class="col-num"&gt;24&lt;/td&gt;&lt;td class="col-title"&gt;제99회 TOPIK 접수 기간 안내&lt;span class="new-badge"&gt;NEW&lt;/span&gt;&lt;/td&gt;&lt;td class="col-date"&gt;2026.05.01&lt;/td&gt;&lt;/tr&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;tr onclick="showDetail(3)"&gt;&lt;td class="col-num"&gt;23&lt;/td&gt;&lt;td class="col-title"&gt;2026년 하반기 TOPIK 시험 일정 공고&lt;/td&gt;&lt;td class="col-date"&gt;2026.04.15&lt;/td&gt;&lt;/tr&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;tr onclick="showDetail(4)"&gt;&lt;td class="col-num"&gt;22&lt;/td&gt;&lt;td class="col-title"&gt;시험 장소 변경 안내 (양곤 시험장)&lt;/td&gt;&lt;td class="col-date"&gt;2026.03.22&lt;/td&gt;&lt;/tr&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;tr onclick="showDetail(5)"&gt;&lt;td class="col-num"&gt;21&lt;/td&gt;&lt;td class="col-title"&gt;제97회 TOPIK 성적 발표 안내&lt;/td&gt;&lt;td class="col-date"&gt;2026.02.18&lt;/td&gt;&lt;/tr&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;tr onclick="showDetail(6)"&gt;&lt;td class="col-num"&gt;20&lt;/td&gt;&lt;td class="col-title"&gt;개인정보 처리방침 개정 안내&lt;/td&gt;&lt;td class="col-date"&gt;2026.01.05&lt;/td&gt;&lt;/tr&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;tr onclick="showDetail(7)"&gt;&lt;td class="col-num"&gt;19&lt;/td&gt;&lt;td class="col-title"&gt;제95회 TOPIK 접수 마감 안내&lt;/td&gt;&lt;td class="col-date"&gt;2025.12.10&lt;/td&gt;&lt;/tr&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;tr onclick="showDetail(8)"&gt;&lt;td class="col-num"&gt;18&lt;/td&gt;&lt;td class="col-title"&gt;TOPIK Myanmar 사이트 개편 안내&lt;/td&gt;&lt;td class="col-date"&gt;2025.11.20&lt;/td&gt;&lt;/tr&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;tr onclick="showDetail(9)"&gt;&lt;td class="col-num"&gt;17&lt;/td&gt;&lt;td class="col-title"&gt;미얀마 TOPIK 응시료 면제 대상 안내&lt;/td&gt;&lt;td class="col-date"&gt;2025.10.02&lt;/td&gt;&lt;/tr&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/tbody&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/table&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- 페이지네이션 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="pagination" role="navigation" aria-label="페이지 이동"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="page-btn arrow" aria-label="이전 페이지"&gt;‹&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="page-btn is-active"&gt;1&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="page-btn"&gt;2&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="page-btn"&gt;3&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="page-btn arrow" aria-label="다음 페이지"&gt;›&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- ── 상세 뷰 ── --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="detail-view" id="js-detail-view"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="back-btn" id="js-back-btn" type="button"&gt;← 목록으로&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="detail-head"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="detail-category"&gt;공지사항&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;h2 class="detail-title" id="detail-title"&gt;제99회 TOPIK 미얀마 접수 안내&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="detail-meta"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span&gt;등록일 : &lt;strong id="detail-date"&gt;2026.04.28&lt;/strong&gt;&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span&gt;조회 : &lt;strong&gt;1,284&lt;/strong&gt;&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="detail-body" id="detail-body"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;p&gt;주미얀마 대한민국 대사관은 제99회 한국어능력시험(TOPIK) 미얀마 시행에 관한 사항을 아래와 같이 안내합니다.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;p&gt;&lt;strong&gt;■ 접수 기간&lt;/strong&gt;&lt;br&gt;2026년 5월 1일(금) ~ 5월 31일(일)&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;p&gt;&lt;strong&gt;■ 시험일&lt;/strong&gt;&lt;br&gt;2026년 7월 12일(일)&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;p&gt;&lt;strong&gt;■ 시험 구분 및 시간&lt;/strong&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;li&gt;TOPIK Ⅰ (1·2급) : 09:00 ~ 11:40 (100분)&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;li&gt;TOPIK Ⅱ (3~6급) : 13:00 ~ 15:50 (180분)&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;p&gt;&lt;strong&gt;■ 접수 방법&lt;/strong&gt;&lt;br&gt;본 사이트 회원가입 후 온라인 접수&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;p&gt;&lt;strong&gt;■ 유의 사항&lt;/strong&gt;&lt;br&gt;접수 기간 외 신청 불가. 1인 1회 1개 구분 접수 가능. 허위 정보 입력 시 접수 취소.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;p&gt;기타 문의 사항은 문의게시판을 이용해 주세요.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="detail-nav"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="detail-nav-item prev"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="detail-nav-label"&gt;이전&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="detail-nav-title" onclick="showDetail(1)"&gt;수험표 사진 규정 변경 안내&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="detail-nav-item next"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="detail-nav-title" onclick="showDetail(2)"&gt;제99회 TOPIK 접수 기간 안내&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="detail-nav-label"&gt;다음&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/main&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Sidebar --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;aside class="content-aside"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="aside-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="aside-card-title"&gt;게시판&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;nav class="aside-nav-list"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="notice.html"<span class="Apple-converted-space">            </span>class="aside-nav-link is-current"&gt;공지사항&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="refund-correction.html" class="aside-nav-link"&gt;환불·정보정정신청&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="qna.html" <span class="Apple-converted-space">              </span>class="aside-nav-link"&gt;문의게시판&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="faq.html" <span class="Apple-converted-space">              </span>class="aside-nav-link"&gt;FAQ&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/nav&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="aside-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="aside-card-title"&gt;최근 공지&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="aside-recent-list"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="aside-recent-item" onclick="showDetail(2)"&gt;&lt;div class="aside-recent-title"&gt;제99회 TOPIK 접수 기간 안내&lt;/div&gt;&lt;div class="aside-recent-date"&gt;2026.05.01&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="aside-recent-item" onclick="showDetail(3)"&gt;&lt;div class="aside-recent-title"&gt;2026년 하반기 시험 일정 공고&lt;/div&gt;&lt;div class="aside-recent-date"&gt;2026.04.15&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="aside-recent-item" onclick="showDetail(4)"&gt;&lt;div class="aside-recent-title"&gt;시험 장소 변경 안내&lt;/div&gt;&lt;div class="aside-recent-date"&gt;2026.03.22&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/aside&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- Footer --&gt;</p>
-<p class="p1">&lt;footer class="footer"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="footer-grid"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="footer-brand"&gt;&lt;strong&gt;주미얀마 대한민국 대사관&lt;/strong&gt;&lt;p&gt;Embassy of the Republic of Korea in Myanmar&lt;br&gt;한국어능력시험(TOPIK) 공식 접수 사이트&lt;/p&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="footer-ext"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://topik.go.kr" target="_blank" rel="noopener"&gt;TOPIK 본부 (topik.go.kr)&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://niied.go.kr" target="_blank" rel="noopener"&gt;국립국제교육원 (NIIED)&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://www.mofa.go.kr/mm-ko" target="_blank" rel="noopener"&gt;대사관 공식 웹사이트&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="footer-bottom"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="footer-copy"&gt;© 2025–2026 Embassy of the Republic of Korea in Myanmar. All rights reserved.&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="footer-policy"&gt;&lt;a href="#"&gt;개인정보처리방침&lt;/a&gt;&lt;a href="#"&gt;이용약관&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/footer&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;script&gt;</p>
-<p class="p1">const hamburger=document.getElementById('js-hamburger');</p>
-<p class="p1">const drawer=document.getElementById('js-drawer');</p>
-<p class="p1">const overlay=document.getElementById('js-overlay');</p>
-<p class="p1">const drawerClose=document.getElementById('js-drawer-close');</p>
-<p class="p1">function openDrawer(){drawer.classList.add('is-open');overlay.classList.add('is-show');document.body.style.overflow='hidden'}</p>
-<p class="p1">function closeDrawer(){drawer.classList.remove('is-open');overlay.classList.remove('is-show');document.body.style.overflow=''}</p>
-<p class="p1">hamburger.addEventListener('click',openDrawer);</p>
-<p class="p1">drawerClose.addEventListener('click',closeDrawer);</p>
-<p class="p1">overlay.addEventListener('click',closeDrawer);</p>
-<p class="p1">document.addEventListener('keydown',e=&gt;{if(e.key==='Escape')closeDrawer()});</p>
-<p class="p2"><br></p>
-<p class="p1">const notices=[</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{title:'제99회 TOPIK 미얀마 접수 안내 (2026.07.12 시행)',date:'2026.04.28'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{title:'수험표 사진 규정 변경 안내 (2026년 적용)',date:'2026.03.10'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{title:'제99회 TOPIK 접수 기간 안내',date:'2026.05.01'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{title:'2026년 하반기 TOPIK 시험 일정 공고',date:'2026.04.15'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{title:'시험 장소 변경 안내 (양곤 시험장)',date:'2026.03.22'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{title:'제97회 TOPIK 성적 발표 안내',date:'2026.02.18'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{title:'개인정보 처리방침 개정 안내',date:'2026.01.05'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{title:'제95회 TOPIK 접수 마감 안내',date:'2025.12.10'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{title:'TOPIK Myanmar 사이트 개편 안내',date:'2025.11.20'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{title:'미얀마 TOPIK 응시료 면제 대상 안내',date:'2025.10.02'},</p>
-<p class="p1">];</p>
-<p class="p2"><br></p>
-<p class="p1">function showDetail(idx){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('js-list-view').classList.add('is-hide');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('js-detail-view').classList.add('is-show');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('detail-title').textContent=notices[idx].title;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('detail-date').textContent=notices[idx].date;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>window.scrollTo({top:0,behavior:'smooth'});</p>
-<p class="p1">}</p>
-<p class="p1">document.getElementById('js-back-btn').addEventListener('click',function(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('js-list-view').classList.remove('is-hide');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('js-detail-view').classList.remove('is-show');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>window.scrollTo({top:0,behavior:'smooth'});</p>
-<p class="p1">});</p>
-<p class="p2"><br></p>
-<p class="p1">document.querySelectorAll('.page-btn:not(.arrow)').forEach(btn=&gt;{</p>
-<p class="p1"><span class="Apple-converted-space">  </span>btn.addEventListener('click',function(){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.querySelectorAll('.page-btn:not(.arrow)').forEach(b=&gt;b.classList.remove('is-active'));</p>
-<p class="p1"><span class="Apple-converted-space">    </span>this.classList.add('is-active');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p1">});</p>
-<p class="p1">&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+<!-- GNB -->
+<header class="gnb">
+ <div class="gnb-inner">
+ <a href="index.html" class="gnb-logo">
+ <div class="gnb-logo-mark">TK</div>
+ <div class="gnb-logo-text"><strong>TOPIK Myanmar</strong><span>한국어능력시험</span></div>
+ </a>
+ <nav class="gnb-nav">
+ <div class="gnb-menu"><button class="gnb-menu-btn">TOPIK 안내<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></button>
+ <div class="gnb-dropdown"><a href="guide-overview.html">시험 개요</a><a href="guide-intro.html">시험 소개</a><a href="guide-questions.html">문항 구성</a><a href="guide-evaluation.html">평가 기준</a></div>
+ </div>
+ <div class="gnb-menu"><button class="gnb-menu-btn">TOPIK 규정<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></button>
+ <div class="gnb-dropdown"><a href="rules-notice.html">유의 사항</a><a href="rules-answer.html">답안 작성 요령</a><a href="rules-fee.html">응시료 규정</a><a href="rules-id.html">신분증 규정</a></div>
+ </div>
+ <div class="gnb-menu"><button class="gnb-menu-btn">TOPIK 접수<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></button>
+ <div class="gnb-dropdown"><a href="apply-howto.html">접수 방법</a><a href="register.html">시험 접수</a><a href="mypage.html">접수 확인</a><a href="admit-card.html">수험표 출력</a></div>
+ </div>
+ <div class="gnb-menu"><button class="gnb-menu-btn is-active">게시판<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></button>
+ <div class="gnb-dropdown"><a href="notice.html" class="is-current">공지사항</a><a href="refund-correction.html">환불·정보정정신청</a><a href="qna.html">문의게시판</a><a href="faq.html">FAQ</a></div>
+ </div>
+ </nav>
+ <div class="gnb-actions">
+ <div class="lang-toggle"><button class="is-active">KO</button><button>MY</button><button>EN</button></div>
+ <a href="login.html" class="btn btn-ghost">로그인</a>
+ <a href="signup.html" class="btn btn-solid">회원가입</a>
+ </div>
+ <button class="gnb-hamburger" id="js-hamburger" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span><span></span></button>
+ </div>
+</header>
+<div class="drawer-overlay" id="js-overlay"></div>
+<div class="mobile-drawer" id="js-drawer" role="dialog" aria-modal="true">
+ <div class="drawer-head">
+ <div class="gnb-logo"><div class="gnb-logo-mark">TK</div><div class="gnb-logo-text"><strong>TOPIK Myanmar</strong><span>한국어능력시험</span></div></div>
+ <button class="drawer-close-btn" id="js-drawer-close">✕</button>
+ </div>
+ <div class="drawer-body">
+ <div class="drawer-group"><div class="drawer-group-title">TOPIK 안내</div><a href="guide-overview.html" class="drawer-link">시험 개요</a><a href="guide-intro.html" class="drawer-link">시험 소개</a><a href="guide-questions.html" class="drawer-link">문항 구성</a><a href="guide-evaluation.html" class="drawer-link">평가 기준</a></div>
+ <div class="drawer-group"><div class="drawer-group-title">TOPIK 규정</div><a href="rules-notice.html" class="drawer-link">유의 사항</a><a href="rules-answer.html" class="drawer-link">답안 작성 요령</a><a href="rules-fee.html" class="drawer-link">응시료 규정</a><a href="rules-id.html" class="drawer-link">신분증 규정</a></div>
+ <div class="drawer-group"><div class="drawer-group-title">TOPIK 접수</div><a href="apply-howto.html" class="drawer-link">접수 방법</a><a href="register.html" class="drawer-link">시험 접수</a><a href="mypage.html" class="drawer-link">접수 확인</a><a href="admit-card.html" class="drawer-link">수험표 출력</a></div>
+ <div class="drawer-group"><div class="drawer-group-title">게시판</div><a href="notice.html" class="drawer-link is-current">공지사항</a><a href="refund-correction.html" class="drawer-link">환불·정보정정신청</a><a href="qna.html" class="drawer-link">문의게시판</a><a href="faq.html" class="drawer-link">FAQ</a></div>
+ </div>
+ <div class="drawer-lang"><button class="is-active">한국어</button><button>မြန်မာ</button><button>English</button></div>
+ <div class="drawer-foot"><a href="login.html" class="btn btn-outline">로그인</a><a href="signup.html" class="btn btn-solid">회원가입</a></div>
+</div>
+<!-- Hero -->
+<div class="page-hero">
+ <div class="container">
+ <nav class="breadcrumb"><a href="index.html">홈</a><span class="sep">›</span><span>게시판</span><span class="sep">›</span><span class="current">공지사항</span></nav>
+ <div class="page-hero-label">게시판</div>
+ <h1 class="page-hero-title">공지사항</h1>
+ <p class="page-hero-desc">TOPIK Myanmar 시험 일정, 접수 안내 등 주요 공지사항을 확인하세요.</p>
+ </div>
+</div>
+<!-- Sub Nav -->
+<div class="sub-nav">
+ <div class="sub-nav-inner">
+ <a href="notice.html" class="sub-nav-link is-active">공지사항</a>
+ <a href="refund-correction.html" class="sub-nav-link">환불·정보정정신청</a>
+ <a href="qna.html"  class="sub-nav-link">문의게시판</a>
+ <a href="faq.html"  class="sub-nav-link">FAQ</a>
+ </div>
+</div>
+<!-- Content -->
+<div class="container">
+ <div class="content-wrap">
+ <main class="content-main">
+ <!-- ── 목록 뷰 ── -->
+ <div class="list-view" id="js-list-view">
+ <!-- 고정 공지 -->
+ <div class="pinned-notice" onclick="showDetail(0)">
+ <span class="pinned-badge">필독</span>
+ <span class="pinned-title">제99회 TOPIK 미얀마 접수 안내 (2026.07.12 시행)</span>
+ <span class="pinned-date">2026.04.28</span>
+ </div>
+ <div class="pinned-notice" onclick="showDetail(1)" style="margin-bottom:16px">
+ <span class="pinned-badge">필독</span>
+ <span class="pinned-title">수험표 사진 규정 변경 안내 (2026년 적용)</span>
+ <span class="pinned-date">2026.03.10</span>
+ </div>
+ <!-- 툴바 -->
+ <div class="board-toolbar">
+ <div class="board-count">전체 <strong>24</strong>건</div>
+ <div class="search-bar">
+ <input type="text" placeholder="검색어 입력" aria-label="공지사항 검색">
+ <button type="button">검색</button>
+ </div>
+ </div>
+ <!-- 목록 -->
+ <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+ <table class="notice-table" role="table">
+ <thead>
+ <tr>
+ <th class="col-num">번호</th>
+ <th>제목</th>
+ <th class="col-date">등록일</th>
+ </tr>
+ </thead>
+ <tbody id="js-notice-tbody">
+ <tr onclick="showDetail(2)"><td class="col-num">24</td><td class="col-title">제99회 TOPIK 접수 기간 안내<span class="new-badge">NEW</span></td><td class="col-date">2026.05.01</td></tr>
+ <tr onclick="showDetail(3)"><td class="col-num">23</td><td class="col-title">2026년 하반기 TOPIK 시험 일정 공고</td><td class="col-date">2026.04.15</td></tr>
+ <tr onclick="showDetail(4)"><td class="col-num">22</td><td class="col-title">시험 장소 변경 안내 (양곤 시험장)</td><td class="col-date">2026.03.22</td></tr>
+ <tr onclick="showDetail(5)"><td class="col-num">21</td><td class="col-title">제97회 TOPIK 성적 발표 안내</td><td class="col-date">2026.02.18</td></tr>
+ <tr onclick="showDetail(6)"><td class="col-num">20</td><td class="col-title">개인정보 처리방침 개정 안내</td><td class="col-date">2026.01.05</td></tr>
+ <tr onclick="showDetail(7)"><td class="col-num">19</td><td class="col-title">제95회 TOPIK 접수 마감 안내</td><td class="col-date">2025.12.10</td></tr>
+ <tr onclick="showDetail(8)"><td class="col-num">18</td><td class="col-title">TOPIK Myanmar 사이트 개편 안내</td><td class="col-date">2025.11.20</td></tr>
+ <tr onclick="showDetail(9)"><td class="col-num">17</td><td class="col-title">미얀마 TOPIK 응시료 면제 대상 안내</td><td class="col-date">2025.10.02</td></tr>
+ </tbody>
+ </table>
+ </div>
+ <!-- 페이지네이션 -->
+ <div class="pagination" role="navigation" aria-label="페이지 이동">
+ <button class="page-btn arrow" aria-label="이전 페이지">‹</button>
+ <button class="page-btn is-active">1</button>
+ <button class="page-btn">2</button>
+ <button class="page-btn">3</button>
+ <button class="page-btn arrow" aria-label="다음 페이지">›</button>
+ </div>
+ </div>
+ <!-- ── 상세 뷰 ── -->
+ <div class="detail-view" id="js-detail-view">
+ <button class="back-btn" id="js-back-btn" type="button">← 목록으로</button>
+ <div class="detail-head">
+ <div class="detail-category">공지사항</div>
+ <h2 class="detail-title" id="detail-title">제99회 TOPIK 미얀마 접수 안내</h2>
+ <div class="detail-meta">
+ <span>등록일 : <strong id="detail-date">2026.04.28</strong></span>
+ <span>조회 : <strong>1,284</strong></span>
+ </div>
+ </div>
+ <div class="detail-body" id="detail-body">
+ <p>주미얀마 대한민국 대사관은 제99회 한국어능력시험(TOPIK) 미얀마 시행에 관한 사항을 아래와 같이 안내합니다.</p>
+ <p><strong>■ 접수 기간</strong><br>2026년 5월 1일(금) ~ 5월 31일(일)</p>
+ <p><strong>■ 시험일</strong><br>2026년 7월 12일(일)</p>
+ <p><strong>■ 시험 구분 및 시간</strong></p>
+ <ul>
+ <li>TOPIK Ⅰ (1·2급) : 09:00 ~ 11:40 (100분)</li>
+ <li>TOPIK Ⅱ (3~6급) : 13:00 ~ 15:50 (180분)</li>
+ </ul>
+ <p><strong>■ 접수 방법</strong><br>본 사이트 회원가입 후 온라인 접수</p>
+ <p><strong>■ 유의 사항</strong><br>접수 기간 외 신청 불가. 1인 1회 1개 구분 접수 가능. 허위 정보 입력 시 접수 취소.</p>
+ <p>기타 문의 사항은 문의게시판을 이용해 주세요.</p>
+ </div>
+ <div class="detail-nav">
+ <div class="detail-nav-item prev">
+ <div class="detail-nav-label">이전</div>
+ <div class="detail-nav-title" onclick="showDetail(1)">수험표 사진 규정 변경 안내</div>
+ </div>
+ <div class="detail-nav-item next">
+ <div class="detail-nav-title" onclick="showDetail(2)">제99회 TOPIK 접수 기간 안내</div>
+ <div class="detail-nav-label">다음</div>
+ </div>
+ </div>
+ </div>
+ </main>
+ <!-- Sidebar -->
+ <aside class="content-aside">
+ <div class="aside-card">
+ <div class="aside-card-title">게시판</div>
+ <nav class="aside-nav-list">
+ <a href="notice.html" class="aside-nav-link is-current">공지사항</a>
+ <a href="refund-correction.html" class="aside-nav-link">환불·정보정정신청</a>
+ <a href="qna.html"  class="aside-nav-link">문의게시판</a>
+ <a href="faq.html"  class="aside-nav-link">FAQ</a>
+ </nav>
+ </div>
+ <div class="aside-card">
+ <div class="aside-card-title">최근 공지</div>
+ <div class="aside-recent-list">
+ <div class="aside-recent-item" onclick="showDetail(2)"><div class="aside-recent-title">제99회 TOPIK 접수 기간 안내</div><div class="aside-recent-date">2026.05.01</div></div>
+ <div class="aside-recent-item" onclick="showDetail(3)"><div class="aside-recent-title">2026년 하반기 시험 일정 공고</div><div class="aside-recent-date">2026.04.15</div></div>
+ <div class="aside-recent-item" onclick="showDetail(4)"><div class="aside-recent-title">시험 장소 변경 안내</div><div class="aside-recent-date">2026.03.22</div></div>
+ </div>
+ </div>
+ </aside>
+ </div>
+</div>
+<!-- Footer -->
+<footer class="footer">
+ <div class="container">
+ <div class="footer-grid">
+ <div class="footer-brand"><strong>주미얀마 대한민국 대사관</strong><p>Embassy of the Republic of Korea in Myanmar<br>한국어능력시험(TOPIK) 공식 접수 사이트</p></div>
+ <div class="footer-ext">
+ <a href="https://topik.go.kr" target="_blank" rel="noopener">TOPIK 본부 (topik.go.kr)</a>
+ <a href="https://niied.go.kr" target="_blank" rel="noopener">국립국제교육원 (NIIED)</a>
+ <a href="https://www.mofa.go.kr/mm-ko" target="_blank" rel="noopener">대사관 공식 웹사이트</a>
+ </div>
+ </div>
+ <div class="footer-bottom">
+ <span class="footer-copy">© 2025–2026 Embassy of the Republic of Korea in Myanmar. All rights reserved.</span>
+ <div class="footer-policy"><a href="#">개인정보처리방침</a><a href="#">이용약관</a></div>
+ </div>
+ </div>
+</footer>
+<script>
+const hamburger=document.getElementById('js-hamburger');
+const drawer=document.getElementById('js-drawer');
+const overlay=document.getElementById('js-overlay');
+const drawerClose=document.getElementById('js-drawer-close');
+function openDrawer(){drawer.classList.add('is-open');overlay.classList.add('is-show');document.body.style.overflow='hidden'}
+function closeDrawer(){drawer.classList.remove('is-open');overlay.classList.remove('is-show');document.body.style.overflow=''}
+hamburger.addEventListener('click',openDrawer);
+drawerClose.addEventListener('click',closeDrawer);
+overlay.addEventListener('click',closeDrawer);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer()});
+const notices=[
+ {title:'제99회 TOPIK 미얀마 접수 안내 (2026.07.12 시행)',date:'2026.04.28'},
+ {title:'수험표 사진 규정 변경 안내 (2026년 적용)',date:'2026.03.10'},
+ {title:'제99회 TOPIK 접수 기간 안내',date:'2026.05.01'},
+ {title:'2026년 하반기 TOPIK 시험 일정 공고',date:'2026.04.15'},
+ {title:'시험 장소 변경 안내 (양곤 시험장)',date:'2026.03.22'},
+ {title:'제97회 TOPIK 성적 발표 안내',date:'2026.02.18'},
+ {title:'개인정보 처리방침 개정 안내',date:'2026.01.05'},
+ {title:'제95회 TOPIK 접수 마감 안내',date:'2025.12.10'},
+ {title:'TOPIK Myanmar 사이트 개편 안내',date:'2025.11.20'},
+ {title:'미얀마 TOPIK 응시료 면제 대상 안내',date:'2025.10.02'},
+];
+function showDetail(idx){
+ document.getElementById('js-list-view').classList.add('is-hide');
+ document.getElementById('js-detail-view').classList.add('is-show');
+ document.getElementById('detail-title').textContent=notices[idx].title;
+ document.getElementById('detail-date').textContent=notices[idx].date;
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+document.getElementById('js-back-btn').addEventListener('click',function(){
+ document.getElementById('js-list-view').classList.remove('is-hide');
+ document.getElementById('js-detail-view').classList.remove('is-show');
+ window.scrollTo({top:0,behavior:'smooth'});
+});
+document.querySelectorAll('.page-btn:not(.arrow)').forEach(btn=>{
+ btn.addEventListener('click',function(){
+ document.querySelectorAll('.page-btn:not(.arrow)').forEach(b=>b.classList.remove('is-active'));
+ this.classList.add('is-active');
+ });
+});
+</script>
 </body>
 </html>

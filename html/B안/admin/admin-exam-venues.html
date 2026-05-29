@@ -1,0 +1,240 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="ko"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1">&lt;title&gt;시험장 관리 — TOPIK Myanmar BO&lt;/title&gt;</p>
+<p class="p1">&lt;style&gt;</p>
+<p class="p1">*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}</p>
+<p class="p1">:root{--primary:#1a4fa0;--primary-dark:#133d80;--primary-light:#e8f0fb;--danger:#d9363e;--danger-light:#fdf0f0;--success:#1e7e4a;--success-light:#eaf6ef;--warning:#b45309;--warning-light:#fef9ec;--info:#0e6fa8;--info-light:#e6f4fb;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;--gray-300:#cbd5e1;--gray-400:#94a3b8;--gray-500:#64748b;--gray-600:#475569;--gray-700:#334155;--gray-800:#1e293b;--gray-900:#0f172a;--white:#fff;--radius-sm:4px;--radius:8px;--radius-lg:12px;--shadow-sm:0 1px 3px rgba(0,0,0,.07);--shadow:0 2px 8px rgba(0,0,0,.10);--shadow-lg:0 8px 28px rgba(0,0,0,.15);--font:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;--sidebar-w:240px;--topbar-h:56px;--tr:.18s ease}</p>
+<p class="p1">html{font-size:15px}body{font-family:var(--font);color:var(--gray-800);background:var(--gray-50);line-height:1.6;overflow-x:hidden}</p>
+<p class="p1">a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;border:none;background:none}input,select,textarea{font-family:inherit;font-size:inherit}</p>
+<p class="p1">.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--gray-900);color:var(--gray-300);display:flex;flex-direction:column;z-index:200;overflow-y:auto;transition:transform .22s ease}</p>
+<p class="p1">.sidebar-brand{display:flex;align-items:center;gap:10px;padding:0 18px;height:var(--topbar-h);border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}</p>
+<p class="p1">.sb-icon{width:32px;height:32px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}</p>
+<p class="p1">.sb-icon svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2}</p>
+<p class="p1">.sb-brand-text{font-size:.82rem;font-weight:700;color:#fff;line-height:1.3}.sb-brand-sub{font-size:.7rem;color:var(--gray-400)}</p>
+<p class="p1">.sb-nav{flex:1;padding:12px 0 8px;overflow-y:auto}</p>
+<p class="p1">.sb-section{padding:16px 18px 4px;font-size:.65rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--gray-500)}</p>
+<p class="p1">.sb-link{display:flex;align-items:center;gap:9px;padding:8px 18px;font-size:.875rem;font-weight:500;color:var(--gray-400);border-left:3px solid transparent;transition:var(--tr)}</p>
+<p class="p1">.sb-link:hover{background:rgba(255,255,255,.06);color:#fff}.sb-link.active{background:rgba(26,79,160,.28);border-left-color:var(--primary);color:#fff}</p>
+<p class="p1">.sb-link svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0;opacity:.8}</p>
+<p class="p1">.sb-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:.65rem;font-weight:700;border-radius:10px;padding:1px 6px;line-height:1.7}</p>
+<p class="p1">.sb-footer{padding:12px 18px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}</p>
+<p class="p1">.sb-user{display:flex;align-items:center;gap:10px;margin-bottom:10px}</p>
+<p class="p1">.sb-avatar{width:32px;height:32px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff;flex-shrink:0}</p>
+<p class="p1">.sb-user-name{font-size:.82rem;font-weight:600;color:#fff}.sb-user-role{font-size:.7rem;color:var(--gray-400)}</p>
+<p class="p1">.sb-logout{display:flex;align-items:center;gap:7px;width:100%;padding:7px 10px;border-radius:var(--radius-sm);font-size:.82rem;color:var(--gray-400);transition:var(--tr)}</p>
+<p class="p1">.sb-logout:hover{background:rgba(217,54,62,.15);color:#f87171}.sb-logout svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}</p>
+<p class="p1">.topbar{position:fixed;top:0;left:var(--sidebar-w);right:0;height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;padding:0 20px;gap:12px;z-index:100;transition:left .22s ease}</p>
+<p class="p1">.topbar-hamburger{display:none;padding:6px;border-radius:var(--radius-sm);color:var(--gray-500)}</p>
+<p class="p1">.topbar-hamburger svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;display:block}</p>
+<p class="p1">.topbar-title{font-size:1rem;font-weight:700;color:var(--gray-900)}</p>
+<p class="p1">.tb-user{display:flex;align-items:center;gap:7px;background:var(--gray-100);border-radius:20px;padding:5px 12px 5px 7px;font-size:.8rem;margin-left:auto}</p>
+<p class="p1">.tb-avatar{width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fff;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}</p>
+<p class="p1">.tb-name{font-weight:600;color:var(--gray-700)}.tb-role{font-size:.68rem;background:var(--primary-light);color:var(--primary);border-radius:3px;padding:1px 5px;font-weight:600}</p>
+<p class="p1">.main-wrap{margin-left:var(--sidebar-w);padding-top:var(--topbar-h);min-height:100vh}</p>
+<p class="p1">.page-body{padding:20px}</p>
+<p class="p1">.backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:190}.backdrop.show{display:block}</p>
+<p class="p1">.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:7px 14px;border-radius:var(--radius-sm);font-size:.83rem;font-weight:600;transition:var(--tr);cursor:pointer;border:none;line-height:1.4;white-space:nowrap}</p>
+<p class="p1">.btn-sm{padding:5px 11px;font-size:.78rem}.btn-xs{padding:3px 8px;font-size:.72rem}</p>
+<p class="p1">.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-dark)}</p>
+<p class="p1">.btn-outline{background:#fff;color:var(--gray-700);border:1px solid var(--gray-300)}.btn-outline:hover{background:var(--gray-50)}</p>
+<p class="p1">.btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{background:#b22a32}</p>
+<p class="p1">.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--gray-200)}</p>
+<p class="p1">.card-header{padding:14px 18px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:8px;flex-wrap:wrap}</p>
+<p class="p1">.card-title{font-size:.95rem;font-weight:700;color:var(--gray-900)}</p>
+<p class="p1">.card-body{padding:18px}</p>
+<p class="p1">.form-control{width:100%;padding:8px 12px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.88rem;color:var(--gray-800);background:#fff;outline:none;transition:var(--tr)}</p>
+<p class="p1">.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,79,160,.1)}</p>
+<p class="p1">.form-select{padding:7px 28px 7px 10px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.85rem;color:var(--gray-800);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center;appearance:none;outline:none;transition:var(--tr);cursor:pointer}</p>
+<p class="p1">.form-select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,79,160,.1)}</p>
+<p class="p1">.form-label{display:block;font-size:.78rem;font-weight:600;color:var(--gray-700);margin-bottom:5px}</p>
+<p class="p1">.form-group{margin-bottom:14px}.form-req{color:var(--danger)}</p>
+<p class="p1">.chip{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:.7rem;font-weight:700;white-space:nowrap}</p>
+<p class="p1">.chip-green{background:var(--success-light);color:var(--success)}.chip-gray{background:var(--gray-100);color:var(--gray-500)}.chip-yellow{background:var(--warning-light);color:var(--warning)}</p>
+<p class="p1">.data-table{width:100%;border-collapse:collapse;font-size:.83rem}</p>
+<p class="p1">.data-table th{padding:9px 12px;text-align:left;font-size:.72rem;font-weight:700;color:var(--gray-500);background:var(--gray-50);border-bottom:1px solid var(--gray-200);white-space:nowrap}</p>
+<p class="p1">.data-table td{padding:9px 12px;border-bottom:1px solid var(--gray-100);color:var(--gray-700);vertical-align:middle}</p>
+<p class="p1">.data-table tr:last-child td{border-bottom:none}.data-table tbody tr:hover td{background:var(--gray-50)}</p>
+<p class="p1">.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}</p>
+<p class="p1">.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;align-items:center;justify-content:center;padding:16px}</p>
+<p class="p1">.overlay.open{display:flex}</p>
+<p class="p1">.modal{background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;max-width:560px;max-height:92vh;display:flex;flex-direction:column}</p>
+<p class="p1">.modal-sm{max-width:420px}</p>
+<p class="p1">.modal-head{padding:18px 20px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;gap:10px;flex-shrink:0}</p>
+<p class="p1">.modal-title{font-size:1rem;font-weight:700;color:var(--gray-900);flex:1}</p>
+<p class="p1">.modal-close-btn{padding:6px;color:var(--gray-400);border-radius:var(--radius-sm);cursor:pointer;border:none;background:none}</p>
+<p class="p1">.modal-close-btn:hover{background:var(--gray-100);color:var(--gray-700)}.modal-close-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;display:block}</p>
+<p class="p1">.modal-body{padding:20px;flex:1;overflow-y:auto}</p>
+<p class="p1">.modal-foot{padding:14px 20px;border-top:1px solid var(--gray-100);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}</p>
+<p class="p1">.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}</p>
+<p class="p1">.alert{padding:10px 14px;border-radius:var(--radius-sm);font-size:.8rem;display:flex;gap:8px;align-items:flex-start}</p>
+<p class="p1">.alert svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0;margin-top:1px}</p>
+<p class="p1">.alert-warn{background:var(--warning-light);color:var(--warning);border:1px solid #fcd34d}</p>
+<p class="p1">.progress-bar-wrap{background:var(--gray-200);border-radius:4px;height:6px;overflow:hidden;margin-top:4px}</p>
+<p class="p1">.progress-bar-fill{height:100%;border-radius:4px;background:var(--primary);transition:width .3s}</p>
+<p class="p1">@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.topbar{left:0}.main-wrap{margin-left:0}.topbar-hamburger{display:flex}.grid-2{grid-template-columns:1fr}}</p>
+<p class="p1">&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1">&lt;div class="backdrop" id="backdrop"&gt;&lt;/div&gt;</p>
+<p class="p1">&lt;aside class="sidebar" id="sidebar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="sidebar-brand"&gt;&lt;div class="sb-icon"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="11" width="18" height="11" rx="2"/&gt;&lt;path d="M7 11V7a5 5 0 0 1 10 0v4"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div&gt;&lt;div class="sb-brand-text"&gt;TOPIK Myanmar&lt;/div&gt;&lt;div class="sb-brand-sub"&gt;관리자 시스템&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;nav class="sb-nav"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;대시보드&lt;/div&gt;&lt;a class="sb-link" href="admin-dashboard.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="3" width="7" height="7" rx="1"/&gt;&lt;rect x="14" y="3" width="7" height="7" rx="1"/&gt;&lt;rect x="3" y="14" width="7" height="7" rx="1"/&gt;&lt;rect x="14" y="14" width="7" height="7" rx="1"/&gt;&lt;/svg&gt;대시보드&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;접수 관리&lt;/div&gt;&lt;a class="sb-link" href="admin-applicants.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/&gt;&lt;circle cx="9" cy="7" r="4"/&gt;&lt;/svg&gt;접수자 목록&lt;span class="sb-badge"&gt;12&lt;/span&gt;&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;시험 관리&lt;/div&gt;&lt;a class="sb-link" href="admin-exam-rounds.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="4" width="18" height="18" rx="2"/&gt;&lt;line x1="16" y1="2" x2="16" y2="6"/&gt;&lt;line x1="8" y1="2" x2="8" y2="6"/&gt;&lt;line x1="3" y1="10" x2="21" y2="10"/&gt;&lt;/svg&gt;회차 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link active" href="admin-exam-venues.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/&gt;&lt;circle cx="12" cy="10" r="3"/&gt;&lt;/svg&gt;시험장 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;콘텐츠&lt;/div&gt;&lt;a class="sb-link" href="admin-notice.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/&gt;&lt;path d="M13.73 21a2 2 0 0 1-3.46 0"/&gt;&lt;/svg&gt;공지사항 관리&lt;/a&gt;&lt;a class="sb-link" href="admin-faq.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="10"/&gt;&lt;path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/&gt;&lt;line x1="12" y1="17" x2="12.01" y2="17"/&gt;&lt;/svg&gt;FAQ 관리&lt;/a&gt;&lt;a class="sb-link" href="admin-refund.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/&gt;&lt;/svg&gt;환불·정정신청&lt;span class="sb-badge"&gt;3&lt;/span&gt;&lt;/a&gt;&lt;a class="sb-link" href="admin-inquiry.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/&gt;&lt;/svg&gt;문의게시판&lt;span class="sb-badge"&gt;7&lt;/span&gt;&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;회원·약관&lt;/div&gt;&lt;a class="sb-link" href="admin-members.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/&gt;&lt;circle cx="12" cy="7" r="4"/&gt;&lt;/svg&gt;회원 관리&lt;/a&gt;&lt;a class="sb-link" href="admin-terms.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/&gt;&lt;polyline points="14 2 14 8 20 8"/&gt;&lt;/svg&gt;약관 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;시스템&lt;/div&gt;&lt;a class="sb-link" href="admin-accounts.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/&gt;&lt;circle cx="9" cy="7" r="4"/&gt;&lt;line x1="23" y1="11" x2="17" y2="11"/&gt;&lt;line x1="20" y1="8" x2="20" y2="14"/&gt;&lt;/svg&gt;관리자 계정&lt;/a&gt;&lt;a class="sb-link" href="admin-permissions.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="11" width="18" height="11" rx="2"/&gt;&lt;path d="M7 11V7a5 5 0 0 1 10 0v4"/&gt;&lt;/svg&gt;권한 관리&lt;/a&gt;&lt;a class="sb-link" href="admin-history.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;polyline points="12 8 12 12 14 14"/&gt;&lt;path d="M3.05 11a9 9 0 1 0 .5-4H1"/&gt;&lt;/svg&gt;처리 이력&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/nav&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="sb-footer"&gt;&lt;div class="sb-user"&gt;&lt;div class="sb-avatar" id="sb-av"&gt;관&lt;/div&gt;&lt;div&gt;&lt;div class="sb-user-name" id="sb-name"&gt;관리자&lt;/div&gt;&lt;div class="sb-user-role" id="sb-role"&gt;최고관리자&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;button class="sb-logout" id="logoutBtn"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/&gt;&lt;polyline points="16 17 21 12 16 7"/&gt;&lt;line x1="21" y1="12" x2="9" y2="12"/&gt;&lt;/svg&gt;로그아웃&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1">&lt;/aside&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;header class="topbar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="topbar-hamburger" id="hbBtn"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="3" y1="6" x2="21" y2="6"/&gt;&lt;line x1="3" y1="12" x2="21" y2="12"/&gt;&lt;line x1="3" y1="18" x2="21" y2="18"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="topbar-title"&gt;시험장 관리&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="tb-user"&gt;&lt;div class="tb-avatar" id="tb-av"&gt;관&lt;/div&gt;&lt;span class="tb-name" id="tb-name"&gt;관리자&lt;/span&gt;&lt;span class="tb-role" id="tb-role"&gt;최고관리자&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1">&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;main class="main-wrap"&gt;&lt;div class="page-body"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="card-header"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="card-title"&gt;시험장 목록&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span style="flex:1"&gt;&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-primary btn-sm" onclick="openVenueModal(null)"&gt;시험장 등록&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="tbl-wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;table class="data-table" id="venueTbl"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;thead&gt;&lt;tr&gt;&lt;th&gt;시험장명&lt;/th&gt;&lt;th&gt;도시/지역&lt;/th&gt;&lt;th&gt;주소&lt;/th&gt;&lt;th&gt;연락처&lt;/th&gt;&lt;th&gt;기본정원&lt;/th&gt;&lt;th&gt;현재 배정 회차&lt;/th&gt;&lt;th&gt;사용여부&lt;/th&gt;&lt;th style="min-width:120px"&gt;관리&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;tbody id="venueTbody"&gt;&lt;/tbody&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/table&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/div&gt;&lt;/main&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- MODAL: 시험장 등록/수정 --&gt;</p>
+<p class="p1">&lt;div class="overlay" id="venueModal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="modal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-head"&gt;&lt;div class="modal-title" id="vm-title"&gt;시험장 등록&lt;/div&gt;&lt;button class="modal-close-btn" onclick="closeModal('venueModal')"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="18" y1="6" x2="6" y2="18"/&gt;&lt;line x1="6" y1="6" x2="18" y2="18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-body"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-group"&gt;&lt;label class="form-label"&gt;시험장명 &lt;span class="form-req"&gt;*&lt;/span&gt;&lt;/label&gt;&lt;input class="form-control" id="vm-name" type="text" placeholder="예) 양곤대 흘라잉캠퍼스"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="grid-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-group"&gt;&lt;label class="form-label"&gt;도시/지역 &lt;span class="form-req"&gt;*&lt;/span&gt;&lt;/label&gt;&lt;input class="form-control" id="vm-city" type="text" placeholder="예) 양곤"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-group"&gt;&lt;label class="form-label"&gt;기본 정원&lt;/label&gt;&lt;input class="form-control" id="vm-cap" type="number" placeholder="예) 120" min="0"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-group"&gt;&lt;label class="form-label"&gt;주소&lt;/label&gt;&lt;input class="form-control" id="vm-addr" type="text" placeholder="상세 주소 입력"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="grid-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-group"&gt;&lt;label class="form-label"&gt;연락처&lt;/label&gt;&lt;input class="form-control" id="vm-tel" type="text" placeholder="01-234-5678"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-group"&gt;&lt;label class="form-label"&gt;담당자명&lt;/label&gt;&lt;input class="form-control" id="vm-manager" type="text" placeholder="담당자 성명"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-group"&gt;&lt;label class="form-label"&gt;찾아오는 방법 (지도/교통 안내)&lt;/label&gt;&lt;textarea class="form-control" id="vm-direction" rows="2" placeholder="교통편, 주차 안내 등"&gt;&lt;/textarea&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-group"&gt;&lt;label class="form-label"&gt;비고&lt;/label&gt;&lt;textarea class="form-control" id="vm-note" rows="2" placeholder="기타 메모"&gt;&lt;/textarea&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-group"&gt;&lt;label class="form-label"&gt;사용 여부&lt;/label&gt;&lt;select class="form-select" id="vm-active" style="width:100%"&gt;&lt;option value="1"&gt;사용&lt;/option&gt;&lt;option value="0"&gt;미사용&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-foot"&gt;&lt;button class="btn btn-outline" onclick="closeModal('venueModal')"&gt;취소&lt;/button&gt;&lt;button class="btn btn-primary" onclick="saveVenue()"&gt;저장&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- MODAL: 삭제 --&gt;</p>
+<p class="p1">&lt;div class="overlay" id="delModal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="modal modal-sm"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-head"&gt;&lt;div class="modal-title"&gt;시험장 삭제&lt;/div&gt;&lt;button class="modal-close-btn" onclick="closeModal('delModal')"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="18" y1="6" x2="6" y2="18"/&gt;&lt;line x1="6" y1="6" x2="18" y2="18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-body"&gt;&lt;p style="font-size:.88rem;color:var(--gray-700);margin-bottom:12px"&gt;&lt;strong id="del-name"&gt;—&lt;/strong&gt; 시험장을 삭제합니다.&lt;/p&gt;&lt;div class="alert alert-warn"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="10"/&gt;&lt;line x1="12" y1="8" x2="12" y2="12"/&gt;&lt;line x1="12" y1="16" x2="12.01" y2="16"/&gt;&lt;/svg&gt;배정된 회차가 있는 경우 삭제가 제한됩니다.&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-foot"&gt;&lt;button class="btn btn-outline" onclick="closeModal('delModal')"&gt;취소&lt;/button&gt;&lt;button class="btn btn-danger" onclick="doDelVenue()"&gt;삭제&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="overlay" id="logoutModal"&gt;&lt;div class="modal modal-sm"&gt;&lt;div class="modal-head"&gt;&lt;div class="modal-title"&gt;로그아웃&lt;/div&gt;&lt;button class="modal-close-btn" onclick="closeModal('logoutModal')"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="18" y1="6" x2="6" y2="18"/&gt;&lt;line x1="6" y1="6" x2="18" y2="18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;&lt;div class="modal-body"&gt;&lt;p style="font-size:.9rem;color:var(--gray-700)"&gt;로그아웃 하시겠습니까?&lt;/p&gt;&lt;/div&gt;&lt;div class="modal-foot"&gt;&lt;button class="btn btn-outline" onclick="closeModal('logoutModal')"&gt;취소&lt;/button&gt;&lt;button class="btn btn-danger" onclick="doLogout()"&gt;로그아웃&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">let VENUES=[</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:1,name:'양곤대 흘라잉캠퍼스',city:'양곤',cap:120,addr:'Hlaing Township, Yangon',tel:'01-2345678',manager:'우 민 아웅',direction:'버스 12번, 45번 이용',note:'',active:1,rounds:'제106회, 제105회'},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:2,name:'만달레이 외국어대학',city:'만달레이',cap:80,addr:'Mandalay University, Chanmyathazi',tel:'02-3456789',manager:'도 에이 에이',direction:'만달레이 시내 버스 이용',note:'',active:1,rounds:'제106회, 제105회'},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:3,name:'네피도 거점센터',city:'네피도',cap:60,addr:'Nay Pyi Taw Exam Center',tel:'067-123456',manager:'우 쪼 쪼',direction:'차량 이용 권장',note:'주차 가능',active:1,rounds:'제106회'},</p>
+<p class="p1">];</p>
+<p class="p1">let editVenueId=null, delVenueId=null;</p>
+<p class="p2"><br></p>
+<p class="p1">function renderVenues(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const tbody=document.getElementById('venueTbody');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!VENUES.length){tbody.innerHTML=`&lt;tr&gt;&lt;td colspan="8" style="text-align:center;padding:40px;color:var(--gray-400)"&gt;등록된 시험장이 없습니다.&lt;/td&gt;&lt;/tr&gt;`;return;}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>tbody.innerHTML=VENUES.map(v=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const pct=Math.min(100,Math.round(70/v.cap*100));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return `&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td style="font-weight:600"&gt;${v.name}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td&gt;${v.city}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td style="font-size:.78rem;color:var(--gray-500);max-width:180px"&gt;${v.addr||'—'}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td style="font-size:.78rem"&gt;${v.tel||'—'}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td&gt;${v.cap}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td style="font-size:.78rem;color:var(--gray-600)"&gt;${v.rounds||'—'}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td&gt;${v.active?'&lt;span class="chip chip-green"&gt;사용&lt;/span&gt;':'&lt;span class="chip chip-gray"&gt;미사용&lt;/span&gt;'}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td&gt;&lt;div style="display:flex;gap:4px"&gt;&lt;button class="btn btn-outline btn-xs" onclick="openVenueModal(${v.id})"&gt;수정&lt;/button&gt;&lt;button class="btn btn-danger btn-xs" onclick="openDelModal(${v.id})"&gt;삭제&lt;/button&gt;&lt;/div&gt;&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/tr&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}).join('');</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function openVenueModal(id){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>editVenueId=id;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const v=id?VENUES.find(x=&gt;x.id===id):null;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('vm-title').textContent=v?'시험장 수정':'시험장 등록';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('vm-name').value=v?v.name:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('vm-city').value=v?v.city:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('vm-cap').value=v?v.cap:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('vm-addr').value=v?v.addr:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('vm-tel').value=v?v.tel:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('vm-manager').value=v?v.manager:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('vm-direction').value=v?v.direction:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('vm-note').value=v?v.note:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('vm-active').value=v?v.active:1;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>openModal('venueModal');</p>
+<p class="p1">}</p>
+<p class="p1">function saveVenue(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const name=document.getElementById('vm-name').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const city=document.getElementById('vm-city').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!name||!city){alert('시험장명과 도시/지역은 필수입니다.');return;}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const data={name,city,cap:+document.getElementById('vm-cap').value||0,addr:document.getElementById('vm-addr').value.trim(),tel:document.getElementById('vm-tel').value.trim(),manager:document.getElementById('vm-manager').value.trim(),direction:document.getElementById('vm-direction').value.trim(),note:document.getElementById('vm-note').value.trim(),active:+document.getElementById('vm-active').value,rounds:'—'};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(editVenueId){const idx=VENUES.findIndex(v=&gt;v.id===editVenueId);VENUES[idx]={...VENUES[idx],...data};}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else{VENUES.push({id:Date.now(),...data});}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>closeModal('venueModal');renderVenues();</p>
+<p class="p1">}</p>
+<p class="p1">function openDelModal(id){delVenueId=id;const v=VENUES.find(x=&gt;x.id===id);document.getElementById('del-name').textContent=v?v.name:'—';openModal('delModal');}</p>
+<p class="p1">function doDelVenue(){VENUES=VENUES.filter(v=&gt;v.id!==delVenueId);closeModal('delModal');renderVenues();}</p>
+<p class="p1">function openModal(id){document.getElementById(id).classList.add('open');}</p>
+<p class="p1">function closeModal(id){document.getElementById(id).classList.remove('open');}</p>
+<p class="p1">document.querySelectorAll('.overlay').forEach(ov=&gt;{ov.addEventListener('click',function(e){if(e.target===this)closeModal(this.id);});});</p>
+<p class="p1">function doLogout(){sessionStorage.clear();location.href='admin-login.html';}</p>
+<p class="p1">(function(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const admin=JSON.parse(sessionStorage.getItem('bo_admin')||'{"name":"관리자","role":"최고관리자"}');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const ini=(admin.name||'관')[0];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>['sb-av','tb-av'].forEach(id=&gt;document.getElementById(id).textContent=ini);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('sb-name').textContent=admin.name;document.getElementById('sb-role').textContent=admin.role;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('tb-name').textContent=admin.name;document.getElementById('tb-role').textContent=admin.role;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const sidebar=document.getElementById('sidebar');const backdrop=document.getElementById('backdrop');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('hbBtn').addEventListener('click',()=&gt;{const o=sidebar.classList.toggle('open');backdrop.classList.toggle('show',o);});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>backdrop.addEventListener('click',()=&gt;{sidebar.classList.remove('open');backdrop.classList.remove('show');});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('logoutBtn').addEventListener('click',()=&gt;openModal('logoutModal'));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderVenues();</p>
+<p class="p1">})();</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>

@@ -1,0 +1,493 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="ko"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1">&lt;title&gt;회차 관리 — TOPIK Myanmar BO&lt;/title&gt;</p>
+<p class="p1">&lt;style&gt;</p>
+<p class="p1">*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}</p>
+<p class="p1">:root{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--primary:#1a4fa0;--primary-dark:#133d80;--primary-light:#e8f0fb;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--danger:#d9363e;--danger-light:#fdf0f0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--success:#1e7e4a;--success-light:#eaf6ef;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--warning:#b45309;--warning-light:#fef9ec;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--info:#0e6fa8;--info-light:#e6f4fb;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-300:#cbd5e1;--gray-400:#94a3b8;--gray-500:#64748b;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-600:#475569;--gray-700:#334155;--gray-800:#1e293b;--gray-900:#0f172a;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--white:#fff;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--radius-sm:4px;--radius:8px;--radius-lg:12px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--shadow-sm:0 1px 3px rgba(0,0,0,.07);--shadow:0 2px 8px rgba(0,0,0,.10);--shadow-lg:0 8px 28px rgba(0,0,0,.15);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--font:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--sidebar-w:240px;--topbar-h:56px;--tr:.18s ease;</p>
+<p class="p1">}</p>
+<p class="p1">html{font-size:15px}body{font-family:var(--font);color:var(--gray-800);background:var(--gray-50);line-height:1.6;overflow-x:hidden}</p>
+<p class="p1">a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;border:none;background:none}input,select,textarea{font-family:inherit;font-size:inherit}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}</p>
+<p class="p1">.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--gray-900);color:var(--gray-300);display:flex;flex-direction:column;z-index:200;overflow-y:auto;transition:transform .22s ease}</p>
+<p class="p1">.sidebar-brand{display:flex;align-items:center;gap:10px;padding:0 18px;height:var(--topbar-h);border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}</p>
+<p class="p1">.sb-icon{width:32px;height:32px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}</p>
+<p class="p1">.sb-icon svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2}</p>
+<p class="p1">.sb-brand-text{font-size:.82rem;font-weight:700;color:#fff;line-height:1.3}</p>
+<p class="p1">.sb-brand-sub{font-size:.7rem;color:var(--gray-400)}</p>
+<p class="p1">.sb-nav{flex:1;padding:12px 0 8px;overflow-y:auto}</p>
+<p class="p1">.sb-section{padding:16px 18px 4px;font-size:.65rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--gray-500)}</p>
+<p class="p1">.sb-link{display:flex;align-items:center;gap:9px;padding:8px 18px;font-size:.875rem;font-weight:500;color:var(--gray-400);border-left:3px solid transparent;transition:var(--tr)}</p>
+<p class="p1">.sb-link:hover{background:rgba(255,255,255,.06);color:#fff}</p>
+<p class="p1">.sb-link.active{background:rgba(26,79,160,.28);border-left-color:var(--primary);color:#fff}</p>
+<p class="p1">.sb-link svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0;opacity:.8}</p>
+<p class="p1">.sb-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:.65rem;font-weight:700;border-radius:10px;padding:1px 6px;line-height:1.7}</p>
+<p class="p1">.sb-footer{padding:12px 18px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}</p>
+<p class="p1">.sb-user{display:flex;align-items:center;gap:10px;margin-bottom:10px}</p>
+<p class="p1">.sb-avatar{width:32px;height:32px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff;flex-shrink:0}</p>
+<p class="p1">.sb-user-name{font-size:.82rem;font-weight:600;color:#fff}</p>
+<p class="p1">.sb-user-role{font-size:.7rem;color:var(--gray-400)}</p>
+<p class="p1">.sb-logout{display:flex;align-items:center;gap:7px;width:100%;padding:7px 10px;border-radius:var(--radius-sm);font-size:.82rem;color:var(--gray-400);transition:var(--tr)}</p>
+<p class="p1">.sb-logout:hover{background:rgba(217,54,62,.15);color:#f87171}</p>
+<p class="p1">.sb-logout svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}</p>
+<p class="p1">.topbar{position:fixed;top:0;left:var(--sidebar-w);right:0;height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;padding:0 20px;gap:12px;z-index:100;transition:left .22s ease}</p>
+<p class="p1">.topbar-hamburger{display:none;padding:6px;border-radius:var(--radius-sm);color:var(--gray-500)}</p>
+<p class="p1">.topbar-hamburger svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;display:block}</p>
+<p class="p1">.topbar-title{font-size:1rem;font-weight:700;color:var(--gray-900)}</p>
+<p class="p1">.tb-user{display:flex;align-items:center;gap:7px;background:var(--gray-100);border-radius:20px;padding:5px 12px 5px 7px;font-size:.8rem;margin-left:auto}</p>
+<p class="p1">.tb-avatar{width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fff;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}</p>
+<p class="p1">.tb-name{font-weight:600;color:var(--gray-700)}.tb-role{font-size:.68rem;background:var(--primary-light);color:var(--primary);border-radius:3px;padding:1px 5px;font-weight:600}</p>
+<p class="p1">.main-wrap{margin-left:var(--sidebar-w);padding-top:var(--topbar-h);min-height:100vh}</p>
+<p class="p1">.page-body{padding:20px}</p>
+<p class="p1">.backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:190}</p>
+<p class="p1">.backdrop.show{display:block}</p>
+<p class="p1">.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:7px 14px;border-radius:var(--radius-sm);font-size:.83rem;font-weight:600;transition:var(--tr);cursor:pointer;border:none;line-height:1.4;white-space:nowrap}</p>
+<p class="p1">.btn-sm{padding:5px 11px;font-size:.78rem}.btn-xs{padding:3px 8px;font-size:.72rem}</p>
+<p class="p1">.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-dark)}</p>
+<p class="p1">.btn-outline{background:#fff;color:var(--gray-700);border:1px solid var(--gray-300)}.btn-outline:hover{background:var(--gray-50)}</p>
+<p class="p1">.btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{background:#b22a32}</p>
+<p class="p1">.btn-success{background:var(--success);color:#fff}.btn-success:hover{background:#166039}</p>
+<p class="p1">.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--gray-200)}</p>
+<p class="p1">.card-header{padding:14px 18px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:8px;flex-wrap:wrap}</p>
+<p class="p1">.card-title{font-size:.95rem;font-weight:700;color:var(--gray-900)}</p>
+<p class="p1">.card-body{padding:18px}</p>
+<p class="p1">.form-control{width:100%;padding:8px 12px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.88rem;color:var(--gray-800);background:#fff;outline:none;transition:var(--tr)}</p>
+<p class="p1">.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,79,160,.1)}</p>
+<p class="p1">.form-select{padding:7px 28px 7px 10px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.85rem;color:var(--gray-800);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center;appearance:none;outline:none;transition:var(--tr);cursor:pointer}</p>
+<p class="p1">.form-select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,79,160,.1)}</p>
+<p class="p1">.form-label{display:block;font-size:.78rem;font-weight:600;color:var(--gray-700);margin-bottom:5px}</p>
+<p class="p1">.form-group{margin-bottom:14px}</p>
+<p class="p1">.form-hint{font-size:.72rem;color:var(--gray-400);margin-top:4px}</p>
+<p class="p1">.form-req{color:var(--danger)}</p>
+<p class="p1">.chip{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:.7rem;font-weight:700;white-space:nowrap}</p>
+<p class="p1">.chip-blue{background:var(--info-light);color:var(--info)}</p>
+<p class="p1">.chip-green{background:var(--success-light);color:var(--success)}</p>
+<p class="p1">.chip-yellow{background:var(--warning-light);color:var(--warning)}</p>
+<p class="p1">.chip-red{background:var(--danger-light);color:var(--danger)}</p>
+<p class="p1">.chip-gray{background:var(--gray-100);color:var(--gray-500)}</p>
+<p class="p1">.data-table{width:100%;border-collapse:collapse;font-size:.83rem}</p>
+<p class="p1">.data-table th{padding:9px 12px;text-align:left;font-size:.72rem;font-weight:700;color:var(--gray-500);background:var(--gray-50);border-bottom:1px solid var(--gray-200);white-space:nowrap}</p>
+<p class="p1">.data-table td{padding:9px 12px;border-bottom:1px solid var(--gray-100);color:var(--gray-700);vertical-align:middle}</p>
+<p class="p1">.data-table tr:last-child td{border-bottom:none}</p>
+<p class="p1">.data-table tbody tr:hover td{background:var(--gray-50)}</p>
+<p class="p1">.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}</p>
+<p class="p1">.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;align-items:center;justify-content:center;padding:16px}</p>
+<p class="p1">.overlay.open{display:flex}</p>
+<p class="p1">.modal{background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;max-width:640px;max-height:92vh;display:flex;flex-direction:column}</p>
+<p class="p1">.modal-sm{max-width:420px}</p>
+<p class="p1">.modal-head{padding:18px 20px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;gap:10px;flex-shrink:0}</p>
+<p class="p1">.modal-title{font-size:1rem;font-weight:700;color:var(--gray-900);flex:1}</p>
+<p class="p1">.modal-close-btn{padding:6px;color:var(--gray-400);border-radius:var(--radius-sm);cursor:pointer;border:none;background:none}</p>
+<p class="p1">.modal-close-btn:hover{background:var(--gray-100);color:var(--gray-700)}</p>
+<p class="p1">.modal-close-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;display:block}</p>
+<p class="p1">.modal-body{padding:20px;flex:1;overflow-y:auto}</p>
+<p class="p1">.modal-foot{padding:14px 20px;border-top:1px solid var(--gray-100);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}</p>
+<p class="p1">.info-box{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-sm);padding:12px 14px}</p>
+<p class="p1">.ib-row{display:flex;gap:10px;padding:4px 0;border-bottom:1px solid var(--gray-100)}</p>
+<p class="p1">.ib-row:last-child{border-bottom:none}</p>
+<p class="p1">.ib-label{font-size:.73rem;font-weight:600;color:var(--gray-400);min-width:90px;flex-shrink:0}</p>
+<p class="p1">.ib-val{font-size:.85rem;color:var(--gray-800);font-weight:500}</p>
+<p class="p1">.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}</p>
+<p class="p1">.alert{padding:10px 14px;border-radius:var(--radius-sm);font-size:.8rem;display:flex;gap:8px;align-items:flex-start}</p>
+<p class="p1">.alert svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0;margin-top:1px}</p>
+<p class="p1">.alert-warn{background:var(--warning-light);color:var(--warning);border:1px solid #fcd34d}</p>
+<p class="p1">.alert-info{background:var(--info-light);color:var(--info);border:1px solid #bae6fd}</p>
+<p class="p1">/* venue assign */</p>
+<p class="p1">.venue-assign-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--gray-100)}</p>
+<p class="p1">.venue-assign-row:last-child{border-bottom:none}</p>
+<p class="p1">.venue-name{flex:1;font-size:.85rem;font-weight:500;color:var(--gray-800)}</p>
+<p class="p1">.venue-cap-input{width:80px;padding:5px 8px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.83rem;text-align:center;outline:none}</p>
+<p class="p1">.venue-cap-input:focus{border-color:var(--primary)}</p>
+<p class="p1">@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.topbar{left:0}.main-wrap{margin-left:0}.topbar-hamburger{display:flex}.grid-2{grid-template-columns:1fr}}</p>
+<p class="p1">&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1">&lt;div class="backdrop" id="backdrop"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;aside class="sidebar" id="sidebar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="sidebar-brand"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-icon"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="11" width="18" height="11" rx="2"/&gt;&lt;path d="M7 11V7a5 5 0 0 1 10 0v4"/&gt;&lt;/svg&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div&gt;&lt;div class="sb-brand-text"&gt;TOPIK Myanmar&lt;/div&gt;&lt;div class="sb-brand-sub"&gt;관리자 시스템&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;nav class="sb-nav"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;대시보드&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-dashboard.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="3" width="7" height="7" rx="1"/&gt;&lt;rect x="14" y="3" width="7" height="7" rx="1"/&gt;&lt;rect x="3" y="14" width="7" height="7" rx="1"/&gt;&lt;rect x="14" y="14" width="7" height="7" rx="1"/&gt;&lt;/svg&gt;대시보드&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;접수 관리&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-applicants.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/&gt;&lt;circle cx="9" cy="7" r="4"/&gt;&lt;/svg&gt;접수자 목록&lt;span class="sb-badge"&gt;12&lt;/span&gt;&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;시험 관리&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link active" href="admin-exam-rounds.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="4" width="18" height="18" rx="2"/&gt;&lt;line x1="16" y1="2" x2="16" y2="6"/&gt;&lt;line x1="8" y1="2" x2="8" y2="6"/&gt;&lt;line x1="3" y1="10" x2="21" y2="10"/&gt;&lt;/svg&gt;회차 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-exam-venues.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/&gt;&lt;circle cx="12" cy="10" r="3"/&gt;&lt;/svg&gt;시험장 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;콘텐츠&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-notice.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/&gt;&lt;path d="M13.73 21a2 2 0 0 1-3.46 0"/&gt;&lt;/svg&gt;공지사항 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-faq.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="10"/&gt;&lt;path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/&gt;&lt;line x1="12" y1="17" x2="12.01" y2="17"/&gt;&lt;/svg&gt;FAQ 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-refund.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/&gt;&lt;/svg&gt;환불·정정신청&lt;span class="sb-badge"&gt;3&lt;/span&gt;&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-inquiry.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/&gt;&lt;/svg&gt;문의게시판&lt;span class="sb-badge"&gt;7&lt;/span&gt;&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;회원·약관&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-members.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/&gt;&lt;circle cx="12" cy="7" r="4"/&gt;&lt;/svg&gt;회원 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-terms.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/&gt;&lt;polyline points="14 2 14 8 20 8"/&gt;&lt;/svg&gt;약관 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;시스템&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-accounts.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/&gt;&lt;circle cx="9" cy="7" r="4"/&gt;&lt;line x1="23" y1="11" x2="17" y2="11"/&gt;&lt;line x1="20" y1="8" x2="20" y2="14"/&gt;&lt;/svg&gt;관리자 계정&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-permissions.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="11" width="18" height="11" rx="2"/&gt;&lt;path d="M7 11V7a5 5 0 0 1 10 0v4"/&gt;&lt;/svg&gt;권한 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-history.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;polyline points="12 8 12 12 14 14"/&gt;&lt;path d="M3.05 11a9 9 0 1 0 .5-4H1"/&gt;&lt;/svg&gt;처리 이력&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/nav&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="sb-footer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-user"&gt;&lt;div class="sb-avatar" id="sb-av"&gt;관&lt;/div&gt;&lt;div&gt;&lt;div class="sb-user-name" id="sb-name"&gt;관리자&lt;/div&gt;&lt;div class="sb-user-role" id="sb-role"&gt;최고관리자&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="sb-logout" id="logoutBtn"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/&gt;&lt;polyline points="16 17 21 12 16 7"/&gt;&lt;line x1="21" y1="12" x2="9" y2="12"/&gt;&lt;/svg&gt;로그아웃&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/aside&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;header class="topbar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="topbar-hamburger" id="hbBtn"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="3" y1="6" x2="21" y2="6"/&gt;&lt;line x1="3" y1="12" x2="21" y2="12"/&gt;&lt;line x1="3" y1="18" x2="21" y2="18"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="topbar-title"&gt;회차 관리&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="tb-user"&gt;&lt;div class="tb-avatar" id="tb-av"&gt;관&lt;/div&gt;&lt;span class="tb-name" id="tb-name"&gt;관리자&lt;/span&gt;&lt;span class="tb-role" id="tb-role"&gt;최고관리자&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1">&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;main class="main-wrap"&gt;</p>
+<p class="p1">&lt;div class="page-body"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="card-header"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="card-title"&gt;회차 목록&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span style="flex:1"&gt;&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-primary btn-sm" onclick="openRoundModal(null)"&gt;회차 등록&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="tbl-wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;table class="data-table" id="roundTable"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;회차번호&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;시험명&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;시험일&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;접수기간&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;접수인원 / 정원&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;응시료 (Ⅰ / Ⅱ / 동시)&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;상태&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th style="min-width:160px"&gt;관리&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;tbody id="roundTbody"&gt;&lt;/tbody&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/table&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p1">&lt;/main&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- MODAL: 회차 등록/수정 --&gt;</p>
+<p class="p1">&lt;div class="overlay" id="roundModal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="modal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-head"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="modal-title" id="rm-title"&gt;회차 등록&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="modal-close-btn" onclick="closeModal('roundModal')"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="18" y1="6" x2="6" y2="18"/&gt;&lt;line x1="6" y1="6" x2="18" y2="18"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-body"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="grid-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="form-label"&gt;회차번호 &lt;span class="form-req"&gt;*&lt;/span&gt;&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input class="form-control" id="rm-no" type="number" placeholder="예) 106" min="1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="form-label"&gt;시험명&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input class="form-control" id="rm-name" type="text" placeholder="예) 제106회 TOPIK"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label"&gt;시험일 &lt;span class="form-req"&gt;*&lt;/span&gt;&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;input class="form-control" id="rm-examdate" type="date"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="grid-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="form-label"&gt;접수 시작일 &lt;span class="form-req"&gt;*&lt;/span&gt;&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input class="form-control" id="rm-regstart" type="date"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="form-label"&gt;접수 종료일 &lt;span class="form-req"&gt;*&lt;/span&gt;&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input class="form-control" id="rm-regend" type="date"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="grid-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="form-label"&gt;수정 가능 종료일&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input class="form-control" id="rm-editend" type="date"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="form-hint"&gt;접수 후 정보 수정 마감일&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="form-label"&gt;성적 발표일&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input class="form-control" id="rm-result" type="date"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="grid-2" style="margin-bottom:0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="form-label"&gt;응시료 TOPIK Ⅰ (MMK) &lt;span class="form-req"&gt;*&lt;/span&gt;&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input class="form-control" id="rm-fee1" type="number" placeholder="20000" min="0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="form-label"&gt;응시료 TOPIK Ⅱ (MMK) &lt;span class="form-req"&gt;*&lt;/span&gt;&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input class="form-control" id="rm-fee2" type="number" placeholder="30000" min="0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label"&gt;응시료 동시응시 (MMK)&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;input class="form-control" id="rm-fee3" type="number" placeholder="50000" min="0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;hr style="margin:16px 0;border:none;border-top:1px solid var(--gray-200)"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 시험장 배정 및 정원 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style="font-size:.82rem;font-weight:700;color:var(--gray-700);margin-bottom:10px"&gt;시험장 배정 및 정원 설정&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="venueAssignList"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- JS render --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style="font-size:.78rem;font-weight:600;color:var(--gray-600);margin-top:12px;margin-bottom:8px"&gt;접수 상태&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;select class="form-select" id="rm-status" style="width:100%"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;option value="준비중"&gt;준비중&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;option value="접수예정"&gt;접수예정&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;option value="접수중" selected&gt;접수중&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;option value="접수마감"&gt;접수마감&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;option value="시험완료"&gt;시험완료&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-foot"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-outline" onclick="closeModal('roundModal')"&gt;취소&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-primary" id="rm-save-btn" onclick="saveRound()"&gt;저장&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- MODAL: 상태 변경 확인 --&gt;</p>
+<p class="p1">&lt;div class="overlay" id="statusModal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="modal modal-sm"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-head"&gt;&lt;div class="modal-title"&gt;회차 상태 변경&lt;/div&gt;&lt;button class="modal-close-btn" onclick="closeModal('statusModal')"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="18" y1="6" x2="6" y2="18"/&gt;&lt;line x1="6" y1="6" x2="18" y2="18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-body"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="info-box" style="margin-bottom:12px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;회차&lt;/span&gt;&lt;span class="ib-val" id="sm-round"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;현재 상태&lt;/span&gt;&lt;span class="ib-val" id="sm-cur"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label"&gt;변경할 상태&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;select class="form-select" id="sm-new" style="width:100%"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option&gt;준비중&lt;/option&gt;&lt;option&gt;접수예정&lt;/option&gt;&lt;option&gt;접수중&lt;/option&gt;&lt;option&gt;접수마감&lt;/option&gt;&lt;option&gt;시험완료&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="alert alert-warn"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;svg viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="10"/&gt;&lt;line x1="12" y1="8" x2="12" y2="12"/&gt;&lt;line x1="12" y1="16" x2="12.01" y2="16"/&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>상태 변경 시 FO 사이트의 접수 가능 여부에 즉시 영향을 미칩니다.</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-foot"&gt;&lt;button class="btn btn-outline" onclick="closeModal('statusModal')"&gt;취소&lt;/button&gt;&lt;button class="btn btn-primary" onclick="doStatusChange()"&gt;변경&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- MODAL: 삭제 확인 --&gt;</p>
+<p class="p1">&lt;div class="overlay" id="deleteModal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="modal modal-sm"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-head"&gt;&lt;div class="modal-title"&gt;회차 삭제&lt;/div&gt;&lt;button class="modal-close-btn" onclick="closeModal('deleteModal')"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="18" y1="6" x2="6" y2="18"/&gt;&lt;line x1="6" y1="6" x2="18" y2="18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-body"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="info-box" style="margin-bottom:12px"&gt;&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;대상&lt;/span&gt;&lt;span class="ib-val" id="dm-target"&gt;—&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="alert alert-warn"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="10"/&gt;&lt;line x1="12" y1="8" x2="12" y2="12"/&gt;&lt;line x1="12" y1="16" x2="12.01" y2="16"/&gt;&lt;/svg&gt;삭제 시 해당 회차의 접수 데이터도 함께 삭제됩니다. 이 작업은 되돌릴 수 없습니다.&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-foot"&gt;&lt;button class="btn btn-outline" onclick="closeModal('deleteModal')"&gt;취소&lt;/button&gt;&lt;button class="btn btn-danger" onclick="doDelete()"&gt;삭제&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- MODAL: 로그아웃 --&gt;</p>
+<p class="p1">&lt;div class="overlay" id="logoutModal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="modal modal-sm"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-head"&gt;&lt;div class="modal-title"&gt;로그아웃&lt;/div&gt;&lt;button class="modal-close-btn" onclick="closeModal('logoutModal')"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="18" y1="6" x2="6" y2="18"/&gt;&lt;line x1="6" y1="6" x2="18" y2="18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-body"&gt;&lt;p style="font-size:.9rem;color:var(--gray-700)"&gt;로그아웃 하시겠습니까?&lt;/p&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-foot"&gt;&lt;button class="btn btn-outline" onclick="closeModal('logoutModal')"&gt;취소&lt;/button&gt;&lt;button class="btn btn-danger" onclick="doLogout()"&gt;로그아웃&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">const VENUES_MASTER = [</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:1,name:'양곤대 흘라잉캠퍼스'},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:2,name:'만달레이 외대'},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:3,name:'네피도 거점센터'},</p>
+<p class="p1">];</p>
+<p class="p2"><br></p>
+<p class="p1">let ROUNDS = [</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:1,no:106,name:'제106회 TOPIK',examdate:'2025-09-21',regstart:'2025-07-01',regend:'2025-07-20',editend:'2025-07-25',result:'2025-11-10',fee1:20000,fee2:30000,fee3:50000,status:'접수중',venues:[{id:1,cap:120,count:89},{id:2,cap:80,count:54},{id:3,cap:60,count:28}]},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:2,no:105,name:'제105회 TOPIK',examdate:'2025-04-13',regstart:'2025-02-01',regend:'2025-02-28',editend:'2025-03-05',result:'2025-06-02',fee1:20000,fee2:30000,fee3:50000,status:'시험완료',venues:[{id:1,cap:120,count:112},{id:2,cap:80,count:80},{id:3,cap:60,count:60}]},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:3,no:104,name:'제104회 TOPIK',examdate:'2024-11-17',regstart:'2024-09-01',regend:'2024-09-30',editend:'2024-10-05',result:'2025-01-20',fee1:18000,fee2:28000,fee3:46000,status:'시험완료',venues:[{id:1,cap:100,count:98},{id:2,cap:80,count:75},{id:3,cap:50,count:46}]},</p>
+<p class="p1">];</p>
+<p class="p1">let editId = null;</p>
+<p class="p1">let statusTargetId = null;</p>
+<p class="p1">let deleteTargetId = null;</p>
+<p class="p2"><br></p>
+<p class="p1">function statusChip(s){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const m={접수중:'chip-green',접수예정:'chip-blue',준비중:'chip-gray',접수마감:'chip-yellow',시험완료:'chip-gray'};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return `&lt;span class="chip ${m[s]||'chip-gray'}"&gt;${s}&lt;/span&gt;`;</p>
+<p class="p1">}</p>
+<p class="p1">function fmtDate(d){ return d?d.replace(/-/g,'.'):'—'; }</p>
+<p class="p1">function numFmt(n){ return n?Number(n).toLocaleString():'—'; }</p>
+<p class="p2"><br></p>
+<p class="p1">function renderRounds(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const tbody=document.getElementById('roundTbody');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!ROUNDS.length){tbody.innerHTML=`&lt;tr&gt;&lt;td colspan="8" style="text-align:center;padding:40px;color:var(--gray-400)"&gt;등록된 회차가 없습니다.&lt;/td&gt;&lt;/tr&gt;`;return;}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>tbody.innerHTML=ROUNDS.map(r=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const totalCap=r.venues.reduce((s,v)=&gt;s+v.cap,0);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const totalCount=r.venues.reduce((s,v)=&gt;s+v.count,0);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return `&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td style="font-weight:700"&gt;제${r.no}회&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td&gt;${r.name}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td&gt;${fmtDate(r.examdate)}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td style="font-size:.78rem"&gt;${fmtDate(r.regstart)} ~ ${fmtDate(r.regend)}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td style="font-weight:600"&gt;${totalCount} / ${totalCap}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td style="font-size:.78rem"&gt;${numFmt(r.fee1)} / ${numFmt(r.fee2)} / ${numFmt(r.fee3)}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td&gt;${statusChip(r.status)}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style="display:flex;gap:4px;flex-wrap:wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="btn btn-outline btn-xs" onclick="openRoundModal(${r.id})"&gt;수정&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="btn btn-outline btn-xs" onclick="openStatusModal(${r.id})"&gt;상태변경&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="btn btn-danger btn-xs" onclick="openDeleteModal(${r.id})"&gt;삭제&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a class="btn btn-outline btn-xs" href="admin-applicants.html?round=${r.no}"&gt;접수자&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/tr&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}).join('');</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function openRoundModal(id){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>editId=id;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const r=id?ROUNDS.find(x=&gt;x.id===id):null;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rm-title').textContent=r?'회차 수정':'회차 등록';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rm-no').value=r?r.no:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rm-name').value=r?r.name:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rm-examdate').value=r?r.examdate:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rm-regstart').value=r?r.regstart:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rm-regend').value=r?r.regend:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rm-editend').value=r?r.editend:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rm-result').value=r?r.result:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rm-fee1').value=r?r.fee1:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rm-fee2').value=r?r.fee2:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rm-fee3').value=r?r.fee3:'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rm-status').value=r?r.status:'접수중';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// venue assign</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const vList=document.getElementById('venueAssignList');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>vList.innerHTML=VENUES_MASTER.map(v=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const rv=r?r.venues.find(x=&gt;x.id===v.id):null;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return `&lt;div class="venue-assign-row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;input type="checkbox" class="venue-chk" data-vid="${v.id}" style="width:15px;height:15px;cursor:pointer" ${rv?'checked':''}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="venue-name"&gt;${v.name}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;label style="font-size:.75rem;color:var(--gray-500);white-space:nowrap"&gt;정원&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;input type="number" class="venue-cap-input" data-vid="${v.id}" value="${rv?rv.cap:''}" placeholder="0" min="0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}).join('');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>openModal('roundModal');</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function saveRound(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const no=+document.getElementById('rm-no').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const name=document.getElementById('rm-name').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const examdate=document.getElementById('rm-examdate').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const regstart=document.getElementById('rm-regstart').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const regend=document.getElementById('rm-regend').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!no||!examdate||!regstart||!regend){ alert('필수 항목을 입력해 주세요.'); return; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const venues=[];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('.venue-chk:checked').forEach(chk=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const vid=+chk.dataset.vid;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const cap=+(document.querySelector(`.venue-cap-input[data-vid="${vid}"]`).value)||0;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>venues.push({id:vid,cap,count:0});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const data={</p>
+<p class="p1"><span class="Apple-converted-space">    </span>no,name:name||`제${no}회 TOPIK`,examdate,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>regstart,regend,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>editend:document.getElementById('rm-editend').value,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>result:document.getElementById('rm-result').value,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>fee1:+document.getElementById('rm-fee1').value||0,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>fee2:+document.getElementById('rm-fee2').value||0,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>fee3:+document.getElementById('rm-fee3').value||0,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>status:document.getElementById('rm-status').value,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>venues</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(editId){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const idx=ROUNDS.findIndex(r=&gt;r.id===editId);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>ROUNDS[idx]={...ROUNDS[idx],...data};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>ROUNDS.unshift({id:Date.now(),...data});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>closeModal('roundModal');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderRounds();</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function openStatusModal(id){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>statusTargetId=id;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const r=ROUNDS.find(x=&gt;x.id===id);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('sm-round').textContent=r.name;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('sm-cur').textContent=r.status;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('sm-new').value=r.status;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>openModal('statusModal');</p>
+<p class="p1">}</p>
+<p class="p1">function doStatusChange(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const r=ROUNDS.find(x=&gt;x.id===statusTargetId);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(r) r.status=document.getElementById('sm-new').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>closeModal('statusModal');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderRounds();</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function openDeleteModal(id){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>deleteTargetId=id;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const r=ROUNDS.find(x=&gt;x.id===id);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-target').textContent=r?r.name:'—';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>openModal('deleteModal');</p>
+<p class="p1">}</p>
+<p class="p1">function doDelete(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>ROUNDS=ROUNDS.filter(r=&gt;r.id!==deleteTargetId);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>closeModal('deleteModal');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderRounds();</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function openModal(id){ document.getElementById(id).classList.add('open'); }</p>
+<p class="p1">function closeModal(id){ document.getElementById(id).classList.remove('open'); }</p>
+<p class="p1">document.querySelectorAll('.overlay').forEach(ov=&gt;{ ov.addEventListener('click',function(e){ if(e.target===this) closeModal(this.id); }); });</p>
+<p class="p1">function doLogout(){ sessionStorage.clear(); location.href='admin-login.html'; }</p>
+<p class="p2"><br></p>
+<p class="p1">(function(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const admin=JSON.parse(sessionStorage.getItem('bo_admin')||'{"name":"관리자","role":"최고관리자"}');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const ini=(admin.name||'관')[0];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>['sb-av','tb-av'].forEach(id=&gt;document.getElementById(id).textContent=ini);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('sb-name').textContent=admin.name;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('sb-role').textContent=admin.role;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('tb-name').textContent=admin.name;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('tb-role').textContent=admin.role;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const sidebar=document.getElementById('sidebar');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const backdrop=document.getElementById('backdrop');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('hbBtn').addEventListener('click',()=&gt;{ const o=sidebar.classList.toggle('open'); backdrop.classList.toggle('show',o); });</p>
+<p class="p1"><span class="Apple-converted-space">  </span>backdrop.addEventListener('click',()=&gt;{ sidebar.classList.remove('open'); backdrop.classList.remove('show'); });</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('logoutBtn').addEventListener('click',()=&gt;openModal('logoutModal'));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderRounds();</p>
+<p class="p1">})();</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>

@@ -1,421 +1,379 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.6">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="TOPIK 답안 작성 요령 — OMR 마킹법, 쓰기 답안지 작성, 수험번호 기재 방법">
+<title>답안 작성 요령 | TOPIK Myanmar</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#1a3a6b;--primary-dark:#122a52;--primary-light:#e8eef7;--accent:#c8232c;--accent-light:#fdf0f0;--warn-bg:#fef9ec;--warn-border:#f5d97a;--warn-text:#7a5a00;--neutral-50:#f8f9fb;--neutral-100:#f1f3f7;--neutral-200:#e2e6ef;--neutral-300:#c8cdd8;--neutral-400:#9099aa;--neutral-500:#636b7a;--neutral-600:#464d5c;--neutral-700:#2d3340;--neutral-800:#1a1e28;--white:#ffffff;--radius-sm:6px;--radius-md:10px;--radius-lg:16px;--shadow-sm:0 1px 4px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(0,0,0,.10);--shadow-lg:0 8px 32px rgba(0,0,0,.14);--font-base:'Noto Sans KR',sans-serif;--ease:cubic-bezier(.4,0,.2,1);--header-h:64px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--font-base);font-size:15px;color:var(--neutral-700);background:var(--white);line-height:1.6;-webkit-font-smoothing:antialiased;padding-top:var(--header-h)}
+a{color:inherit;text-decoration:none}ul{list-style:none}button{cursor:pointer;border:none;background:none;font-family:inherit}
+.container{width:100%;max-width:1100px;margin:0 auto;padding:0 20px}
+/* GNB — rules-notice.html 과 동일 */
+.gnb{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--white);border-bottom:1px solid var(--neutral-200);height:var(--header-h);display:flex;align-items:center}
+.gnb-inner{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:1100px;margin:0 auto;padding:0 20px;gap:12px}
+.gnb-logo{display:flex;align-items:center;gap:10px;flex-shrink:0;text-decoration:none}
+.gnb-logo-mark{width:32px;height:32px;background:var(--primary);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--white);font-weight:700;font-size:13px}
+.gnb-logo-text{line-height:1.2}.gnb-logo-text strong{display:block;font-size:14px;font-weight:700;color:var(--primary)}.gnb-logo-text span{font-size:10px;color:var(--neutral-500)}
+.gnb-nav{display:flex;align-items:center;gap:2px}.gnb-menu{position:relative}
+.gnb-menu-btn{display:flex;align-items:center;gap:4px;padding:8px 13px;font-size:14px;font-weight:500;color:var(--neutral-600);border-radius:var(--radius-sm);transition:.2s var(--ease);white-space:nowrap}
+.gnb-menu-btn:hover,.gnb-menu-btn.is-active{color:var(--primary);background:var(--primary-light)}
+.gnb-menu-btn svg{width:14px;height:14px;transition:transform .2s var(--ease);flex-shrink:0}
+.gnb-menu:hover .gnb-menu-btn svg{transform:rotate(180deg)}
+.gnb-dropdown{position:absolute;top:calc(100% + 8px);left:0;min-width:172px;background:var(--white);border:1px solid var(--neutral-200);border-radius:var(--radius-md);box-shadow:var(--shadow-md);opacity:0;visibility:hidden;transform:translateY(-6px);transition:.18s var(--ease);z-index:200;overflow:hidden}
+.gnb-menu:hover .gnb-dropdown{opacity:1;visibility:visible;transform:translateY(0)}
+.gnb-dropdown a{display:block;padding:10px 16px;font-size:13.5px;color:var(--neutral-600);transition:.15s var(--ease)}
+.gnb-dropdown a:hover{color:var(--primary);background:var(--primary-light)}.gnb-dropdown a.is-current{color:var(--primary);background:var(--primary-light);font-weight:600}
+.gnb-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.lang-toggle{display:flex;border:1px solid var(--neutral-200);border-radius:20px;overflow:hidden;font-size:12px;font-weight:500}
+.lang-toggle button{padding:4px 9px;color:var(--neutral-500);transition:.15s var(--ease)}.lang-toggle button.is-active{background:var(--primary);color:var(--white)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;font-size:13px;font-weight:600;border-radius:var(--radius-sm);transition:.2s var(--ease);cursor:pointer;white-space:nowrap;text-decoration:none;border:none}
+.btn-ghost{color:var(--neutral-600);border:1px solid var(--neutral-200);background:transparent}.btn-ghost:hover{border-color:var(--primary);color:var(--primary)}
+.btn-solid{background:var(--primary);color:var(--white);border:1px solid var(--primary)}.btn-solid:hover{background:var(--primary-dark)}
+.btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary)}.btn-outline:hover{background:var(--primary-light)}
+.btn-lg{padding:12px 24px;font-size:14px;border-radius:var(--radius-md)}
+.gnb-hamburger{display:none;flex-direction:column;gap:5px;padding:8px}.gnb-hamburger span{display:block;width:22px;height:2px;background:var(--neutral-700);border-radius:2px;transition:.2s var(--ease)}
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.46);z-index:1999;opacity:0;visibility:hidden;transition:.25s var(--ease)}.drawer-overlay.is-show{opacity:1;visibility:visible}
+.mobile-drawer{position:fixed;top:0;right:0;bottom:0;width:82%;max-width:320px;background:var(--white);z-index:2000;transform:translateX(100%);transition:.28s var(--ease);box-shadow:var(--shadow-lg);display:flex;flex-direction:column}.mobile-drawer.is-open{transform:translateX(0)}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--neutral-100);flex-shrink:0}
+.drawer-close-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--neutral-200);display:flex;align-items:center;justify-content:center;color:var(--neutral-500);font-size:17px;cursor:pointer}
+.drawer-body{flex:1;overflow-y:auto}.drawer-group{border-bottom:1px solid var(--neutral-100)}
+.drawer-group-title{padding:14px 20px 6px;font-size:10.5px;font-weight:700;color:var(--neutral-400);letter-spacing:.1em;text-transform:uppercase}
+.drawer-link{display:block;padding:10px 20px;font-size:14px;font-weight:500;color:var(--neutral-600);transition:.15s var(--ease)}.drawer-link:hover,.drawer-link.is-current{color:var(--primary);background:var(--primary-light)}
+.drawer-lang{display:flex;gap:6px;padding:14px 20px;border-top:1px solid var(--neutral-100)}
+.drawer-lang button{flex:1;padding:8px;font-size:12px;font-weight:500;border-radius:var(--radius-sm);border:1px solid var(--neutral-200);color:var(--neutral-500);transition:.15s var(--ease)}.drawer-lang button.is-active{background:var(--primary);color:var(--white);border-color:var(--primary)}
+.drawer-foot{padding:14px 20px 20px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--neutral-100);flex-shrink:0}.drawer-foot .btn{justify-content:center}
+.page-hero{background:linear-gradient(135deg,var(--primary) 0%,#0d2550 100%);color:var(--white);padding:44px 0 38px}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,.5);margin-bottom:14px}
+.breadcrumb a{color:rgba(255,255,255,.5)}.breadcrumb a:hover{color:rgba(255,255,255,.85)}.breadcrumb .sep{color:rgba(255,255,255,.25)}.breadcrumb .cur{color:rgba(255,255,255,.85)}
+.page-hero-label{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:8px}
+.page-hero-title{font-size:clamp(22px,4vw,30px);font-weight:700;margin-bottom:8px}.page-hero-desc{font-size:14px;color:rgba(255,255,255,.68);line-height:1.65;max-width:560px}
+.sub-nav{background:var(--white);border-bottom:1px solid var(--neutral-200);position:sticky;top:var(--header-h);z-index:100}
+.sub-nav-inner{display:flex;max-width:1100px;margin:0 auto;padding:0 20px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}.sub-nav-inner::-webkit-scrollbar{display:none}
+.sub-nav-link{flex-shrink:0;padding:14px 16px;font-size:13.5px;font-weight:500;color:var(--neutral-500);border-bottom:2px solid transparent;transition:.18s var(--ease);white-space:nowrap;text-decoration:none}
+.sub-nav-link:hover{color:var(--primary)}.sub-nav-link.is-active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}
+.content-wrap{display:grid;grid-template-columns:1fr 248px;gap:40px;padding:44px 0 64px}
+.info-card{background:var(--white);border:1px solid var(--neutral-200);border-radius:var(--radius-lg);padding:28px;margin-bottom:20px}
+.info-card:last-of-type{margin-bottom:0}
+.info-card-title{font-size:17px;font-weight:700;color:var(--neutral-800);margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--neutral-100)}
+.info-card p{font-size:14px;color:var(--neutral-600);line-height:1.8;margin-bottom:10px}.info-card p:last-child{margin-bottom:0}
+.callout{display:flex;gap:12px;padding:14px 16px;border-radius:var(--radius-md);font-size:13.5px;line-height:1.65;margin-top:16px}
+.callout.info{background:var(--primary-light);border:1px solid rgba(26,58,107,.12);color:var(--primary)}
+.callout.warn{background:var(--warn-bg);border:1px solid var(--warn-border);color:var(--warn-text)}
+.callout.danger{background:var(--accent-light);border:1px solid #fca5a5;color:var(--accent)}
+.callout-icon{flex-shrink:0;font-size:16px;margin-top:1px}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;padding-top:24px;border-top:1px solid var(--neutral-100)}
+.aside-card{background:var(--neutral-50);border:1px solid var(--neutral-200);border-radius:var(--radius-lg);padding:18px 16px;margin-bottom:14px}.aside-card:last-child{margin-bottom:0}
+.aside-card-title{font-size:12px;font-weight:700;color:var(--neutral-500);letter-spacing:.07em;text-transform:uppercase;margin-bottom:10px}
+.aside-nav-list{display:flex;flex-direction:column;gap:2px}
+.aside-nav-link{display:block;padding:9px 12px;font-size:13.5px;font-weight:500;color:var(--neutral-600);border-radius:var(--radius-sm);transition:.15s var(--ease);text-decoration:none}
+.aside-nav-link:hover{color:var(--primary);background:var(--primary-light)}.aside-nav-link.is-current{color:var(--primary);background:var(--primary-light);font-weight:600}
+.aside-ext-link{display:block;padding:9px 12px;font-size:13px;border-radius:var(--radius-sm);margin-bottom:6px;transition:.15s var(--ease)}.aside-ext-link:last-child{margin-bottom:0}
+.aside-ext-link.primary-link{color:var(--primary);background:var(--primary-light)}.aside-ext-link.neutral-link{color:var(--neutral-600);background:var(--white);border:1px solid var(--neutral-200)}
+.footer{background:var(--neutral-800);color:rgba(255,255,255,.65);padding:40px 0 24px}
+.footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:28px}
+.footer-brand strong{display:block;font-size:14px;font-weight:700;color:var(--white);margin-bottom:6px}.footer-brand p{font-size:12px;line-height:1.75}
+.footer-ext{display:flex;flex-direction:column;gap:6px;align-items:flex-end}.footer-ext a{font-size:12px;color:rgba(255,255,255,.45);transition:.15s var(--ease)}.footer-ext a:hover{color:var(--white)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.footer-copy{font-size:11px;color:rgba(255,255,255,.3)}.footer-policy{display:flex;gap:14px}.footer-policy a{font-size:11px;color:rgba(255,255,255,.35);transition:.15s var(--ease)}.footer-policy a:hover{color:rgba(255,255,255,.7)}
+/* ===================================================
+ PAGE-SPECIFIC : 답안 작성 요령
+=================================================== */
+/* OMR 시각 모형 */
+.omr-demo{background:var(--neutral-50);border:1px solid var(--neutral-200);border-radius:var(--radius-lg);padding:24px;margin-top:4px}
+.omr-demo-title{font-size:12px;font-weight:700;color:var(--neutral-500);letter-spacing:.07em;text-transform:uppercase;margin-bottom:16px}
+.omr-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.omr-row:last-child{margin-bottom:0}
+.omr-q-num{width:28px;font-size:12px;font-weight:600;color:var(--neutral-500);text-align:right;flex-shrink:0}
+.omr-circles{display:flex;gap:8px}
+.omr-circle{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--neutral-300);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--neutral-400);font-weight:500;transition:.15s var(--ease)}
+.omr-circle.filled{background:var(--neutral-800);border-color:var(--neutral-800);color:var(--white)}
+.omr-circle.correct{background:var(--primary);border-color:var(--primary);color:var(--white)}
+.omr-circle.wrong{background:var(--accent);border-color:var(--accent);color:var(--white);position:relative}
+.omr-circle.wrong::after{content:'✕';position:absolute;font-size:10px}
+.omr-note{font-size:11px;color:var(--neutral-500);margin-left:8px}
+/* 스텝 카드 */
+.step-cards{display:flex;flex-direction:column;gap:12px}
+.step-card{display:flex;gap:16px;padding:16px 18px;border-radius:var(--radius-md);border:1px solid var(--neutral-200);background:var(--white);align-items:flex-start}
+.step-badge{width:32px;height:32px;border-radius:50%;background:var(--primary);color:var(--white);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-content-title{font-size:13.5px;font-weight:700;color:var(--neutral-800);margin-bottom:3px}
+.step-content-desc{font-size:13px;color:var(--neutral-500);line-height:1.55}
+/* OK / NG 비교 */
+.compare-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.compare-box{border-radius:var(--radius-md);padding:16px;border:1px solid}
+.compare-box.ok{background:var(--success-light,#dcfce7);border-color:#bbf7d0}
+.compare-box.ng{background:var(--accent-light);border-color:#fecaca}
+.compare-box-label{font-size:11px;font-weight:700;letter-spacing:.06em;margin-bottom:8px}
+.compare-box.ok .compare-box-label{color:#166534}
+.compare-box.ng .compare-box-label{color:var(--accent)}
+.compare-box ul{display:flex;flex-direction:column;gap:6px}
+.compare-box ul li{font-size:13px;color:var(--neutral-700);line-height:1.5;padding-left:14px;position:relative}
+.compare-box ul li::before{content:'';position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%}
+.compare-box.ok ul li::before{background:#166534}
+.compare-box.ng ul li::before{background:var(--accent)}
+/* 수험번호 기재 예시 */
+.code-demo{display:flex;gap:4px;margin-top:12px}
+.code-box{width:36px;height:44px;border:1.5px solid var(--neutral-300);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--neutral-800);background:var(--white)}
+.code-box.filled{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+.code-box.empty{background:var(--neutral-50);color:var(--neutral-300)}
+@media(max-width:900px){.content-wrap{grid-template-columns:1fr;gap:28px;padding:32px 0 48px}.content-aside{display:none}.aside-nav-list{flex-direction:row;flex-wrap:wrap}.compare-row{grid-template-columns:1fr}}
+@media(max-width:768px){.gnb-nav,.gnb-actions .btn-ghost,.gnb-actions .btn-solid,.lang-toggle{display:none}.gnb-hamburger{display:flex}.footer-grid{grid-template-columns:1fr}.footer-ext{align-items:flex-start}}
+@media(max-width:480px){.cta-row{flex-direction:column}.cta-row .btn{justify-content:center}}
+</style>
+ <link rel="stylesheet" href="css/layout-mobile.css">
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="ko"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1">&lt;meta name="description" content="TOPIK 답안 작성 요령 — OMR 마킹법, 쓰기 답안지 작성, 수험번호 기재 방법"&gt;</p>
-<p class="p1">&lt;title&gt;답안 작성 요령 | TOPIK Myanmar&lt;/title&gt;</p>
-<p class="p1">&lt;link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"&gt;</p>
-<p class="p1">&lt;style&gt;</p>
-<p class="p1">:root{--primary:#1a3a6b;--primary-dark:#122a52;--primary-light:#e8eef7;--accent:#c8232c;--accent-light:#fdf0f0;--warn-bg:#fef9ec;--warn-border:#f5d97a;--warn-text:#7a5a00;--neutral-50:#f8f9fb;--neutral-100:#f1f3f7;--neutral-200:#e2e6ef;--neutral-300:#c8cdd8;--neutral-400:#9099aa;--neutral-500:#636b7a;--neutral-600:#464d5c;--neutral-700:#2d3340;--neutral-800:#1a1e28;--white:#ffffff;--radius-sm:6px;--radius-md:10px;--radius-lg:16px;--shadow-sm:0 1px 4px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(0,0,0,.10);--shadow-lg:0 8px 32px rgba(0,0,0,.14);--font-base:'Noto Sans KR',sans-serif;--ease:cubic-bezier(.4,0,.2,1);--header-h:64px}</p>
-<p class="p1">*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}</p>
-<p class="p1">html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}</p>
-<p class="p1">body{font-family:var(--font-base);font-size:15px;color:var(--neutral-700);background:var(--white);line-height:1.6;-webkit-font-smoothing:antialiased;padding-top:var(--header-h)}</p>
-<p class="p1">a{color:inherit;text-decoration:none}ul{list-style:none}button{cursor:pointer;border:none;background:none;font-family:inherit}</p>
-<p class="p1">.container{width:100%;max-width:1100px;margin:0 auto;padding:0 20px}</p>
-<p class="p2"><br></p>
-<p class="p1">/* GNB — rules-notice.html 과 동일 */</p>
-<p class="p1">.gnb{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--white);border-bottom:1px solid var(--neutral-200);height:var(--header-h);display:flex;align-items:center}</p>
-<p class="p1">.gnb-inner{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:1100px;margin:0 auto;padding:0 20px;gap:12px}</p>
-<p class="p1">.gnb-logo{display:flex;align-items:center;gap:10px;flex-shrink:0;text-decoration:none}</p>
-<p class="p1">.gnb-logo-mark{width:32px;height:32px;background:var(--primary);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--white);font-weight:700;font-size:13px}</p>
-<p class="p1">.gnb-logo-text{line-height:1.2}.gnb-logo-text strong{display:block;font-size:14px;font-weight:700;color:var(--primary)}.gnb-logo-text span{font-size:10px;color:var(--neutral-500)}</p>
-<p class="p1">.gnb-nav{display:flex;align-items:center;gap:2px}.gnb-menu{position:relative}</p>
-<p class="p1">.gnb-menu-btn{display:flex;align-items:center;gap:4px;padding:8px 13px;font-size:14px;font-weight:500;color:var(--neutral-600);border-radius:var(--radius-sm);transition:.2s var(--ease);white-space:nowrap}</p>
-<p class="p1">.gnb-menu-btn:hover,.gnb-menu-btn.is-active{color:var(--primary);background:var(--primary-light)}</p>
-<p class="p1">.gnb-menu-btn svg{width:14px;height:14px;transition:transform .2s var(--ease);flex-shrink:0}</p>
-<p class="p1">.gnb-menu:hover .gnb-menu-btn svg{transform:rotate(180deg)}</p>
-<p class="p1">.gnb-dropdown{position:absolute;top:calc(100% + 8px);left:0;min-width:172px;background:var(--white);border:1px solid var(--neutral-200);border-radius:var(--radius-md);box-shadow:var(--shadow-md);opacity:0;visibility:hidden;transform:translateY(-6px);transition:.18s var(--ease);z-index:200;overflow:hidden}</p>
-<p class="p1">.gnb-menu:hover .gnb-dropdown{opacity:1;visibility:visible;transform:translateY(0)}</p>
-<p class="p1">.gnb-dropdown a{display:block;padding:10px 16px;font-size:13.5px;color:var(--neutral-600);transition:.15s var(--ease)}</p>
-<p class="p1">.gnb-dropdown a:hover{color:var(--primary);background:var(--primary-light)}.gnb-dropdown a.is-current{color:var(--primary);background:var(--primary-light);font-weight:600}</p>
-<p class="p1">.gnb-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}</p>
-<p class="p1">.lang-toggle{display:flex;border:1px solid var(--neutral-200);border-radius:20px;overflow:hidden;font-size:12px;font-weight:500}</p>
-<p class="p1">.lang-toggle button{padding:4px 9px;color:var(--neutral-500);transition:.15s var(--ease)}.lang-toggle button.is-active{background:var(--primary);color:var(--white)}</p>
-<p class="p1">.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;font-size:13px;font-weight:600;border-radius:var(--radius-sm);transition:.2s var(--ease);cursor:pointer;white-space:nowrap;text-decoration:none;border:none}</p>
-<p class="p1">.btn-ghost{color:var(--neutral-600);border:1px solid var(--neutral-200);background:transparent}.btn-ghost:hover{border-color:var(--primary);color:var(--primary)}</p>
-<p class="p1">.btn-solid{background:var(--primary);color:var(--white);border:1px solid var(--primary)}.btn-solid:hover{background:var(--primary-dark)}</p>
-<p class="p1">.btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary)}.btn-outline:hover{background:var(--primary-light)}</p>
-<p class="p1">.btn-lg{padding:12px 24px;font-size:14px;border-radius:var(--radius-md)}</p>
-<p class="p1">.gnb-hamburger{display:none;flex-direction:column;gap:5px;padding:8px}.gnb-hamburger span{display:block;width:22px;height:2px;background:var(--neutral-700);border-radius:2px;transition:.2s var(--ease)}</p>
-<p class="p1">.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.46);z-index:1999;opacity:0;visibility:hidden;transition:.25s var(--ease)}.drawer-overlay.is-show{opacity:1;visibility:visible}</p>
-<p class="p1">.mobile-drawer{position:fixed;top:0;right:0;bottom:0;width:82%;max-width:320px;background:var(--white);z-index:2000;transform:translateX(100%);transition:.28s var(--ease);box-shadow:var(--shadow-lg);display:flex;flex-direction:column}.mobile-drawer.is-open{transform:translateX(0)}</p>
-<p class="p1">.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--neutral-100);flex-shrink:0}</p>
-<p class="p1">.drawer-close-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--neutral-200);display:flex;align-items:center;justify-content:center;color:var(--neutral-500);font-size:17px;cursor:pointer}</p>
-<p class="p1">.drawer-body{flex:1;overflow-y:auto}.drawer-group{border-bottom:1px solid var(--neutral-100)}</p>
-<p class="p1">.drawer-group-title{padding:14px 20px 6px;font-size:10.5px;font-weight:700;color:var(--neutral-400);letter-spacing:.1em;text-transform:uppercase}</p>
-<p class="p1">.drawer-link{display:block;padding:10px 20px;font-size:14px;font-weight:500;color:var(--neutral-600);transition:.15s var(--ease)}.drawer-link:hover,.drawer-link.is-current{color:var(--primary);background:var(--primary-light)}</p>
-<p class="p1">.drawer-lang{display:flex;gap:6px;padding:14px 20px;border-top:1px solid var(--neutral-100)}</p>
-<p class="p1">.drawer-lang button{flex:1;padding:8px;font-size:12px;font-weight:500;border-radius:var(--radius-sm);border:1px solid var(--neutral-200);color:var(--neutral-500);transition:.15s var(--ease)}.drawer-lang button.is-active{background:var(--primary);color:var(--white);border-color:var(--primary)}</p>
-<p class="p1">.drawer-foot{padding:14px 20px 20px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--neutral-100);flex-shrink:0}.drawer-foot .btn{justify-content:center}</p>
-<p class="p1">.page-hero{background:linear-gradient(135deg,var(--primary) 0%,#0d2550 100%);color:var(--white);padding:44px 0 38px}</p>
-<p class="p1">.breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,.5);margin-bottom:14px}</p>
-<p class="p1">.breadcrumb a{color:rgba(255,255,255,.5)}.breadcrumb a:hover{color:rgba(255,255,255,.85)}.breadcrumb .sep{color:rgba(255,255,255,.25)}.breadcrumb .cur{color:rgba(255,255,255,.85)}</p>
-<p class="p1">.page-hero-label{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:8px}</p>
-<p class="p1">.page-hero-title{font-size:clamp(22px,4vw,30px);font-weight:700;margin-bottom:8px}.page-hero-desc{font-size:14px;color:rgba(255,255,255,.68);line-height:1.65;max-width:560px}</p>
-<p class="p1">.sub-nav{background:var(--white);border-bottom:1px solid var(--neutral-200);position:sticky;top:var(--header-h);z-index:100}</p>
-<p class="p1">.sub-nav-inner{display:flex;max-width:1100px;margin:0 auto;padding:0 20px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}.sub-nav-inner::-webkit-scrollbar{display:none}</p>
-<p class="p1">.sub-nav-link{flex-shrink:0;padding:14px 16px;font-size:13.5px;font-weight:500;color:var(--neutral-500);border-bottom:2px solid transparent;transition:.18s var(--ease);white-space:nowrap;text-decoration:none}</p>
-<p class="p1">.sub-nav-link:hover{color:var(--primary)}.sub-nav-link.is-active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}</p>
-<p class="p1">.content-wrap{display:grid;grid-template-columns:1fr 248px;gap:40px;padding:44px 0 64px}</p>
-<p class="p1">.info-card{background:var(--white);border:1px solid var(--neutral-200);border-radius:var(--radius-lg);padding:28px;margin-bottom:20px}</p>
-<p class="p1">.info-card:last-of-type{margin-bottom:0}</p>
-<p class="p1">.info-card-title{font-size:17px;font-weight:700;color:var(--neutral-800);margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--neutral-100)}</p>
-<p class="p1">.info-card p{font-size:14px;color:var(--neutral-600);line-height:1.8;margin-bottom:10px}.info-card p:last-child{margin-bottom:0}</p>
-<p class="p1">.callout{display:flex;gap:12px;padding:14px 16px;border-radius:var(--radius-md);font-size:13.5px;line-height:1.65;margin-top:16px}</p>
-<p class="p1">.callout.info{background:var(--primary-light);border:1px solid rgba(26,58,107,.12);color:var(--primary)}</p>
-<p class="p1">.callout.warn{background:var(--warn-bg);border:1px solid var(--warn-border);color:var(--warn-text)}</p>
-<p class="p1">.callout.danger{background:var(--accent-light);border:1px solid #fca5a5;color:var(--accent)}</p>
-<p class="p1">.callout-icon{flex-shrink:0;font-size:16px;margin-top:1px}</p>
-<p class="p1">.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;padding-top:24px;border-top:1px solid var(--neutral-100)}</p>
-<p class="p1">.aside-card{background:var(--neutral-50);border:1px solid var(--neutral-200);border-radius:var(--radius-lg);padding:18px 16px;margin-bottom:14px}.aside-card:last-child{margin-bottom:0}</p>
-<p class="p1">.aside-card-title{font-size:12px;font-weight:700;color:var(--neutral-500);letter-spacing:.07em;text-transform:uppercase;margin-bottom:10px}</p>
-<p class="p1">.aside-nav-list{display:flex;flex-direction:column;gap:2px}</p>
-<p class="p1">.aside-nav-link{display:block;padding:9px 12px;font-size:13.5px;font-weight:500;color:var(--neutral-600);border-radius:var(--radius-sm);transition:.15s var(--ease);text-decoration:none}</p>
-<p class="p1">.aside-nav-link:hover{color:var(--primary);background:var(--primary-light)}.aside-nav-link.is-current{color:var(--primary);background:var(--primary-light);font-weight:600}</p>
-<p class="p1">.aside-ext-link{display:block;padding:9px 12px;font-size:13px;border-radius:var(--radius-sm);margin-bottom:6px;transition:.15s var(--ease)}.aside-ext-link:last-child{margin-bottom:0}</p>
-<p class="p1">.aside-ext-link.primary-link{color:var(--primary);background:var(--primary-light)}.aside-ext-link.neutral-link{color:var(--neutral-600);background:var(--white);border:1px solid var(--neutral-200)}</p>
-<p class="p1">.footer{background:var(--neutral-800);color:rgba(255,255,255,.65);padding:40px 0 24px}</p>
-<p class="p1">.footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:28px}</p>
-<p class="p1">.footer-brand strong{display:block;font-size:14px;font-weight:700;color:var(--white);margin-bottom:6px}.footer-brand p{font-size:12px;line-height:1.75}</p>
-<p class="p1">.footer-ext{display:flex;flex-direction:column;gap:6px;align-items:flex-end}.footer-ext a{font-size:12px;color:rgba(255,255,255,.45);transition:.15s var(--ease)}.footer-ext a:hover{color:var(--white)}</p>
-<p class="p1">.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}</p>
-<p class="p1">.footer-copy{font-size:11px;color:rgba(255,255,255,.3)}.footer-policy{display:flex;gap:14px}.footer-policy a{font-size:11px;color:rgba(255,255,255,.35);transition:.15s var(--ease)}.footer-policy a:hover{color:rgba(255,255,255,.7)}</p>
-<p class="p2"><br></p>
-<p class="p1">/* ===================================================</p>
-<p class="p1"><span class="Apple-converted-space">   </span>PAGE-SPECIFIC : 답안 작성 요령</p>
-<p class="p1">=================================================== */</p>
-<p class="p2"><br></p>
-<p class="p1">/* OMR 시각 모형 */</p>
-<p class="p1">.omr-demo{background:var(--neutral-50);border:1px solid var(--neutral-200);border-radius:var(--radius-lg);padding:24px;margin-top:4px}</p>
-<p class="p1">.omr-demo-title{font-size:12px;font-weight:700;color:var(--neutral-500);letter-spacing:.07em;text-transform:uppercase;margin-bottom:16px}</p>
-<p class="p1">.omr-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}</p>
-<p class="p1">.omr-row:last-child{margin-bottom:0}</p>
-<p class="p1">.omr-q-num{width:28px;font-size:12px;font-weight:600;color:var(--neutral-500);text-align:right;flex-shrink:0}</p>
-<p class="p1">.omr-circles{display:flex;gap:8px}</p>
-<p class="p1">.omr-circle{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--neutral-300);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--neutral-400);font-weight:500;transition:.15s var(--ease)}</p>
-<p class="p1">.omr-circle.filled{background:var(--neutral-800);border-color:var(--neutral-800);color:var(--white)}</p>
-<p class="p1">.omr-circle.correct{background:var(--primary);border-color:var(--primary);color:var(--white)}</p>
-<p class="p1">.omr-circle.wrong{background:var(--accent);border-color:var(--accent);color:var(--white);position:relative}</p>
-<p class="p1">.omr-circle.wrong::after{content:'✕';position:absolute;font-size:10px}</p>
-<p class="p1">.omr-note{font-size:11px;color:var(--neutral-500);margin-left:8px}</p>
-<p class="p2"><br></p>
-<p class="p1">/* 스텝 카드 */</p>
-<p class="p1">.step-cards{display:flex;flex-direction:column;gap:12px}</p>
-<p class="p1">.step-card{display:flex;gap:16px;padding:16px 18px;border-radius:var(--radius-md);border:1px solid var(--neutral-200);background:var(--white);align-items:flex-start}</p>
-<p class="p1">.step-badge{width:32px;height:32px;border-radius:50%;background:var(--primary);color:var(--white);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}</p>
-<p class="p1">.step-content-title{font-size:13.5px;font-weight:700;color:var(--neutral-800);margin-bottom:3px}</p>
-<p class="p1">.step-content-desc{font-size:13px;color:var(--neutral-500);line-height:1.55}</p>
-<p class="p2"><br></p>
-<p class="p1">/* OK / NG 비교 */</p>
-<p class="p1">.compare-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}</p>
-<p class="p1">.compare-box{border-radius:var(--radius-md);padding:16px;border:1px solid}</p>
-<p class="p1">.compare-box.ok{background:var(--success-light,#dcfce7);border-color:#bbf7d0}</p>
-<p class="p1">.compare-box.ng{background:var(--accent-light);border-color:#fecaca}</p>
-<p class="p1">.compare-box-label{font-size:11px;font-weight:700;letter-spacing:.06em;margin-bottom:8px}</p>
-<p class="p1">.compare-box.ok .compare-box-label{color:#166534}</p>
-<p class="p1">.compare-box.ng .compare-box-label{color:var(--accent)}</p>
-<p class="p1">.compare-box ul{display:flex;flex-direction:column;gap:6px}</p>
-<p class="p1">.compare-box ul li{font-size:13px;color:var(--neutral-700);line-height:1.5;padding-left:14px;position:relative}</p>
-<p class="p1">.compare-box ul li::before{content:'';position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%}</p>
-<p class="p1">.compare-box.ok ul li::before{background:#166534}</p>
-<p class="p1">.compare-box.ng ul li::before{background:var(--accent)}</p>
-<p class="p2"><br></p>
-<p class="p1">/* 수험번호 기재 예시 */</p>
-<p class="p1">.code-demo{display:flex;gap:4px;margin-top:12px}</p>
-<p class="p1">.code-box{width:36px;height:44px;border:1.5px solid var(--neutral-300);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--neutral-800);background:var(--white)}</p>
-<p class="p1">.code-box.filled{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}</p>
-<p class="p1">.code-box.empty{background:var(--neutral-50);color:var(--neutral-300)}</p>
-<p class="p2"><br></p>
-<p class="p1">@media(max-width:900px){.content-wrap{grid-template-columns:1fr;gap:28px;padding:32px 0 48px}.content-aside{order:-1}.aside-nav-list{flex-direction:row;flex-wrap:wrap}.compare-row{grid-template-columns:1fr}}</p>
-<p class="p1">@media(max-width:768px){.gnb-nav,.gnb-actions .btn-ghost,.gnb-actions .btn-solid,.lang-toggle{display:none}.gnb-hamburger{display:flex}.footer-grid{grid-template-columns:1fr}.footer-ext{align-items:flex-start}}</p>
-<p class="p1">@media(max-width:480px){.cta-row{flex-direction:column}.cta-row .btn{justify-content:center}}</p>
-<p class="p1">&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;header class="gnb" role="banner"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="gnb-inner"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="index.html" class="gnb-logo" aria-label="TOPIK Myanmar 홈으로"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-logo-mark"&gt;TK&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-logo-text"&gt;&lt;strong&gt;TOPIK Myanmar&lt;/strong&gt;&lt;span&gt;한국어능력시험&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;nav class="gnb-nav" role="navigation" aria-label="주요 메뉴"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;&lt;button class="gnb-menu-btn" aria-haspopup="true"&gt;TOPIK 안내&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;div class="gnb-dropdown"&gt;&lt;a href="guide-overview.html"&gt;시험 개요&lt;/a&gt;&lt;a href="guide-intro.html"&gt;시험 소개&lt;/a&gt;&lt;a href="guide-questions.html"&gt;문항 구성&lt;/a&gt;&lt;a href="guide-evaluation.html"&gt;평가 기준&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;&lt;button class="gnb-menu-btn is-active" aria-haspopup="true"&gt;TOPIK 규정&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;div class="gnb-dropdown"&gt;&lt;a href="rules-notice.html"&gt;유의 사항&lt;/a&gt;&lt;a href="rules-answer.html" class="is-current" aria-current="page"&gt;답안 작성 요령&lt;/a&gt;&lt;a href="rules-fee.html"&gt;응시료 규정&lt;/a&gt;&lt;a href="rules-id.html"&gt;신분증 규정&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;&lt;button class="gnb-menu-btn" aria-haspopup="true"&gt;TOPIK 접수&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;div class="gnb-dropdown"&gt;&lt;a href="apply-howto.html"&gt;접수 방법&lt;/a&gt;&lt;a href="register.html"&gt;시험 접수&lt;/a&gt;&lt;a href="mypage.html"&gt;접수 확인&lt;/a&gt;&lt;a href="admit-card.html"&gt;수험표 출력&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;&lt;button class="gnb-menu-btn" aria-haspopup="true"&gt;게시판&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;div class="gnb-dropdown"&gt;&lt;a href="notice.html"&gt;공지사항&lt;/a&gt;&lt;a href="refund-correction.html"&gt;환불·정보정정신청&lt;/a&gt;&lt;a href="qna.html"&gt;문의게시판&lt;/a&gt;&lt;a href="faq.html"&gt;FAQ&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/nav&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="gnb-actions"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="lang-toggle" role="group"&gt;&lt;button class="is-active" onclick="setLang('ko')"&gt;KO&lt;/button&gt;&lt;button onclick="setLang('my')"&gt;MY&lt;/button&gt;&lt;button onclick="setLang('en')"&gt;EN&lt;/button&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="login.html"<span class="Apple-converted-space">  </span>class="btn btn-ghost"&gt;로그인&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="signup.html" class="btn btn-solid"&gt;회원가입&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="gnb-hamburger" id="js-hamburger" aria-label="메뉴 열기" aria-expanded="false"&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/header&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="drawer-overlay" id="js-overlay"&gt;&lt;/div&gt;</p>
-<p class="p1">&lt;div class="mobile-drawer" id="js-drawer" role="dialog" aria-modal="true" aria-label="모바일 메뉴"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-head"&gt;&lt;div class="gnb-logo"&gt;&lt;div class="gnb-logo-mark"&gt;TK&lt;/div&gt;&lt;div class="gnb-logo-text"&gt;&lt;strong&gt;TOPIK Myanmar&lt;/strong&gt;&lt;span&gt;한국어능력시험&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;button class="drawer-close-btn" id="js-drawer-close"&gt;✕&lt;/button&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-body"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;&lt;div class="drawer-group-title"&gt;TOPIK 안내&lt;/div&gt;&lt;a href="guide-overview.html" class="drawer-link"&gt;시험 개요&lt;/a&gt;&lt;a href="guide-intro.html" class="drawer-link"&gt;시험 소개&lt;/a&gt;&lt;a href="guide-questions.html" class="drawer-link"&gt;문항 구성&lt;/a&gt;&lt;a href="guide-evaluation.html" class="drawer-link"&gt;평가 기준&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;&lt;div class="drawer-group-title"&gt;TOPIK 규정&lt;/div&gt;&lt;a href="rules-notice.html" class="drawer-link"&gt;유의 사항&lt;/a&gt;&lt;a href="rules-answer.html" class="drawer-link is-current"&gt;답안 작성 요령&lt;/a&gt;&lt;a href="rules-fee.html" class="drawer-link"&gt;응시료 규정&lt;/a&gt;&lt;a href="rules-id.html" class="drawer-link"&gt;신분증 규정&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;&lt;div class="drawer-group-title"&gt;TOPIK 접수&lt;/div&gt;&lt;a href="apply-howto.html" class="drawer-link"&gt;접수 방법&lt;/a&gt;&lt;a href="register.html" class="drawer-link"&gt;시험 접수&lt;/a&gt;&lt;a href="mypage.html" class="drawer-link"&gt;접수 확인&lt;/a&gt;&lt;a href="admit-card.html" class="drawer-link"&gt;수험표 출력&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;&lt;div class="drawer-group-title"&gt;게시판&lt;/div&gt;&lt;a href="notice.html" class="drawer-link"&gt;공지사항&lt;/a&gt;&lt;a href="refund-correction.html" class="drawer-link"&gt;환불·정보정정신청&lt;/a&gt;&lt;a href="qna.html" class="drawer-link"&gt;문의게시판&lt;/a&gt;&lt;a href="faq.html" class="drawer-link"&gt;FAQ&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-lang"&gt;&lt;button class="is-active" onclick="setLang('ko')"&gt;한국어&lt;/button&gt;&lt;button onclick="setLang('my')"&gt;မြန်မာ&lt;/button&gt;&lt;button onclick="setLang('en')"&gt;English&lt;/button&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-foot"&gt;&lt;a href="login.html" class="btn btn-outline"&gt;로그인&lt;/a&gt;&lt;a href="signup.html" class="btn btn-solid"&gt;회원가입&lt;/a&gt;&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="page-hero"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;nav class="breadcrumb" aria-label="경로"&gt;&lt;a href="index.html"&gt;홈&lt;/a&gt;&lt;span class="sep"&gt;›&lt;/span&gt;&lt;span&gt;TOPIK 규정&lt;/span&gt;&lt;span class="sep"&gt;›&lt;/span&gt;&lt;span class="cur"&gt;답안 작성 요령&lt;/span&gt;&lt;/nav&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="page-hero-label"&gt;TOPIK 규정&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;h1 class="page-hero-title"&gt;답안 작성 요령&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;p class="page-hero-desc"&gt;OMR 카드 마킹법, 쓰기 답안지 작성 방법, 수험번호 기재 요령을 안내합니다. 시험 전 반드시 숙지하세요.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="sub-nav" role="navigation" aria-label="TOPIK 규정 하위 메뉴"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="sub-nav-inner"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="rules-notice.html" class="sub-nav-link"&gt;유의 사항&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="rules-answer.html" class="sub-nav-link is-active" aria-current="page"&gt;답안 작성 요령&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="rules-fee.html"<span class="Apple-converted-space">    </span>class="sub-nav-link"&gt;응시료 규정&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="rules-id.html" <span class="Apple-converted-space">    </span>class="sub-nav-link"&gt;신분증 규정&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="content-wrap"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;main class="content-main"&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 1. OMR 마킹법 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="info-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2 class="info-card-title"&gt;OMR 카드 마킹법&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;p&gt;TOPIK 듣기·읽기 영역(TOPIK Ⅰ 전 영역 포함)의 답안은 &lt;strong&gt;컴퓨터용 사인펜&lt;/strong&gt;을 사용하여 OMR 카드에 마킹합니다.&lt;/p&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- OMR 시각 모형 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="omr-demo"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="omr-demo-title"&gt;OMR 마킹 예시&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="omr-row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="omr-q-num"&gt;1&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="omr-circles"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="omr-circle"&gt;①&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="omr-circle correct"&gt;②&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="omr-circle"&gt;③&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="omr-circle"&gt;④&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="omr-note"&gt;✓ 올바른 마킹 — 진하고 완전하게&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="omr-row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="omr-q-num"&gt;2&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="omr-circles"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="omr-circle wrong"&gt;①&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="omr-circle filled"&gt;②&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="omr-circle"&gt;③&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="omr-circle"&gt;④&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="omr-note" style="color:var(--accent)"&gt;✕ 이중 마킹 — 오답 처리&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="omr-row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="omr-q-num"&gt;3&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="omr-circles"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="omr-circle"&gt;①&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="omr-circle" style="border-style:dashed;font-size:10px;color:var(--neutral-300)"&gt;②&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="omr-circle"&gt;③&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="omr-circle"&gt;④&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="omr-note" style="color:var(--accent)"&gt;✕ 흐리게 마킹 — 인식 오류 가능&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style="margin-top:18px"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="compare-row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="compare-box ok"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="compare-box-label"&gt;✓ 올바른 마킹&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;컴퓨터용 사인펜 사용&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;원 안을 완전히 채워 마킹&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;진하고 번지지 않게 마킹&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;수정 시 수정테이프 사용&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="compare-box ng"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="compare-box-label"&gt;✕ 잘못된 마킹&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;볼펜·연필 사용 금지&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;두 개 이상 마킹 (이중 마킹)&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;흐리거나 삐져나온 마킹&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;수정액·수정펜 사용 금지&lt;/li&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="callout warn"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="callout-icon"&gt;⚠&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span&gt;OMR 카드 답안 수정 시 반드시 &lt;strong&gt;수정테이프&lt;/strong&gt;를 사용해야 합니다. 수정액(화이트)은 절대 사용할 수 없으며, 사용 시 해당 문항이 무효 처리될 수 있습니다.&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 2. 쓰기 답안지 작성 요령 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="info-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2 class="info-card-title"&gt;쓰기 답안지 작성 요령 (TOPIK Ⅱ)&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;p&gt;TOPIK Ⅱ 쓰기 영역의 서술형 문항(53번·54번)은 별도 제공되는 &lt;strong&gt;원고지 답안지&lt;/strong&gt;에 직접 작성합니다.&lt;/p&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="step-cards" style="margin-top:16px"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="step-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="step-badge"&gt;1&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="step-content-title"&gt;원고지 규칙 준수&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="step-content-desc"&gt;한 칸에 한 글자씩 작성합니다. 문장 부호(쉼표, 마침표 등)도 각각 한 칸을 사용합니다.&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="step-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="step-badge"&gt;2&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="step-content-title"&gt;첫 줄 들여쓰기&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="step-content-desc"&gt;단락 시작 시 첫 칸을 비우고 두 번째 칸부터 작성합니다. (들여쓰기 1칸)&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="step-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="step-badge"&gt;3&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="step-content-title"&gt;분량 요건 준수&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="step-content-desc"&gt;문항별로 요구하는 글자 수 범위를 지킵니다. 분량 미달 또는 초과 시 감점이 적용됩니다.&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="step-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="step-badge"&gt;4&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="step-content-title"&gt;수정 방법&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="step-content-desc"&gt;쓰기 답안지는 수정테이프 또는 두 줄 긋기(—) 후 재작성이 가능합니다. 수정액은 사용 불가합니다.&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="callout danger" style="margin-top:16px"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="callout-icon"&gt;🚫&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span&gt;쓰기 답안지에 &lt;strong&gt;수정액(화이트) 및 수정테이프 사용이 금지&lt;/strong&gt;됩니다. 잘못 작성한 경우 두 줄로 긋고 옆이나 아래에 다시 작성하세요.&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 3. 수험번호 기재 방법 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="info-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2 class="info-card-title"&gt;응시자 코드 및 수험번호 기재 방법&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;p&gt;답안지 상단에 &lt;strong&gt;응시자 코드&lt;/strong&gt;와 &lt;strong&gt;수험번호&lt;/strong&gt;를 정확히 기재하고, 해당 번호를 OMR에 마킹해야 합니다. 미기재 또는 오기재 시 채점이 불가합니다.&lt;/p&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style="margin-top:18px;padding:20px;background:var(--neutral-50);border-radius:var(--radius-lg);border:1px solid var(--neutral-200)"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style="font-size:12px;font-weight:700;color:var(--neutral-500);letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px"&gt;수험번호 기재 예시&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style="font-size:13px;color:var(--neutral-600);margin-bottom:10px"&gt;예시: 수험번호 &lt;strong&gt;9 9 0 0 1 2 3&lt;/strong&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="code-demo"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="code-box filled"&gt;9&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="code-box filled"&gt;9&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="code-box filled"&gt;0&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="code-box filled"&gt;0&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="code-box filled"&gt;1&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="code-box filled"&gt;2&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="code-box filled"&gt;3&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style="margin-top:12px;font-size:12.5px;color:var(--neutral-500);line-height:1.6"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>① 답안지 상단 수험번호 란에 숫자를 직접 기재&lt;br&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>② 아래 OMR 마킹란에 각 자리 숫자에 해당하는 번호를 마킹&lt;br&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>③ 수험표와 반드시 일치하는지 확인</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="callout info" style="margin-top:16px"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="callout-icon"&gt;ℹ&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span&gt;수험번호는 수험표에 인쇄된 번호를 그대로 기재합니다. 숫자 하나라도 틀릴 경우 채점 오류가 발생할 수 있으므로 반드시 두 번 확인하세요.&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 4. 단답형 작성 요령 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="info-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2 class="info-card-title"&gt;단답형 주관식 작성 요령 (TOPIK Ⅱ 51·52번)&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;p&gt;TOPIK Ⅱ 쓰기 51번·52번 문항은 단어 또는 짧은 문장을 쓰기 답란에 직접 기재합니다.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="step-cards" style="margin-top:14px"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="step-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="step-badge"&gt;!&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="step-content-title"&gt;답란 내에만 작성&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="step-content-desc"&gt;지정된 답란 밖으로 글씨가 넘어갈 경우 인식되지 않을 수 있습니다.&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="step-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="step-badge"&gt;!&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="step-content-title"&gt;정자로 명확하게 작성&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="step-content-desc"&gt;채점자가 판독하기 어려운 글씨는 오답으로 처리될 수 있습니다. 정확하고 깔끔하게 작성하세요.&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="cta-row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="rules-notice.html" class="btn btn-solid btn-lg"&gt;유의 사항 보기&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="rules-fee.html"<span class="Apple-converted-space">    </span>class="btn btn-outline btn-lg"&gt;응시료 규정 보기&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="faq.html"<span class="Apple-converted-space">          </span>class="btn btn-ghost btn-lg"&gt;자주 묻는 질문&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/main&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;aside class="content-aside"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="aside-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="aside-card-title"&gt;TOPIK 규정&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;nav class="aside-nav-list"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="rules-notice.html" class="aside-nav-link"&gt;유의 사항&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="rules-answer.html" class="aside-nav-link is-current" aria-current="page"&gt;답안 작성 요령&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="rules-fee.html"<span class="Apple-converted-space">    </span>class="aside-nav-link"&gt;응시료 규정&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="rules-id.html" <span class="Apple-converted-space">    </span>class="aside-nav-link"&gt;신분증 규정&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/nav&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="aside-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="aside-card-title"&gt;관련 페이지&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="rules-notice.html" class="aside-ext-link primary-link"&gt;시험 유의 사항&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="guide-questions.html" class="aside-ext-link neutral-link"&gt;문항 구성 안내&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="notice.html" <span class="Apple-converted-space">      </span>class="aside-ext-link neutral-link"&gt;시험 공지사항&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="aside-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="aside-card-title"&gt;외부 링크&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://topik.go.kr" target="_blank" rel="noopener noreferrer" class="aside-ext-link primary-link"&gt;TOPIK 본부 ↗&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://niied.go.kr" target="_blank" rel="noopener noreferrer" class="aside-ext-link neutral-link"&gt;국립국제교육원 ↗&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/aside&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;footer class="footer" role="contentinfo"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="footer-grid"&gt;&lt;div class="footer-brand"&gt;&lt;strong&gt;주미얀마 대한민국 대사관&lt;/strong&gt;&lt;p&gt;Embassy of the Republic of Korea in Myanmar&lt;br&gt;한국어능력시험(TOPIK) 공식 접수 사이트&lt;/p&gt;&lt;/div&gt;&lt;div class="footer-ext"&gt;&lt;a href="https://topik.go.kr" target="_blank" rel="noopener noreferrer"&gt;TOPIK 본부 (topik.go.kr)&lt;/a&gt;&lt;a href="https://niied.go.kr" target="_blank" rel="noopener noreferrer"&gt;국립국제교육원 (NIIED)&lt;/a&gt;&lt;a href="https://www.mofa.go.kr/mm-ko" target="_blank" rel="noopener noreferrer"&gt;대사관 공식 웹사이트&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="footer-bottom"&gt;&lt;span class="footer-copy"&gt;© 2025–2026 Embassy of the Republic of Korea in Myanmar. All rights reserved.&lt;/span&gt;&lt;div class="footer-policy"&gt;&lt;a href="#"&gt;개인정보처리방침&lt;/a&gt;&lt;a href="#"&gt;이용약관&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/footer&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;script&gt;</p>
-<p class="p1">const hamburger=document.getElementById('js-hamburger'),drawer=document.getElementById('js-drawer'),overlay=document.getElementById('js-overlay'),drawerClose=document.getElementById('js-drawer-close');</p>
-<p class="p1">function openDrawer(){drawer.classList.add('is-open');overlay.classList.add('is-show');hamburger.setAttribute('aria-expanded','true');document.body.style.overflow='hidden'}</p>
-<p class="p1">function closeDrawer(){drawer.classList.remove('is-open');overlay.classList.remove('is-show');hamburger.setAttribute('aria-expanded','false');document.body.style.overflow=''}</p>
-<p class="p1">hamburger.addEventListener('click',openDrawer);drawerClose.addEventListener('click',closeDrawer);overlay.addEventListener('click',closeDrawer);</p>
-<p class="p1">document.addEventListener('keydown',e=&gt;{if(e.key==='Escape')closeDrawer()});</p>
-<p class="p1">function setLang(code){try{localStorage.setItem('tm_lang',code)}catch(e){}document.querySelectorAll('.lang-toggle button,.drawer-lang button').forEach(btn=&gt;{btn.classList.toggle('is-active',!!btn.getAttribute('onclick')?.includes(`'${code}'`))})}</p>
-<p class="p1">try{setLang(localStorage.getItem('tm_lang')||'ko')}catch(e){}</p>
-<p class="p1">&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+<header class="gnb" role="banner">
+ <div class="gnb-inner">
+ <a href="index.html" class="gnb-logo" aria-label="TOPIK Myanmar 홈으로">
+ <div class="gnb-logo-mark">TK</div>
+ <div class="gnb-logo-text"><strong>TOPIK Myanmar</strong><span>한국어능력시험</span></div>
+ </a>
+ <nav class="gnb-nav" role="navigation" aria-label="주요 메뉴">
+ <div class="gnb-menu"><button class="gnb-menu-btn" aria-haspopup="true">TOPIK 안내<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></button><div class="gnb-dropdown"><a href="guide-overview.html">시험 개요</a><a href="guide-intro.html">시험 소개</a><a href="guide-questions.html">문항 구성</a><a href="guide-evaluation.html">평가 기준</a></div></div>
+ <div class="gnb-menu"><button class="gnb-menu-btn is-active" aria-haspopup="true">TOPIK 규정<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></button><div class="gnb-dropdown"><a href="rules-notice.html">유의 사항</a><a href="rules-answer.html" class="is-current" aria-current="page">답안 작성 요령</a><a href="rules-fee.html">응시료 규정</a><a href="rules-id.html">신분증 규정</a></div></div>
+ <div class="gnb-menu"><button class="gnb-menu-btn" aria-haspopup="true">TOPIK 접수<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></button><div class="gnb-dropdown"><a href="apply-howto.html">접수 방법</a><a href="register.html">시험 접수</a><a href="mypage.html">접수 확인</a><a href="admit-card.html">수험표 출력</a></div></div>
+ <div class="gnb-menu"><button class="gnb-menu-btn" aria-haspopup="true">게시판<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></button><div class="gnb-dropdown"><a href="notice.html">공지사항</a><a href="refund-correction.html">환불·정보정정신청</a><a href="qna.html">문의게시판</a><a href="faq.html">FAQ</a></div></div>
+ </nav>
+ <div class="gnb-actions">
+ <div class="lang-toggle" role="group"><button class="is-active" onclick="setLang('ko')">KO</button><button onclick="setLang('my')">MY</button><button onclick="setLang('en')">EN</button></div>
+ <a href="login.html" class="btn btn-ghost">로그인</a>
+ <a href="signup.html" class="btn btn-solid">회원가입</a>
+ </div>
+ <button class="gnb-hamburger" id="js-hamburger" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span><span></span></button>
+ </div>
+</header>
+<div class="drawer-overlay" id="js-overlay"></div>
+<div class="mobile-drawer" id="js-drawer" role="dialog" aria-modal="true" aria-label="모바일 메뉴">
+ <div class="drawer-head"><div class="gnb-logo"><div class="gnb-logo-mark">TK</div><div class="gnb-logo-text"><strong>TOPIK Myanmar</strong><span>한국어능력시험</span></div></div><button class="drawer-close-btn" id="js-drawer-close">✕</button></div>
+ <div class="drawer-body">
+ <div class="drawer-group"><div class="drawer-group-title">TOPIK 안내</div><a href="guide-overview.html" class="drawer-link">시험 개요</a><a href="guide-intro.html" class="drawer-link">시험 소개</a><a href="guide-questions.html" class="drawer-link">문항 구성</a><a href="guide-evaluation.html" class="drawer-link">평가 기준</a></div>
+ <div class="drawer-group"><div class="drawer-group-title">TOPIK 규정</div><a href="rules-notice.html" class="drawer-link">유의 사항</a><a href="rules-answer.html" class="drawer-link is-current">답안 작성 요령</a><a href="rules-fee.html" class="drawer-link">응시료 규정</a><a href="rules-id.html" class="drawer-link">신분증 규정</a></div>
+ <div class="drawer-group"><div class="drawer-group-title">TOPIK 접수</div><a href="apply-howto.html" class="drawer-link">접수 방법</a><a href="register.html" class="drawer-link">시험 접수</a><a href="mypage.html" class="drawer-link">접수 확인</a><a href="admit-card.html" class="drawer-link">수험표 출력</a></div>
+ <div class="drawer-group"><div class="drawer-group-title">게시판</div><a href="notice.html" class="drawer-link">공지사항</a><a href="refund-correction.html" class="drawer-link">환불·정보정정신청</a><a href="qna.html" class="drawer-link">문의게시판</a><a href="faq.html" class="drawer-link">FAQ</a></div>
+ </div>
+ <div class="drawer-lang"><button class="is-active" onclick="setLang('ko')">한국어</button><button onclick="setLang('my')">မြန်မာ</button><button onclick="setLang('en')">English</button></div>
+ <div class="drawer-foot"><a href="login.html" class="btn btn-outline">로그인</a><a href="signup.html" class="btn btn-solid">회원가입</a></div>
+</div>
+<div class="page-hero">
+ <div class="container">
+ <nav class="breadcrumb" aria-label="경로"><a href="index.html">홈</a><span class="sep">›</span><span>TOPIK 규정</span><span class="sep">›</span><span class="cur">답안 작성 요령</span></nav>
+ <div class="page-hero-label">TOPIK 규정</div>
+ <h1 class="page-hero-title">답안 작성 요령</h1>
+ <p class="page-hero-desc">OMR 카드 마킹법, 쓰기 답안지 작성 방법, 수험번호 기재 요령을 안내합니다. 시험 전 반드시 숙지하세요.</p>
+ </div>
+</div>
+<div class="sub-nav" role="navigation" aria-label="TOPIK 규정 하위 메뉴">
+ <div class="sub-nav-inner">
+ <a href="rules-notice.html" class="sub-nav-link">유의 사항</a>
+ <a href="rules-answer.html" class="sub-nav-link is-active" aria-current="page">답안 작성 요령</a>
+ <a href="rules-fee.html" class="sub-nav-link">응시료 규정</a>
+ <a href="rules-id.html"  class="sub-nav-link">신분증 규정</a>
+ </div>
+</div>
+<div class="container">
+ <div class="content-wrap">
+ <main class="content-main">
+ <!-- 1. OMR 마킹법 -->
+ <div class="info-card">
+ <h2 class="info-card-title">OMR 카드 마킹법</h2>
+ <p>TOPIK 듣기·읽기 영역(TOPIK Ⅰ 전 영역 포함)의 답안은 <strong>컴퓨터용 사인펜</strong>을 사용하여 OMR 카드에 마킹합니다.</p>
+ <!-- OMR 시각 모형 -->
+ <div class="omr-demo">
+ <div class="omr-demo-title">OMR 마킹 예시</div>
+ <div class="omr-row">
+ <div class="omr-q-num">1</div>
+ <div class="omr-circles">
+ <div class="omr-circle">①</div>
+ <div class="omr-circle correct">②</div>
+ <div class="omr-circle">③</div>
+ <div class="omr-circle">④</div>
+ </div>
+ <span class="omr-note">✓ 올바른 마킹 — 진하고 완전하게</span>
+ </div>
+ <div class="omr-row">
+ <div class="omr-q-num">2</div>
+ <div class="omr-circles">
+ <div class="omr-circle wrong">①</div>
+ <div class="omr-circle filled">②</div>
+ <div class="omr-circle">③</div>
+ <div class="omr-circle">④</div>
+ </div>
+ <span class="omr-note" style="color:var(--accent)">✕ 이중 마킹 — 오답 처리</span>
+ </div>
+ <div class="omr-row">
+ <div class="omr-q-num">3</div>
+ <div class="omr-circles">
+ <div class="omr-circle">①</div>
+ <div class="omr-circle" style="border-style:dashed;font-size:10px;color:var(--neutral-300)">②</div>
+ <div class="omr-circle">③</div>
+ <div class="omr-circle">④</div>
+ </div>
+ <span class="omr-note" style="color:var(--accent)">✕ 흐리게 마킹 — 인식 오류 가능</span>
+ </div>
+ </div>
+ <div style="margin-top:18px">
+ <div class="compare-row">
+ <div class="compare-box ok">
+ <div class="compare-box-label">✓ 올바른 마킹</div>
+ <ul>
+ <li>컴퓨터용 사인펜 사용</li>
+ <li>원 안을 완전히 채워 마킹</li>
+ <li>진하고 번지지 않게 마킹</li>
+ <li>수정 시 수정테이프 사용</li>
+ </ul>
+ </div>
+ <div class="compare-box ng">
+ <div class="compare-box-label">✕ 잘못된 마킹</div>
+ <ul>
+ <li>볼펜·연필 사용 금지</li>
+ <li>두 개 이상 마킹 (이중 마킹)</li>
+ <li>흐리거나 삐져나온 마킹</li>
+ <li>수정액·수정펜 사용 금지</li>
+ </ul>
+ </div>
+ </div>
+ </div>
+ <div class="callout warn">
+ <span class="callout-icon">⚠</span>
+ <span>OMR 카드 답안 수정 시 반드시 <strong>수정테이프</strong>를 사용해야 합니다. 수정액(화이트)은 절대 사용할 수 없으며, 사용 시 해당 문항이 무효 처리될 수 있습니다.</span>
+ </div>
+ </div>
+ <!-- 2. 쓰기 답안지 작성 요령 -->
+ <div class="info-card">
+ <h2 class="info-card-title">쓰기 답안지 작성 요령 (TOPIK Ⅱ)</h2>
+ <p>TOPIK Ⅱ 쓰기 영역의 서술형 문항(53번·54번)은 별도 제공되는 <strong>원고지 답안지</strong>에 직접 작성합니다.</p>
+ <div class="step-cards" style="margin-top:16px">
+ <div class="step-card">
+ <div class="step-badge">1</div>
+ <div>
+ <div class="step-content-title">원고지 규칙 준수</div>
+ <div class="step-content-desc">한 칸에 한 글자씩 작성합니다. 문장 부호(쉼표, 마침표 등)도 각각 한 칸을 사용합니다.</div>
+ </div>
+ </div>
+ <div class="step-card">
+ <div class="step-badge">2</div>
+ <div>
+ <div class="step-content-title">첫 줄 들여쓰기</div>
+ <div class="step-content-desc">단락 시작 시 첫 칸을 비우고 두 번째 칸부터 작성합니다. (들여쓰기 1칸)</div>
+ </div>
+ </div>
+ <div class="step-card">
+ <div class="step-badge">3</div>
+ <div>
+ <div class="step-content-title">분량 요건 준수</div>
+ <div class="step-content-desc">문항별로 요구하는 글자 수 범위를 지킵니다. 분량 미달 또는 초과 시 감점이 적용됩니다.</div>
+ </div>
+ </div>
+ <div class="step-card">
+ <div class="step-badge">4</div>
+ <div>
+ <div class="step-content-title">수정 방법</div>
+ <div class="step-content-desc">쓰기 답안지는 수정테이프 또는 두 줄 긋기(—) 후 재작성이 가능합니다. 수정액은 사용 불가합니다.</div>
+ </div>
+ </div>
+ </div>
+ <div class="callout danger" style="margin-top:16px">
+ <span class="callout-icon">🚫</span>
+ <span>쓰기 답안지에 <strong>수정액(화이트) 및 수정테이프 사용이 금지</strong>됩니다. 잘못 작성한 경우 두 줄로 긋고 옆이나 아래에 다시 작성하세요.</span>
+ </div>
+ </div>
+ <!-- 3. 수험번호 기재 방법 -->
+ <div class="info-card">
+ <h2 class="info-card-title">응시자 코드 및 수험번호 기재 방법</h2>
+ <p>답안지 상단에 <strong>응시자 코드</strong>와 <strong>수험번호</strong>를 정확히 기재하고, 해당 번호를 OMR에 마킹해야 합니다. 미기재 또는 오기재 시 채점이 불가합니다.</p>
+ <div style="margin-top:18px;padding:20px;background:var(--neutral-50);border-radius:var(--radius-lg);border:1px solid var(--neutral-200)">
+ <div style="font-size:12px;font-weight:700;color:var(--neutral-500);letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px">수험번호 기재 예시</div>
+ <div style="font-size:13px;color:var(--neutral-600);margin-bottom:10px">예시: 수험번호 <strong>9 9 0 0 1 2 3</strong></div>
+ <div class="code-demo">
+ <div class="code-box filled">9</div>
+ <div class="code-box filled">9</div>
+ <div class="code-box filled">0</div>
+ <div class="code-box filled">0</div>
+ <div class="code-box filled">1</div>
+ <div class="code-box filled">2</div>
+ <div class="code-box filled">3</div>
+ </div>
+ <div style="margin-top:12px;font-size:12.5px;color:var(--neutral-500);line-height:1.6">
+ ① 답안지 상단 수험번호 란에 숫자를 직접 기재<br>
+ ② 아래 OMR 마킹란에 각 자리 숫자에 해당하는 번호를 마킹<br>
+ ③ 수험표와 반드시 일치하는지 확인
+ </div>
+ </div>
+ <div class="callout info" style="margin-top:16px">
+ <span class="callout-icon">ℹ</span>
+ <span>수험번호는 수험표에 인쇄된 번호를 그대로 기재합니다. 숫자 하나라도 틀릴 경우 채점 오류가 발생할 수 있으므로 반드시 두 번 확인하세요.</span>
+ </div>
+ </div>
+ <!-- 4. 단답형 작성 요령 -->
+ <div class="info-card">
+ <h2 class="info-card-title">단답형 주관식 작성 요령 (TOPIK Ⅱ 51·52번)</h2>
+ <p>TOPIK Ⅱ 쓰기 51번·52번 문항은 단어 또는 짧은 문장을 쓰기 답란에 직접 기재합니다.</p>
+ <div class="step-cards" style="margin-top:14px">
+ <div class="step-card">
+ <div class="step-badge">!</div>
+ <div>
+ <div class="step-content-title">답란 내에만 작성</div>
+ <div class="step-content-desc">지정된 답란 밖으로 글씨가 넘어갈 경우 인식되지 않을 수 있습니다.</div>
+ </div>
+ </div>
+ <div class="step-card">
+ <div class="step-badge">!</div>
+ <div>
+ <div class="step-content-title">정자로 명확하게 작성</div>
+ <div class="step-content-desc">채점자가 판독하기 어려운 글씨는 오답으로 처리될 수 있습니다. 정확하고 깔끔하게 작성하세요.</div>
+ </div>
+ </div>
+ </div>
+ </div>
+ <div class="cta-row">
+ <a href="rules-notice.html" class="btn btn-solid btn-lg">유의 사항 보기</a>
+ <a href="rules-fee.html" class="btn btn-outline btn-lg">응시료 규정 보기</a>
+ <a href="faq.html" class="btn btn-ghost btn-lg">자주 묻는 질문</a>
+ </div>
+ </main>
+ <aside class="content-aside">
+ <div class="aside-card">
+ <div class="aside-card-title">TOPIK 규정</div>
+ <nav class="aside-nav-list">
+ <a href="rules-notice.html" class="aside-nav-link">유의 사항</a>
+ <a href="rules-answer.html" class="aside-nav-link is-current" aria-current="page">답안 작성 요령</a>
+ <a href="rules-fee.html" class="aside-nav-link">응시료 규정</a>
+ <a href="rules-id.html"  class="aside-nav-link">신분증 규정</a>
+ </nav>
+ </div>
+ <div class="aside-card">
+ <div class="aside-card-title">관련 페이지</div>
+ <a href="rules-notice.html" class="aside-ext-link primary-link">시험 유의 사항</a>
+ <a href="guide-questions.html" class="aside-ext-link neutral-link">문항 구성 안내</a>
+ <a href="notice.html"  class="aside-ext-link neutral-link">시험 공지사항</a>
+ </div>
+ <div class="aside-card">
+ <div class="aside-card-title">외부 링크</div>
+ <a href="https://topik.go.kr" target="_blank" rel="noopener noreferrer" class="aside-ext-link primary-link">TOPIK 본부 ↗</a>
+ <a href="https://niied.go.kr" target="_blank" rel="noopener noreferrer" class="aside-ext-link neutral-link">국립국제교육원 ↗</a>
+ </div>
+ </aside>
+ </div>
+</div>
+<footer class="footer" role="contentinfo">
+ <div class="container">
+ <div class="footer-grid"><div class="footer-brand"><strong>주미얀마 대한민국 대사관</strong><p>Embassy of the Republic of Korea in Myanmar<br>한국어능력시험(TOPIK) 공식 접수 사이트</p></div><div class="footer-ext"><a href="https://topik.go.kr" target="_blank" rel="noopener noreferrer">TOPIK 본부 (topik.go.kr)</a><a href="https://niied.go.kr" target="_blank" rel="noopener noreferrer">국립국제교육원 (NIIED)</a><a href="https://www.mofa.go.kr/mm-ko" target="_blank" rel="noopener noreferrer">대사관 공식 웹사이트</a></div></div>
+ <div class="footer-bottom"><span class="footer-copy">© 2025–2026 Embassy of the Republic of Korea in Myanmar. All rights reserved.</span><div class="footer-policy"><a href="#">개인정보처리방침</a><a href="#">이용약관</a></div></div>
+ </div>
+</footer>
+<script>
+const hamburger=document.getElementById('js-hamburger'),drawer=document.getElementById('js-drawer'),overlay=document.getElementById('js-overlay'),drawerClose=document.getElementById('js-drawer-close');
+function openDrawer(){drawer.classList.add('is-open');overlay.classList.add('is-show');hamburger.setAttribute('aria-expanded','true');document.body.style.overflow='hidden'}
+function closeDrawer(){drawer.classList.remove('is-open');overlay.classList.remove('is-show');hamburger.setAttribute('aria-expanded','false');document.body.style.overflow=''}
+hamburger.addEventListener('click',openDrawer);drawerClose.addEventListener('click',closeDrawer);overlay.addEventListener('click',closeDrawer);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer()});
+function setLang(code){try{localStorage.setItem('tm_lang',code)}catch(e){}document.querySelectorAll('.lang-toggle button,.drawer-lang button').forEach(btn=>{btn.classList.toggle('is-active',!!btn.getAttribute('onclick')?.includes(`'${code}'`))})}
+try{setLang(localStorage.getItem('tm_lang')||'ko')}catch(e){}
+</script>
 </body>
 </html>

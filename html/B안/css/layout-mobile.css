@@ -1,0 +1,125 @@
+/* =============================================================
+   TOPIK Myanmar (B안) · 공통 모바일 보정 스타일
+   - 각 페이지의 <style> 뒤에 마지막으로 로드되어 모바일 레이아웃을 보정합니다.
+   - 데스크톱(>900px)에는 영향이 없도록 미디어쿼리로 한정합니다.
+   ============================================================= */
+
+/* 가로 스크롤(레이아웃 틀어짐) 최종 방어선.
+   overflow-x:clip 은 스크롤 컨테이너를 만들지 않아 position:sticky 를 깨지 않습니다. */
+html { overflow-x: clip; }
+body { overflow-x: clip; max-width: 100%; }
+
+/* 미디어/임베드가 화면을 넘지 않도록 */
+img, svg, video, iframe { max-width: 100%; }
+
+@media (max-width: 900px) {
+  /* 본문만 표시, 우측 패널(2depth 바로가기·외부링크 등) 숨김 */
+  .content-aside,
+  .content-sidebar {
+    display: none !important;
+  }
+
+  /* 2단 컬럼 레이아웃을 1단으로 강제 (사이드바 제거 후 본문 전체폭) */
+  .content-wrap,
+  .content-layout,
+  .main-wrap {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+
+  /* CSS Grid/Flex 블로우아웃 방지 */
+  .content-main,
+  .content-body,
+  .ticket-wrap,
+  .main-wrap,
+  main {
+    min-width: 0 !important;
+  }
+
+  /* ── 표: 셀 한 줄 유지 + 좌우 스와이프 ── */
+  .q-table-wrap,
+  .compare-table-wrap,
+  .refund-table-wrap,
+  .history-card > div,
+  .content-main > div[style*="overflow-x"],
+  .content-body > div[style*="overflow-x"],
+  .info-card > div[style*="overflow-x"],
+  .list-view > div[style*="overflow-x"],
+  main > div[style*="overflow-x"] {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+  }
+
+  .content-main table,
+  .content-body table,
+  main table,
+  .info-card table,
+  .ticket-wrap table,
+  .history-card table,
+  .notice-table,
+  .data-table,
+  .board-table,
+  .summary-table,
+  .receipt-table,
+  .q-table,
+  .compare-table,
+  .refund-table {
+    width: max-content;
+    min-width: 100%;
+    table-layout: auto;
+  }
+
+  .content-main table th,
+  .content-main table td,
+  .content-body table th,
+  .content-body table td,
+  main table th,
+  main table td,
+  .info-card table th,
+  .info-card table td,
+  .history-card table th,
+  .history-card table td,
+  .notice-table th,
+  .notice-table td,
+  .data-table th,
+  .data-table td,
+  .board-table th,
+  .board-table td,
+  .summary-table th,
+  .summary-table td,
+  .receipt-table th,
+  .receipt-table td,
+  .q-table th,
+  .q-table td,
+  .compare-table th,
+  .compare-table td,
+  .refund-table th,
+  .refund-table td {
+    white-space: nowrap;
+  }
+
+  /* 긴 영문/이메일/번호 등이 줄바꿈되어 넘치지 않도록 (표 셀 제외) */
+  .member-contact,
+  .apply-card-foot-note,
+  .detail-meta,
+  .breadcrumb,
+  .aside-recent-title {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+}
+
+/* 작은 화면(≤480px) 추가 보정 */
+@media (max-width: 480px) {
+  .container,
+  .gnb-inner,
+  .footer-container {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .mobile-drawer {
+    width: 88%;
+  }
+}

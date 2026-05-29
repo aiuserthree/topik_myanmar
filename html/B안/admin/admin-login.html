@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="ko"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1">&lt;title&gt;관리자 로그인 — TOPIK Myanmar BO&lt;/title&gt;</p>
+<p class="p1">&lt;style&gt;</p>
+<p class="p1">/* ===== RESET &amp; BASE ===== */</p>
+<p class="p1">*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}</p>
+<p class="p1">:root{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--primary:#1a4fa0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--primary-dark:#133d80;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--primary-light:#e8f0fb;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--accent:#c8a84b;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--danger:#d9363e;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--danger-light:#fdf0f0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--success:#1e7e4a;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--success-light:#eaf6ef;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--warning:#b45309;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--warning-light:#fef9ec;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-50:#f8fafc;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-100:#f1f5f9;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-200:#e2e8f0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-300:#cbd5e1;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-400:#94a3b8;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-500:#64748b;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-600:#475569;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-700:#334155;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-800:#1e293b;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-900:#0f172a;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--white:#ffffff;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--radius-sm:4px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--radius:8px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--radius-lg:12px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--shadow-sm:0 1px 2px rgba(0,0,0,.06);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--shadow:0 2px 8px rgba(0,0,0,.10);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--shadow-lg:0 8px 24px rgba(0,0,0,.14);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--font:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--sidebar-w:240px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--topbar-h:56px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--transition:all .18s ease;</p>
+<p class="p1">}</p>
+<p class="p1">html{font-size:15px;-webkit-text-size-adjust:100%}</p>
+<p class="p1">body{font-family:var(--font);color:var(--gray-800);background:var(--gray-50);line-height:1.6}</p>
+<p class="p1">a{color:inherit;text-decoration:none}</p>
+<p class="p1">button{font-family:inherit;cursor:pointer;border:none;background:none}</p>
+<p class="p1">input,select,textarea{font-family:inherit}</p>
+<p class="p1">img{display:block;max-width:100%}</p>
+<p class="p1">.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ===== LOGIN PAGE ===== */</p>
+<p class="p1">.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#0d2f6e 0%,#1a4fa0 50%,#1a5dbf 100%);padding:24px}</p>
+<p class="p1">.login-card{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:48px 44px;width:100%;max-width:420px}</p>
+<p class="p1">.login-logo{text-align:center;margin-bottom:32px}</p>
+<p class="p1">.login-logo-badge{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;background:var(--primary);border-radius:var(--radius);margin-bottom:12px}</p>
+<p class="p1">.login-logo-badge svg{width:32px;height:32px;fill:none;stroke:#fff;stroke-width:2}</p>
+<p class="p1">.login-title{font-size:1.3rem;font-weight:700;color:var(--gray-900);line-height:1.3}</p>
+<p class="p1">.login-subtitle{font-size:.85rem;color:var(--gray-500);margin-top:4px}</p>
+<p class="p1">.form-group{margin-bottom:18px}</p>
+<p class="p1">.form-label{display:block;font-size:.82rem;font-weight:600;color:var(--gray-700);margin-bottom:6px}</p>
+<p class="p1">.form-control{width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.95rem;color:var(--gray-800);background:var(--white);transition:var(--transition);outline:none}</p>
+<p class="p1">.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,79,160,.12)}</p>
+<p class="p1">.form-control.is-error{border-color:var(--danger)}</p>
+<p class="p1">.pw-wrap{position:relative}</p>
+<p class="p1">.pw-wrap .form-control{padding-right:44px}</p>
+<p class="p1">.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--gray-400);padding:4px;background:none;border:none;cursor:pointer;display:flex}</p>
+<p class="p1">.pw-toggle:hover{color:var(--gray-600)}</p>
+<p class="p1">.form-error{display:none;font-size:.78rem;color:var(--danger);margin-top:5px}</p>
+<p class="p1">.form-error.show{display:block}</p>
+<p class="p1">.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border-radius:var(--radius-sm);font-size:.9rem;font-weight:600;transition:var(--transition);cursor:pointer;border:none;line-height:1.4}</p>
+<p class="p1">.btn-primary{background:var(--primary);color:#fff}</p>
+<p class="p1">.btn-primary:hover{background:var(--primary-dark)}</p>
+<p class="p1">.btn-block{width:100%;padding:12px}</p>
+<p class="p1">.login-footer{margin-top:28px;padding-top:20px;border-top:1px solid var(--gray-100);text-align:center;font-size:.8rem;color:var(--gray-400)}</p>
+<p class="p1">.login-lock-notice{background:var(--danger-light);border:1px solid #f5c6c8;border-radius:var(--radius-sm);padding:10px 14px;font-size:.82rem;color:var(--danger);margin-bottom:16px;display:none}</p>
+<p class="p1">.login-lock-notice.show{display:block}</p>
+<p class="p1">&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1">&lt;div class="login-wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="login-card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="login-logo"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="login-logo-badge"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="11" width="18" height="11" rx="2"/&gt;&lt;path d="M7 11V7a5 5 0 0 1 10 0v4"/&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="login-title"&gt;TOPIK Myanmar 관리자&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="login-subtitle"&gt;Back-Office 관리 시스템&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="login-lock-notice" id="lockNotice"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>로그인 5회 연속 실패로 계정이 잠금 상태입니다. 관리자에게 문의하세요.</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;form id="loginForm" novalidate&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label" for="adminId"&gt;관리자 아이디&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;input class="form-control" id="adminId" type="text" placeholder="아이디 입력" autocomplete="username" required&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-error" id="idError"&gt;아이디를 입력해 주세요.&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label" for="adminPw"&gt;비밀번호&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="pw-wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input class="form-control" id="adminPw" type="password" placeholder="비밀번호 입력" autocomplete="current-password" required&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button type="button" class="pw-toggle" id="pwToggle" aria-label="비밀번호 표시/숨김"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"&gt;&lt;path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/&gt;&lt;circle cx="12" cy="12" r="3"/&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-error" id="pwError"&gt;비밀번호를 입력해 주세요.&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-error show" id="loginError" style="display:none;margin-bottom:12px;font-size:.85rem"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button type="submit" class="btn btn-primary btn-block" id="loginBtn"&gt;로그인&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/form&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="login-footer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>TOPIK Myanmar BO v1.0 &amp;copy; 2025 주미얀마대사관</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">(function(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const FAIL_KEY='bo_fail_cnt', LOCK_KEY='bo_lock_until';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const MAX_FAIL=5, LOCK_MIN=30;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// Demo credentials</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const ADMINS=[</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{id:'superadmin',pw:'Admin1234!',role:'최고관리자',name:'관리자'},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{id:'manager',pw:'Admin1234!',role:'일반관리자',name:'운영자'},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{id:'viewer',pw:'Admin1234!',role:'조회관리자',name:'조회자'}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const form=document.getElementById('loginForm');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const idEl=document.getElementById('adminId');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const pwEl=document.getElementById('adminPw');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const idErr=document.getElementById('idError');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const pwErr=document.getElementById('pwError');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const loginErr=document.getElementById('loginError');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const lockNotice=document.getElementById('lockNotice');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const pwToggle=document.getElementById('pwToggle');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// Check lock</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function checkLock(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const until=localStorage.getItem(LOCK_KEY);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(until&amp;&amp;Date.now()&lt;+until){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>lockNotice.classList.add('show');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return true;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>lockNotice.classList.remove('show');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return false;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>pwToggle.addEventListener('click',function(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const isText=pwEl.type==='text';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>pwEl.type=isText?'password':'text';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>form.addEventListener('submit',function(e){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>e.preventDefault();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(checkLock())return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let valid=true;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const id=idEl.value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const pw=pwEl.value;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>idErr.style.display='none'; pwErr.style.display='none'; loginErr.style.display='none';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>idEl.classList.remove('is-error'); pwEl.classList.remove('is-error');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!id){idErr.style.display='block';idEl.classList.add('is-error');valid=false;}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!pw){pwErr.style.display='block';pwEl.classList.add('is-error');valid=false;}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!valid)return;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const admin=ADMINS.find(a=&gt;a.id===id&amp;&amp;a.pw===pw);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(admin){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>localStorage.removeItem(FAIL_KEY); localStorage.removeItem(LOCK_KEY);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>sessionStorage.setItem('bo_admin',JSON.stringify({id:admin.id,name:admin.name,role:admin.role}));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const next=new URLSearchParams(location.search).get('next');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>location.href=(next&amp;&amp;next.startsWith('admin'))?next:'admin-dashboard.html';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>let fail=+(localStorage.getItem(FAIL_KEY)||0)+1;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>localStorage.setItem(FAIL_KEY,fail);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(fail&gt;=MAX_FAIL){</p>
+<p class="p1"><span class="Apple-converted-space">        </span>localStorage.setItem(LOCK_KEY,Date.now()+LOCK_MIN*60*1000);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>lockNotice.classList.add('show');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>loginErr.style.display='none';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>loginErr.textContent=`아이디 또는 비밀번호가 올바르지 않습니다. (${fail}/${MAX_FAIL}회 실패)`;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>loginErr.style.display='block';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>checkLock();</p>
+<p class="p1">})();</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>

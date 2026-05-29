@@ -1,0 +1,980 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="ko"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1">&lt;title&gt;접수자 목록 — TOPIK Myanmar BO&lt;/title&gt;</p>
+<p class="p1">&lt;style&gt;</p>
+<p class="p1">*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}</p>
+<p class="p1">:root{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--primary:#1a4fa0;--primary-dark:#133d80;--primary-light:#e8f0fb;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--danger:#d9363e;--danger-light:#fdf0f0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--success:#1e7e4a;--success-light:#eaf6ef;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--warning:#b45309;--warning-light:#fef9ec;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--info:#0e6fa8;--info-light:#e6f4fb;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-300:#cbd5e1;--gray-400:#94a3b8;--gray-500:#64748b;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-600:#475569;--gray-700:#334155;--gray-800:#1e293b;--gray-900:#0f172a;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--white:#fff;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--radius-sm:4px;--radius:8px;--radius-lg:12px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--shadow-sm:0 1px 3px rgba(0,0,0,.07);--shadow:0 2px 8px rgba(0,0,0,.10);--shadow-lg:0 8px 28px rgba(0,0,0,.15);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--font:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--sidebar-w:240px;--topbar-h:56px;--tr:.18s ease;</p>
+<p class="p1">}</p>
+<p class="p1">html{font-size:15px}</p>
+<p class="p1">body{font-family:var(--font);color:var(--gray-800);background:var(--gray-50);line-height:1.6;overflow-x:hidden}</p>
+<p class="p1">a{color:inherit;text-decoration:none}</p>
+<p class="p1">button{font-family:inherit;cursor:pointer;border:none;background:none}</p>
+<p class="p1">input,select,textarea{font-family:inherit;font-size:inherit}</p>
+<p class="p1">.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── LAYOUT ── */</p>
+<p class="p1">.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--gray-900);color:var(--gray-300);display:flex;flex-direction:column;z-index:200;overflow-y:auto;transition:transform .22s ease}</p>
+<p class="p1">.sidebar-brand{display:flex;align-items:center;gap:10px;padding:0 18px;height:var(--topbar-h);border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}</p>
+<p class="p1">.sb-icon{width:32px;height:32px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}</p>
+<p class="p1">.sb-icon svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2}</p>
+<p class="p1">.sb-brand-text{font-size:.82rem;font-weight:700;color:#fff;line-height:1.3}</p>
+<p class="p1">.sb-brand-sub{font-size:.7rem;color:var(--gray-400);font-weight:400}</p>
+<p class="p1">.sb-nav{flex:1;padding:12px 0 8px;overflow-y:auto}</p>
+<p class="p1">.sb-section{padding:16px 18px 4px;font-size:.65rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--gray-500)}</p>
+<p class="p1">.sb-link{display:flex;align-items:center;gap:9px;padding:8px 18px;font-size:.875rem;font-weight:500;color:var(--gray-400);border-left:3px solid transparent;transition:var(--tr)}</p>
+<p class="p1">.sb-link:hover{background:rgba(255,255,255,.06);color:#fff}</p>
+<p class="p1">.sb-link.active{background:rgba(26,79,160,.28);border-left-color:var(--primary);color:#fff}</p>
+<p class="p1">.sb-link svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0;opacity:.8}</p>
+<p class="p1">.sb-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:.65rem;font-weight:700;border-radius:10px;padding:1px 6px;line-height:1.7}</p>
+<p class="p1">.sb-footer{padding:12px 18px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}</p>
+<p class="p1">.sb-user{display:flex;align-items:center;gap:10px;margin-bottom:10px}</p>
+<p class="p1">.sb-avatar{width:32px;height:32px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff;flex-shrink:0}</p>
+<p class="p1">.sb-user-name{font-size:.82rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}</p>
+<p class="p1">.sb-user-role{font-size:.7rem;color:var(--gray-400)}</p>
+<p class="p1">.sb-logout{display:flex;align-items:center;gap:7px;width:100%;padding:7px 10px;border-radius:var(--radius-sm);font-size:.82rem;color:var(--gray-400);transition:var(--tr)}</p>
+<p class="p1">.sb-logout:hover{background:rgba(217,54,62,.15);color:#f87171}</p>
+<p class="p1">.sb-logout svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}</p>
+<p class="p1">.topbar{position:fixed;top:0;left:var(--sidebar-w);right:0;height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;padding:0 20px;gap:12px;z-index:100;transition:left .22s ease}</p>
+<p class="p1">.topbar-hamburger{display:none;padding:6px;border-radius:var(--radius-sm);color:var(--gray-500)}</p>
+<p class="p1">.topbar-hamburger svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;display:block}</p>
+<p class="p1">.topbar-title{font-size:1rem;font-weight:700;color:var(--gray-900)}</p>
+<p class="p1">.tb-user{display:flex;align-items:center;gap:7px;background:var(--gray-100);border-radius:20px;padding:5px 12px 5px 7px;font-size:.8rem;margin-left:auto}</p>
+<p class="p1">.tb-avatar{width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fff;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}</p>
+<p class="p1">.tb-name{font-weight:600;color:var(--gray-700)}</p>
+<p class="p1">.tb-role{font-size:.68rem;background:var(--primary-light);color:var(--primary);border-radius:3px;padding:1px 5px;font-weight:600}</p>
+<p class="p1">.main-wrap{margin-left:var(--sidebar-w);padding-top:var(--topbar-h);min-height:100vh}</p>
+<p class="p1">.page-body{padding:20px}</p>
+<p class="p1">.backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:190}</p>
+<p class="p1">.backdrop.show{display:block}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── COMPONENTS ── */</p>
+<p class="p1">.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:7px 14px;border-radius:var(--radius-sm);font-size:.83rem;font-weight:600;transition:var(--tr);cursor:pointer;border:none;line-height:1.4;white-space:nowrap}</p>
+<p class="p1">.btn-xs{padding:3px 8px;font-size:.72rem}</p>
+<p class="p1">.btn-sm{padding:5px 11px;font-size:.78rem}</p>
+<p class="p1">.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-dark)}</p>
+<p class="p1">.btn-outline{background:#fff;color:var(--gray-700);border:1px solid var(--gray-300)}.btn-outline:hover{background:var(--gray-50);border-color:var(--gray-400)}</p>
+<p class="p1">.btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{background:#b22a32}</p>
+<p class="p1">.btn-success{background:var(--success);color:#fff}.btn-success:hover{background:#166039}</p>
+<p class="p1">.btn-warning{background:#d97706;color:#fff}.btn-warning:hover{background:#b45309}</p>
+<p class="p2"><br></p>
+<p class="p1">.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--gray-200)}</p>
+<p class="p1">.card-header{padding:14px 18px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:8px;flex-wrap:wrap}</p>
+<p class="p1">.card-title{font-size:.95rem;font-weight:700;color:var(--gray-900)}</p>
+<p class="p1">.card-body{padding:18px}</p>
+<p class="p2"><br></p>
+<p class="p1">.form-control{width:100%;padding:8px 12px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.88rem;color:var(--gray-800);background:#fff;outline:none;transition:var(--tr)}</p>
+<p class="p1">.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,79,160,.1)}</p>
+<p class="p1">.form-select{padding:7px 28px 7px 10px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.85rem;color:var(--gray-800);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center;appearance:none;outline:none;transition:var(--tr);cursor:pointer}</p>
+<p class="p1">.form-select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,79,160,.1)}</p>
+<p class="p1">.form-label{display:block;font-size:.78rem;font-weight:600;color:var(--gray-700);margin-bottom:5px}</p>
+<p class="p1">.form-group{margin-bottom:14px}</p>
+<p class="p1">.form-hint{font-size:.72rem;color:var(--gray-400);margin-top:4px}</p>
+<p class="p2"><br></p>
+<p class="p1">.chip{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:.7rem;font-weight:700;white-space:nowrap}</p>
+<p class="p1">.chip-blue{background:var(--info-light);color:var(--info)}</p>
+<p class="p1">.chip-green{background:var(--success-light);color:var(--success)}</p>
+<p class="p1">.chip-yellow{background:var(--warning-light);color:var(--warning)}</p>
+<p class="p1">.chip-red{background:var(--danger-light);color:var(--danger)}</p>
+<p class="p1">.chip-gray{background:var(--gray-100);color:var(--gray-500)}</p>
+<p class="p1">.chip-purple{background:#f3f0ff;color:#6d28d9}</p>
+<p class="p1">.chip-indigo{background:#eef2ff;color:#4338ca}</p>
+<p class="p2"><br></p>
+<p class="p1">.filter-chip-row{display:flex;flex-wrap:wrap;gap:6px}</p>
+<p class="p1">.filter-chip{padding:5px 13px;border-radius:20px;font-size:.78rem;font-weight:600;border:1.5px solid var(--gray-200);color:var(--gray-600);background:#fff;cursor:pointer;transition:var(--tr)}</p>
+<p class="p1">.filter-chip:hover{border-color:var(--primary);color:var(--primary)}</p>
+<p class="p1">.filter-chip.on{background:var(--primary);border-color:var(--primary);color:#fff}</p>
+<p class="p2"><br></p>
+<p class="p1">.data-table{width:100%;border-collapse:collapse;font-size:.82rem}</p>
+<p class="p1">.data-table th{padding:9px 10px;text-align:left;font-size:.72rem;font-weight:700;color:var(--gray-500);background:var(--gray-50);border-bottom:1px solid var(--gray-200);white-space:nowrap}</p>
+<p class="p1">.data-table td{padding:8px 10px;border-bottom:1px solid var(--gray-100);color:var(--gray-700);vertical-align:middle}</p>
+<p class="p1">.data-table tr:last-child td{border-bottom:none}</p>
+<p class="p1">.data-table tbody tr:hover td{background:var(--gray-50)}</p>
+<p class="p1">.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}</p>
+<p class="p1">.tbl-wrap .data-table{min-width:1100px}</p>
+<p class="p2"><br></p>
+<p class="p1">.pager{display:flex;align-items:center;gap:4px;justify-content:center;padding:16px 0 4px}</p>
+<p class="p1">.pg-btn{width:32px;height:32px;border-radius:var(--radius-sm);font-size:.82rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--gray-200);background:#fff;color:var(--gray-600);cursor:pointer;transition:var(--tr)}</p>
+<p class="p1">.pg-btn:hover{border-color:var(--primary);color:var(--primary)}</p>
+<p class="p1">.pg-btn.on{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:700}</p>
+<p class="p2"><br></p>
+<p class="p1">/* slide panel */</p>
+<p class="p1">.sp{position:fixed;top:0;right:-500px;width:460px;max-width:100vw;height:100vh;background:#fff;box-shadow:var(--shadow-lg);z-index:300;display:flex;flex-direction:column;transition:right .25s ease}</p>
+<p class="p1">.sp.open{right:0}</p>
+<p class="p1">.sp-head{padding:16px 20px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;gap:10px;flex-shrink:0}</p>
+<p class="p1">.sp-title{font-size:1rem;font-weight:700;color:var(--gray-900);flex:1}</p>
+<p class="p1">.sp-close{padding:6px;color:var(--gray-400);border-radius:var(--radius-sm);cursor:pointer}</p>
+<p class="p1">.sp-close:hover{background:var(--gray-100);color:var(--gray-700)}</p>
+<p class="p1">.sp-close svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;display:block}</p>
+<p class="p1">.sp-body{flex:1;overflow-y:auto;padding:20px}</p>
+<p class="p1">.sp-footer{padding:14px 20px;border-top:1px solid var(--gray-100);display:flex;gap:8px;flex-shrink:0}</p>
+<p class="p2"><br></p>
+<p class="p1">/* modal */</p>
+<p class="p1">.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;align-items:center;justify-content:center;padding:16px}</p>
+<p class="p1">.overlay.open{display:flex}</p>
+<p class="p1">.modal{background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;max-width:520px;max-height:90vh;display:flex;flex-direction:column}</p>
+<p class="p1">.modal-sm{max-width:420px}</p>
+<p class="p1">.modal-head{padding:18px 20px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;gap:10px;flex-shrink:0}</p>
+<p class="p1">.modal-title{font-size:1rem;font-weight:700;color:var(--gray-900);flex:1}</p>
+<p class="p1">.modal-close-btn{padding:6px;color:var(--gray-400);border-radius:var(--radius-sm);cursor:pointer;border:none;background:none}</p>
+<p class="p1">.modal-close-btn:hover{background:var(--gray-100);color:var(--gray-700)}</p>
+<p class="p1">.modal-close-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;display:block}</p>
+<p class="p1">.modal-body{padding:20px;flex:1;overflow-y:auto}</p>
+<p class="p1">.modal-foot{padding:14px 20px;border-top:1px solid var(--gray-100);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}</p>
+<p class="p2"><br></p>
+<p class="p1">/* info box */</p>
+<p class="p1">.info-box{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-sm);padding:12px 14px}</p>
+<p class="p1">.ib-row{display:flex;gap:10px;padding:4px 0;border-bottom:1px solid var(--gray-100)}</p>
+<p class="p1">.ib-row:last-child{border-bottom:none}</p>
+<p class="p1">.ib-label{font-size:.73rem;font-weight:600;color:var(--gray-400);min-width:76px;flex-shrink:0;padding-top:1px}</p>
+<p class="p1">.ib-val{font-size:.85rem;color:var(--gray-800);font-weight:500}</p>
+<p class="p2"><br></p>
+<p class="p1">/* photo */</p>
+<p class="p1">.photo-box{width:100%;aspect-ratio:1/1;background:var(--gray-100);border-radius:var(--radius);border:2px dashed var(--gray-300);display:flex;align-items:center;justify-content:center;margin-bottom:12px;overflow:hidden;cursor:zoom-in;position:relative}</p>
+<p class="p1">.photo-box img{width:100%;height:100%;object-fit:cover}</p>
+<p class="p1">.photo-ph{text-align:center;color:var(--gray-400)}</p>
+<p class="p1">.photo-ph svg{width:44px;height:44px;fill:none;stroke:currentColor;stroke-width:1.5;margin:0 auto 8px;display:block}</p>
+<p class="p1">.photo-ph span{font-size:.82rem}</p>
+<p class="p1">.photo-thumb-cell{width:38px;height:38px;border-radius:4px;background:var(--gray-200);display:flex;align-items:center;justify-content:center;border:1px solid var(--gray-200);cursor:pointer;overflow:hidden;font-size:.62rem;color:var(--gray-400)}</p>
+<p class="p1">.photo-thumb-cell img{width:100%;height:100%;object-fit:cover}</p>
+<p class="p2"><br></p>
+<p class="p1">/* reject chips */</p>
+<p class="p1">.rj-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}</p>
+<p class="p1">.rj-chip{padding:5px 11px;border-radius:20px;font-size:.75rem;border:1.5px solid var(--gray-200);color:var(--gray-600);background:#fff;cursor:pointer;transition:var(--tr)}</p>
+<p class="p1">.rj-chip.on{background:var(--danger-light);border-color:var(--danger);color:var(--danger);font-weight:700}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ds-section */</p>
+<p class="p1">.ds-title{font-size:.72rem;font-weight:700;color:var(--gray-400);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--gray-100)}</p>
+<p class="p2"><br></p>
+<p class="p1">/* alert */</p>
+<p class="p1">.alert{padding:10px 14px;border-radius:var(--radius-sm);font-size:.8rem;display:flex;gap:8px;align-items:flex-start}</p>
+<p class="p1">.alert svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0;margin-top:1px}</p>
+<p class="p1">.alert-warn{background:var(--warning-light);color:var(--warning);border:1px solid #fcd34d}</p>
+<p class="p1">.alert-info{background:var(--info-light);color:var(--info);border:1px solid #bae6fd}</p>
+<p class="p2"><br></p>
+<p class="p1">/* timeline */</p>
+<p class="p1">.tl-item{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--gray-100)}</p>
+<p class="p1">.tl-item:last-child{border-bottom:none}</p>
+<p class="p1">.tl-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0;margin-top:6px}</p>
+<p class="p1">.tl-action{font-size:.83rem;font-weight:600;color:var(--gray-800)}</p>
+<p class="p1">.tl-meta{font-size:.72rem;color:var(--gray-400)}</p>
+<p class="p2"><br></p>
+<p class="p1">@media(max-width:900px){.sp{width:100vw}}</p>
+<p class="p1">@media(max-width:768px){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.topbar{left:0}.main-wrap{margin-left:0}.topbar-hamburger{display:flex}</p>
+<p class="p1">}</p>
+<p class="p1">&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="backdrop" id="backdrop"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- ═══ SIDEBAR ═══ --&gt;</p>
+<p class="p1">&lt;aside class="sidebar" id="sidebar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="sidebar-brand"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-icon"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="11" width="18" height="11" rx="2"/&gt;&lt;path d="M7 11V7a5 5 0 0 1 10 0v4"/&gt;&lt;/svg&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div&gt;&lt;div class="sb-brand-text"&gt;TOPIK Myanmar&lt;/div&gt;&lt;div class="sb-brand-sub"&gt;관리자 시스템&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;nav class="sb-nav"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;대시보드&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-dashboard.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="3" width="7" height="7" rx="1"/&gt;&lt;rect x="14" y="3" width="7" height="7" rx="1"/&gt;&lt;rect x="3" y="14" width="7" height="7" rx="1"/&gt;&lt;rect x="14" y="14" width="7" height="7" rx="1"/&gt;&lt;/svg&gt;대시보드&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;접수 관리&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link active" href="admin-applicants.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/&gt;&lt;circle cx="9" cy="7" r="4"/&gt;&lt;path d="M23 21v-2a4 4 0 0 0-3-3.87"/&gt;&lt;path d="M16 3.13a4 4 0 0 1 0 7.75"/&gt;&lt;/svg&gt;접수자 목록&lt;span class="sb-badge"&gt;12&lt;/span&gt;&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;시험 관리&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-exam-rounds.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="4" width="18" height="18" rx="2"/&gt;&lt;line x1="16" y1="2" x2="16" y2="6"/&gt;&lt;line x1="8" y1="2" x2="8" y2="6"/&gt;&lt;line x1="3" y1="10" x2="21" y2="10"/&gt;&lt;/svg&gt;회차 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-exam-venues.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/&gt;&lt;circle cx="12" cy="10" r="3"/&gt;&lt;/svg&gt;시험장 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;콘텐츠&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-notice.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/&gt;&lt;path d="M13.73 21a2 2 0 0 1-3.46 0"/&gt;&lt;/svg&gt;공지사항 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-faq.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="10"/&gt;&lt;path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/&gt;&lt;line x1="12" y1="17" x2="12.01" y2="17"/&gt;&lt;/svg&gt;FAQ 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-refund.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/&gt;&lt;polyline points="9 22 9 12 15 12 15 22"/&gt;&lt;/svg&gt;환불·정정신청&lt;span class="sb-badge"&gt;3&lt;/span&gt;&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-inquiry.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/&gt;&lt;/svg&gt;문의게시판&lt;span class="sb-badge"&gt;7&lt;/span&gt;&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;회원·약관&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-members.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/&gt;&lt;circle cx="12" cy="7" r="4"/&gt;&lt;/svg&gt;회원 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-terms.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/&gt;&lt;polyline points="14 2 14 8 20 8"/&gt;&lt;/svg&gt;약관 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;시스템&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-accounts.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/&gt;&lt;circle cx="9" cy="7" r="4"/&gt;&lt;line x1="23" y1="11" x2="17" y2="11"/&gt;&lt;line x1="20" y1="8" x2="20" y2="14"/&gt;&lt;/svg&gt;관리자 계정&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-permissions.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="11" width="18" height="11" rx="2"/&gt;&lt;path d="M7 11V7a5 5 0 0 1 10 0v4"/&gt;&lt;/svg&gt;권한 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-history.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;polyline points="12 8 12 12 14 14"/&gt;&lt;path d="M3.05 11a9 9 0 1 0 .5-4H1"/&gt;&lt;polyline points="1 3 1 7 5 7"/&gt;&lt;/svg&gt;처리 이력&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/nav&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="sb-footer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-user"&gt;&lt;div class="sb-avatar" id="sb-av"&gt;관&lt;/div&gt;&lt;div&gt;&lt;div class="sb-user-name" id="sb-name"&gt;관리자&lt;/div&gt;&lt;div class="sb-user-role" id="sb-role"&gt;최고관리자&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="sb-logout" id="logoutBtn"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/&gt;&lt;polyline points="16 17 21 12 16 7"/&gt;&lt;line x1="21" y1="12" x2="9" y2="12"/&gt;&lt;/svg&gt;로그아웃&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/aside&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- ═══ TOPBAR ═══ --&gt;</p>
+<p class="p1">&lt;header class="topbar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="topbar-hamburger" id="hbBtn"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="3" y1="6" x2="21" y2="6"/&gt;&lt;line x1="3" y1="12" x2="21" y2="12"/&gt;&lt;line x1="3" y1="18" x2="21" y2="18"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="topbar-title"&gt;접수자 목록&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="tb-user"&gt;&lt;div class="tb-avatar" id="tb-av"&gt;관&lt;/div&gt;&lt;span class="tb-name" id="tb-name"&gt;관리자&lt;/span&gt;&lt;span class="tb-role" id="tb-role"&gt;최고관리자&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1">&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- ═══ MAIN ═══ --&gt;</p>
+<p class="p1">&lt;main class="main-wrap"&gt;</p>
+<p class="p1">&lt;div class="page-body"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;!-- 상단 회차 컨텍스트 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;span style="font-size:.82rem;font-weight:600;color:var(--gray-600)"&gt;회차&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;select class="form-select" id="roundCtx" style="width:220px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;option value="106" selected&gt;제106회 TOPIK (2025.09.21)&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;option value="105"&gt;제105회 TOPIK (2025.04.13)&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;option value="104"&gt;제104회 TOPIK (2024.11.17)&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;span class="chip chip-green"&gt;접수중&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;span style="flex:1"&gt;&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;span style="font-size:.8rem;color:var(--gray-500)"&gt;총 &lt;strong id="totalCount"&gt;8&lt;/strong&gt;명 (필터 기준)&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- 카드 헤더: 필터 + 액션 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="card-header" style="flex-direction:column;align-items:stretch;gap:12px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="card-title"&gt;접수자 목록&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;span style="flex:1"&gt;&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn btn-outline btn-sm" onclick="openExamNoModal()"&gt;수험번호 일괄 부여&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn btn-outline btn-sm" onclick="alert('연명부 엑셀 다운로드')"&gt;연명부 엑셀&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn btn-outline btn-sm" onclick="alert('사진 ZIP 다운로드')"&gt;사진 ZIP&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn btn-outline btn-sm" onclick="window.print()"&gt;인쇄&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 상태 필터 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="filter-chip-row" id="statusFilters"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="filter-chip on" data-s="all"&gt;전체 &lt;span class="fcnt" data-s="all"&gt;8&lt;/span&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="filter-chip" data-s="접수완료"&gt;접수완료 &lt;span class="fcnt" data-s="접수완료"&gt;1&lt;/span&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="filter-chip" data-s="사진심사중"&gt;사진심사중 &lt;span class="fcnt" data-s="사진심사중"&gt;2&lt;/span&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="filter-chip" data-s="수납대기"&gt;수납대기 &lt;span class="fcnt" data-s="수납대기"&gt;1&lt;/span&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="filter-chip" data-s="승인완료"&gt;승인완료 &lt;span class="fcnt" data-s="승인완료"&gt;3&lt;/span&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="filter-chip" data-s="반려"&gt;반려 &lt;span class="fcnt" data-s="반려"&gt;1&lt;/span&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="filter-chip" data-s="취소"&gt;취소 &lt;span class="fcnt" data-s="취소"&gt;0&lt;/span&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 검색 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style="display:flex;gap:8px;flex-wrap:wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;select class="form-select" id="venueFilter" style="width:170px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value=""&gt;시험장 전체&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option&gt;양곤대 흘라잉캠퍼스&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option&gt;만달레이 외대&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option&gt;네피도 거점센터&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;select class="form-select" id="levelFilter" style="width:130px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value=""&gt;급수 전체&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option&gt;TOPIK Ⅰ&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option&gt;TOPIK Ⅱ&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option&gt;동시&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;input class="form-control" id="searchQ" type="search" placeholder="성명·생년월일·수험번호 검색" style="flex:1;min-width:180px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn btn-primary btn-sm" onclick="renderTable()"&gt;검색&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn btn-outline btn-sm" onclick="resetFilter()"&gt;초기화&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- 일괄 액션 바 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--gray-50);border-bottom:1px solid var(--gray-200);flex-wrap:wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;input type="checkbox" id="chkAll" style="width:16px;height:16px;cursor:pointer" title="전체 선택"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span style="font-size:.8rem;color:var(--gray-500)" id="selCount"&gt;0건 선택&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span style="flex:1"&gt;&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-outline btn-sm" onclick="bulkAction('payment')"&gt;일괄 수납처리&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-success btn-sm" onclick="bulkAction('approve')"&gt;일괄 승인&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-danger btn-sm" onclick="bulkAction('reject')"&gt;일괄 반려&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="tbl-wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;table class="data-table" id="tbl"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th style="width:36px"&gt;&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;번호&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;사진&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;한글성명&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;영문성명&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;생년월일&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;성별&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;급수&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;시험장&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;접수일&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;사진심사&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;수납&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;수험번호&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;상태&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th style="min-width:220px"&gt;관리&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;tbody id="tbody"&gt;&lt;/tbody&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/table&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="pager" id="pager"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p1">&lt;/main&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- ══════════════════════════════════════════════</p>
+<p class="p1"><span class="Apple-converted-space">     </span>SLIDE PANEL — 사진 심사</p>
+<p class="p1">══════════════════════════════════════════════ --&gt;</p>
+<p class="p1">&lt;div class="sp" id="photoPanel" role="dialog" aria-modal="true" aria-label="사진 심사"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="sp-head"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sp-title"&gt;사진 심사&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="sp-close" onclick="closePhotoPanel()"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="18" y1="6" x2="6" y2="18"/&gt;&lt;line x1="6" y1="6" x2="18" y2="18"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="sp-body"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="photo-box" id="ppPhotoBox" onclick="zoomPhoto()"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="photo-ph" id="ppPhotoPlaceholder"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="3" width="18" height="18" rx="2"/&gt;&lt;circle cx="8.5" cy="8.5" r="1.5"/&gt;&lt;polyline points="21 15 16 10 5 21"/&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;span&gt;사진 없음&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;img id="ppPhotoImg" src="" alt="응시자 사진" style="display:none"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div style="margin-bottom:14px;display:flex;align-items:center;gap:8px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span id="ppStatusChip" class="chip chip-gray"&gt;미심사&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span style="font-size:.75rem;color:var(--gray-400)"&gt;클릭하면 크게 보기&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="ds-title"&gt;응시자 정보&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="info-box" style="margin-bottom:16px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;한글성명&lt;/span&gt;&lt;span class="ib-val" id="pp-nko"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;영문성명&lt;/span&gt;&lt;span class="ib-val" id="pp-nen"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;생년월일&lt;/span&gt;&lt;span class="ib-val" id="pp-dob"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;성별&lt;/span&gt;&lt;span class="ib-val" id="pp-sex"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;급수&lt;/span&gt;&lt;span class="ib-val" id="pp-lvl"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;시험장&lt;/span&gt;&lt;span class="ib-val" id="pp-venue"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="ds-title" style="margin-bottom:8px"&gt;반려 사유 선택&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="rj-chips" id="rjChips"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="rj-chip" data-r="정면 아님"&gt;정면 아님&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="rj-chip" data-r="모자·선글라스"&gt;모자·선글라스&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="rj-chip" data-r="흑백 사진"&gt;흑백 사진&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="rj-chip" data-r="사진 흐림"&gt;사진 흐림&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="rj-chip" data-r="배경 불량"&gt;배경 불량&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="rj-chip" data-r="본인 불일치"&gt;본인 불일치&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="rj-chip" data-r="기타"&gt;기타&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;textarea class="form-control" id="rjText" rows="2" placeholder="반려 사유 직접 입력 (선택 사유에 추가 입력 가능)" style="margin-bottom:14px"&gt;&lt;/textarea&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="sp-footer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="btn btn-danger" style="flex:1" onclick="doPhotoAction('reject')"&gt;반려&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="btn btn-success" style="flex:1" onclick="doPhotoAction('approve')"&gt;사진 승인&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- ══════════════════════════════════════════════</p>
+<p class="p1"><span class="Apple-converted-space">     </span>MODAL — 접수자 상세 / 수납처리</p>
+<p class="p1">══════════════════════════════════════════════ --&gt;</p>
+<p class="p1">&lt;div class="overlay" id="detailModal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="modal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-head"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="modal-title" id="dm-title"&gt;접수 상세&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="modal-close-btn" onclick="closeModal('detailModal')"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="18" y1="6" x2="6" y2="18"/&gt;&lt;line x1="6" y1="6" x2="18" y2="18"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-body"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 인적사항 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="ds-title" style="margin-bottom:8px"&gt;인적사항&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style="display:flex;gap:16px;margin-bottom:14px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="photo-box" style="width:100px;height:100px;flex-shrink:0;cursor:default;margin-bottom:0;border-style:solid"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;img id="dm-photo" src="" alt="사진" style="display:none"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="photo-ph" id="dm-photo-ph" style="font-size:.72rem"&gt;&lt;svg viewBox="0 0 24 24" style="width:28px;height:28px"&gt;&lt;rect x="3" y="3" width="18" height="18" rx="2"/&gt;&lt;circle cx="8.5" cy="8.5" r="1.5"/&gt;&lt;polyline points="21 15 16 10 5 21"/&gt;&lt;/svg&gt;&lt;span&gt;사진없음&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style="flex:1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style="font-size:1.05rem;font-weight:700;color:var(--gray-900);margin-bottom:2px" id="dm-nko"&gt;—&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style="font-size:.85rem;color:var(--gray-500);margin-bottom:6px" id="dm-nen"&gt;—&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style="display:flex;gap:6px;flex-wrap:wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="chip chip-gray" id="dm-photo-status"&gt;미심사&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="chip chip-gray" id="dm-pay-status"&gt;수납대기&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="chip chip-gray" id="dm-status-chip"&gt;접수완료&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="info-box" style="margin-bottom:14px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;생년월일&lt;/span&gt;&lt;span class="ib-val" id="dm-dob"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;성별&lt;/span&gt;&lt;span class="ib-val" id="dm-sex"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;국적&lt;/span&gt;&lt;span class="ib-val" id="dm-nation"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;급수&lt;/span&gt;&lt;span class="ib-val" id="dm-lvl"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;시험장&lt;/span&gt;&lt;span class="ib-val" id="dm-venue"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;수험번호&lt;/span&gt;&lt;span class="ib-val" id="dm-examno"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;접수일&lt;/span&gt;&lt;span class="ib-val" id="dm-regdate"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 수납 처리 영역 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="dm-payment-area"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ds-title" style="margin-bottom:8px"&gt;오프라인 수납 처리&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="info-box" style="margin-bottom:12px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;응시료&lt;/span&gt;&lt;span class="ib-val" id="dm-fee"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;영수증번호&lt;/span&gt;&lt;span class="ib-val" id="dm-receipt-view"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="form-label"&gt;영수증 번호 &lt;span style="font-weight:400;color:var(--gray-400)"&gt;(선택)&lt;/span&gt;&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input class="form-control" id="dm-receipt-input" type="text" placeholder="영수증 번호 입력"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="form-label"&gt;메모 &lt;span style="font-weight:400;color:var(--gray-400)"&gt;(선택)&lt;/span&gt;&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;textarea class="form-control" id="dm-memo" rows="2" placeholder="수납 관련 메모"&gt;&lt;/textarea&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="alert alert-warn" style="margin-bottom:0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;svg viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="10"/&gt;&lt;line x1="12" y1="8" x2="12" y2="12"/&gt;&lt;line x1="12" y1="16" x2="12.01" y2="16"/&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>수납 완료 후 취소하려면 별도 환불 처리가 필요합니다.</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 처리 이력 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style="margin-top:18px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ds-title" style="margin-bottom:8px"&gt;처리 이력&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="dm-timeline"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-foot"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-outline" onclick="closeModal('detailModal')"&gt;닫기&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-warning btn-sm" id="dm-photo-btn" onclick="openPhotoPanelFromDetail()"&gt;사진 심사&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-primary" id="dm-pay-btn" onclick="doPaymentFromDetail()"&gt;수납 완료 처리&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-success" id="dm-approve-btn" onclick="doApproveFromDetail()"&gt;승인 처리&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- MODAL — 반려 --&gt;</p>
+<p class="p1">&lt;div class="overlay" id="rejectModal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="modal modal-sm"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-head"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="modal-title"&gt;접수 반려&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="modal-close-btn" onclick="closeModal('rejectModal')"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="18" y1="6" x2="6" y2="18"/&gt;&lt;line x1="6" y1="6" x2="18" y2="18"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-body"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="info-box" style="margin-bottom:12px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;대상자&lt;/span&gt;&lt;span class="ib-val" id="rj-target"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label"&gt;반려 사유 &lt;span style="color:var(--danger)"&gt;*&lt;/span&gt;&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;textarea class="form-control" id="rj-reason" rows="3" placeholder="반려 사유를 입력해 주세요" required&gt;&lt;/textarea&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="alert alert-warn"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;svg viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="10"/&gt;&lt;line x1="12" y1="8" x2="12" y2="12"/&gt;&lt;line x1="12" y1="16" x2="12.01" y2="16"/&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>반려 처리 시 지원자에게 사유가 전달됩니다.</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-foot"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-outline" onclick="closeModal('rejectModal')"&gt;취소&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-danger" onclick="doReject()"&gt;반려 처리&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- MODAL — 수험번호 일괄 부여 --&gt;</p>
+<p class="p1">&lt;div class="overlay" id="examNoModal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="modal modal-sm"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-head"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="modal-title"&gt;수험번호 일괄 부여&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="modal-close-btn" onclick="closeModal('examNoModal')"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="18" y1="6" x2="6" y2="18"/&gt;&lt;line x1="6" y1="6" x2="18" y2="18"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-body"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="alert alert-info" style="margin-bottom:14px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;svg viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="10"/&gt;&lt;line x1="12" y1="8" x2="12" y2="12"/&gt;&lt;line x1="12" y1="16" x2="12.01" y2="16"/&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>승인완료 상태의 접수자에게 수험번호를 일괄 부여합니다. 부여 기준: 급수 → 시험장 → 접수순.</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label"&gt;시작 번호&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;input class="form-control" id="examNoStart" type="number" value="1" min="1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-hint"&gt;예) 1 입력 시 → 001, 002, 003 … 순서로 부여&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label"&gt;부여 방식&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;select class="form-select" style="width:100%"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option selected&gt;급수 → 시험장 → 접수순&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option&gt;시험장 → 급수 → 접수순&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option&gt;접수순&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="info-box"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;대상 인원&lt;/span&gt;&lt;span class="ib-val"&gt;3명 (승인완료 기준)&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-foot"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-outline" onclick="closeModal('examNoModal')"&gt;취소&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-primary" onclick="doAssignExamNo()"&gt;일괄 부여&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- MODAL — 사진 확대 --&gt;</p>
+<p class="p1">&lt;div class="overlay" id="zoomModal" onclick="closeModal('zoomModal')" style="background:rgba(0,0,0,.85)"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;img id="zoomImg" src="" alt="사진 확대" style="max-width:90vw;max-height:90vh;object-fit:contain;border-radius:var(--radius)"&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- MODAL — 로그아웃 --&gt;</p>
+<p class="p1">&lt;div class="overlay" id="logoutModal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="modal modal-sm"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-head"&gt;&lt;div class="modal-title"&gt;로그아웃&lt;/div&gt;&lt;button class="modal-close-btn" onclick="closeModal('logoutModal')"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="18" y1="6" x2="6" y2="18"/&gt;&lt;line x1="6" y1="6" x2="18" y2="18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-body"&gt;&lt;p style="font-size:.9rem;color:var(--gray-700)"&gt;로그아웃 하시겠습니까?&lt;/p&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-foot"&gt;&lt;button class="btn btn-outline" onclick="closeModal('logoutModal')"&gt;취소&lt;/button&gt;&lt;button class="btn btn-danger" onclick="doLogout()"&gt;로그아웃&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">/* ═══════════ DATA ═══════════ */</p>
+<p class="p1">const APPLICANTS = [</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:247,nko:'아웅 민',nen:'Aung Min',dob:'1998.03.15',sex:'남',nation:'미얀마',level:'TOPIK Ⅱ',venue:'양곤대 흘라잉캠퍼스',regdate:'2025.07.10',photo:'review',payment:'unpaid',examno:'',status:'사진심사중',fee:'30,000 MMK',receipt:'',memo:'',history:[{action:'접수완료',by:'본인',at:'2025.07.10 14:22'},{action:'사진심사중',by:'자동',at:'2025.07.10 14:23'}]},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:246,nko:'떼인 쪼',nen:'Thein Kyaw',dob:'1995.11.04',sex:'남',nation:'미얀마',level:'TOPIK Ⅰ',venue:'양곤대 흘라잉캠퍼스',regdate:'2025.07.10',photo:'review',payment:'unpaid',examno:'',status:'사진심사중',fee:'20,000 MMK',receipt:'',memo:'',history:[{action:'접수완료',by:'본인',at:'2025.07.10 10:05'}]},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:245,nko:'수 수 라',nen:'Su Su La',dob:'2001.06.22',sex:'여',nation:'미얀마',level:'TOPIK Ⅱ',venue:'만달레이 외대',regdate:'2025.07.09',photo:'approved',payment:'paid',examno:'106-002',status:'승인완료',fee:'30,000 MMK',receipt:'RCP-0029',memo:'',history:[{action:'접수완료',by:'본인',at:'2025.07.09 09:11'},{action:'사진승인',by:'admin',at:'2025.07.09 15:00'},{action:'수납완료',by:'manager',at:'2025.07.09 16:30'},{action:'승인완료',by:'manager',at:'2025.07.09 16:31'}]},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:244,nko:'밍 밍 쪼',nen:'Myint Myint Kyaw',dob:'1999.02.28',sex:'여',nation:'미얀마',level:'TOPIK Ⅰ',venue:'양곤대 흘라잉캠퍼스',regdate:'2025.07.09',photo:'approved',payment:'paid',examno:'106-001',status:'승인완료',fee:'20,000 MMK',receipt:'RCP-0028',memo:'',history:[{action:'접수완료',by:'본인',at:'2025.07.09 08:00'},{action:'사진승인',by:'admin',at:'2025.07.09 10:00'},{action:'수납완료',by:'manager',at:'2025.07.09 11:00'},{action:'승인완료',by:'manager',at:'2025.07.09 11:01'}]},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:243,nko:'나웅 린',nen:'Naung Lin',dob:'1997.09.17',sex:'남',nation:'미얀마',level:'동시',venue:'양곤대 흘라잉캠퍼스',regdate:'2025.07.08',photo:'rejected',payment:'unpaid',examno:'',status:'반려',fee:'50,000 MMK',receipt:'',memo:'',history:[{action:'접수완료',by:'본인',at:'2025.07.08 13:45'},{action:'사진반려(정면 아님)',by:'admin',at:'2025.07.08 17:00'}]},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:242,nko:'에이 떼인',nen:'Aye Thein',dob:'2000.04.09',sex:'여',nation:'미얀마',level:'TOPIK Ⅱ',venue:'네피도 거점센터',regdate:'2025.07.08',photo:'approved',payment:'paid',examno:'106-003',status:'승인완료',fee:'30,000 MMK',receipt:'RCP-0030',memo:'',history:[{action:'접수완료',by:'본인',at:'2025.07.08 09:00'},{action:'사진승인',by:'admin',at:'2025.07.08 11:00'},{action:'수납완료',by:'manager',at:'2025.07.08 14:00'},{action:'승인완료',by:'manager',at:'2025.07.08 14:01'}]},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:241,nko:'쪼 쪼',nen:'Kyaw Kyaw',dob:'1996.07.30',sex:'남',nation:'미얀마',level:'TOPIK Ⅰ',venue:'만달레이 외대',regdate:'2025.07.07',photo:'approved',payment:'unpaid',examno:'',status:'수납대기',fee:'20,000 MMK',receipt:'',memo:'',history:[{action:'접수완료',by:'본인',at:'2025.07.07 10:00'},{action:'사진승인',by:'admin',at:'2025.07.07 14:00'}]},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:240,nko:'띤 마웅',nen:'Tin Maung',dob:'1994.12.05',sex:'남',nation:'미얀마',level:'TOPIK Ⅱ',venue:'양곤대 흘라잉캠퍼스',regdate:'2025.07.06',photo:'none',payment:'unpaid',examno:'',status:'접수완료',fee:'30,000 MMK',receipt:'',memo:'',history:[{action:'접수완료',by:'본인',at:'2025.07.06 16:00'}]},</p>
+<p class="p1">];</p>
+<p class="p2"><br></p>
+<p class="p1">/* ═══════════ STATE ═══════════ */</p>
+<p class="p1">let filtered = [...APPLICANTS];</p>
+<p class="p1">let currentStatus = 'all';</p>
+<p class="p1">let currentPage = 1;</p>
+<p class="p1">const PAGE_SIZE = 20;</p>
+<p class="p1">let currentId = null;</p>
+<p class="p1">let selectedIds = new Set();</p>
+<p class="p2"><br></p>
+<p class="p1">/* ═══════════ HELPERS ═══════════ */</p>
+<p class="p1">function statusChip(s){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const map={</p>
+<p class="p1"><span class="Apple-converted-space">    </span>'접수완료':'chip-blue','사진심사중':'chip-yellow','수납대기':'chip-indigo',</p>
+<p class="p1"><span class="Apple-converted-space">    </span>'승인완료':'chip-green','반려':'chip-red','취소':'chip-gray'</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return `&lt;span class="chip ${map[s]||'chip-gray'}"&gt;${s}&lt;/span&gt;`;</p>
+<p class="p1">}</p>
+<p class="p1">function photoChip(p){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(p==='approved') return '&lt;span class="chip chip-green"&gt;승인&lt;/span&gt;';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(p==='rejected') return '&lt;span class="chip chip-red"&gt;반려&lt;/span&gt;';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(p==='review') <span class="Apple-converted-space">  </span>return '&lt;span class="chip chip-yellow"&gt;심사중&lt;/span&gt;';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return '&lt;span class="chip chip-gray"&gt;미등록&lt;/span&gt;';</p>
+<p class="p1">}</p>
+<p class="p1">function payChip(p){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return p==='paid'</p>
+<p class="p1"><span class="Apple-converted-space">    </span>? '&lt;span class="chip chip-green"&gt;수납완료&lt;/span&gt;'</p>
+<p class="p1"><span class="Apple-converted-space">    </span>: '&lt;span class="chip chip-gray"&gt;수납대기&lt;/span&gt;';</p>
+<p class="p1">}</p>
+<p class="p1">function levelChip(l){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const map={'TOPIK Ⅰ':'chip-blue','TOPIK Ⅱ':'chip-indigo','동시':'chip-purple'};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return `&lt;span class="chip ${map[l]||'chip-gray'}"&gt;${l}&lt;/span&gt;`;</p>
+<p class="p1">}</p>
+<p class="p1">function getById(id){ return APPLICANTS.find(a=&gt;a.id===id); }</p>
+<p class="p2"><br></p>
+<p class="p1">/* ═══════════ RENDER TABLE ═══════════ */</p>
+<p class="p1">function getFiltered(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const q = document.getElementById('searchQ').value.trim().toLowerCase();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const venue = document.getElementById('venueFilter').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const level = document.getElementById('levelFilter').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return APPLICANTS.filter(a=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(currentStatus!=='all' &amp;&amp; a.status!==currentStatus) return false;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(venue &amp;&amp; a.venue!==venue) return false;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(level &amp;&amp; a.level!==level) return false;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(q &amp;&amp; !(a.nko.includes(q)||a.nen.toLowerCase().includes(q)||a.dob.includes(q)||a.examno.includes(q))) return false;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return true;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function renderTable(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>filtered = getFiltered();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('totalCount').textContent = filtered.length;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>currentPage = 1;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>selectedIds.clear();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('chkAll').checked = false;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>updateSelCount();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderPage();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderPager();</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function renderPage(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const tbody = document.getElementById('tbody');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const start = (currentPage-1)*PAGE_SIZE;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const slice = filtered.slice(start, start+PAGE_SIZE);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!slice.length){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>tbody.innerHTML = `&lt;tr&gt;&lt;td colspan="15" style="text-align:center;padding:40px;color:var(--gray-400)"&gt;조회된 접수자가 없습니다.&lt;/td&gt;&lt;/tr&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>tbody.innerHTML = slice.map(a=&gt;`</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;tr data-id="${a.id}"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td&gt;&lt;input type="checkbox" class="row-chk" data-id="${a.id}" style="width:15px;height:15px;cursor:pointer" ${selectedIds.has(a.id)?'checked':''}&gt;&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td style="font-weight:600;color:var(--gray-700)"&gt;${a.id}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="photo-thumb-cell" onclick="openPhotoPanel(${a.id})" title="사진 심사"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>${a.photo==='none'?'없음':'&lt;svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"&gt;&lt;rect x="3" y="3" width="18" height="18" rx="2"/&gt;&lt;circle cx="8.5" cy="8.5" r="1.5"/&gt;&lt;polyline points="21 15 16 10 5 21"/&gt;&lt;/svg&gt;'}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td style="font-weight:600"&gt;${a.nko}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td style="color:var(--gray-500)"&gt;${a.nen}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td&gt;${a.dob}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td&gt;${a.sex}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td&gt;${levelChip(a.level)}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td style="font-size:.78rem;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${a.venue}"&gt;${a.venue}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td style="font-size:.78rem;color:var(--gray-500)"&gt;${a.regdate}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td&gt;${photoChip(a.photo)}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td&gt;${payChip(a.payment)}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td style="font-size:.78rem;color:var(--gray-700)"&gt;${a.examno||'—'}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td&gt;${statusChip(a.status)}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style="display:flex;gap:4px;flex-wrap:wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="btn btn-outline btn-xs" onclick="openDetail(${a.id})"&gt;상세&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="btn btn-outline btn-xs" onclick="openPhotoPanel(${a.id})"&gt;사진심사&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>${a.payment==='unpaid'?`&lt;button class="btn btn-warning btn-xs" onclick="openPaymentFromTable(${a.id})"&gt;수납처리&lt;/button&gt;`:''}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>${a.status==='수납대기'||a.status==='사진심사중'?`&lt;button class="btn btn-success btn-xs" onclick="openApproveConfirm(${a.id})"&gt;승인&lt;/button&gt;`:''}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>${a.status!=='반려'&amp;&amp;a.status!=='취소'&amp;&amp;a.status!=='승인완료'?`&lt;button class="btn btn-danger btn-xs" onclick="openRejectModal(${a.id})"&gt;반려&lt;/button&gt;`:''}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>`).join('');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// row checkbox events</p>
+<p class="p1"><span class="Apple-converted-space">  </span>tbody.querySelectorAll('.row-chk').forEach(chk=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>chk.addEventListener('change',function(){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const id=+this.dataset.id;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>this.checked?selectedIds.add(id):selectedIds.delete(id);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>updateSelCount();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('chkAll').checked=(selectedIds.size===filtered.length&amp;&amp;filtered.length&gt;0);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function renderPager(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const total = Math.ceil(filtered.length/PAGE_SIZE)||1;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const pager = document.getElementById('pager');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let html='';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>html+=`&lt;button class="pg-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}&gt;&amp;#8249;&lt;/button&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>for(let i=1;i&lt;=total;i++){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>html+=`&lt;button class="pg-btn ${i===currentPage?'on':''}" onclick="goPage(${i})"&gt;${i}&lt;/button&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>html+=`&lt;button class="pg-btn" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled':''}&gt;&amp;#8250;&lt;/button&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>pager.innerHTML=html;</p>
+<p class="p1">}</p>
+<p class="p1">function goPage(p){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const total=Math.ceil(filtered.length/PAGE_SIZE)||1;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(p&lt;1||p&gt;total)return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>currentPage=p;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderPage();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderPager();</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ═══════════ FILTER CHIPS ═══════════ */</p>
+<p class="p1">function initFilterChips(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('statusFilters').querySelectorAll('.filter-chip').forEach(btn=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>btn.addEventListener('click',function(){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.querySelectorAll('.filter-chip').forEach(b=&gt;b.classList.remove('on'));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>this.classList.add('on');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>currentStatus=this.dataset.s;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>renderTable();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// update counts</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const counts={};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>APPLICANTS.forEach(a=&gt;{ counts[a.status]=(counts[a.status]||0)+1; });</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('.fcnt').forEach(el=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const s=el.dataset.s;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>el.textContent = s==='all'? APPLICANTS.length : (counts[s]||0);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function resetFilter(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>currentStatus='all';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('.filter-chip').forEach(b=&gt;b.classList.remove('on'));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelector('.filter-chip[data-s="all"]').classList.add('on');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('searchQ').value='';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('venueFilter').value='';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('levelFilter').value='';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderTable();</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ═══════════ SELECT ALL ═══════════ */</p>
+<p class="p1">document.getElementById('chkAll').addEventListener('change',function(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(this.checked){ filtered.forEach(a=&gt;selectedIds.add(a.id)); }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else { selectedIds.clear(); }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderPage();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderPager();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>updateSelCount();</p>
+<p class="p1">});</p>
+<p class="p1">function updateSelCount(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('selCount').textContent=selectedIds.size+'건 선택';</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ═══════════ BULK ACTIONS ═══════════ */</p>
+<p class="p1">function bulkAction(type){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!selectedIds.size){ alert('선택된 항목이 없습니다.'); return; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const names=APPLICANTS.filter(a=&gt;selectedIds.has(a.id)).map(a=&gt;a.nko).join(', ');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(type==='payment'){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!confirm(`${selectedIds.size}명을 수납 완료 처리하시겠습니까?\n${names}`)) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>selectedIds.forEach(id=&gt;{ const a=getById(id); if(a)a.payment='paid'; });</p>
+<p class="p1"><span class="Apple-converted-space">    </span>selectedIds.forEach(id=&gt;{ const a=getById(id); if(a&amp;&amp;a.status==='수납대기')a.status='승인완료'; });</p>
+<p class="p1"><span class="Apple-converted-space">    </span>alert('일괄 수납 처리되었습니다.'); selectedIds.clear(); renderTable();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>} else if(type==='approve'){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!confirm(`${selectedIds.size}명을 승인 처리하시겠습니까?\n${names}`)) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>selectedIds.forEach(id=&gt;{ const a=getById(id); if(a){a.status='승인완료';a.history.push({action:'승인완료',by:'manager',at:nowStr()});} });</p>
+<p class="p1"><span class="Apple-converted-space">    </span>alert('일괄 승인 처리되었습니다.'); selectedIds.clear(); renderTable();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>} else if(type==='reject'){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const reason=prompt('반려 사유를 입력해 주세요');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!reason) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>selectedIds.forEach(id=&gt;{ const a=getById(id); if(a){a.status='반려';a.history.push({action:`반려(${reason})`,by:'manager',at:nowStr()});} });</p>
+<p class="p1"><span class="Apple-converted-space">    </span>alert('일괄 반려 처리되었습니다.'); selectedIds.clear(); renderTable();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ═══════════ PHOTO PANEL ═══════════ */</p>
+<p class="p1">function openPhotoPanel(id){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>currentId=id;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const a=getById(id);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!a) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('pp-nko').textContent=a.nko;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('pp-nen').textContent=a.nen;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('pp-dob').textContent=a.dob;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('pp-sex').textContent=a.sex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('pp-lvl').textContent=a.level;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('pp-venue').textContent=a.venue;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const chip=document.getElementById('ppStatusChip');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>chip.className='chip';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(a.photo==='approved'){chip.classList.add('chip-green');chip.textContent='사진 승인됨';}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else if(a.photo==='rejected'){chip.classList.add('chip-red');chip.textContent='사진 반려됨';}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else if(a.photo==='review'){chip.classList.add('chip-yellow');chip.textContent='심사 대기중';}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else{chip.classList.add('chip-gray');chip.textContent='사진 미등록';}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// Photo display (placeholder since no real images)</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('ppPhotoImg').style.display='none';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('ppPhotoPlaceholder').style.display='block';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// Reset reject chips &amp; text</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('.rj-chip').forEach(c=&gt;c.classList.remove('on'));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rjText').value='';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('photoPanel').classList.add('open');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('backdrop').classList.add('show');</p>
+<p class="p1">}</p>
+<p class="p1">function closePhotoPanel(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('photoPanel').classList.remove('open');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('backdrop').classList.remove('show');</p>
+<p class="p1">}</p>
+<p class="p1">function zoomPhoto(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const img=document.getElementById('ppPhotoImg');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(img.style.display==='none'||!img.src) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('zoomImg').src=img.src;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>openModal('zoomModal');</p>
+<p class="p1">}</p>
+<p class="p1">function doPhotoAction(type){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const a=getById(currentId);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!a) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(type==='approve'){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>a.photo='approved';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(a.status==='사진심사중'||a.status==='접수완료') a.status='수납대기';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>a.history.push({action:'사진승인',by:'admin',at:nowStr()});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>alert('사진이 승인되었습니다.');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const chips=[...document.querySelectorAll('.rj-chip.on')].map(c=&gt;c.dataset.r).join(', ');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const text=document.getElementById('rjText').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const reason=[chips,text].filter(Boolean).join(' / ')||'사유 없음';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>a.photo='rejected';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>a.status='반려';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>a.history.push({action:`사진반려(${reason})`,by:'admin',at:nowStr()});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>alert(`사진이 반려되었습니다.\n사유: ${reason}`);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>closePhotoPanel();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderPage();</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ═══════════ DETAIL MODAL ═══════════ */</p>
+<p class="p1">function openDetail(id){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>currentId=id;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const a=getById(id);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!a) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-title').textContent=`접수 상세 — ${a.nko}`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-nko').textContent=a.nko;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-nen').textContent=a.nen;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-dob').textContent=a.dob;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-sex').textContent=a.sex;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-nation').textContent=a.nation;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-lvl').textContent=a.level;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-venue').textContent=a.venue;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-examno').textContent=a.examno||'미부여';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-regdate').textContent=a.regdate;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-fee').textContent=a.fee;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-receipt-view').textContent=a.receipt||'—';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-receipt-input').value=a.receipt||'';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-memo').value=a.memo||'';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// status chips</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const psc=document.getElementById('dm-photo-status');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>psc.className='chip'; psc.classList.add(a.photo==='approved'?'chip-green':a.photo==='rejected'?'chip-red':'chip-gray');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>psc.textContent=a.photo==='approved'?'사진승인':a.photo==='rejected'?'사진반려':a.photo==='review'?'심사중':'사진미등록';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const pyc=document.getElementById('dm-pay-status');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>pyc.className='chip'; pyc.classList.add(a.payment==='paid'?'chip-green':'chip-gray');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>pyc.textContent=a.payment==='paid'?'수납완료':'수납대기';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const sc=document.getElementById('dm-status-chip');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const smap={접수완료:'chip-blue',사진심사중:'chip-yellow',수납대기:'chip-indigo',승인완료:'chip-green',반려:'chip-red',취소:'chip-gray'};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>sc.className='chip'; sc.classList.add(smap[a.status]||'chip-gray');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>sc.textContent=a.status;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// photo placeholder</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-photo').style.display='none';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-photo-ph').style.display='flex';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// timeline</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const tl=document.getElementById('dm-timeline');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>tl.innerHTML=a.history.map(h=&gt;`</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="tl-item"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="tl-dot"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="tl-action"&gt;${h.action}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="tl-meta"&gt;${h.at} · ${h.by}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>`).join('');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// button visibility</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-pay-btn').style.display=(a.payment==='unpaid')?'inline-flex':'none';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-approve-btn').style.display=(a.status==='수납대기'||a.status==='사진심사중')?'inline-flex':'none';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('dm-payment-area').style.display=(a.payment==='unpaid')?'block':'none';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>openModal('detailModal');</p>
+<p class="p1">}</p>
+<p class="p1">function openPhotoPanelFromDetail(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>closeModal('detailModal');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>openPhotoPanel(currentId);</p>
+<p class="p1">}</p>
+<p class="p1">function openPaymentFromTable(id){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>currentId=id;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>openDetail(id);</p>
+<p class="p1">}</p>
+<p class="p1">function doPaymentFromDetail(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const a=getById(currentId);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!a) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const receipt=document.getElementById('dm-receipt-input').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const memo=document.getElementById('dm-memo').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!confirm('수납 완료 처리하시겠습니까?')) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>a.payment='paid';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>a.receipt=receipt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>a.memo=memo;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(a.status==='수납대기') a.status='승인완료';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>a.history.push({action:'수납완료',by:'manager',at:nowStr()});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>alert('수납 처리되었습니다.');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>closeModal('detailModal');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderTable();</p>
+<p class="p1">}</p>
+<p class="p1">function doApproveFromDetail(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const a=getById(currentId);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!a) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!confirm(`${a.nko}을(를) 승인 처리하시겠습니까?`)) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>a.status='승인완료';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>a.history.push({action:'승인완료',by:'manager',at:nowStr()});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>alert('승인 처리되었습니다.');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>closeModal('detailModal');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderTable();</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ═══════════ APPROVE / REJECT ═══════════ */</p>
+<p class="p1">function openApproveConfirm(id){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>currentId=id;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const a=getById(id);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!confirm(`${a.nko}을(를) 승인 처리하시겠습니까?`)) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>a.status='승인완료';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>a.history.push({action:'승인완료',by:'manager',at:nowStr()});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderTable();</p>
+<p class="p1">}</p>
+<p class="p1">function openRejectModal(id){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>currentId=id;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const a=getById(id);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rj-target').textContent=a?a.nko:'—';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rj-reason').value='';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>openModal('rejectModal');</p>
+<p class="p1">}</p>
+<p class="p1">function doReject(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const reason=document.getElementById('rj-reason').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!reason){ alert('반려 사유를 입력해 주세요.'); return; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const a=getById(currentId);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(a){ a.status='반려'; a.history.push({action:`반려(${reason})`,by:'manager',at:nowStr()}); }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>closeModal('rejectModal');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderTable();</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ═══════════ EXAM NO ═══════════ */</p>
+<p class="p1">function openExamNoModal(){ openModal('examNoModal'); }</p>
+<p class="p1">function doAssignExamNo(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!confirm('승인완료 상태 접수자에게 수험번호를 일괄 부여하시겠습니까?')) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const start=+(document.getElementById('examNoStart').value)||1;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const targets=APPLICANTS.filter(a=&gt;a.status==='승인완료'&amp;&amp;!a.examno);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>targets.forEach((a,i)=&gt;{ a.examno=`106-${String(start+i).padStart(3,'0')}`; });</p>
+<p class="p1"><span class="Apple-converted-space">  </span>closeModal('examNoModal');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderTable();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>alert(`${targets.length}명에게 수험번호가 부여되었습니다.`);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ═══════════ REJECT CHIP TOGGLE ═══════════ */</p>
+<p class="p1">document.getElementById('rjChips').querySelectorAll('.rj-chip').forEach(btn=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>btn.addEventListener('click',function(){ this.classList.toggle('on'); });</p>
+<p class="p1">});</p>
+<p class="p2"><br></p>
+<p class="p1">/* ═══════════ MODAL HELPERS ═══════════ */</p>
+<p class="p1">function openModal(id){ document.getElementById(id).classList.add('open'); }</p>
+<p class="p1">function closeModal(id){ document.getElementById(id).classList.remove('open'); }</p>
+<p class="p1">document.querySelectorAll('.overlay').forEach(ov=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>ov.addEventListener('click',function(e){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(e.target===this&amp;&amp;this.id!=='zoomModal') closeModal(this.id);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1">});</p>
+<p class="p2"><br></p>
+<p class="p1">/* ═══════════ LAYOUT ═══════════ */</p>
+<p class="p1">function nowStr(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const d=new Date();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return d.getFullYear()+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getDate().toString().padStart(2,'0')+' '+d.toTimeString().slice(0,5);</p>
+<p class="p1">}</p>
+<p class="p1">(function(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const admin=JSON.parse(sessionStorage.getItem('bo_admin')||'{"name":"관리자","role":"최고관리자"}');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const ini=(admin.name||'관')[0];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('sb-av').textContent=ini;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('sb-name').textContent=admin.name;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('sb-role').textContent=admin.role;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('tb-av').textContent=ini;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('tb-name').textContent=admin.name;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('tb-role').textContent=admin.role;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const sidebar=document.getElementById('sidebar');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const backdrop=document.getElementById('backdrop');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('hbBtn').addEventListener('click',()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const open=sidebar.classList.toggle('open');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>backdrop.classList.toggle('show',open);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>backdrop.addEventListener('click',()=&gt;{ sidebar.classList.remove('open'); backdrop.classList.remove('show'); closePhotoPanel(); });</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('logoutBtn').addEventListener('click',()=&gt;openModal('logoutModal'));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>initFilterChips();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderTable();</p>
+<p class="p1">})();</p>
+<p class="p2"><br></p>
+<p class="p1">function doLogout(){ sessionStorage.clear(); location.href='admin-login.html'; }</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>

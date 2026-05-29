@@ -1,432 +1,543 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.6">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="TOPIK Myanmar 로그인 페이지">
+<title>로그인 | TOPIK Myanmar</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+ --primary:#1a3a6b; --primary-dark:#122a52; --primary-light:#e8eef7;
+ --accent:#c8232c; --accent-light:#fdf0f0;
+ --neutral-50:#f8f9fb; --neutral-100:#f1f3f7; --neutral-200:#e2e6ef;
+ --neutral-300:#c8cdd8; --neutral-400:#9099aa; --neutral-500:#636b7a;
+ --neutral-600:#464d5c; --neutral-700:#2d3340; --neutral-800:#1a1e28;
+ --white:#ffffff;
+ --radius-sm:6px; --radius-md:10px; --radius-lg:16px;
+ --shadow-sm:0 1px 4px rgba(0,0,0,.07); --shadow-md:0 4px 16px rgba(0,0,0,.10);
+ --font-base:'Noto Sans KR',sans-serif; --ease:cubic-bezier(.4,0,.2,1);
+ --header-h:64px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--font-base);font-size:15px;color:var(--neutral-700);
+ background:var(--neutral-50);line-height:1.6;-webkit-font-smoothing:antialiased;
+ padding-top:var(--header-h)}
+a{color:inherit;text-decoration:none}
+ul,ol{list-style:none}
+button{cursor:pointer;border:none;background:none;font-family:inherit}
+input{font-family:inherit}
+/* ── GNB ── */
+.gnb{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--white);
+ border-bottom:1px solid var(--neutral-200);height:var(--header-h);display:flex;align-items:center}
+.gnb-inner{display:flex;align-items:center;justify-content:space-between;
+ width:100%;max-width:1100px;margin:0 auto;padding:0 20px;gap:12px}
+.gnb-logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.gnb-logo-mark{width:32px;height:32px;background:var(--primary);border-radius:var(--radius-sm);
+ display:flex;align-items:center;justify-content:center;color:var(--white);
+ font-weight:700;font-size:13px}
+.gnb-logo-text strong{display:block;font-size:14px;font-weight:700;color:var(--primary)}
+.gnb-logo-text span{font-size:10px;color:var(--neutral-500)}
+.gnb-nav{display:flex;align-items:center;gap:2px}
+.gnb-menu{position:relative}
+.gnb-menu-btn{display:flex;align-items:center;gap:4px;padding:8px 13px;font-size:14px;
+ font-weight:500;color:var(--neutral-600);border-radius:var(--radius-sm);transition:.2s var(--ease)}
+.gnb-menu-btn:hover{color:var(--primary);background:var(--primary-light)}
+.gnb-menu-btn svg{width:14px;height:14px;transition:transform .2s var(--ease)}
+.gnb-menu:hover .gnb-menu-btn svg{transform:rotate(180deg)}
+.gnb-dropdown{position:absolute;top:calc(100% + 8px);left:0;min-width:172px;
+ background:var(--white);border:1px solid var(--neutral-200);border-radius:var(--radius-md);
+ box-shadow:var(--shadow-md);opacity:0;visibility:hidden;transform:translateY(-6px);
+ transition:.18s var(--ease);z-index:200;overflow:hidden}
+.gnb-menu:hover .gnb-dropdown{opacity:1;visibility:visible;transform:translateY(0)}
+.gnb-dropdown a{display:block;padding:10px 16px;font-size:13.5px;color:var(--neutral-600);transition:.15s var(--ease)}
+.gnb-dropdown a:hover{color:var(--primary);background:var(--primary-light)}
+.gnb-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.lang-toggle{display:flex;border:1px solid var(--neutral-200);border-radius:20px;overflow:hidden;font-size:12px;font-weight:500}
+.lang-toggle button{padding:4px 9px;color:var(--neutral-500);transition:.15s var(--ease)}
+.lang-toggle button.is-active{background:var(--primary);color:var(--white)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+ padding:8px 16px;font-size:13px;font-weight:600;border-radius:var(--radius-sm);
+ transition:.2s var(--ease);cursor:pointer;white-space:nowrap;border:none}
+.btn-ghost{color:var(--neutral-600);border:1px solid var(--neutral-200);background:transparent}
+.btn-ghost:hover{border-color:var(--primary);color:var(--primary)}
+.btn-solid{background:var(--primary);color:var(--white);border:1px solid var(--primary)}
+.btn-solid:hover{background:var(--primary-dark)}
+.btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary)}
+.btn-outline:hover{background:var(--primary-light)}
+.gnb-hamburger{display:none;flex-direction:column;gap:5px;padding:8px}
+.gnb-hamburger span{display:block;width:22px;height:2px;background:var(--neutral-700);
+ border-radius:2px;transition:.2s var(--ease)}
+/* ── Drawer ── */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.46);z-index:1999;
+ opacity:0;visibility:hidden;transition:.25s var(--ease)}
+.drawer-overlay.is-show{opacity:1;visibility:visible}
+.mobile-drawer{position:fixed;top:0;right:0;bottom:0;width:82%;max-width:320px;
+ background:var(--white);z-index:2000;transform:translateX(100%);
+ transition:.28s var(--ease);box-shadow:var(--shadow-md);display:flex;flex-direction:column}
+.mobile-drawer.is-open{transform:translateX(0)}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;
+ padding:16px 20px;border-bottom:1px solid var(--neutral-100);flex-shrink:0}
+.drawer-close-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--neutral-200);
+ display:flex;align-items:center;justify-content:center;color:var(--neutral-500);font-size:17px}
+.drawer-body{flex:1;overflow-y:auto}
+.drawer-group{border-bottom:1px solid var(--neutral-100)}
+.drawer-group-title{padding:14px 20px 6px;font-size:10.5px;font-weight:700;
+ color:var(--neutral-400);letter-spacing:.1em;text-transform:uppercase}
+.drawer-link{display:block;padding:10px 20px;font-size:14px;font-weight:500;
+ color:var(--neutral-600);transition:.15s var(--ease)}
+.drawer-link:hover{color:var(--primary);background:var(--primary-light)}
+.drawer-lang{display:flex;gap:6px;padding:14px 20px;border-top:1px solid var(--neutral-100)}
+.drawer-lang button{flex:1;padding:8px;font-size:12px;font-weight:500;border-radius:var(--radius-sm);
+ border:1px solid var(--neutral-200);color:var(--neutral-500);transition:.15s var(--ease)}
+.drawer-lang button.is-active{background:var(--primary);color:var(--white);border-color:var(--primary)}
+.drawer-foot{padding:14px 20px 20px;display:flex;flex-direction:column;gap:8px;
+ border-top:1px solid var(--neutral-100);flex-shrink:0}
+.drawer-foot .btn{justify-content:center}
+/* ── Auth Layout ── */
+.auth-wrap{min-height:calc(100vh - var(--header-h));display:flex;align-items:center;
+ justify-content:center;padding:40px 20px 60px}
+.auth-card{width:100%;max-width:440px;background:var(--white);
+ border-radius:var(--radius-lg);border:1px solid var(--neutral-200);
+ box-shadow:var(--shadow-md);overflow:hidden}
+.auth-card-head{padding:32px 32px 24px;border-bottom:1px solid var(--neutral-100);
+ text-align:center}
+.auth-logo-mark{width:44px;height:44px;background:var(--primary);border-radius:var(--radius-md);
+ display:flex;align-items:center;justify-content:center;color:var(--white);
+ font-weight:700;font-size:16px;margin:0 auto 14px}
+.auth-title{font-size:20px;font-weight:700;color:var(--neutral-800);margin-bottom:6px}
+.auth-desc{font-size:13px;color:var(--neutral-500);line-height:1.6}
+.auth-body{padding:28px 32px}
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:13px;font-weight:600;color:var(--neutral-700);margin-bottom:7px}
+.form-label .req{color:var(--accent);margin-left:2px}
+.form-control{width:100%;padding:11px 14px;font-size:14px;color:var(--neutral-800);
+ background:var(--white);border:1.5px solid var(--neutral-200);border-radius:var(--radius-md);
+ transition:.18s var(--ease);outline:none;font-family:inherit}
+.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,58,107,.08)}
+.form-control::placeholder{color:var(--neutral-400)}
+.form-control.is-error{border-color:var(--accent)}
+.form-hint{font-size:12px;color:var(--neutral-500);margin-top:5px}
+.form-error{font-size:12px;color:var(--accent);margin-top:5px;display:none}
+.form-error.is-show{display:block}
+.form-options{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.checkbox-label{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--neutral-600);cursor:pointer}
+.checkbox-label input[type="checkbox"]{width:16px;height:16px;accent-color:var(--primary)}
+.forgot-link{font-size:13px;color:var(--primary);font-weight:500}
+.forgot-link:hover{text-decoration:underline}
+.btn-full{width:100%;justify-content:center;padding:13px 20px;font-size:15px;border-radius:var(--radius-md)}
+.btn-submit{background:var(--primary);color:var(--white);border:none;
+ width:100%;padding:13px 20px;font-size:15px;font-weight:600;border-radius:var(--radius-md);
+ cursor:pointer;transition:.2s var(--ease);font-family:inherit}
+.btn-submit:hover{background:var(--primary-dark)}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--neutral-400);font-size:12px}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--neutral-200)}
+.auth-foot{padding:18px 32px 24px;border-top:1px solid var(--neutral-100);text-align:center}
+.auth-foot p{font-size:13px;color:var(--neutral-500)}
+.auth-foot a{color:var(--primary);font-weight:600}
+.auth-foot a:hover{text-decoration:underline}
+.alert-box{padding:11px 14px;border-radius:var(--radius-md);font-size:13px;
+ margin-bottom:18px;display:none;line-height:1.55}
+.alert-box.is-show{display:block}
+.alert-error{background:var(--accent-light);border:1px solid rgba(200,35,44,.15);color:var(--accent)}
+.alert-info{background:var(--primary-light);border:1px solid rgba(26,58,107,.12);color:var(--primary)}
+.auth-links{display:flex;align-items:center;gap:10px;font-size:13px}
+.auth-links a{color:var(--primary);font-weight:500}
+.auth-links a:hover{text-decoration:underline}
+.auth-links .sep{color:var(--neutral-300);font-size:11px}
+.btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+ padding:12px 16px;font-size:14px;font-weight:600;color:var(--neutral-700);
+ border:1.5px solid var(--neutral-200);border-radius:var(--radius-md);background:var(--white);transition:.2s var(--ease);margin-bottom:18px}
+.btn-google:hover{border-color:var(--neutral-400);background:var(--neutral-50)}
+.btn-google svg{width:20px;height:20px;flex-shrink:0}
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;display:flex;align-items:center;
+ justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:.2s var(--ease)}
+.modal-overlay.is-show,.modal-overlay.open{opacity:1;visibility:visible}
+.modal-box{background:var(--white);border-radius:var(--radius-lg);max-width:440px;width:100%;
+ box-shadow:var(--shadow-md);overflow:hidden;max-height:90vh;display:flex;flex-direction:column}
+.modal-head{padding:20px 24px 12px;border-bottom:1px solid var(--neutral-100);flex-shrink:0}
+.modal-head h2{font-size:17px;font-weight:700;color:var(--neutral-800)}
+.modal-body{padding:18px 24px;overflow-y:auto;flex:1}
+.modal-body>p{font-size:13px;color:var(--neutral-500);line-height:1.65;margin-bottom:16px}
+.modal-foot{padding:14px 24px 20px;display:flex;gap:10px;border-top:1px solid var(--neutral-100);flex-shrink:0}
+.modal-foot .btn{flex:1;justify-content:center;padding:11px;font-size:14px;border-radius:var(--radius-md)}
+.modal-result{display:none;padding:14px;background:var(--primary-light);border:1px solid rgba(26,58,107,.12);
+ border-radius:var(--radius-md);margin-top:4px}
+.modal-result.is-show{display:block}
+.modal-result-email{font-size:15px;font-weight:700;color:var(--primary);margin-bottom:6px}
+.modal-result-note{font-size:12.5px;color:var(--neutral-600);line-height:1.6}
+.modal-form.is-hide{display:none}
+/* ── Footer ── */
+.footer{background:var(--neutral-800);color:rgba(255,255,255,.65);padding:36px 0 20px}
+.container{width:100%;max-width:1100px;margin:0 auto;padding:0 20px}
+.footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:24px}
+.footer-brand strong{display:block;font-size:14px;font-weight:700;color:var(--white);margin-bottom:6px}
+.footer-brand p{font-size:12px;line-height:1.75}
+.footer-ext{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.footer-ext a{font-size:12px;color:rgba(255,255,255,.45);transition:.15s var(--ease)}
+.footer-ext a:hover{color:var(--white)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:16px;
+ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.footer-copy{font-size:11px;color:rgba(255,255,255,.3)}
+.footer-policy{display:flex;gap:14px}
+.footer-policy a{font-size:11px;color:rgba(255,255,255,.35);transition:.15s var(--ease)}
+.footer-policy a:hover{color:rgba(255,255,255,.7)}
+/* ── Responsive ── */
+@media(max-width:768px){
+ .gnb-nav,.gnb-actions .btn-ghost,.gnb-actions .btn-solid,.lang-toggle{display:none}
+ .gnb-hamburger{display:flex}
+ .auth-card-head{padding:24px 20px 18px}
+ .auth-body{padding:22px 20px}
+ .auth-foot{padding:14px 20px 20px}
+ .footer-grid{grid-template-columns:1fr}
+ .footer-ext{align-items:flex-start}
+}
+</style>
+<link rel="stylesheet" href="css/layout-mobile.css">
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="ko"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1">&lt;meta name="description" content="TOPIK Myanmar 로그인 페이지"&gt;</p>
-<p class="p1">&lt;title&gt;로그인 | TOPIK Myanmar&lt;/title&gt;</p>
-<p class="p1">&lt;link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"&gt;</p>
-<p class="p1">&lt;style&gt;</p>
-<p class="p1">:root {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--primary:#1a3a6b; --primary-dark:#122a52; --primary-light:#e8eef7;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--accent:#c8232c; --accent-light:#fdf0f0;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--neutral-50:#f8f9fb; --neutral-100:#f1f3f7; --neutral-200:#e2e6ef;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--neutral-300:#c8cdd8; --neutral-400:#9099aa; --neutral-500:#636b7a;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--neutral-600:#464d5c; --neutral-700:#2d3340; --neutral-800:#1a1e28;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--white:#ffffff;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--radius-sm:6px; --radius-md:10px; --radius-lg:16px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--shadow-sm:0 1px 4px rgba(0,0,0,.07); --shadow-md:0 4px 16px rgba(0,0,0,.10);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--font-base:'Noto Sans KR',sans-serif; --ease:cubic-bezier(.4,0,.2,1);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>--header-h:64px;</p>
-<p class="p1">}</p>
-<p class="p1">*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}</p>
-<p class="p1">html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}</p>
-<p class="p1">body{font-family:var(--font-base);font-size:15px;color:var(--neutral-700);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>background:var(--neutral-50);line-height:1.6;-webkit-font-smoothing:antialiased;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>padding-top:var(--header-h)}</p>
-<p class="p1">a{color:inherit;text-decoration:none}</p>
-<p class="p1">ul,ol{list-style:none}</p>
-<p class="p1">button{cursor:pointer;border:none;background:none;font-family:inherit}</p>
-<p class="p1">input{font-family:inherit}</p>
-<p class="p2"><br></p>
-<p class="p1">/* ── GNB ── */</p>
-<p class="p1">.gnb{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--white);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border-bottom:1px solid var(--neutral-200);height:var(--header-h);display:flex;align-items:center}</p>
-<p class="p1">.gnb-inner{display:flex;align-items:center;justify-content:space-between;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>width:100%;max-width:1100px;margin:0 auto;padding:0 20px;gap:12px}</p>
-<p class="p1">.gnb-logo{display:flex;align-items:center;gap:10px;flex-shrink:0}</p>
-<p class="p1">.gnb-logo-mark{width:32px;height:32px;background:var(--primary);border-radius:var(--radius-sm);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>display:flex;align-items:center;justify-content:center;color:var(--white);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-weight:700;font-size:13px}</p>
-<p class="p1">.gnb-logo-text strong{display:block;font-size:14px;font-weight:700;color:var(--primary)}</p>
-<p class="p1">.gnb-logo-text span{font-size:10px;color:var(--neutral-500)}</p>
-<p class="p1">.gnb-nav{display:flex;align-items:center;gap:2px}</p>
-<p class="p1">.gnb-menu{position:relative}</p>
-<p class="p1">.gnb-menu-btn{display:flex;align-items:center;gap:4px;padding:8px 13px;font-size:14px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-weight:500;color:var(--neutral-600);border-radius:var(--radius-sm);transition:.2s var(--ease)}</p>
-<p class="p1">.gnb-menu-btn:hover{color:var(--primary);background:var(--primary-light)}</p>
-<p class="p1">.gnb-menu-btn svg{width:14px;height:14px;transition:transform .2s var(--ease)}</p>
-<p class="p1">.gnb-menu:hover .gnb-menu-btn svg{transform:rotate(180deg)}</p>
-<p class="p1">.gnb-dropdown{position:absolute;top:calc(100% + 8px);left:0;min-width:172px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>background:var(--white);border:1px solid var(--neutral-200);border-radius:var(--radius-md);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>box-shadow:var(--shadow-md);opacity:0;visibility:hidden;transform:translateY(-6px);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>transition:.18s var(--ease);z-index:200;overflow:hidden}</p>
-<p class="p1">.gnb-menu:hover .gnb-dropdown{opacity:1;visibility:visible;transform:translateY(0)}</p>
-<p class="p1">.gnb-dropdown a{display:block;padding:10px 16px;font-size:13.5px;color:var(--neutral-600);transition:.15s var(--ease)}</p>
-<p class="p1">.gnb-dropdown a:hover{color:var(--primary);background:var(--primary-light)}</p>
-<p class="p1">.gnb-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}</p>
-<p class="p1">.lang-toggle{display:flex;border:1px solid var(--neutral-200);border-radius:20px;overflow:hidden;font-size:12px;font-weight:500}</p>
-<p class="p1">.lang-toggle button{padding:4px 9px;color:var(--neutral-500);transition:.15s var(--ease)}</p>
-<p class="p1">.lang-toggle button.is-active{background:var(--primary);color:var(--white)}</p>
-<p class="p1">.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>padding:8px 16px;font-size:13px;font-weight:600;border-radius:var(--radius-sm);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>transition:.2s var(--ease);cursor:pointer;white-space:nowrap;border:none}</p>
-<p class="p1">.btn-ghost{color:var(--neutral-600);border:1px solid var(--neutral-200);background:transparent}</p>
-<p class="p1">.btn-ghost:hover{border-color:var(--primary);color:var(--primary)}</p>
-<p class="p1">.btn-solid{background:var(--primary);color:var(--white);border:1px solid var(--primary)}</p>
-<p class="p1">.btn-solid:hover{background:var(--primary-dark)}</p>
-<p class="p1">.btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary)}</p>
-<p class="p1">.btn-outline:hover{background:var(--primary-light)}</p>
-<p class="p1">.gnb-hamburger{display:none;flex-direction:column;gap:5px;padding:8px}</p>
-<p class="p1">.gnb-hamburger span{display:block;width:22px;height:2px;background:var(--neutral-700);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border-radius:2px;transition:.2s var(--ease)}</p>
-<p class="p2"><br></p>
-<p class="p1">/* ── Drawer ── */</p>
-<p class="p1">.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.46);z-index:1999;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>opacity:0;visibility:hidden;transition:.25s var(--ease)}</p>
-<p class="p1">.drawer-overlay.is-show{opacity:1;visibility:visible}</p>
-<p class="p1">.mobile-drawer{position:fixed;top:0;right:0;bottom:0;width:82%;max-width:320px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>background:var(--white);z-index:2000;transform:translateX(100%);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>transition:.28s var(--ease);box-shadow:var(--shadow-md);display:flex;flex-direction:column}</p>
-<p class="p1">.mobile-drawer.is-open{transform:translateX(0)}</p>
-<p class="p1">.drawer-head{display:flex;align-items:center;justify-content:space-between;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>padding:16px 20px;border-bottom:1px solid var(--neutral-100);flex-shrink:0}</p>
-<p class="p1">.drawer-close-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--neutral-200);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>display:flex;align-items:center;justify-content:center;color:var(--neutral-500);font-size:17px}</p>
-<p class="p1">.drawer-body{flex:1;overflow-y:auto}</p>
-<p class="p1">.drawer-group{border-bottom:1px solid var(--neutral-100)}</p>
-<p class="p1">.drawer-group-title{padding:14px 20px 6px;font-size:10.5px;font-weight:700;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>color:var(--neutral-400);letter-spacing:.1em;text-transform:uppercase}</p>
-<p class="p1">.drawer-link{display:block;padding:10px 20px;font-size:14px;font-weight:500;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>color:var(--neutral-600);transition:.15s var(--ease)}</p>
-<p class="p1">.drawer-link:hover{color:var(--primary);background:var(--primary-light)}</p>
-<p class="p1">.drawer-lang{display:flex;gap:6px;padding:14px 20px;border-top:1px solid var(--neutral-100)}</p>
-<p class="p1">.drawer-lang button{flex:1;padding:8px;font-size:12px;font-weight:500;border-radius:var(--radius-sm);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border:1px solid var(--neutral-200);color:var(--neutral-500);transition:.15s var(--ease)}</p>
-<p class="p1">.drawer-lang button.is-active{background:var(--primary);color:var(--white);border-color:var(--primary)}</p>
-<p class="p1">.drawer-foot{padding:14px 20px 20px;display:flex;flex-direction:column;gap:8px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border-top:1px solid var(--neutral-100);flex-shrink:0}</p>
-<p class="p1">.drawer-foot .btn{justify-content:center}</p>
-<p class="p2"><br></p>
-<p class="p1">/* ── Auth Layout ── */</p>
-<p class="p1">.auth-wrap{min-height:calc(100vh - var(--header-h));display:flex;align-items:center;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>justify-content:center;padding:40px 20px 60px}</p>
-<p class="p1">.auth-card{width:100%;max-width:440px;background:var(--white);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>border-radius:var(--radius-lg);border:1px solid var(--neutral-200);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>box-shadow:var(--shadow-md);overflow:hidden}</p>
-<p class="p1">.auth-card-head{padding:32px 32px 24px;border-bottom:1px solid var(--neutral-100);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>text-align:center}</p>
-<p class="p1">.auth-logo-mark{width:44px;height:44px;background:var(--primary);border-radius:var(--radius-md);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>display:flex;align-items:center;justify-content:center;color:var(--white);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>font-weight:700;font-size:16px;margin:0 auto 14px}</p>
-<p class="p1">.auth-title{font-size:20px;font-weight:700;color:var(--neutral-800);margin-bottom:6px}</p>
-<p class="p1">.auth-desc{font-size:13px;color:var(--neutral-500);line-height:1.6}</p>
-<p class="p1">.auth-body{padding:28px 32px}</p>
-<p class="p1">.form-group{margin-bottom:18px}</p>
-<p class="p1">.form-label{display:block;font-size:13px;font-weight:600;color:var(--neutral-700);margin-bottom:7px}</p>
-<p class="p1">.form-label .req{color:var(--accent);margin-left:2px}</p>
-<p class="p1">.form-control{width:100%;padding:11px 14px;font-size:14px;color:var(--neutral-800);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>background:var(--white);border:1.5px solid var(--neutral-200);border-radius:var(--radius-md);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>transition:.18s var(--ease);outline:none;font-family:inherit}</p>
-<p class="p1">.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,58,107,.08)}</p>
-<p class="p1">.form-control::placeholder{color:var(--neutral-400)}</p>
-<p class="p1">.form-control.is-error{border-color:var(--accent)}</p>
-<p class="p1">.form-hint{font-size:12px;color:var(--neutral-500);margin-top:5px}</p>
-<p class="p1">.form-error{font-size:12px;color:var(--accent);margin-top:5px;display:none}</p>
-<p class="p1">.form-error.is-show{display:block}</p>
-<p class="p2"><br></p>
-<p class="p1">.form-options{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}</p>
-<p class="p1">.checkbox-label{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--neutral-600);cursor:pointer}</p>
-<p class="p1">.checkbox-label input[type="checkbox"]{width:16px;height:16px;accent-color:var(--primary)}</p>
-<p class="p1">.forgot-link{font-size:13px;color:var(--primary);font-weight:500}</p>
-<p class="p1">.forgot-link:hover{text-decoration:underline}</p>
-<p class="p2"><br></p>
-<p class="p1">.btn-full{width:100%;justify-content:center;padding:13px 20px;font-size:15px;border-radius:var(--radius-md)}</p>
-<p class="p1">.btn-submit{background:var(--primary);color:var(--white);border:none;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>width:100%;padding:13px 20px;font-size:15px;font-weight:600;border-radius:var(--radius-md);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>cursor:pointer;transition:.2s var(--ease);font-family:inherit}</p>
-<p class="p1">.btn-submit:hover{background:var(--primary-dark)}</p>
-<p class="p2"><br></p>
-<p class="p1">.auth-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--neutral-400);font-size:12px}</p>
-<p class="p1">.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--neutral-200)}</p>
-<p class="p2"><br></p>
-<p class="p1">.auth-foot{padding:18px 32px 24px;border-top:1px solid var(--neutral-100);text-align:center}</p>
-<p class="p1">.auth-foot p{font-size:13px;color:var(--neutral-500)}</p>
-<p class="p1">.auth-foot a{color:var(--primary);font-weight:600}</p>
-<p class="p1">.auth-foot a:hover{text-decoration:underline}</p>
-<p class="p2"><br></p>
-<p class="p1">.alert-box{padding:11px 14px;border-radius:var(--radius-md);font-size:13px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>margin-bottom:18px;display:none;line-height:1.55}</p>
-<p class="p1">.alert-box.is-show{display:block}</p>
-<p class="p1">.alert-error{background:var(--accent-light);border:1px solid rgba(200,35,44,.15);color:var(--accent)}</p>
-<p class="p1">.alert-info{background:var(--primary-light);border:1px solid rgba(26,58,107,.12);color:var(--primary)}</p>
-<p class="p2"><br></p>
-<p class="p1">/* ── Footer ── */</p>
-<p class="p1">.footer{background:var(--neutral-800);color:rgba(255,255,255,.65);padding:36px 0 20px}</p>
-<p class="p1">.container{width:100%;max-width:1100px;margin:0 auto;padding:0 20px}</p>
-<p class="p1">.footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:24px}</p>
-<p class="p1">.footer-brand strong{display:block;font-size:14px;font-weight:700;color:var(--white);margin-bottom:6px}</p>
-<p class="p1">.footer-brand p{font-size:12px;line-height:1.75}</p>
-<p class="p1">.footer-ext{display:flex;flex-direction:column;gap:6px;align-items:flex-end}</p>
-<p class="p1">.footer-ext a{font-size:12px;color:rgba(255,255,255,.45);transition:.15s var(--ease)}</p>
-<p class="p1">.footer-ext a:hover{color:var(--white)}</p>
-<p class="p1">.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:16px;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}</p>
-<p class="p1">.footer-copy{font-size:11px;color:rgba(255,255,255,.3)}</p>
-<p class="p1">.footer-policy{display:flex;gap:14px}</p>
-<p class="p1">.footer-policy a{font-size:11px;color:rgba(255,255,255,.35);transition:.15s var(--ease)}</p>
-<p class="p1">.footer-policy a:hover{color:rgba(255,255,255,.7)}</p>
-<p class="p2"><br></p>
-<p class="p1">/* ── Responsive ── */</p>
-<p class="p1">@media(max-width:768px){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.gnb-nav,.gnb-actions .btn-ghost,.gnb-actions .btn-solid,.lang-toggle{display:none}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.gnb-hamburger{display:flex}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.auth-card-head{padding:24px 20px 18px}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.auth-body{padding:22px 20px}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.auth-foot{padding:14px 20px 20px}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.footer-grid{grid-template-columns:1fr}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.footer-ext{align-items:flex-start}</p>
-<p class="p1">}</p>
-<p class="p1">&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- GNB --&gt;</p>
-<p class="p1">&lt;header class="gnb"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="gnb-inner"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="index.html" class="gnb-logo"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-logo-mark"&gt;TK&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-logo-text"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;strong&gt;TOPIK Myanmar&lt;/strong&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;span&gt;한국어능력시험&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;nav class="gnb-nav"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="gnb-menu-btn"&gt;TOPIK 안내&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-overview.html"&gt;시험 개요&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-intro.html"&gt;시험 소개&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-questions.html"&gt;문항 구성&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="guide-evaluation.html"&gt;평가 기준&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="gnb-menu-btn"&gt;TOPIK 규정&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="rules-notice.html"&gt;유의 사항&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="rules-answer.html"&gt;답안 작성 요령&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="rules-fee.html"&gt;응시료 규정&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="rules-id.html"&gt;신분증 규정&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="gnb-menu-btn"&gt;TOPIK 접수&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="apply-howto.html"&gt;접수 방법&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="register.html"&gt;시험 접수&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="mypage.html"&gt;접수 확인&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="admit-card.html"&gt;수험표 출력&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="gnb-menu-btn"&gt;게시판&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="notice.html"&gt;공지사항&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="refund-correction.html"&gt;환불·정보정정신청&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="qna.html"&gt;문의게시판&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="faq.html"&gt;FAQ&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/nav&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="gnb-actions"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="lang-toggle"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="is-active"&gt;KO&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button&gt;MY&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button&gt;EN&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="login.html" class="btn btn-ghost"&gt;로그인&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="signup.html" class="btn btn-solid"&gt;회원가입&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="gnb-hamburger" id="js-hamburger" aria-label="메뉴 열기" aria-expanded="false"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/header&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- Drawer --&gt;</p>
-<p class="p1">&lt;div class="drawer-overlay" id="js-overlay"&gt;&lt;/div&gt;</p>
-<p class="p1">&lt;div class="mobile-drawer" id="js-drawer" role="dialog" aria-modal="true"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-head"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="gnb-logo"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-logo-mark"&gt;TK&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-logo-text"&gt;&lt;strong&gt;TOPIK Myanmar&lt;/strong&gt;&lt;span&gt;한국어능력시험&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="drawer-close-btn" id="js-drawer-close" aria-label="닫기"&gt;✕&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-body"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="drawer-group-title"&gt;TOPIK 안내&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="guide-overview.html" class="drawer-link"&gt;시험 개요&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="guide-intro.html" class="drawer-link"&gt;시험 소개&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="guide-questions.html" class="drawer-link"&gt;문항 구성&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="guide-evaluation.html" class="drawer-link"&gt;평가 기준&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="drawer-group-title"&gt;TOPIK 규정&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="rules-notice.html" class="drawer-link"&gt;유의 사항&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="rules-answer.html" class="drawer-link"&gt;답안 작성 요령&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="rules-fee.html" class="drawer-link"&gt;응시료 규정&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="rules-id.html" class="drawer-link"&gt;신분증 규정&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="drawer-group-title"&gt;TOPIK 접수&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="apply-howto.html" class="drawer-link"&gt;접수 방법&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="register.html" class="drawer-link"&gt;시험 접수&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="mypage.html" class="drawer-link"&gt;접수 확인&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="admit-card.html" class="drawer-link"&gt;수험표 출력&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="drawer-group-title"&gt;게시판&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="notice.html" class="drawer-link"&gt;공지사항&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="refund-correction.html" class="drawer-link"&gt;환불·정보정정신청&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="qna.html" class="drawer-link"&gt;문의게시판&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="faq.html" class="drawer-link"&gt;FAQ&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-lang"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="is-active"&gt;한국어&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button&gt;မြန်မာ&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button&gt;English&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-foot"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="login.html" class="btn btn-outline btn-full"&gt;로그인&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="signup.html" class="btn btn-solid btn-full"&gt;회원가입&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- Auth --&gt;</p>
-<p class="p1">&lt;div class="auth-wrap"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="auth-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="auth-card-head"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="auth-logo-mark"&gt;TK&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;h1 class="auth-title"&gt;로그인&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;p class="auth-desc"&gt;TOPIK Myanmar 시험 접수 계정으로 로그인하세요&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="auth-body"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="alert-box alert-error" id="js-login-error"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>이메일 또는 비밀번호가 올바르지 않습니다. 다시 확인해 주세요.</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;form id="js-login-form" novalidate&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-group"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="form-label" for="login-email"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>이메일 주소 &lt;span class="req"&gt;*&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;input type="email" id="login-email" class="form-control"</p>
-<p class="p1"><span class="Apple-converted-space">                 </span>placeholder="example@email.com" autocomplete="email" required&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="form-error" id="err-email"&gt;유효한 이메일 주소를 입력해 주세요.&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-group"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="form-label" for="login-pw"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>비밀번호 &lt;span class="req"&gt;*&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;input type="password" id="login-pw" class="form-control"</p>
-<p class="p1"><span class="Apple-converted-space">                 </span>placeholder="비밀번호 입력" autocomplete="current-password" required&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="form-error" id="err-pw"&gt;비밀번호를 입력해 주세요.&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="form-options"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="checkbox-label"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;input type="checkbox" id="remember-me"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>로그인 상태 유지</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="#" class="forgot-link"&gt;비밀번호 찾기&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button type="submit" class="btn-submit"&gt;로그인&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/form&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="auth-divider"&gt;또는&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;p style="font-size:13px;color:var(--neutral-500);text-align:center;line-height:1.65"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>아직 계정이 없으신가요?&lt;br&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="signup.html" style="color:var(--primary);font-weight:600"&gt;회원가입&lt;/a&gt;하고 시험을 접수하세요.</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="auth-foot"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>로그인 문의:</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="qna.html"&gt;문의게시판 바로가기&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- Footer --&gt;</p>
-<p class="p1">&lt;footer class="footer"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="footer-grid"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="footer-brand"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;strong&gt;주미얀마 대한민국 대사관&lt;/strong&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;p&gt;Embassy of the Republic of Korea in Myanmar&lt;br&gt;한국어능력시험(TOPIK) 공식 접수 사이트&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="footer-ext"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://topik.go.kr" target="_blank" rel="noopener"&gt;TOPIK 본부 (topik.go.kr)&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://niied.go.kr" target="_blank" rel="noopener"&gt;국립국제교육원 (NIIED)&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://www.mofa.go.kr/mm-ko" target="_blank" rel="noopener"&gt;대사관 공식 웹사이트&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="footer-bottom"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="footer-copy"&gt;© 2025–2026 Embassy of the Republic of Korea in Myanmar. All rights reserved.&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="footer-policy"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="#"&gt;개인정보처리방침&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="#"&gt;이용약관&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/footer&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;script&gt;</p>
-<p class="p1">const hamburger=document.getElementById('js-hamburger');</p>
-<p class="p1">const drawer=document.getElementById('js-drawer');</p>
-<p class="p1">const overlay=document.getElementById('js-overlay');</p>
-<p class="p1">const drawerClose=document.getElementById('js-drawer-close');</p>
-<p class="p1">function openDrawer(){drawer.classList.add('is-open');overlay.classList.add('is-show');hamburger.setAttribute('aria-expanded','true');document.body.style.overflow='hidden'}</p>
-<p class="p1">function closeDrawer(){drawer.classList.remove('is-open');overlay.classList.remove('is-show');hamburger.setAttribute('aria-expanded','false');document.body.style.overflow=''}</p>
-<p class="p1">hamburger.addEventListener('click',openDrawer);</p>
-<p class="p1">drawerClose.addEventListener('click',closeDrawer);</p>
-<p class="p1">overlay.addEventListener('click',closeDrawer);</p>
-<p class="p1">document.addEventListener('keydown',e=&gt;{if(e.key==='Escape')closeDrawer()});</p>
-<p class="p2"><br></p>
-<p class="p1">document.getElementById('js-login-form').addEventListener('submit',function(e){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>e.preventDefault();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const email=document.getElementById('login-email');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const pw=document.getElementById('login-pw');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const errEmail=document.getElementById('err-email');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const errPw=document.getElementById('err-pw');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const alertBox=document.getElementById('js-login-error');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>let valid=true;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(!email.value||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>email.classList.add('is-error');errEmail.classList.add('is-show');valid=false;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}else{email.classList.remove('is-error');errEmail.classList.remove('is-show')}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(!pw.value){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>pw.classList.add('is-error');errPw.classList.add('is-show');valid=false;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}else{pw.classList.remove('is-error');errPw.classList.remove('is-show')}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(valid){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>/* 실제 구현 시 API 호출 */</p>
-<p class="p1"><span class="Apple-converted-space">    </span>alertBox.classList.add('is-show');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">});</p>
-<p class="p1">&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+<!-- GNB -->
+<header class="gnb">
+ <div class="gnb-inner">
+ <a href="index.html" class="gnb-logo">
+ <div class="gnb-logo-mark">TK</div>
+ <div class="gnb-logo-text">
+ <strong>TOPIK Myanmar</strong>
+ <span>한국어능력시험</span>
+ </div>
+ </a>
+ <nav class="gnb-nav">
+ <div class="gnb-menu">
+ <button class="gnb-menu-btn">TOPIK 안내<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></button>
+ <div class="gnb-dropdown">
+ <a href="guide-overview.html">시험 개요</a>
+ <a href="guide-intro.html">시험 소개</a>
+ <a href="guide-questions.html">문항 구성</a>
+ <a href="guide-evaluation.html">평가 기준</a>
+ </div>
+ </div>
+ <div class="gnb-menu">
+ <button class="gnb-menu-btn">TOPIK 규정<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></button>
+ <div class="gnb-dropdown">
+ <a href="rules-notice.html">유의 사항</a>
+ <a href="rules-answer.html">답안 작성 요령</a>
+ <a href="rules-fee.html">응시료 규정</a>
+ <a href="rules-id.html">신분증 규정</a>
+ </div>
+ </div>
+ <div class="gnb-menu">
+ <button class="gnb-menu-btn">TOPIK 접수<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></button>
+ <div class="gnb-dropdown">
+ <a href="apply-howto.html">접수 방법</a>
+ <a href="register.html">시험 접수</a>
+ <a href="mypage.html">접수 확인</a>
+ <a href="admit-card.html">수험표 출력</a>
+ </div>
+ </div>
+ <div class="gnb-menu">
+ <button class="gnb-menu-btn">게시판<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></button>
+ <div class="gnb-dropdown">
+ <a href="notice.html">공지사항</a>
+ <a href="refund-correction.html">환불·정보정정신청</a>
+ <a href="qna.html">문의게시판</a>
+ <a href="faq.html">FAQ</a>
+ </div>
+ </div>
+ </nav>
+ <div class="gnb-actions">
+ <div class="lang-toggle">
+ <button class="is-active">KO</button>
+ <button>MY</button>
+ <button>EN</button>
+ </div>
+ <a href="login.html" class="btn btn-ghost">로그인</a>
+ <a href="signup.html" class="btn btn-solid">회원가입</a>
+ </div>
+ <button class="gnb-hamburger" id="js-hamburger" aria-label="메뉴 열기" aria-expanded="false">
+ <span></span><span></span><span></span>
+ </button>
+ </div>
+</header>
+<!-- Drawer -->
+<div class="drawer-overlay" id="js-overlay"></div>
+<div class="mobile-drawer" id="js-drawer" role="dialog" aria-modal="true">
+ <div class="drawer-head">
+ <div class="gnb-logo">
+ <div class="gnb-logo-mark">TK</div>
+ <div class="gnb-logo-text"><strong>TOPIK Myanmar</strong><span>한국어능력시험</span></div>
+ </div>
+ <button class="drawer-close-btn" id="js-drawer-close" aria-label="닫기">✕</button>
+ </div>
+ <div class="drawer-body">
+ <div class="drawer-group">
+ <div class="drawer-group-title">TOPIK 안내</div>
+ <a href="guide-overview.html" class="drawer-link">시험 개요</a>
+ <a href="guide-intro.html" class="drawer-link">시험 소개</a>
+ <a href="guide-questions.html" class="drawer-link">문항 구성</a>
+ <a href="guide-evaluation.html" class="drawer-link">평가 기준</a>
+ </div>
+ <div class="drawer-group">
+ <div class="drawer-group-title">TOPIK 규정</div>
+ <a href="rules-notice.html" class="drawer-link">유의 사항</a>
+ <a href="rules-answer.html" class="drawer-link">답안 작성 요령</a>
+ <a href="rules-fee.html" class="drawer-link">응시료 규정</a>
+ <a href="rules-id.html" class="drawer-link">신분증 규정</a>
+ </div>
+ <div class="drawer-group">
+ <div class="drawer-group-title">TOPIK 접수</div>
+ <a href="apply-howto.html" class="drawer-link">접수 방법</a>
+ <a href="register.html" class="drawer-link">시험 접수</a>
+ <a href="mypage.html" class="drawer-link">접수 확인</a>
+ <a href="admit-card.html" class="drawer-link">수험표 출력</a>
+ </div>
+ <div class="drawer-group">
+ <div class="drawer-group-title">게시판</div>
+ <a href="notice.html" class="drawer-link">공지사항</a>
+ <a href="refund-correction.html" class="drawer-link">환불·정보정정신청</a>
+ <a href="qna.html" class="drawer-link">문의게시판</a>
+ <a href="faq.html" class="drawer-link">FAQ</a>
+ </div>
+ </div>
+ <div class="drawer-lang">
+ <button class="is-active">한국어</button>
+ <button>မြန်မာ</button>
+ <button>English</button>
+ </div>
+ <div class="drawer-foot">
+ <a href="login.html" class="btn btn-outline btn-full">로그인</a>
+ <a href="signup.html" class="btn btn-solid btn-full">회원가입</a>
+ </div>
+</div>
+<!-- Auth -->
+<div class="auth-wrap">
+ <div class="auth-card">
+ <div class="auth-card-head">
+ <div class="auth-logo-mark">TK</div>
+ <h1 class="auth-title">로그인</h1>
+ <p class="auth-desc">TOPIK Myanmar 시험 접수 계정으로 로그인하세요</p>
+ </div>
+ <div class="auth-body">
+ <div class="alert-box alert-error" id="js-login-error">
+ 이메일 또는 비밀번호가 올바르지 않습니다. 다시 확인해 주세요.
+ </div>
+ <form id="js-login-form" novalidate>
+ <div class="form-group">
+ <label class="form-label" for="login-email">
+ 이메일 주소 <span class="req">*</span>
+ </label>
+ <input type="email" id="login-email" class="form-control"
+ placeholder="example@email.com" autocomplete="email" required>
+ <div class="form-error" id="err-email">유효한 이메일 주소를 입력해 주세요.</div>
+ </div>
+ <div class="form-group">
+ <label class="form-label" for="login-pw">
+ 비밀번호 <span class="req">*</span>
+ </label>
+ <input type="password" id="login-pw" class="form-control"
+ placeholder="비밀번호 입력" autocomplete="current-password" required>
+ <div class="form-error" id="err-pw">비밀번호를 입력해 주세요.</div>
+ </div>
+ <div class="form-options">
+ <label class="checkbox-label">
+ <input type="checkbox" id="remember-me">
+ 로그인 상태 유지
+ </label>
+ <div class="auth-links">
+ <a href="#" id="link-find-id">아이디 찾기</a>
+ <span class="sep">|</span>
+ <a href="#" id="link-find-pw">비밀번호 찾기</a>
+ </div>
+ </div>
+ <button type="submit" class="btn-submit">로그인</button>
+ </form>
+ <div class="auth-divider">또는</div>
+ <button type="button" class="btn-google" id="btn-google-login">
+ <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.99 10.99 0 0 0 1 12c0 1.77.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+ G 구글 계정으로 로그인
+ </button>
+ <p style="font-size:13px;color:var(--neutral-500);text-align:center;line-height:1.65">
+ 아직 계정이 없으신가요?<br>
+ <a href="signup.html" style="color:var(--primary);font-weight:600">회원가입</a>하고 시험을 접수하세요.
+ </p>
+ </div>
+ <div class="auth-foot">
+ <p>
+ 로그인 문의:
+ <a href="qna.html">문의게시판 바로가기</a>
+ </p>
+ </div>
+ </div>
+</div>
+<!-- 아이디 찾기 모달 -->
+<div class="modal-overlay" id="modalFindId" role="dialog" aria-modal="true" aria-labelledby="modalFindId-title">
+ <div class="modal-box">
+ <div class="modal-head"><h2 id="modalFindId-title">아이디(이메일) 찾기</h2></div>
+ <div class="modal-body">
+ <p>가입 시 입력한 정보와 일치하면 로그인 아이디(이메일)를 안내해 드립니다.</p>
+ <div class="modal-form" id="find-id-form">
+ <div class="form-group">
+ <label class="form-label" for="fi-name">한글 성명 <span class="req">*</span></label>
+ <input type="text" id="fi-name" class="form-control" placeholder="홍길동">
+ </div>
+ <div class="form-group">
+ <label class="form-label" for="fi-birth">생년월일 (YYYYMMDD) <span class="req">*</span></label>
+ <input type="text" id="fi-birth" class="form-control" placeholder="19960101" maxlength="8" inputmode="numeric">
+ </div>
+ <div class="form-group" style="margin-bottom:0">
+ <label class="form-label" for="fi-tel">연락처 <span class="req">*</span></label>
+ <input type="tel" id="fi-tel" class="form-control" placeholder="+95 9 xxx xxxx">
+ </div>
+ </div>
+ <div class="modal-result" id="find-id-result">
+ <div class="modal-result-email" id="find-id-email">hong****@naver.com</div>
+ <p class="modal-result-note">위 이메일이 로그인 아이디입니다. 로그인 화면에 자동 반영됩니다.</p>
+ </div>
+ </div>
+ <div class="modal-foot">
+ <button type="button" class="btn btn-ghost" data-modal-close="modalFindId">닫기</button>
+ <button type="button" class="btn btn-solid" id="btn-find-id">아이디 확인</button>
+ </div>
+ </div>
+</div>
+<!-- 비밀번호 찾기 모달 -->
+<div class="modal-overlay" id="modalFindPw" role="dialog" aria-modal="true" aria-labelledby="modalFindPw-title">
+ <div class="modal-box">
+ <div class="modal-head"><h2 id="modalFindPw-title">비밀번호 찾기</h2></div>
+ <div class="modal-body">
+ <p>가입하신 이메일로 비밀번호 재설정 링크를 발송합니다. 링크 유효시간은 <strong>30분</strong>입니다.</p>
+ <div class="modal-form" id="find-pw-form">
+ <div class="form-group" style="margin-bottom:0">
+ <label class="form-label" for="fp-email">이메일 <span class="req">*</span></label>
+ <input type="email" id="fp-email" class="form-control" placeholder="example@email.com">
+ </div>
+ </div>
+ <div class="modal-result" id="find-pw-result">
+ <p class="modal-result-note" style="margin:0"><strong style="color:var(--primary)">재설정 링크를 발송했습니다.</strong><br>
+ <span id="find-pw-sent-email">example@email.com</span> 으로 발송된 메일의 링크를 통해 새 비밀번호를 설정해 주세요. 메일이 보이지 않으면 스팸함도 확인해 주세요. (유효시간 30분)</p>
+ </div>
+ </div>
+ <div class="modal-foot">
+ <button type="button" class="btn btn-ghost" data-modal-close="modalFindPw">닫기</button>
+ <button type="button" class="btn btn-solid" id="btn-find-pw">재설정 링크 발송</button>
+ </div>
+ </div>
+</div>
+<!-- Footer -->
+<footer class="footer">
+ <div class="container">
+ <div class="footer-grid">
+ <div class="footer-brand">
+ <strong>주미얀마 대한민국 대사관</strong>
+ <p>Embassy of the Republic of Korea in Myanmar<br>한국어능력시험(TOPIK) 공식 접수 사이트</p>
+ </div>
+ <div class="footer-ext">
+ <a href="https://topik.go.kr" target="_blank" rel="noopener">TOPIK 본부 (topik.go.kr)</a>
+ <a href="https://niied.go.kr" target="_blank" rel="noopener">국립국제교육원 (NIIED)</a>
+ <a href="https://www.mofa.go.kr/mm-ko" target="_blank" rel="noopener">대사관 공식 웹사이트</a>
+ </div>
+ </div>
+ <div class="footer-bottom">
+ <span class="footer-copy">© 2025–2026 Embassy of the Republic of Korea in Myanmar. All rights reserved.</span>
+ <div class="footer-policy">
+ <a href="#">개인정보처리방침</a>
+ <a href="#">이용약관</a>
+ </div>
+ </div>
+ </div>
+</footer>
+<script src="js/tm-auth.js"></script>
+<script>
+const hamburger=document.getElementById('js-hamburger');
+const drawer=document.getElementById('js-drawer');
+const overlay=document.getElementById('js-overlay');
+const drawerClose=document.getElementById('js-drawer-close');
+function openDrawer(){drawer.classList.add('is-open');overlay.classList.add('is-show');hamburger.setAttribute('aria-expanded','true');document.body.style.overflow='hidden'}
+function closeDrawer(){drawer.classList.remove('is-open');overlay.classList.remove('is-show');hamburger.setAttribute('aria-expanded','false');document.body.style.overflow=''}
+hamburger.addEventListener('click',openDrawer);
+drawerClose.addEventListener('click',closeDrawer);
+overlay.addEventListener('click',closeDrawer);
+function closeAllModals(){
+ ['modalFindId','modalFindPw'].forEach(function(id){TPKM.closeModal(id)});
+}
+document.addEventListener('keydown',function(e){
+ if(e.key==='Escape'){closeDrawer();closeAllModals()}
+});
+document.querySelectorAll('[data-modal-close]').forEach(function(btn){
+ btn.addEventListener('click',function(){TPKM.closeModal(btn.getAttribute('data-modal-close'))});
+});
+['modalFindId','modalFindPw'].forEach(function(id){
+ var el=document.getElementById(id);
+ if(el)el.addEventListener('click',function(e){if(e.target===el)TPKM.closeModal(id)});
+});
+document.getElementById('link-find-id').addEventListener('click',function(e){
+ e.preventDefault();resetFindId();TPKM.openModal('modalFindId');
+});
+document.getElementById('link-find-pw').addEventListener('click',function(e){
+ e.preventDefault();resetFindPw();TPKM.openModal('modalFindPw');
+});
+function resetFindId(){
+ document.getElementById('find-id-form').classList.remove('is-hide');
+ document.getElementById('find-id-result').classList.remove('is-show');
+ document.getElementById('btn-find-id').textContent='아이디 확인';
+}
+function resetFindPw(){
+ document.getElementById('find-pw-form').classList.remove('is-hide');
+ document.getElementById('find-pw-result').classList.remove('is-show');
+ document.getElementById('btn-find-pw').textContent='재설정 링크 발송';
+}
+document.getElementById('btn-find-id').addEventListener('click',function(){
+ if(document.getElementById('find-id-result').classList.contains('is-show')){
+  TPKM.closeModal('modalFindId');resetFindId();return;
+ }
+ var n=document.getElementById('fi-name').value.trim();
+ var b=document.getElementById('fi-birth').value.trim();
+ var t=document.getElementById('fi-tel').value.trim();
+ if(!n||!b||!t){alert('이름, 생년월일, 연락처를 모두 입력해 주세요.');return}
+ document.getElementById('find-id-email').textContent='hong****@naver.com';
+ document.getElementById('find-id-form').classList.add('is-hide');
+ document.getElementById('find-id-result').classList.add('is-show');
+ document.getElementById('login-email').value='hong@naver.com';
+ this.textContent='로그인하러 가기';
+});
+document.getElementById('btn-find-pw').addEventListener('click',function(){
+ var em=document.getElementById('fp-email').value.trim();
+ if(!em||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){alert('유효한 이메일을 입력해 주세요.');return}
+ document.getElementById('find-pw-sent-email').textContent=em;
+ document.getElementById('find-pw-form').classList.add('is-hide');
+ document.getElementById('find-pw-result').classList.add('is-show');
+});
+function redirectAfterLogin(){
+ var next=new URLSearchParams(location.search).get('next');
+ location.href=next||'index.html';
+}
+document.getElementById('js-login-form').addEventListener('submit',function(e){
+ e.preventDefault();
+ var email=document.getElementById('login-email');
+ var pw=document.getElementById('login-pw');
+ var errEmail=document.getElementById('err-email');
+ var errPw=document.getElementById('err-pw');
+ var alertBox=document.getElementById('js-login-error');
+ alertBox.classList.remove('is-show');
+ var valid=true;
+ if(!email.value.trim()){
+ email.classList.add('is-error');errEmail.textContent='이메일을 입력해 주세요.';errEmail.classList.add('is-show');valid=false;
+ }else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())){
+ email.classList.add('is-error');errEmail.textContent='유효한 이메일 주소를 입력해 주세요.';errEmail.classList.add('is-show');valid=false;
+ }else{email.classList.remove('is-error');errEmail.classList.remove('is-show')}
+ if(!pw.value){
+ pw.classList.add('is-error');errPw.classList.add('is-show');valid=false;
+ }else{pw.classList.remove('is-error');errPw.classList.remove('is-show')}
+ if(!valid)return;
+ var addr=email.value.trim();
+ TPKMAuth.login({name:addr.split('@')[0],email:addr});
+ redirectAfterLogin();
+});
+document.getElementById('btn-google-login').addEventListener('click',function(){
+ TPKMAuth.login({name:'Google 사용자',email:'demo@gmail.com',provider:'google'});
+ redirectAfterLogin();
+});
+</script>
 </body>
 </html>

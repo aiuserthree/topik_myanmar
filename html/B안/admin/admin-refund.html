@@ -1,0 +1,509 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="ko"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1">&lt;title&gt;환불·정정신청 관리 — TOPIK Myanmar BO&lt;/title&gt;</p>
+<p class="p1">&lt;style&gt;</p>
+<p class="p1">*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}</p>
+<p class="p1">:root{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--primary:#1a4fa0;--primary-dark:#133d80;--primary-light:#e8f0fb;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--danger:#d9363e;--danger-light:#fdf0f0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--success:#1e7e4a;--success-light:#eaf6ef;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--warning:#b45309;--warning-light:#fef9ec;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--info:#0e6fa8;--info-light:#e6f4fb;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-300:#cbd5e1;--gray-400:#94a3b8;--gray-500:#64748b;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--gray-600:#475569;--gray-700:#334155;--gray-800:#1e293b;--gray-900:#0f172a;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--white:#fff;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--radius-sm:4px;--radius:8px;--radius-lg:12px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--shadow-sm:0 1px 3px rgba(0,0,0,.07);--shadow-lg:0 8px 28px rgba(0,0,0,.15);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--font:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--sidebar-w:240px;--topbar-h:56px;--tr:.18s ease;</p>
+<p class="p1">}</p>
+<p class="p1">html{font-size:15px}</p>
+<p class="p1">body{font-family:var(--font);color:var(--gray-800);background:var(--gray-50);line-height:1.6;overflow-x:hidden}</p>
+<p class="p1">a{color:inherit;text-decoration:none}</p>
+<p class="p1">button{font-family:inherit;cursor:pointer;border:none;background:none}</p>
+<p class="p1">input,select,textarea{font-family:inherit;font-size:inherit}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── SIDEBAR ── */</p>
+<p class="p1">.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--gray-900);color:var(--gray-400);display:flex;flex-direction:column;z-index:200;overflow-y:auto;transition:transform .22s ease}</p>
+<p class="p1">.sidebar-brand{display:flex;align-items:center;gap:10px;padding:0 18px;height:var(--topbar-h);border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}</p>
+<p class="p1">.sb-icon{width:32px;height:32px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}</p>
+<p class="p1">.sb-icon svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2}</p>
+<p class="p1">.sb-brand-text{font-size:.82rem;font-weight:700;color:#fff;line-height:1.3}</p>
+<p class="p1">.sb-brand-sub{font-size:.7rem;color:var(--gray-400)}</p>
+<p class="p1">.sb-nav{flex:1;padding:12px 0 8px;overflow-y:auto}</p>
+<p class="p1">.sb-section{padding:16px 18px 4px;font-size:.65rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--gray-500)}</p>
+<p class="p1">.sb-link{display:flex;align-items:center;gap:9px;padding:8px 18px;font-size:.875rem;font-weight:500;color:var(--gray-400);border-left:3px solid transparent;transition:var(--tr)}</p>
+<p class="p1">.sb-link:hover{background:rgba(255,255,255,.06);color:#fff}</p>
+<p class="p1">.sb-link.active{background:rgba(26,79,160,.28);border-left-color:var(--primary);color:#fff}</p>
+<p class="p1">.sb-link svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0;opacity:.8}</p>
+<p class="p1">.sb-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:.65rem;font-weight:700;border-radius:10px;padding:1px 6px;line-height:1.7}</p>
+<p class="p1">.sb-footer{padding:12px 18px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}</p>
+<p class="p1">.sb-user{display:flex;align-items:center;gap:10px;margin-bottom:10px}</p>
+<p class="p1">.sb-avatar{width:32px;height:32px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff;flex-shrink:0}</p>
+<p class="p1">.sb-user-name{font-size:.82rem;font-weight:600;color:#fff}</p>
+<p class="p1">.sb-user-role{font-size:.7rem;color:var(--gray-400)}</p>
+<p class="p1">.sb-logout{display:flex;align-items:center;gap:7px;width:100%;padding:7px 10px;border-radius:var(--radius-sm);font-size:.82rem;color:var(--gray-400);transition:var(--tr)}</p>
+<p class="p1">.sb-logout:hover{background:rgba(217,54,62,.15);color:#f87171}</p>
+<p class="p1">.sb-logout svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── TOPBAR ── */</p>
+<p class="p1">.topbar{position:fixed;top:0;left:var(--sidebar-w);right:0;height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;padding:0 20px;gap:12px;z-index:100;transition:left .22s ease}</p>
+<p class="p1">.topbar-hamburger{display:none;padding:6px;border-radius:var(--radius-sm);color:var(--gray-500)}</p>
+<p class="p1">.topbar-hamburger svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;display:block}</p>
+<p class="p1">.topbar-title{font-size:1rem;font-weight:700;color:var(--gray-900)}</p>
+<p class="p1">.tb-user{display:flex;align-items:center;gap:7px;background:var(--gray-100);border-radius:20px;padding:5px 12px 5px 7px;font-size:.8rem;margin-left:auto}</p>
+<p class="p1">.tb-avatar{width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fff;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}</p>
+<p class="p1">.tb-name{font-weight:600;color:var(--gray-700)}</p>
+<p class="p1">.tb-role{font-size:.68rem;background:var(--primary-light);color:var(--primary);border-radius:3px;padding:1px 5px;font-weight:600}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── LAYOUT ── */</p>
+<p class="p1">.main-wrap{margin-left:var(--sidebar-w);padding-top:var(--topbar-h);min-height:100vh}</p>
+<p class="p1">.page-body{padding:20px}</p>
+<p class="p1">.backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:190}</p>
+<p class="p1">.backdrop.show{display:block}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── BUTTONS ── */</p>
+<p class="p1">.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:7px 14px;border-radius:var(--radius-sm);font-size:.83rem;font-weight:600;transition:var(--tr);cursor:pointer;border:none;line-height:1.4;white-space:nowrap}</p>
+<p class="p1">.btn-sm{padding:5px 11px;font-size:.78rem}</p>
+<p class="p1">.btn-xs{padding:3px 8px;font-size:.72rem}</p>
+<p class="p1">.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-dark)}</p>
+<p class="p1">.btn-outline{background:#fff;color:var(--gray-700);border:1px solid var(--gray-300)}.btn-outline:hover{background:var(--gray-50)}</p>
+<p class="p1">.btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{background:#b22a32}</p>
+<p class="p1">.btn-success{background:var(--success);color:#fff}.btn-success:hover{background:#166039}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── CARD ── */</p>
+<p class="p1">.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--gray-200)}</p>
+<p class="p1">.card-header{padding:14px 18px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:8px;flex-wrap:wrap}</p>
+<p class="p1">.card-title{font-size:.95rem;font-weight:700;color:var(--gray-900)}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── FORM ── */</p>
+<p class="p1">.form-control{width:100%;padding:8px 12px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.88rem;color:var(--gray-800);background:#fff;outline:none;transition:var(--tr)}</p>
+<p class="p1">.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,79,160,.1)}</p>
+<p class="p1">.form-select{padding:7px 28px 7px 10px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.85rem;color:var(--gray-800);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center;appearance:none;outline:none;transition:var(--tr);cursor:pointer}</p>
+<p class="p1">.form-select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,79,160,.1)}</p>
+<p class="p1">.form-label{display:block;font-size:.78rem;font-weight:600;color:var(--gray-700);margin-bottom:5px}</p>
+<p class="p1">.form-group{margin-bottom:14px}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── CHIP ── */</p>
+<p class="p1">.chip{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:.7rem;font-weight:700;white-space:nowrap}</p>
+<p class="p1">.chip-green{background:var(--success-light);color:var(--success)}</p>
+<p class="p1">.chip-yellow{background:var(--warning-light);color:var(--warning)}</p>
+<p class="p1">.chip-red{background:var(--danger-light);color:var(--danger)}</p>
+<p class="p1">.chip-blue{background:var(--info-light);color:var(--info)}</p>
+<p class="p1">.chip-gray{background:var(--gray-100);color:var(--gray-500)}</p>
+<p class="p1">.chip-purple{background:#f3f0ff;color:#6d28d9}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── FILTER CHIP ── */</p>
+<p class="p1">.filter-chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}</p>
+<p class="p1">.filter-chip{padding:5px 13px;border-radius:20px;font-size:.78rem;font-weight:600;border:1.5px solid var(--gray-200);color:var(--gray-600);background:#fff;cursor:pointer;transition:var(--tr)}</p>
+<p class="p1">.filter-chip:hover{border-color:var(--primary);color:var(--primary)}</p>
+<p class="p1">.filter-chip.on{background:var(--primary);border-color:var(--primary);color:#fff}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── TABLE ── */</p>
+<p class="p1">.data-table{width:100%;border-collapse:collapse;font-size:.83rem;min-width:900px}</p>
+<p class="p1">.data-table th{padding:9px 12px;text-align:left;font-size:.72rem;font-weight:700;color:var(--gray-500);background:var(--gray-50);border-bottom:1px solid var(--gray-200);white-space:nowrap}</p>
+<p class="p1">.data-table td{padding:9px 12px;border-bottom:1px solid var(--gray-100);color:var(--gray-700);vertical-align:middle}</p>
+<p class="p1">.data-table tr:last-child td{border-bottom:none}</p>
+<p class="p1">.data-table tbody tr:hover td{background:var(--gray-50)}</p>
+<p class="p1">.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── MODAL ── */</p>
+<p class="p1">.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;align-items:center;justify-content:center;padding:16px}</p>
+<p class="p1">.overlay.open{display:flex}</p>
+<p class="p1">.modal{background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;max-width:620px;max-height:92vh;display:flex;flex-direction:column}</p>
+<p class="p1">.modal-sm{max-width:420px}</p>
+<p class="p1">.modal-head{padding:18px 20px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;gap:10px;flex-shrink:0}</p>
+<p class="p1">.modal-title{font-size:1rem;font-weight:700;color:var(--gray-900);flex:1}</p>
+<p class="p1">.modal-close-btn{padding:6px;color:var(--gray-400);border-radius:var(--radius-sm);cursor:pointer;border:none;background:none}</p>
+<p class="p1">.modal-close-btn:hover{background:var(--gray-100)}</p>
+<p class="p1">.modal-close-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;display:block}</p>
+<p class="p1">.modal-body{padding:20px;flex:1;overflow-y:auto}</p>
+<p class="p1">.modal-foot{padding:14px 20px;border-top:1px solid var(--gray-100);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── INFO BOX ── */</p>
+<p class="p1">.info-box{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px}</p>
+<p class="p1">.ib-row{display:flex;gap:10px;padding:5px 0;border-bottom:1px solid var(--gray-100)}</p>
+<p class="p1">.ib-row:last-child{border-bottom:none}</p>
+<p class="p1">.ib-label{font-size:.73rem;font-weight:600;color:var(--gray-400);min-width:84px;flex-shrink:0;padding-top:1px}</p>
+<p class="p1">.ib-val{font-size:.85rem;color:var(--gray-800);font-weight:500}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── ALERT ── */</p>
+<p class="p1">.alert{padding:10px 14px;border-radius:var(--radius-sm);font-size:.8rem;display:flex;gap:8px;align-items:flex-start}</p>
+<p class="p1">.alert svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0;margin-top:1px}</p>
+<p class="p1">.alert-warn{background:var(--warning-light);color:var(--warning);border:1px solid #fcd34d}</p>
+<p class="p1">.alert-info{background:var(--info-light);color:var(--info);border:1px solid #bae6fd}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── DS TITLE ── */</p>
+<p class="p1">.ds-title{font-size:.72rem;font-weight:700;color:var(--gray-400);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--gray-100)}</p>
+<p class="p2"><br></p>
+<p class="p1">@media(max-width:768px){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.sidebar{transform:translateX(-100%)}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.sidebar.open{transform:translateX(0)}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.topbar{left:0}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.main-wrap{margin-left:0}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.topbar-hamburger{display:flex}</p>
+<p class="p1">}</p>
+<p class="p1">&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="backdrop" id="backdrop"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- ═══ SIDEBAR ═══ --&gt;</p>
+<p class="p1">&lt;aside class="sidebar" id="sidebar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="sidebar-brand"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-icon"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="11" width="18" height="11" rx="2"/&gt;&lt;path d="M7 11V7a5 5 0 0 1 10 0v4"/&gt;&lt;/svg&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div&gt;&lt;div class="sb-brand-text"&gt;TOPIK Myanmar&lt;/div&gt;&lt;div class="sb-brand-sub"&gt;관리자 시스템&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;nav class="sb-nav"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;대시보드&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-dashboard.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="3" width="7" height="7" rx="1"/&gt;&lt;rect x="14" y="3" width="7" height="7" rx="1"/&gt;&lt;rect x="3" y="14" width="7" height="7" rx="1"/&gt;&lt;rect x="14" y="14" width="7" height="7" rx="1"/&gt;&lt;/svg&gt;대시보드&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;접수 관리&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-applicants.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/&gt;&lt;circle cx="9" cy="7" r="4"/&gt;&lt;path d="M23 21v-2a4 4 0 0 0-3-3.87"/&gt;&lt;path d="M16 3.13a4 4 0 0 1 0 7.75"/&gt;&lt;/svg&gt;접수자 목록&lt;span class="sb-badge"&gt;12&lt;/span&gt;&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;시험 관리&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-exam-rounds.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="4" width="18" height="18" rx="2"/&gt;&lt;line x1="16" y1="2" x2="16" y2="6"/&gt;&lt;line x1="8" y1="2" x2="8" y2="6"/&gt;&lt;line x1="3" y1="10" x2="21" y2="10"/&gt;&lt;/svg&gt;회차 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-exam-venues.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/&gt;&lt;circle cx="12" cy="10" r="3"/&gt;&lt;/svg&gt;시험장 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;콘텐츠&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-notice.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/&gt;&lt;path d="M13.73 21a2 2 0 0 1-3.46 0"/&gt;&lt;/svg&gt;공지사항 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-faq.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="10"/&gt;&lt;path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/&gt;&lt;line x1="12" y1="17" x2="12.01" y2="17"/&gt;&lt;/svg&gt;FAQ 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link active" href="admin-refund.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/&gt;&lt;polyline points="9 22 9 12 15 12 15 22"/&gt;&lt;/svg&gt;환불·정정신청&lt;span class="sb-badge"&gt;3&lt;/span&gt;&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-inquiry.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/&gt;&lt;/svg&gt;문의게시판&lt;span class="sb-badge"&gt;7&lt;/span&gt;&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;회원·약관&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-members.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/&gt;&lt;circle cx="12" cy="7" r="4"/&gt;&lt;/svg&gt;회원 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-terms.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/&gt;&lt;polyline points="14 2 14 8 20 8"/&gt;&lt;/svg&gt;약관 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-section"&gt;시스템&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-accounts.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/&gt;&lt;circle cx="9" cy="7" r="4"/&gt;&lt;line x1="23" y1="11" x2="17" y2="11"/&gt;&lt;line x1="20" y1="8" x2="20" y2="14"/&gt;&lt;/svg&gt;관리자 계정&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-permissions.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="11" width="18" height="11" rx="2"/&gt;&lt;path d="M7 11V7a5 5 0 0 1 10 0v4"/&gt;&lt;/svg&gt;권한 관리&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a class="sb-link" href="admin-history.html"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;polyline points="12 8 12 12 14 14"/&gt;&lt;path d="M3.05 11a9 9 0 1 0 .5-4H1"/&gt;&lt;polyline points="1 3 1 7 5 7"/&gt;&lt;/svg&gt;처리 이력&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/nav&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="sb-footer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sb-user"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="sb-avatar" id="sb-av"&gt;관&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;&lt;div class="sb-user-name" id="sb-name"&gt;관리자&lt;/div&gt;&lt;div class="sb-user-role" id="sb-role"&gt;최고관리자&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="sb-logout" id="logoutBtn"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/&gt;&lt;polyline points="16 17 21 12 16 7"/&gt;&lt;line x1="21" y1="12" x2="9" y2="12"/&gt;&lt;/svg&gt;로그아웃&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/aside&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- ═══ TOPBAR ═══ --&gt;</p>
+<p class="p1">&lt;header class="topbar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="topbar-hamburger" id="hbBtn"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="3" y1="6" x2="21" y2="6"/&gt;&lt;line x1="3" y1="12" x2="21" y2="12"/&gt;&lt;line x1="3" y1="18" x2="21" y2="18"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="topbar-title"&gt;환불·정정신청 관리&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="tb-user"&gt;&lt;div class="tb-avatar" id="tb-av"&gt;관&lt;/div&gt;&lt;span class="tb-name" id="tb-name"&gt;관리자&lt;/span&gt;&lt;span class="tb-role" id="tb-role"&gt;최고관리자&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1">&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- ═══ MAIN ═══ --&gt;</p>
+<p class="p1">&lt;main class="main-wrap"&gt;</p>
+<p class="p1">&lt;div class="page-body"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="card-header" style="flex-direction:column;align-items:stretch;gap:12px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="card-title"&gt;환불·정정신청 목록&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;span style="flex:1"&gt;&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn btn-outline btn-sm" onclick="alert('엑셀 내보내기')"&gt;엑셀 내보내기&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 상태 필터 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="filter-chip-row" id="rfFilters"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="filter-chip on" data-s="all"&gt;전체 &lt;span class="rfcnt" data-s="all"&gt;6&lt;/span&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="filter-chip" data-s="대기"&gt;대기 &lt;span class="rfcnt" data-s="대기"&gt;3&lt;/span&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="filter-chip" data-s="처리중"&gt;처리중 &lt;span class="rfcnt" data-s="처리중"&gt;1&lt;/span&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="filter-chip" data-s="완료"&gt;완료 &lt;span class="rfcnt" data-s="완료"&gt;2&lt;/span&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="filter-chip" data-s="거절"&gt;거절 &lt;span class="rfcnt" data-s="거절"&gt;0&lt;/span&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 검색 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style="display:flex;gap:8px;flex-wrap:wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;select class="form-select" id="rfType" style="width:120px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value=""&gt;유형 전체&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option&gt;환불&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option&gt;정보정정&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;select class="form-select" id="rfRound" style="width:180px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option value=""&gt;회차 전체&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option&gt;제106회 TOPIK&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option&gt;제105회 TOPIK&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;input class="form-control" id="rfSearch" type="search" placeholder="성명·제목 검색" style="flex:1;min-width:160px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn btn-primary btn-sm" onclick="renderRefunds()"&gt;검색&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn btn-outline btn-sm" onclick="resetRfFilter()"&gt;초기화&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="tbl-wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;table class="data-table"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;번호&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;유형&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;신청자&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;회차&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;신청 제목&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;신청일&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;처리상태&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th&gt;처리일&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;th style="min-width:120px"&gt;관리&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;tbody id="rfTbody"&gt;&lt;/tbody&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/table&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p1">&lt;/main&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- ═══ MODAL: 상세 / 답변 ═══ --&gt;</p>
+<p class="p1">&lt;div class="overlay" id="rfDetailModal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="modal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-head"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="modal-title" id="rf-modal-title"&gt;신청 상세&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="modal-close-btn" onclick="closeModal('rfDetailModal')"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="18" y1="6" x2="6" y2="18"/&gt;&lt;line x1="6" y1="6" x2="18" y2="18"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-body"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="ds-title"&gt;신청 정보&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="info-box"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;유형&lt;/span&gt;&lt;span class="ib-val" id="rf-type"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;신청자&lt;/span&gt;&lt;span class="ib-val" id="rf-name"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;연락처&lt;/span&gt;&lt;span class="ib-val" id="rf-contact"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;회차&lt;/span&gt;&lt;span class="ib-val" id="rf-round"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;급수&lt;/span&gt;&lt;span class="ib-val" id="rf-level"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;응시료&lt;/span&gt;&lt;span class="ib-val" id="rf-fee"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;신청일&lt;/span&gt;&lt;span class="ib-val" id="rf-date"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ib-row"&gt;&lt;span class="ib-label"&gt;처리상태&lt;/span&gt;&lt;span class="ib-val" id="rf-status-val"&gt;—&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="ds-title" style="margin-top:16px"&gt;신청 내용&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-sm);padding:14px;font-size:.88rem;color:var(--gray-800);white-space:pre-line;margin-bottom:16px;min-height:80px" id="rf-content"&gt;—&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 정정 신청인 경우 변경 전/후 표시 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="rf-correction-area" style="display:none"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ds-title"&gt;정정 요청 내용&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style="font-size:.72rem;font-weight:700;color:var(--gray-400);margin-bottom:6px"&gt;변경 전&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="info-box" style="margin-bottom:0"&gt;&lt;div class="ib-row" style="border:none;padding:0"&gt;&lt;span class="ib-val" id="rf-before"&gt;—&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style="font-size:.72rem;font-weight:700;color:var(--success);margin-bottom:6px"&gt;변경 후 (요청)&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="info-box" style="margin-bottom:0;border-color:var(--success)"&gt;&lt;div class="ib-row" style="border:none;padding:0"&gt;&lt;span class="ib-val" id="rf-after"&gt;—&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="ds-title"&gt;관리자 처리&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label"&gt;처리 상태 변경&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;select class="form-select" id="rf-new-status" style="width:100%"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option&gt;대기&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option&gt;처리중&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option&gt;완료&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;option&gt;거절&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="form-label"&gt;처리 메모 / 답변 내용 &lt;span style="color:var(--danger)"&gt;*&lt;/span&gt;&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;textarea class="form-control" id="rf-reply" rows="4" placeholder="신청자에게 전달할 처리 내용 또는 거절 사유를 입력해 주세요."&gt;&lt;/textarea&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="alert alert-warn"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;svg viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="10"/&gt;&lt;line x1="12" y1="8" x2="12" y2="12"/&gt;&lt;line x1="12" y1="16" x2="12.01" y2="16"/&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>환불 완료 처리 시 수납 취소 및 환불이 실제로 이뤄졌는지 반드시 확인 후 처리하세요.</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-foot"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-outline" onclick="closeModal('rfDetailModal')"&gt;닫기&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-primary" onclick="doRfProcess()"&gt;처리 저장&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- MODAL: 로그아웃 --&gt;</p>
+<p class="p1">&lt;div class="overlay" id="logoutModal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="modal modal-sm"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-head"&gt;&lt;div class="modal-title"&gt;로그아웃&lt;/div&gt;&lt;button class="modal-close-btn" onclick="closeModal('logoutModal')"&gt;&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="18" y1="6" x2="6" y2="18"/&gt;&lt;line x1="6" y1="6" x2="18" y2="18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-body"&gt;&lt;p style="font-size:.9rem;color:var(--gray-700)"&gt;로그아웃 하시겠습니까?&lt;/p&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-foot"&gt;&lt;button class="btn btn-outline" onclick="closeModal('logoutModal')"&gt;취소&lt;/button&gt;&lt;button class="btn btn-danger" onclick="doLogout()"&gt;로그아웃&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">/* ── DATA ── */</p>
+<p class="p1">let REFUNDS = [</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:1,type:'환불',name:'아웅 민',contact:'09-1234-5678',round:'제106회 TOPIK',level:'TOPIK Ⅱ',fee:'30,000 MMK',date:'2025.07.09',status:'대기',content:'개인 사정으로 시험 응시가 어려워 환불을 요청드립니다.',correction:null,reply:''},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:2,type:'정보정정',name:'수 수 라',contact:'09-9876-5432',round:'제106회 TOPIK',level:'TOPIK Ⅱ',fee:'30,000 MMK',date:'2025.07.08',status:'대기',content:'영문성명 오기재로 정정을 요청드립니다.',correction:{field:'영문성명',before:'SU SU LA',after:'SU SU LAR'},reply:''},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:3,type:'환불',name:'나웅 린',contact:'09-5555-1234',round:'제106회 TOPIK',level:'동시',fee:'50,000 MMK',date:'2025.07.07',status:'대기',content:'해외 출장으로 시험 응시가 불가능하여 환불 요청드립니다.',correction:null,reply:''},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:4,type:'정보정정',name:'밍 밍 쪼',contact:'09-1111-2222',round:'제106회 TOPIK',level:'TOPIK Ⅰ',fee:'20,000 MMK',date:'2025.07.05',status:'처리중',content:'생년월일 오입력으로 정정 요청드립니다.',correction:{field:'생년월일',before:'1999.02.18',after:'1999.02.28'},reply:'확인 중입니다.'},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:5,type:'환불',name:'에이 떼인',contact:'09-3333-4444',round:'제105회 TOPIK',level:'TOPIK Ⅱ',fee:'30,000 MMK',date:'2025.03.10',status:'완료',content:'병원 입원으로 인한 환불 요청입니다.',correction:null,reply:'환불 처리 완료되었습니다. 3~5 영업일 내 환불됩니다.'},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{id:6,type:'정보정정',name:'쪼 쪼',contact:'09-7777-8888',round:'제105회 TOPIK',level:'TOPIK Ⅰ',fee:'20,000 MMK',date:'2025.03.08',status:'완료',content:'한글성명 오기재 정정 요청드립니다.',correction:{field:'한글성명',before:'쪼쪼',after:'쪼 쪼'},reply:'정정 처리 완료되었습니다.'},</p>
+<p class="p1">];</p>
+<p class="p2"><br></p>
+<p class="p1">let currentRfId = null;</p>
+<p class="p1">let currentStatus = 'all';</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── STATUS CHIP ── */</p>
+<p class="p1">function statusChip(s){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const m={대기:'chip-yellow',처리중:'chip-blue',완료:'chip-green',거절:'chip-red'};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return `&lt;span class="chip ${m[s]||'chip-gray'}"&gt;${s}&lt;/span&gt;`;</p>
+<p class="p1">}</p>
+<p class="p1">function typeChip(t){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return t==='환불'</p>
+<p class="p1"><span class="Apple-converted-space">    </span>? `&lt;span class="chip chip-red"&gt;${t}&lt;/span&gt;`</p>
+<p class="p1"><span class="Apple-converted-space">    </span>: `&lt;span class="chip chip-purple"&gt;${t}&lt;/span&gt;`;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── RENDER ── */</p>
+<p class="p1">function getFiltered(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const type = document.getElementById('rfType').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const round = document.getElementById('rfRound').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const q = document.getElementById('rfSearch').value.trim().toLowerCase();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return REFUNDS.filter(r=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(currentStatus !== 'all' &amp;&amp; r.status !== currentStatus) return false;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(type &amp;&amp; r.type !== type) return false;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(round &amp;&amp; r.round !== round) return false;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(q &amp;&amp; !(r.name.includes(q) || r.content.toLowerCase().includes(q))) return false;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return true;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function renderRefunds(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const list = getFiltered();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rfTbody').innerHTML = list.length</p>
+<p class="p1"><span class="Apple-converted-space">    </span>? list.map(r=&gt;`</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;td style="font-weight:600"&gt;${r.id}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;td&gt;${typeChip(r.type)}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;td style="font-weight:500"&gt;${r.name}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;td style="font-size:.78rem"&gt;${r.round}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"&gt;${r.content.slice(0,30)}${r.content.length&gt;30?'…':''}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;td style="font-size:.78rem;color:var(--gray-500)"&gt;${r.date}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;td&gt;${statusChip(r.status)}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;td style="font-size:.78rem;color:var(--gray-400)"&gt;${r.status==='완료'||r.status==='거절'?r.date+' 처리':'—'}&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;td&gt;&lt;div style="display:flex;gap:4px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="btn btn-primary btn-xs" onclick="openRfDetail(${r.id})"&gt;상세·처리&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;&lt;/td&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/tr&gt;`)</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.join('')</p>
+<p class="p1"><span class="Apple-converted-space">    </span>: `&lt;tr&gt;&lt;td colspan="9" style="text-align:center;padding:40px;color:var(--gray-400)"&gt;조회된 신청이 없습니다.&lt;/td&gt;&lt;/tr&gt;`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>/* 카운트 업데이트 */</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const counts={};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>REFUNDS.forEach(r=&gt;{ counts[r.status]=(counts[r.status]||0)+1; });</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('.rfcnt').forEach(el=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const s=el.dataset.s;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>el.textContent = s==='all' ? REFUNDS.length : (counts[s]||0);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── FILTER CHIPS ── */</p>
+<p class="p1">document.getElementById('rfFilters').querySelectorAll('.filter-chip').forEach(btn=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>btn.addEventListener('click', function(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.querySelectorAll('#rfFilters .filter-chip').forEach(b=&gt;b.classList.remove('on'));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>this.classList.add('on');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>currentStatus = this.dataset.s;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>renderRefunds();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1">});</p>
+<p class="p2"><br></p>
+<p class="p1">function resetRfFilter(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>currentStatus='all';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('#rfFilters .filter-chip').forEach(b=&gt;b.classList.remove('on'));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelector('#rfFilters .filter-chip[data-s="all"]').classList.add('on');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rfType').value='';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rfRound').value='';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rfSearch').value='';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderRefunds();</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── DETAIL MODAL ── */</p>
+<p class="p1">function openRfDetail(id){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>currentRfId = id;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const r = REFUNDS.find(x=&gt;x.id===id);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!r) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rf-modal-title').textContent = `${r.type} 신청 상세 — ${r.name}`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rf-type').textContent = r.type;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rf-name').textContent = r.name;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rf-contact').textContent = r.contact;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rf-round').textContent = r.round;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rf-level').textContent = r.level;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rf-fee').textContent = r.fee;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rf-date').textContent = r.date;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rf-status-val').innerHTML = statusChip(r.status);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rf-content').textContent = r.content;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rf-new-status').value = r.status;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('rf-reply').value = r.reply || '';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const corrArea = document.getElementById('rf-correction-area');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(r.correction){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>corrArea.style.display='block';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('rf-before').textContent = `[${r.correction.field}] ${r.correction.before}`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('rf-after').textContent = `[${r.correction.field}] ${r.correction.after}`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>corrArea.style.display='none';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>openModal('rfDetailModal');</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function doRfProcess(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const r = REFUNDS.find(x=&gt;x.id===currentRfId);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!r) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const reply = document.getElementById('rf-reply').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!reply){ alert('처리 메모 또는 답변 내용을 입력해 주세요.'); return; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>r.status = document.getElementById('rf-new-status').value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>r.reply = reply;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>closeModal('rfDetailModal');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderRefunds();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>alert('처리가 저장되었습니다.');</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── HELPERS ── */</p>
+<p class="p1">function openModal(id){ document.getElementById(id).classList.add('open'); }</p>
+<p class="p1">function closeModal(id){ document.getElementById(id).classList.remove('open'); }</p>
+<p class="p1">document.querySelectorAll('.overlay').forEach(ov=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>ov.addEventListener('click', function(e){ if(e.target===this) closeModal(this.id); });</p>
+<p class="p1">});</p>
+<p class="p1">function doLogout(){ sessionStorage.clear(); location.href='admin-login.html'; }</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── INIT ── */</p>
+<p class="p1">(function(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const admin = JSON.parse(sessionStorage.getItem('bo_admin')||'{"name":"관리자","role":"최고관리자"}');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const ini = (admin.name||'관')[0];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>['sb-av','tb-av'].forEach(id=&gt;document.getElementById(id).textContent=ini);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('sb-name').textContent = admin.name;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('sb-role').textContent = admin.role;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('tb-name').textContent = admin.name;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('tb-role').textContent = admin.role;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const sidebar = document.getElementById('sidebar');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const backdrop = document.getElementById('backdrop');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('hbBtn').addEventListener('click',()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const o = sidebar.classList.toggle('open');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>backdrop.classList.toggle('show', o);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>backdrop.addEventListener('click',()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>sidebar.classList.remove('open');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>backdrop.classList.remove('show');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('logoutBtn').addEventListener('click',()=&gt;openModal('logoutModal'));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderRefunds();</p>
+<p class="p1">})();</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
