@@ -34,7 +34,7 @@
     .step-num{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--gray-light);color:var(--gray-text);transition:all .3s;border:2px solid transparent;flex-shrink:0;}
     .step-num.active{background:var(--navy);color:white;border-color:var(--navy);}
     .step-num.done{background:white;color:var(--red);border-color:var(--red);}
-    .step-label{font-size:12px;color:var(--gray-text);font-weight:500;white-space:nowrap;}
+    .step-label{font-size:12px;color:var(--gray-text);font-weight:500;white-space:nowrap;word-break:keep-all;}
     .step-label.active{color:var(--navy);font-weight:700;}
     .step-line{width:32px;min-width:32px;height:2px;background:var(--gray-light);margin:0 4px;transition:background .3s;flex-shrink:0;}
     .step-line.done{background:var(--red);}
@@ -215,7 +215,7 @@
     <div class="step-line" id="ln1"></div>
     <div class="step"><div class="step-num" id="s2">2</div><div class="step-label" id="sl2">회원정보 확인</div></div>
     <div class="step-line" id="ln2"></div>
-    <div class="step"><div class="step-num" id="s3">3</div><div class="step-label" id="sl3">사진·급수 확인</div></div>
+    <div class="step"><div class="step-num" id="s3">3</div><div class="step-label" id="sl3">사진 확인</div></div>
     <div class="step-line" id="ln3"></div>
     <div class="step"><div class="step-num" id="s4">4</div><div class="step-label" id="sl4">최종 확인</div></div>
   </div>
