@@ -1,0 +1,551 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="ko"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1">&lt;meta name="description" content="TOPIK Myanmar 문의게시판"&gt;</p>
+<p class="p1">&lt;title&gt;문의게시판 | TOPIK Myanmar&lt;/title&gt;</p>
+<p class="p1">&lt;link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"&gt;</p>
+<p class="p1">&lt;style&gt;</p>
+<p class="p1">:root{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--primary:#1a3a6b;--primary-dark:#122a52;--primary-light:#e8eef7;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--accent:#c8232c;--accent-light:#fdf0f0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--neutral-50:#f8f9fb;--neutral-100:#f1f3f7;--neutral-200:#e2e6ef;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--neutral-300:#c8cdd8;--neutral-400:#9099aa;--neutral-500:#636b7a;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--neutral-600:#464d5c;--neutral-700:#2d3340;--neutral-800:#1a1e28;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--white:#ffffff;--success:#1a8c5b;--success-light:#eaf5f0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--radius-sm:6px;--radius-md:10px;--radius-lg:16px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--shadow-sm:0 1px 4px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(0,0,0,.10);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--font-base:'Noto Sans KR',sans-serif;--ease:cubic-bezier(.4,0,.2,1);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>--header-h:64px;</p>
+<p class="p1">}</p>
+<p class="p1">*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}</p>
+<p class="p1">html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}</p>
+<p class="p1">body{font-family:var(--font-base);font-size:15px;color:var(--neutral-700);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background:var(--white);line-height:1.6;-webkit-font-smoothing:antialiased;padding-top:var(--header-h)}</p>
+<p class="p1">a{color:inherit;text-decoration:none}ul,ol{list-style:none}</p>
+<p class="p1">button{cursor:pointer;border:none;background:none;font-family:inherit}</p>
+<p class="p1">input,select,textarea{font-family:inherit}</p>
+<p class="p2"><br></p>
+<p class="p1">/* GNB */</p>
+<p class="p1">.gnb{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--white);border-bottom:1px solid var(--neutral-200);height:var(--header-h);display:flex;align-items:center}</p>
+<p class="p1">.gnb-inner{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:1100px;margin:0 auto;padding:0 20px;gap:12px}</p>
+<p class="p1">.gnb-logo{display:flex;align-items:center;gap:10px;flex-shrink:0}</p>
+<p class="p1">.gnb-logo-mark{width:32px;height:32px;background:var(--primary);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--white);font-weight:700;font-size:13px}</p>
+<p class="p1">.gnb-logo-text strong{display:block;font-size:14px;font-weight:700;color:var(--primary)}</p>
+<p class="p1">.gnb-logo-text span{font-size:10px;color:var(--neutral-500)}</p>
+<p class="p1">.gnb-nav{display:flex;align-items:center;gap:2px}</p>
+<p class="p1">.gnb-menu{position:relative}</p>
+<p class="p1">.gnb-menu-btn{display:flex;align-items:center;gap:4px;padding:8px 13px;font-size:14px;font-weight:500;color:var(--neutral-600);border-radius:var(--radius-sm);transition:.2s var(--ease)}</p>
+<p class="p1">.gnb-menu-btn:hover,.gnb-menu-btn.is-active{color:var(--primary);background:var(--primary-light)}</p>
+<p class="p1">.gnb-menu-btn svg{width:14px;height:14px;transition:transform .2s var(--ease)}</p>
+<p class="p1">.gnb-menu:hover .gnb-menu-btn svg{transform:rotate(180deg)}</p>
+<p class="p1">.gnb-dropdown{position:absolute;top:calc(100% + 8px);left:0;min-width:172px;background:var(--white);border:1px solid var(--neutral-200);border-radius:var(--radius-md);box-shadow:var(--shadow-md);opacity:0;visibility:hidden;transform:translateY(-6px);transition:.18s var(--ease);z-index:200;overflow:hidden}</p>
+<p class="p1">.gnb-menu:hover .gnb-dropdown{opacity:1;visibility:visible;transform:translateY(0)}</p>
+<p class="p1">.gnb-dropdown a{display:block;padding:10px 16px;font-size:13.5px;color:var(--neutral-600);transition:.15s var(--ease)}</p>
+<p class="p1">.gnb-dropdown a:hover{color:var(--primary);background:var(--primary-light)}</p>
+<p class="p1">.gnb-dropdown a.is-current{color:var(--primary);background:var(--primary-light);font-weight:600}</p>
+<p class="p1">.gnb-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}</p>
+<p class="p1">.lang-toggle{display:flex;border:1px solid var(--neutral-200);border-radius:20px;overflow:hidden;font-size:12px;font-weight:500}</p>
+<p class="p1">.lang-toggle button{padding:4px 9px;color:var(--neutral-500);transition:.15s var(--ease)}</p>
+<p class="p1">.lang-toggle button.is-active{background:var(--primary);color:var(--white)}</p>
+<p class="p1">.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;font-size:13px;font-weight:600;border-radius:var(--radius-sm);transition:.2s var(--ease);cursor:pointer;white-space:nowrap;border:none}</p>
+<p class="p1">.btn-ghost{color:var(--neutral-600);border:1px solid var(--neutral-200);background:transparent}</p>
+<p class="p1">.btn-ghost:hover{border-color:var(--primary);color:var(--primary)}</p>
+<p class="p1">.btn-solid{background:var(--primary);color:var(--white);border:1px solid var(--primary)}</p>
+<p class="p1">.btn-solid:hover{background:var(--primary-dark)}</p>
+<p class="p1">.btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary)}</p>
+<p class="p1">.btn-outline:hover{background:var(--primary-light)}</p>
+<p class="p1">.gnb-hamburger{display:none;flex-direction:column;gap:5px;padding:8px}</p>
+<p class="p1">.gnb-hamburger span{display:block;width:22px;height:2px;background:var(--neutral-700);border-radius:2px}</p>
+<p class="p1">.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.46);z-index:1999;opacity:0;visibility:hidden;transition:.25s var(--ease)}</p>
+<p class="p1">.drawer-overlay.is-show{opacity:1;visibility:visible}</p>
+<p class="p1">.mobile-drawer{position:fixed;top:0;right:0;bottom:0;width:82%;max-width:320px;background:var(--white);z-index:2000;transform:translateX(100%);transition:.28s var(--ease);box-shadow:var(--shadow-md);display:flex;flex-direction:column}</p>
+<p class="p1">.mobile-drawer.is-open{transform:translateX(0)}</p>
+<p class="p1">.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--neutral-100);flex-shrink:0}</p>
+<p class="p1">.drawer-close-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--neutral-200);display:flex;align-items:center;justify-content:center;color:var(--neutral-500);font-size:17px}</p>
+<p class="p1">.drawer-body{flex:1;overflow-y:auto}</p>
+<p class="p1">.drawer-group{border-bottom:1px solid var(--neutral-100)}</p>
+<p class="p1">.drawer-group-title{padding:14px 20px 6px;font-size:10.5px;font-weight:700;color:var(--neutral-400);letter-spacing:.1em;text-transform:uppercase}</p>
+<p class="p1">.drawer-link{display:block;padding:10px 20px;font-size:14px;font-weight:500;color:var(--neutral-600);transition:.15s var(--ease)}</p>
+<p class="p1">.drawer-link:hover,.drawer-link.is-current{color:var(--primary);background:var(--primary-light)}</p>
+<p class="p1">.drawer-lang{display:flex;gap:6px;padding:14px 20px;border-top:1px solid var(--neutral-100)}</p>
+<p class="p1">.drawer-lang button{flex:1;padding:8px;font-size:12px;font-weight:500;border-radius:var(--radius-sm);border:1px solid var(--neutral-200);color:var(--neutral-500);transition:.15s var(--ease)}</p>
+<p class="p1">.drawer-lang button.is-active{background:var(--primary);color:var(--white);border-color:var(--primary)}</p>
+<p class="p1">.drawer-foot{padding:14px 20px 20px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--neutral-100);flex-shrink:0}</p>
+<p class="p1">.drawer-foot .btn{justify-content:center}</p>
+<p class="p2"><br></p>
+<p class="p1">/* Layout */</p>
+<p class="p1">.container{width:100%;max-width:1100px;margin:0 auto;padding:0 20px}</p>
+<p class="p2"><br></p>
+<p class="p1">/* Hero */</p>
+<p class="p1">.page-hero{background:linear-gradient(135deg,var(--primary) 0%,#0d2550 100%);color:var(--white);padding:44px 0 36px}</p>
+<p class="p1">.breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,.5);margin-bottom:14px}</p>
+<p class="p1">.breadcrumb a{color:rgba(255,255,255,.5)}</p>
+<p class="p1">.breadcrumb a:hover{color:rgba(255,255,255,.85)}</p>
+<p class="p1">.breadcrumb .sep{color:rgba(255,255,255,.25)}</p>
+<p class="p1">.breadcrumb .current{color:rgba(255,255,255,.85)}</p>
+<p class="p1">.page-hero-label{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:8px}</p>
+<p class="p1">.page-hero-title{font-size:clamp(22px,4vw,30px);font-weight:700;margin-bottom:6px}</p>
+<p class="p1">.page-hero-desc{font-size:14px;color:rgba(255,255,255,.65)}</p>
+<p class="p2"><br></p>
+<p class="p1">/* Sub Nav */</p>
+<p class="p1">.sub-nav{background:var(--white);border-bottom:1px solid var(--neutral-200);position:sticky;top:var(--header-h);z-index:100}</p>
+<p class="p1">.sub-nav-inner{display:flex;max-width:1100px;margin:0 auto;padding:0 20px;overflow-x:auto;scrollbar-width:none}</p>
+<p class="p1">.sub-nav-inner::-webkit-scrollbar{display:none}</p>
+<p class="p1">.sub-nav-link{flex-shrink:0;padding:14px 16px;font-size:13.5px;font-weight:500;color:var(--neutral-500);border-bottom:2px solid transparent;transition:.18s var(--ease);white-space:nowrap}</p>
+<p class="p1">.sub-nav-link:hover{color:var(--primary)}</p>
+<p class="p1">.sub-nav-link.is-active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}</p>
+<p class="p2"><br></p>
+<p class="p1">/* Content */</p>
+<p class="p1">.content-wrap{display:grid;grid-template-columns:1fr 240px;gap:40px;padding:40px 0 64px}</p>
+<p class="p2"><br></p>
+<p class="p1">/* ── 문의 목록 ── */</p>
+<p class="p1">.board-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}</p>
+<p class="p1">.board-count{font-size:13.5px;color:var(--neutral-500)}</p>
+<p class="p1">.board-count strong{color:var(--neutral-800);font-weight:700}</p>
+<p class="p1">.toolbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}</p>
+<p class="p1">.search-bar{display:flex;border:1.5px solid var(--neutral-200);border-radius:var(--radius-md);overflow:hidden}</p>
+<p class="p1">.search-bar input{padding:9px 13px;font-size:13.5px;color:var(--neutral-700);border:none;outline:none;width:180px;background:transparent}</p>
+<p class="p1">.search-bar input::placeholder{color:var(--neutral-400)}</p>
+<p class="p1">.search-bar button{padding:9px 13px;background:var(--primary);color:var(--white);font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:inherit}</p>
+<p class="p1">.write-btn{padding:9px 16px;font-size:13px;font-weight:600;background:var(--primary);color:var(--white);border:none;border-radius:var(--radius-md);cursor:pointer;transition:.15s var(--ease);font-family:inherit;white-space:nowrap}</p>
+<p class="p1">.write-btn:hover{background:var(--primary-dark)}</p>
+<p class="p2"><br></p>
+<p class="p1">/* QnA 목록 */</p>
+<p class="p1">.qna-list{border-top:2px solid var(--neutral-800)}</p>
+<p class="p1">.qna-item{border-bottom:1px solid var(--neutral-100);cursor:pointer}</p>
+<p class="p1">.qna-item-head{display:flex;align-items:flex-start;gap:12px;padding:16px 4px;transition:.15s var(--ease)}</p>
+<p class="p1">.qna-item-head:hover{background:var(--neutral-50)}</p>
+<p class="p1">.qna-item-num{width:44px;flex-shrink:0;font-size:13px;color:var(--neutral-400);text-align:center;padding-top:1px}</p>
+<p class="p1">.qna-item-main{flex:1}</p>
+<p class="p1">.qna-item-meta{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}</p>
+<p class="p1">.qna-category{padding:2px 8px;border-radius:3px;font-size:11px;font-weight:700;background:var(--primary-light);color:var(--primary)}</p>
+<p class="p1">.qna-status-badge{padding:2px 8px;border-radius:3px;font-size:11px;font-weight:700}</p>
+<p class="p1">.s-answered{background:var(--success-light);color:var(--success)}</p>
+<p class="p1">.s-waiting{background:var(--neutral-100);color:var(--neutral-500)}</p>
+<p class="p1">.qna-item-title{font-size:14px;font-weight:600;color:var(--neutral-800);line-height:1.4}</p>
+<p class="p1">.qna-item-info{font-size:12px;color:var(--neutral-400);margin-top:4px}</p>
+<p class="p1">.qna-lock{display:inline-block;margin-left:6px;font-size:12px;color:var(--neutral-400)}</p>
+<p class="p1">.qna-toggle{flex-shrink:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--neutral-400);font-size:16px;transition:transform .2s var(--ease)}</p>
+<p class="p1">.qna-item.is-open .qna-toggle{transform:rotate(180deg)}</p>
+<p class="p2"><br></p>
+<p class="p1">/* QnA 답변 */</p>
+<p class="p1">.qna-answer{display:none;padding:0 4px 16px 60px}</p>
+<p class="p1">.qna-item.is-open .qna-answer{display:block}</p>
+<p class="p1">.qna-q-content{padding:14px 16px;background:var(--neutral-50);border-radius:var(--radius-md);font-size:13.5px;color:var(--neutral-700);line-height:1.75;margin-bottom:10px;border:1px solid var(--neutral-100)}</p>
+<p class="p1">.qna-a-wrap{padding:14px 16px;background:var(--primary-light);border-radius:var(--radius-md);border-left:3px solid var(--primary)}</p>
+<p class="p1">.qna-a-label{font-size:11.5px;font-weight:700;color:var(--primary);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}</p>
+<p class="p1">.qna-a-content{font-size:13.5px;color:var(--neutral-700);line-height:1.75}</p>
+<p class="p1">.qna-a-date{font-size:12px;color:var(--neutral-400);margin-top:8px}</p>
+<p class="p1">.qna-no-answer{padding:14px 16px;background:var(--neutral-50);border-radius:var(--radius-md);font-size:13.5px;color:var(--neutral-500);border:1px solid var(--neutral-100)}</p>
+<p class="p2"><br></p>
+<p class="p1">/* 쓰기 폼 */</p>
+<p class="p1">.write-form-wrap{display:none;background:var(--neutral-50);border:1px solid var(--neutral-200);border-radius:var(--radius-lg);padding:22px;margin-bottom:20px}</p>
+<p class="p1">.write-form-wrap.is-show{display:block}</p>
+<p class="p1">.write-form-title{font-size:16px;font-weight:700;color:var(--neutral-800);margin-bottom:18px}</p>
+<p class="p1">.form-group{margin-bottom:16px}</p>
+<p class="p1">.form-group:last-child{margin-bottom:0}</p>
+<p class="p1">.form-label{display:block;font-size:13px;font-weight:600;color:var(--neutral-700);margin-bottom:7px}</p>
+<p class="p1">.form-label .req{color:var(--accent);margin-left:2px}</p>
+<p class="p1">.form-control{width:100%;padding:10px 13px;font-size:14px;color:var(--neutral-800);background:var(--white);border:1.5px solid var(--neutral-200);border-radius:var(--radius-md);transition:.18s var(--ease);outline:none}</p>
+<p class="p1">.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,58,107,.08)}</p>
+<p class="p1">.form-control::placeholder{color:var(--neutral-400)}</p>
+<p class="p1">.form-control.is-error{border-color:var(--accent)}</p>
+<p class="p1">select.form-control{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16'%3E%3Cpolyline points='4,6 8,10 12,6' stroke='%239099aa' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}</p>
+<p class="p1">textarea.form-control{resize:vertical;min-height:110px;line-height:1.65}</p>
+<p class="p1">.form-error{font-size:12px;color:var(--accent);margin-top:5px;display:none}</p>
+<p class="p1">.form-error.is-show{display:block}</p>
+<p class="p1">.write-form-actions{display:flex;gap:10px;margin-top:16px}</p>
+<p class="p1">.btn-cancel-write{padding:10px 16px;font-size:13.5px;font-weight:600;color:var(--neutral-600);border:1.5px solid var(--neutral-200);background:transparent;border-radius:var(--radius-md);cursor:pointer;transition:.15s var(--ease);font-family:inherit}</p>
+<p class="p1">.btn-cancel-write:hover{border-color:var(--neutral-400)}</p>
+<p class="p1">.btn-submit-write{flex:1;padding:10px;font-size:14px;font-weight:600;background:var(--primary);color:var(--white);border:none;border-radius:var(--radius-md);cursor:pointer;transition:.2s var(--ease);font-family:inherit}</p>
+<p class="p1">.btn-submit-write:hover{background:var(--primary-dark)}</p>
+<p class="p2"><br></p>
+<p class="p1">/* 페이지네이션 */</p>
+<p class="p1">.pagination{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:24px}</p>
+<p class="p1">.page-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);font-size:13.5px;font-weight:500;cursor:pointer;border:1.5px solid var(--neutral-200);color:var(--neutral-600);transition:.15s var(--ease);background:transparent;font-family:inherit}</p>
+<p class="p1">.page-btn:hover{border-color:var(--primary);color:var(--primary)}</p>
+<p class="p1">.page-btn.is-active{background:var(--primary);color:var(--white);border-color:var(--primary)}</p>
+<p class="p2"><br></p>
+<p class="p1">/* alert */</p>
+<p class="p1">.alert-box{padding:12px 16px;border-radius:var(--radius-md);font-size:13.5px;margin-bottom:16px;display:none;line-height:1.55}</p>
+<p class="p1">.alert-box.is-show{display:block}</p>
+<p class="p1">.alert-success{background:var(--success-light);border:1px solid rgba(26,140,91,.2);color:var(--success)}</p>
+<p class="p2"><br></p>
+<p class="p1">/* Sidebar */</p>
+<p class="p1">.aside-card{background:var(--neutral-50);border:1px solid var(--neutral-200);border-radius:var(--radius-lg);padding:18px 16px;margin-bottom:14px}</p>
+<p class="p1">.aside-card:last-child{margin-bottom:0}</p>
+<p class="p1">.aside-card-title{font-size:12px;font-weight:700;color:var(--neutral-500);letter-spacing:.07em;text-transform:uppercase;margin-bottom:10px}</p>
+<p class="p1">.aside-nav-list{display:flex;flex-direction:column;gap:2px}</p>
+<p class="p1">.aside-nav-link{display:block;padding:9px 12px;font-size:13.5px;font-weight:500;color:var(--neutral-600);border-radius:var(--radius-sm);transition:.15s var(--ease)}</p>
+<p class="p1">.aside-nav-link:hover{color:var(--primary);background:var(--primary-light)}</p>
+<p class="p1">.aside-nav-link.is-current{color:var(--primary);background:var(--primary-light);font-weight:600}</p>
+<p class="p1">.aside-notice{padding:12px 14px;background:var(--primary-light);border:1px solid rgba(26,58,107,.12);border-radius:var(--radius-md);font-size:12.5px;color:var(--primary);line-height:1.6}</p>
+<p class="p1">.aside-notice strong{display:block;font-weight:700;margin-bottom:2px}</p>
+<p class="p2"><br></p>
+<p class="p1">/* Footer */</p>
+<p class="p1">.footer{background:var(--neutral-800);color:rgba(255,255,255,.65);padding:40px 0 24px}</p>
+<p class="p1">.footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:28px}</p>
+<p class="p1">.footer-brand strong{display:block;font-size:14px;font-weight:700;color:var(--white);margin-bottom:6px}</p>
+<p class="p1">.footer-brand p{font-size:12px;line-height:1.75}</p>
+<p class="p1">.footer-ext{display:flex;flex-direction:column;gap:6px;align-items:flex-end}</p>
+<p class="p1">.footer-ext a{font-size:12px;color:rgba(255,255,255,.45)}</p>
+<p class="p1">.footer-ext a:hover{color:var(--white)}</p>
+<p class="p1">.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}</p>
+<p class="p1">.footer-copy{font-size:11px;color:rgba(255,255,255,.3)}</p>
+<p class="p1">.footer-policy{display:flex;gap:14px}</p>
+<p class="p1">.footer-policy a{font-size:11px;color:rgba(255,255,255,.35);transition:.15s}</p>
+<p class="p1">.footer-policy a:hover{color:rgba(255,255,255,.7)}</p>
+<p class="p2"><br></p>
+<p class="p1">@media(max-width:900px){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.content-wrap{grid-template-columns:1fr;gap:28px;padding:28px 0 48px}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.content-aside{order:-1}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.aside-nav-list{flex-direction:row;flex-wrap:wrap}</p>
+<p class="p1">}</p>
+<p class="p1">@media(max-width:768px){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.gnb-nav,.gnb-actions .btn-ghost,.gnb-actions .btn-solid,.lang-toggle{display:none}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.gnb-hamburger{display:flex}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.qna-item-num{display:none}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.qna-answer{padding-left:0}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.footer-grid{grid-template-columns:1fr}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.footer-ext{align-items:flex-start}</p>
+<p class="p1">}</p>
+<p class="p1">&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- GNB --&gt;</p>
+<p class="p1">&lt;header class="gnb"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="gnb-inner"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="index.html" class="gnb-logo"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-logo-mark"&gt;TK&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-logo-text"&gt;&lt;strong&gt;TOPIK Myanmar&lt;/strong&gt;&lt;span&gt;한국어능력시험&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;nav class="gnb-nav"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;&lt;button class="gnb-menu-btn"&gt;TOPIK 안내&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;&lt;a href="guide-overview.html"&gt;시험 개요&lt;/a&gt;&lt;a href="guide-intro.html"&gt;시험 소개&lt;/a&gt;&lt;a href="guide-questions.html"&gt;문항 구성&lt;/a&gt;&lt;a href="guide-evaluation.html"&gt;평가 기준&lt;/a&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;&lt;button class="gnb-menu-btn"&gt;TOPIK 규정&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;&lt;a href="rules-notice.html"&gt;유의 사항&lt;/a&gt;&lt;a href="rules-answer.html"&gt;답안 작성 요령&lt;/a&gt;&lt;a href="rules-fee.html"&gt;응시료 규정&lt;/a&gt;&lt;a href="rules-id.html"&gt;신분증 규정&lt;/a&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;&lt;button class="gnb-menu-btn"&gt;TOPIK 접수&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;&lt;a href="apply-howto.html"&gt;접수 방법&lt;/a&gt;&lt;a href="register.html"&gt;시험 접수&lt;/a&gt;&lt;a href="mypage.html"&gt;접수 확인&lt;/a&gt;&lt;a href="admit-card.html"&gt;수험표 출력&lt;/a&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="gnb-menu"&gt;&lt;button class="gnb-menu-btn is-active"&gt;게시판&lt;svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"&gt;&lt;polyline points="4,6 8,10 12,6"/&gt;&lt;/svg&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="gnb-dropdown"&gt;&lt;a href="notice.html"&gt;공지사항&lt;/a&gt;&lt;a href="refund-correction.html"&gt;환불·정보정정신청&lt;/a&gt;&lt;a href="qna.html" class="is-current"&gt;문의게시판&lt;/a&gt;&lt;a href="faq.html"&gt;FAQ&lt;/a&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/nav&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="gnb-actions"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="lang-toggle"&gt;&lt;button class="is-active"&gt;KO&lt;/button&gt;&lt;button&gt;MY&lt;/button&gt;&lt;button&gt;EN&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="login.html" class="btn btn-ghost"&gt;로그인&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a href="signup.html" class="btn btn-solid"&gt;회원가입&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="gnb-hamburger" id="js-hamburger" aria-label="메뉴 열기" aria-expanded="false"&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/header&gt;</p>
+<p class="p1">&lt;div class="drawer-overlay" id="js-overlay"&gt;&lt;/div&gt;</p>
+<p class="p1">&lt;div class="mobile-drawer" id="js-drawer" role="dialog" aria-modal="true"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-head"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="gnb-logo"&gt;&lt;div class="gnb-logo-mark"&gt;TK&lt;/div&gt;&lt;div class="gnb-logo-text"&gt;&lt;strong&gt;TOPIK Myanmar&lt;/strong&gt;&lt;span&gt;한국어능력시험&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="drawer-close-btn" id="js-drawer-close"&gt;✕&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-body"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;&lt;div class="drawer-group-title"&gt;TOPIK 안내&lt;/div&gt;&lt;a href="guide-overview.html" class="drawer-link"&gt;시험 개요&lt;/a&gt;&lt;a href="guide-intro.html" class="drawer-link"&gt;시험 소개&lt;/a&gt;&lt;a href="guide-questions.html" class="drawer-link"&gt;문항 구성&lt;/a&gt;&lt;a href="guide-evaluation.html" class="drawer-link"&gt;평가 기준&lt;/a&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;&lt;div class="drawer-group-title"&gt;TOPIK 규정&lt;/div&gt;&lt;a href="rules-notice.html" class="drawer-link"&gt;유의 사항&lt;/a&gt;&lt;a href="rules-answer.html" class="drawer-link"&gt;답안 작성 요령&lt;/a&gt;&lt;a href="rules-fee.html" class="drawer-link"&gt;응시료 규정&lt;/a&gt;&lt;a href="rules-id.html" class="drawer-link"&gt;신분증 규정&lt;/a&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;&lt;div class="drawer-group-title"&gt;TOPIK 접수&lt;/div&gt;&lt;a href="apply-howto.html" class="drawer-link"&gt;접수 방법&lt;/a&gt;&lt;a href="register.html" class="drawer-link"&gt;시험 접수&lt;/a&gt;&lt;a href="mypage.html" class="drawer-link"&gt;접수 확인&lt;/a&gt;&lt;a href="admit-card.html" class="drawer-link"&gt;수험표 출력&lt;/a&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="drawer-group"&gt;&lt;div class="drawer-group-title"&gt;게시판&lt;/div&gt;&lt;a href="notice.html" class="drawer-link"&gt;공지사항&lt;/a&gt;&lt;a href="refund-correction.html" class="drawer-link"&gt;환불·정보정정신청&lt;/a&gt;&lt;a href="qna.html" class="drawer-link is-current"&gt;문의게시판&lt;/a&gt;&lt;a href="faq.html" class="drawer-link"&gt;FAQ&lt;/a&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-lang"&gt;&lt;button class="is-active"&gt;한국어&lt;/button&gt;&lt;button&gt;မြန်မာ&lt;/button&gt;&lt;button&gt;English&lt;/button&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="drawer-foot"&gt;&lt;a href="login.html" class="btn btn-outline"&gt;로그인&lt;/a&gt;&lt;a href="signup.html" class="btn btn-solid"&gt;회원가입&lt;/a&gt;&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- Hero --&gt;</p>
+<p class="p1">&lt;div class="page-hero"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;nav class="breadcrumb"&gt;&lt;a href="index.html"&gt;홈&lt;/a&gt;&lt;span class="sep"&gt;›&lt;/span&gt;&lt;span&gt;게시판&lt;/span&gt;&lt;span class="sep"&gt;›&lt;/span&gt;&lt;span class="current"&gt;문의게시판&lt;/span&gt;&lt;/nav&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="page-hero-label"&gt;게시판&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;h1 class="page-hero-title"&gt;문의게시판&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;p class="page-hero-desc"&gt;시험 접수, 일정 등 궁금한 사항을 남겨 주세요. 빠른 시일 내 답변드립니다.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- Sub Nav --&gt;</p>
+<p class="p1">&lt;div class="sub-nav"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="sub-nav-inner"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="notice.html"<span class="Apple-converted-space">            </span>class="sub-nav-link"&gt;공지사항&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="refund-correction.html" class="sub-nav-link"&gt;환불·정보정정신청&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="qna.html" <span class="Apple-converted-space">              </span>class="sub-nav-link is-active"&gt;문의게시판&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;a href="faq.html" <span class="Apple-converted-space">              </span>class="sub-nav-link"&gt;FAQ&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- Content --&gt;</p>
+<p class="p1">&lt;div class="container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="content-wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;main class="content-main"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="alert-box alert-success" id="qna-success"&gt;문의가 등록되었습니다. 검토 후 빠른 시일 내에 답변드립니다.&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 글쓰기 폼 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="write-form-wrap" id="js-write-form"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="write-form-title"&gt;문의 작성&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;form id="js-qna-form" novalidate&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;label class="form-label" for="q-category"&gt;문의 유형 &lt;span class="req"&gt;*&lt;/span&gt;&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;select id="q-category" class="form-control"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value=""&gt;선택해 주세요&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="apply"&gt;접수 관련&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="schedule"&gt;시험 일정&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="score"&gt;성적 관련&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="admit"&gt;수험표 관련&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="account"&gt;계정 관련&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="other"&gt;기타&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="form-error" id="err-q-cat"&gt;문의 유형을 선택해 주세요.&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;label class="form-label" for="q-title"&gt;제목 &lt;span class="req"&gt;*&lt;/span&gt;&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input type="text" id="q-title" class="form-control" placeholder="문의 제목을 입력해 주세요."&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="form-error" id="err-q-title"&gt;제목을 입력해 주세요.&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="form-group"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;label class="form-label" for="q-content"&gt;내용 &lt;span class="req"&gt;*&lt;/span&gt;&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;textarea id="q-content" class="form-control" rows="5" placeholder="문의 내용을 상세히 작성해 주세요."&gt;&lt;/textarea&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="form-error" id="err-q-content"&gt;내용을 입력해 주세요.&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="write-form-actions"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button type="button" class="btn-cancel-write" id="js-cancel-write"&gt;취소&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button type="submit" class="btn-submit-write"&gt;등록&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/form&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 툴바 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="board-toolbar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="board-count"&gt;전체 &lt;strong&gt;18&lt;/strong&gt;건&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="toolbar-right"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="search-bar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input type="text" placeholder="검색어 입력" aria-label="문의 검색"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button type="button"&gt;검색&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="write-btn" id="js-write-btn" type="button"&gt;문의 작성&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- QnA 목록 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="qna-list" id="js-qna-list"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="qna-item" data-qna="0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="qna-item-head"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-item-num"&gt;18&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-item-main"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-item-meta"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;span class="qna-category"&gt;접수 관련&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;span class="qna-status-badge s-answered"&gt;답변완료&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-item-title"&gt;제99회 접수 기간이 언제까지인가요?&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-item-info"&gt;2026.05.15 · Hong**&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-toggle"&gt;▾&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="qna-answer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-q-content"&gt;제99회 TOPIK 접수 기간이 정확히 언제까지인지 알고 싶습니다.&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-a-wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-a-label"&gt;관리자 답변&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-a-content"&gt;제99회 TOPIK 미얀마 접수 기간은 &lt;strong&gt;2026년 5월 1일(금)부터 5월 31일(일)&lt;/strong&gt;까지입니다. 기간 내에 반드시 접수를 완료해 주세요.&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-a-date"&gt;답변일 : 2026.05.16&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="qna-item" data-qna="1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="qna-item-head"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-item-num"&gt;17&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-item-main"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-item-meta"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;span class="qna-category"&gt;수험표 관련&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;span class="qna-status-badge s-answered"&gt;답변완료&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-item-title"&gt;수험표 출력은 언제부터 가능한가요?&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-item-info"&gt;2026.05.10 · Aye**&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-toggle"&gt;▾&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="qna-answer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-q-content"&gt;수험표 출력 가능 시점을 알고 싶습니다.&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-a-wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-a-label"&gt;관리자 답변&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-a-content"&gt;수험표는 시험일 약 1주일 전인 &lt;strong&gt;2026년 7월 5일(일)&lt;/strong&gt;부터 마이페이지에서 출력하실 수 있습니다.&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-a-date"&gt;답변일 : 2026.05.11&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="qna-item" data-qna="2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="qna-item-head"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-item-num"&gt;16&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-item-main"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-item-meta"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;span class="qna-category"&gt;성적 관련&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;span class="qna-status-badge s-waiting"&gt;답변대기&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-item-title"&gt;성적표 발급은 어디서 받을 수 있나요?&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-item-info"&gt;2026.05.18 · Min**&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-toggle"&gt;▾&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="qna-answer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-q-content"&gt;제95회 시험 성적표를 발급받고 싶은데 어떻게 해야 하나요?&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-no-answer"&gt;현재 검토 중입니다. 빠른 시일 내에 답변드리겠습니다.&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="qna-item" data-qna="3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="qna-item-head"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-item-num"&gt;15&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-item-main"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-item-meta"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;span class="qna-category"&gt;계정 관련&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;span class="qna-status-badge s-answered"&gt;답변완료&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-item-title"&gt;비밀번호를 잊어버렸습니다.&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-item-info"&gt;2026.04.28 · Zin**&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-toggle"&gt;▾&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="qna-answer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-q-content"&gt;비밀번호를 잊어버려서 로그인을 못하고 있습니다. 어떻게 하면 되나요?&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="qna-a-wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-a-label"&gt;관리자 답변&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-a-content"&gt;로그인 페이지의 &lt;strong&gt;'비밀번호 찾기'&lt;/strong&gt; 링크를 클릭하신 후, 가입 시 등록한 이메일 주소를 입력하시면 비밀번호 재설정 메일이 발송됩니다.&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="qna-a-date"&gt;답변일 : 2026.04.29&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;&lt;!-- /qna-list --&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="pagination"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="page-btn arrow"&gt;‹&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="page-btn is-active"&gt;1&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="page-btn"&gt;2&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="page-btn arrow"&gt;›&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/main&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Sidebar --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;aside class="content-aside"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="aside-card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="aside-card-title"&gt;게시판&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;nav class="aside-nav-list"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="notice.html"<span class="Apple-converted-space">            </span>class="aside-nav-link"&gt;공지사항&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="refund-correction.html" class="aside-nav-link"&gt;환불·정보정정신청&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="qna.html" <span class="Apple-converted-space">              </span>class="aside-nav-link is-current"&gt;문의게시판&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="faq.html" <span class="Apple-converted-space">              </span>class="aside-nav-link"&gt;FAQ&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/nav&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="aside-card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="aside-notice"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;strong&gt;답변 안내&lt;/strong&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>문의는 영업일 기준 1~3일 내에 답변됩니다. 급한 문의는 FAQ를 먼저 확인해 주세요.</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style="margin-top:10px"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a href="faq.html" class="btn btn-outline" style="width:100%;justify-content:center"&gt;FAQ 바로가기&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/aside&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- Footer --&gt;</p>
+<p class="p1">&lt;footer class="footer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="footer-grid"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="footer-brand"&gt;&lt;strong&gt;주미얀마 대한민국 대사관&lt;/strong&gt;&lt;p&gt;Embassy of the Republic of Korea in Myanmar&lt;br&gt;한국어능력시험(TOPIK) 공식 접수 사이트&lt;/p&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="footer-ext"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://topik.go.kr" target="_blank" rel="noopener"&gt;TOPIK 본부 (topik.go.kr)&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://niied.go.kr" target="_blank" rel="noopener"&gt;국립국제교육원 (NIIED)&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="https://www.mofa.go.kr/mm-ko" target="_blank" rel="noopener"&gt;대사관 공식 웹사이트&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="footer-bottom"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="footer-copy"&gt;© 2025–2026 Embassy of the Republic of Korea in Myanmar. All rights reserved.&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="footer-policy"&gt;&lt;a href="#"&gt;개인정보처리방침&lt;/a&gt;&lt;a href="#"&gt;이용약관&lt;/a&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/footer&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">const hamburger=document.getElementById('js-hamburger');</p>
+<p class="p1">const drawer=document.getElementById('js-drawer');</p>
+<p class="p1">const overlay=document.getElementById('js-overlay');</p>
+<p class="p1">const drawerClose=document.getElementById('js-drawer-close');</p>
+<p class="p1">function openDrawer(){drawer.classList.add('is-open');overlay.classList.add('is-show');document.body.style.overflow='hidden'}</p>
+<p class="p1">function closeDrawer(){drawer.classList.remove('is-open');overlay.classList.remove('is-show');document.body.style.overflow=''}</p>
+<p class="p1">hamburger.addEventListener('click',openDrawer);</p>
+<p class="p1">drawerClose.addEventListener('click',closeDrawer);</p>
+<p class="p1">overlay.addEventListener('click',closeDrawer);</p>
+<p class="p1">document.addEventListener('keydown',e=&gt;{if(e.key==='Escape')closeDrawer()});</p>
+<p class="p2"><br></p>
+<p class="p1">/* QnA 아코디언 */</p>
+<p class="p1">document.querySelectorAll('.qna-item').forEach(item=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>item.querySelector('.qna-item-head').addEventListener('click',function(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const isOpen=item.classList.contains('is-open');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.querySelectorAll('.qna-item').forEach(i=&gt;i.classList.remove('is-open'));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!isOpen)item.classList.add('is-open');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1">});</p>
+<p class="p2"><br></p>
+<p class="p1">/* 글쓰기 */</p>
+<p class="p1">const writeForm=document.getElementById('js-write-form');</p>
+<p class="p1">const writeBtn=document.getElementById('js-write-btn');</p>
+<p class="p1">const cancelWrite=document.getElementById('js-cancel-write');</p>
+<p class="p1">writeBtn.addEventListener('click',function(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>writeForm.classList.add('is-show');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>writeForm.scrollIntoView({behavior:'smooth',block:'start'});</p>
+<p class="p1">});</p>
+<p class="p1">cancelWrite.addEventListener('click',function(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>writeForm.classList.remove('is-show');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('js-qna-form').reset();</p>
+<p class="p1">});</p>
+<p class="p2"><br></p>
+<p class="p1">document.getElementById('js-qna-form').addEventListener('submit',function(e){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>e.preventDefault();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let valid=true;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function chk(id,errId,cond){const el=document.getElementById(id);const err=document.getElementById(errId);if(!cond){el.classList.add('is-error');err.classList.add('is-show');valid=false;}else{el.classList.remove('is-error');err.classList.remove('is-show');}}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>chk('q-category','err-q-cat',document.getElementById('q-category').value!=='');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>chk('q-title','err-q-title',document.getElementById('q-title').value.trim().length&gt;0);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>chk('q-content','err-q-content',document.getElementById('q-content').value.trim().length&gt;0);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!valid)return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>writeForm.classList.remove('is-show');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>this.reset();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const alert=document.getElementById('qna-success');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>alert.classList.add('is-show');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>window.scrollTo({top:0,behavior:'smooth'});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(()=&gt;alert.classList.remove('is-show'),5000);</p>
+<p class="p1">});</p>
+<p class="p2"><br></p>
+<p class="p1">document.querySelectorAll('.page-btn:not(.arrow)').forEach(btn=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>btn.addEventListener('click',function(){document.querySelectorAll('.page-btn:not(.arrow)').forEach(b=&gt;b.classList.remove('is-active'));this.classList.add('is-active')});</p>
+<p class="p1">});</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>

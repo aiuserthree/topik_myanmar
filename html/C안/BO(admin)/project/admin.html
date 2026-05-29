@@ -1109,7 +1109,7 @@ function ApplicantsPanel() {
       return a && a.photoStatus !== 'approved';
     });
     if (blocked.length) {
-      toastErr(`사진 미심사 ${blocked.length}건이 포함되어 있습니다. 행의 ‘사진심사’ 버튼으로 먼저 심사해주세요.`, { title: '승인 불가' });
+      toastErr(`사진 미심사 ${blocked.length}건이 포함되어 있습니다. 상세보기에서 사진심사를 먼저 진행해주세요.`, { title: '승인 불가' });
       return;
     }
     let n = 0;
@@ -1299,7 +1299,7 @@ function ApplicantsPanel() {
         <button className="ibtn" onClick={() => setPayModal({ ids: bulkIds, mode: 'pay' })}>오프라인 수납</button>
         <button className="ibtn" onClick={() => setApproveModal({ ids: bulkIds })}>승인</button>
         <button className="ibtn danger" onClick={() => setRejectModal({ ids: bulkIds })}>반려</button>
-        <button className="ibtn" onClick={() => setPayModal({ ids: bulkIds.filter(id => state.applicants.find(a => a.id === id)?.paid), mode: 'cancel' })}>수납 취소(환불)</button>
+        <button className="ibtn" onClick={() => setPayModal({ ids: bulkIds.filter(id => state.applicants.find(a => a.id === id)?.paid), mode: 'cancel' })}>수납취소</button>
       </BulkBar>
 
       {/* Data grid — TPKM_BO_2_1_2 연명부 컬럼 정합 */}
@@ -1313,19 +1313,11 @@ function ApplicantsPanel() {
                 <th>사진</th>
                 <th className="sortable" onClick={() => sortBy('nameKo')}>한글성명</th>
                 <th className="sortable" onClick={() => sortBy('nameEn')}>영문성명</th>
-                <th>생년월일</th>
-                <th>성별</th>
-                <th>국적</th>
-                <th>제1언어</th>
-                <th>직업</th>
-                <th>응시동기</th>
-                <th>응시목적</th>
                 <th>급수</th>
-                <th>시험장</th>
                 <th className="sortable" onClick={() => sortBy('appliedAt')}>접수일</th>
+                <th>수험번호</th>
                 <th>사진심사</th>
                 <th>수납</th>
-                <th>수험번호</th>
                 <th>상태</th>
                 <th className="no-print">관리</th>
               </tr>
@@ -1338,35 +1330,23 @@ function ApplicantsPanel() {
                   <td>
                     <PhotoThumb status={a.photoStatus} name={a.nameKo} seed={a.id}/>
                   </td>
-                  <td><a style={{ color: 'var(--primary)', fontWeight: 600, cursor: 'pointer' }} onClick={() => setDetailId(a.id)}>{a.nameKo}</a></td>
+                  <td>{a.nameKo}</td>
                   <td>{a.nameEn}</td>
-                  <td className="code">{a.dob}</td>
-                  <td className="num">{a.sx}</td>
-                  <td>{a.nation}</td>
-                  <td>{a.l1}</td>
-                  <td>{a.job}</td>
-                  <td>{a.motive}</td>
-                  <td>{a.purpose}</td>
                   <td><span className="code-id">{a.level}</span></td>
-                  <td>{DataStore.venueName(a.venueId)}</td>
                   <td className="code muted">{a.appliedAt}</td>
+                  <td className="code"><b style={{ color: a.exam ? 'var(--st-number)' : 'var(--text-4)' }}>{a.exam || '—'}</b></td>
                   <td><PhotoStatusPill status={a.photoStatus}/></td>
                   <td>{a.paid ? <Pill kind="approved">수납완료</Pill> : <Pill kind="pay">미수납</Pill>}</td>
-                  <td className="code"><b style={{ color: a.exam ? 'var(--st-number)' : 'var(--text-4)' }}>{a.exam || '—'}</b></td>
                   <td><Pill kind={a.status}>{DataStore.statusLabel(a.status)}</Pill></td>
                   <td className="no-print">
-                    <div className="row-actions">
-                      <button className="ibtn" title="사진 심사" onClick={() => setPhotoLP(a.id)}><I.Image style={{ width: 13, height: 13 }}/> 사진심사</button>
-                      <button className="ibtn" title="수납" onClick={() => setPayModal({ ids: [a.id], mode: a.paid ? 'cancel' : 'pay' })}>{a.paid ? '취소' : '수납'}</button>
-                      <button className="ibtn primary" title="승인" disabled={a.status === 'approved'} onClick={() => setApproveModal({ ids: [a.id] })}>승인</button>
-                      <button className="ibtn danger" title="반려" disabled={a.status === 'rejected'} onClick={() => setRejectModal({ ids: [a.id] })}>반려</button>
-                      <button className="ibtn ghost" title="상세 보기" onClick={() => setDetailId(a.id)}><I.Eye style={{ width: 14, height: 14 }}/></button>
-                    </div>
+                    <button className="ibtn" title="상세 보기" onClick={() => setDetailId(a.id)}>
+                      <I.Eye style={{ width: 13, height: 13 }}/> 상세보기
+                    </button>
                   </td>
                 </tr>
               ))}
               {!pageRows.length && (
-                <tr><td colSpan="20">
+                <tr><td colSpan="12">
                   <div className="empty">
                     <div className="icon"><I.Search/></div>
                     <div className="ttl">조건에 맞는 접수자가 없습니다</div>
@@ -1407,6 +1387,7 @@ function ApplicantsPanel() {
         onApprove={() => { setApproveModal({ ids: [detailId] }); }}
         onReject={() => { setRejectModal({ ids: [detailId] }); }}
         onPay={() => { const a = state.applicants.find(x => x.id === detailId); setPayModal({ ids: [detailId], mode: a?.paid ? 'cancel' : 'pay' }); }}
+        onPhotoReview={() => setPhotoLP(detailId)}
       />}
 
       {/* Modals */}
@@ -1532,13 +1513,14 @@ function PhotoReviewLP({ id, onClose, onApprove, onReject }) {
 }
 
 // ===== Detail LP =====
-function ApplicantDetailLP({ id, onClose, onApprove, onReject, onPay }) {
+function ApplicantDetailLP({ id, onClose, onApprove, onReject, onPay, onPhotoReview }) {
   const state = useStore();
   const a = state.applicants.find(x => x.id === id);
   const [tab, setTab] = useState('profile');
   const [memo, setMemo] = useState('');
   if (!a) return null;
   const venue = state.venues.find(v => v.id === a.venueId);
+  const session = state.sessions.find(s => s.id === a.sessionId);
   const log = state.audit.filter(l => l.targetId === id);
 
   const addMemo = () => {
@@ -1553,12 +1535,13 @@ function ApplicantDetailLP({ id, onClose, onApprove, onReject, onPay }) {
   return (
     <LP open={true} size="wide" onClose={onClose}
       title={`접수자 상세 — ${a.nameKo} (${a.nameEn})`}
-      sub={<span>회차 컨텍스트 · 접수ID <code className="code-id">{a.id}</code> · 상태 <Pill kind={a.status}>{DataStore.statusLabel(a.status)}</Pill></span>}
+      sub={<span>회차 {session?.name || '—'} · 접수번호 <code className="code-id">{a.no}</code> · 접수ID <code className="code-id">{a.id}</code> · 상태 <Pill kind={a.status}>{DataStore.statusLabel(a.status)}</Pill></span>}
       footer={<>
         <button className="btn btn-secondary" onClick={onClose}>닫기</button>
-        <button className="btn btn-secondary" onClick={onReject}>반려</button>
+        <button className="btn btn-secondary" onClick={onPhotoReview}><I.Image style={{ width: 14, height: 14 }}/> 사진심사</button>
         <button className="btn btn-secondary" onClick={onPay}>{a.paid ? '수납 취소' : '수납'}</button>
-        <button className="btn btn-primary" onClick={onApprove}>승인</button>
+        <button className="btn btn-secondary" onClick={onReject} disabled={a.status === 'rejected'}>반려</button>
+        <button className="btn btn-primary" onClick={onApprove} disabled={a.status === 'approved'}>승인</button>
       </>}>
       <div className="lp-tabs">
         <button className={tab === 'profile' ? 'active' : ''} onClick={() => setTab('profile')}>기본 정보</button>
@@ -1572,12 +1555,13 @@ function ApplicantDetailLP({ id, onClose, onApprove, onReject, onPay }) {
             <PhotoLarge status={a.photoStatus} name={a.nameKo} seed={a.id}/>
             <div style={{ marginTop: 10, display: 'flex', gap: 6 }}>
               <button className="ibtn" style={{ flex: 1 }}><I.Download style={{ width: 12, height: 12 }}/> 원본 받기</button>
-              <button className="ibtn" style={{ flex: 1 }}>회전 보정</button>
+              <button className="ibtn" style={{ flex: 1 }} onClick={onPhotoReview}>사진심사</button>
             </div>
-            {a.photoStatus !== 'approved' && <div style={{ marginTop: 8, padding: 8, background: 'var(--st-photo-bg)', color: 'var(--st-photo)', borderRadius: 6, fontSize: 12 }}>사진 {a.photoStatus === 'rejected' ? '반려' : '미심사'} 상태입니다. ‘사진심사’ 버튼으로 처리하세요.</div>}
+            {a.photoStatus !== 'approved' && <div style={{ marginTop: 8, padding: 8, background: 'var(--st-photo-bg)', color: 'var(--st-photo)', borderRadius: 6, fontSize: 12 }}>사진 {a.photoStatus === 'rejected' ? '반려' : '미심사'} 상태입니다. 하단 ‘사진심사’ 버튼으로 처리하세요.</div>}
           </div>
           <div>
             <FieldSet legend="응시자 정보" cols={2}>
+              <KV k="접수번호" v={<code className="code-id">{a.no}</code>}/>
               <KV k="한글 성명" v={a.nameKo}/>
               <KV k="영문 성명" v={a.nameEn}/>
               <KV k="생년월일" v={<code className="code-id">{a.dob}</code>}/>
@@ -1585,22 +1569,24 @@ function ApplicantDetailLP({ id, onClose, onApprove, onReject, onPay }) {
               <KV k="국적" v={a.nation}/>
               <KV k="제1언어" v={a.l1}/>
               <KV k="직업" v={a.job}/>
+              <KV k="응시동기" v={a.motive}/>
+              <KV k="응시목적" v={a.purpose}/>
               <KV k="이메일" v={a.email}/>
               <KV k="전화" v={a.tel}/>
               <KV k="편의지원" v={a.accommodation ? '신청' : '미신청'}/>
             </FieldSet>
 
-            <FieldSet legend="시험 정보" cols={2}>
+            <FieldSet legend="시험·접수 정보" cols={2}>
+              <KV k="회차" v={session?.name || '—'}/>
               <KV k="급수" v={`TOPIK ${a.level}`}/>
-              <KV k="시험장" v={venue?.nameKo}/>
+              <KV k="시험장" v={venue?.nameKo || '—'}/>
+              <KV k="접수일시" v={a.appliedAt}/>
               <KV k="사진 심사" v={<PhotoStatusPill status={a.photoStatus}/>}/>
-              <KV k="응시동기" v={a.motive}/>
-              <KV k="응시목적" v={a.purpose}/>
               <KV k="수납 상태" v={a.paid ? <Pill kind="approved">수납완료</Pill> : <Pill kind="pay">미수납</Pill>}/>
               <KV k="수납 일시" v={a.paidAt || '—'}/>
               <KV k="영수증" v={a.receipt || '—'}/>
               <KV k="수험번호" v={a.exam ? <code className="code-id" style={{ color: 'var(--st-number)', fontWeight: 700 }}>{a.exam}</code> : '미부여'}/>
-              <KV k="접수일시" v={a.appliedAt}/>
+              <KV k="처리 상태" v={<Pill kind={a.status}>{DataStore.statusLabel(a.status)}</Pill>}/>
               <KV k="반려 사유" v={a.rejectReason || '—'}/>
             </FieldSet>
           </div>
@@ -4520,10 +4506,6 @@ function App() {
             <a className="tb-iconbtn" href="https://topik-myanmar-c.vercel.app/index.html" target="_blank" rel="noopener noreferrer" title="사이트 보기(새 창)">
               <I.ExternalLink/>
             </a>
-            <button className="tb-iconbtn" title="알림">
-              <I.Bell/>
-              {(badges.unreviewed + badges.photoWait + badges.refundNew + badges.inquiryWait) > 0 && <span className="dot"></span>}
-            </button>
             <div className="tb-user" title={me?.id}>
               <div className="avatar">{me?.name?.slice(0,1) || 'A'}</div>
               <div className="meta">
