@@ -83,7 +83,7 @@
         <div class="ph-prev">현재 사진</div>
         <div style="flex:1;">
           <p style="font-size: 13.5px; color: var(--text-2);">시험 접수 시 자동 사용됩니다.</p>
-          <p class="body-sm" style="margin-top: 4px;">새 사진 등록 시 진행 중인 접수 건에도 즉시 반영되며, BO 사진 심사가 재실행됩니다.</p>
+          <p class="body-sm" style="margin-top: 4px;">새 사진 등록 시 <strong>진행 중인 접수 건에도 즉시 반영</strong>되며, <strong>BO 사진 심사가 자동으로 재실행(재심사)</strong>됩니다. (0527 정책)</p>
           <div style="margin-top: 10px; display:flex; gap: 6px;">
             <button class="btn btn-secondary btn-sm" type="button" data-photo-select>파일 선택</button>
             <button class="btn btn-text btn-sm" type="button" data-photo-spec>규격 안내</button>
@@ -195,7 +195,7 @@
     </div>
     <div class="modal-foot">
       <button class="btn btn-secondary" onclick="TPKM.closeModal('modalLeave')">취소</button>
-      <button class="btn btn-danger">탈퇴 진행</button>
+      <button class="btn btn-danger" id="btnLeaveConfirm">탈퇴 진행</button>
     </div>
   </div>
 </div>
@@ -214,6 +214,14 @@
       b.classList.add('active');
       document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.dataset.tab === b.dataset.tab));
     });
+  });
+
+  // 회원 탈퇴 진행 (데모: 세션 정리 후 안내·홈 이동)
+  document.getElementById('btnLeaveConfirm')?.addEventListener('click', function () {
+    TPKM.closeModal('modalLeave');
+    if (window.TPKMAuth) TPKMAuth.logout();
+    alert('회원 탈퇴가 완료되었습니다.\n진행 중이던 접수 내역은 모두 취소 처리되었습니다. 이용해 주셔서 감사합니다.');
+    location.href = 'index.html';
   });
 </script>
 </body>

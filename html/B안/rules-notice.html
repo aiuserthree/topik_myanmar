@@ -471,5 +471,6 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer()});
 function setLang(code){try{localStorage.setItem('tm_lang',code)}catch(e){}document.querySelectorAll('.lang-toggle button,.drawer-lang button').forEach(btn=>{btn.classList.toggle('is-active',!!btn.getAttribute('onclick')?.includes(`'${code}'`))})}
 try{setLang(localStorage.getItem('tm_lang')||'ko')}catch(e){}
 </script>
+<script src="js/tm-auth.js"></script>
 </body>
 </html>

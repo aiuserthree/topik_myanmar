@@ -293,6 +293,10 @@ textarea.form-control{min-height:110px;resize:vertical}
  <div class="comment-list" id="comment-list"></div>
  <div class="comment-form">
  <textarea id="new-comment" placeholder="댓글을 입력하세요."></textarea>
+ <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
+ <label class="checkbox-label" id="comment-private-label" style="font-size:13px"><input type="checkbox" id="comment-private"> 비공개 댓글 (작성자·관리자만 열람)</label>
+ <span id="comment-secret-note" style="display:none;font-size:12px;color:var(--accent)">🔒 비밀글의 댓글·대댓글은 자동으로 비공개 처리됩니다.</span>
+ </div>
  <button type="button" id="btn-add-comment">댓글 등록</button>
  </div>
  </div>
@@ -351,7 +355,7 @@ const POSTS={
  1:{vis:'public',cat:'exam',title:'성적표 발급 방법 문의',date:'2026.05.18',status:'waiting',secret:false,owner:false,
  body:'성적표를 발급받고 싶은데 절차를 알려주세요.',reply:null,comments:[]}
 };
-let secretFails=0,secretLockedUntil=0,pendingPostId=null;
+let secretFails=0,secretLockedUntil=0,pendingPostId=null,currentDetailId=null;
 
 function showPane(name){
  document.querySelectorAll('.board-pane').forEach(p=>p.classList.remove('is-active'));
@@ -364,6 +368,7 @@ function statusHtml(s){return s==='answered'?'<span class="status-badge s-done">
 
 function openDetail(id){
  const p=POSTS[id];if(!p)return;
+ currentDetailId=id;
  document.getElementById('d-title').textContent=p.title;
  document.getElementById('d-cat').innerHTML='<span class="cat-badge">'+CAT[p.cat]+'</span>';
  document.getElementById('d-date').textContent=p.date;
@@ -372,17 +377,38 @@ function openDetail(id){
  const re=document.getElementById('d-reply');
  if(p.reply){re.style.display='block';document.getElementById('d-reply-body').textContent=p.reply}
  else re.style.display='none';
- const cl=document.getElementById('comment-list');cl.innerHTML='';
- (p.comments||[]).forEach(c=>cl.appendChild(renderComment(c,false)));
+ renderComments(p);
+ var pv=document.getElementById('comment-private'),lbl=document.getElementById('comment-private-label'),note=document.getElementById('comment-secret-note');
+ if(p.secret){pv.checked=true;pv.disabled=true;lbl.style.display='none';note.style.display='inline';}
+ else{pv.checked=false;pv.disabled=false;lbl.style.display='inline-flex';note.style.display='none';}
  showPane('detail');
 }
 
-function renderComment(c,isReply){
- const div=document.createElement('div');
- div.className='comment-item'+(isReply?' is-reply':'');
- div.innerHTML='<div class="comment-meta"><strong>'+c.author+'</strong> · '+c.date+'</div><div>'+c.body+'</div>';
- (c.replies||[]).forEach(r=>div.appendChild(renderComment(r,true)));
- return div;
+function commentMeta(c,isReply){
+ var sec=c.secret?' <span style="font-size:11px;color:var(--accent)">🔒 비공개</span>':'';
+ return '<div class="comment-meta">'+(isReply?'↳ ':'')+'<strong>'+c.author+'</strong> · '+c.date+sec+'</div>';
+}
+function renderComments(p){
+ var box=document.getElementById('comment-list');
+ var list=p.comments||[];
+ if(!list.length){box.innerHTML='<div style="font-size:13px;color:var(--neutral-400);padding:6px 0">등록된 댓글이 없습니다.</div>';return;}
+ box.innerHTML=list.map(function(c,ci){
+ var replies=(c.replies||[]).map(function(r){return '<div class="comment-item is-reply">'+commentMeta(r,true)+'<div>'+r.body+'</div></div>';}).join('');
+ return '<div class="comment-item">'+commentMeta(c,false)+'<div>'+c.body+'</div>'+replies
+ +'<div style="margin-top:6px"><button type="button" class="reply-toggle" data-ci="'+ci+'" style="font-size:12px;color:var(--primary);font-weight:600;background:none;border:none;padding:0;cursor:pointer">답글</button></div>'
+ +'<div class="reply-box" id="reply-box-'+ci+'" style="display:none;margin-top:8px"><textarea id="reply-input-'+ci+'" placeholder="답글을 입력하세요." style="width:100%;padding:8px;border:1.5px solid var(--neutral-200);border-radius:var(--radius-md);min-height:56px;font-size:13px;margin-bottom:6px"></textarea><button type="button" class="reply-submit" data-ci="'+ci+'" style="padding:6px 12px;font-size:12px;font-weight:600;background:var(--primary);color:#fff;border:none;border-radius:var(--radius-sm)">답글 등록</button></div>'
+ +'</div>';
+ }).join('');
+ box.querySelectorAll('.reply-toggle').forEach(function(b){b.addEventListener('click',function(){var bx=document.getElementById('reply-box-'+this.dataset.ci);bx.style.display=bx.style.display==='none'?'block':'none';});});
+ box.querySelectorAll('.reply-submit').forEach(function(b){b.addEventListener('click',function(){addReply(+this.dataset.ci);});});
+}
+function addReply(ci){
+ var p=POSTS[currentDetailId];if(!p)return;
+ var inp=document.getElementById('reply-input-'+ci);var t=inp.value.trim();if(!t)return;
+ var c=(p.comments||[])[ci];if(!c)return;
+ if(!c.replies)c.replies=[];
+ c.replies.push({author:'나',date:new Date().toLocaleDateString('ko-KR'),body:t,secret:p.secret});
+ renderComments(p);
 }
 
 function closeSecretModal(){
@@ -449,13 +475,13 @@ document.getElementById('write-form').addEventListener('submit',e=>{
 });
 
 document.getElementById('btn-add-comment').addEventListener('click',()=>{
- const t=document.getElementById('new-comment').value.trim();
- if(!t)return;
- const div=document.createElement('div');
- div.className='comment-item';
- div.innerHTML='<div class="comment-meta"><strong>나</strong> · 오늘</div><div>'+t+'</div>';
- document.getElementById('comment-list').appendChild(div);
- document.getElementById('new-comment').value='';
+ var p=POSTS[currentDetailId];if(!p)return;
+ var ta=document.getElementById('new-comment');var t=ta.value.trim();if(!t)return;
+ if(!p.comments)p.comments=[];
+ var isSecret=p.secret||document.getElementById('comment-private').checked;
+ p.comments.push({author:'나',date:new Date().toLocaleDateString('ko-KR'),body:t,secret:isSecret,replies:[]});
+ ta.value='';document.getElementById('comment-private').checked=false;
+ renderComments(p);
 });
 
 document.querySelectorAll('.vis-tab').forEach(tab=>{

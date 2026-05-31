@@ -206,6 +206,7 @@
 <script src="js/profile-store.js"></script>
 <script src="js/account-password.js"></script>
 <script src="js/fo-nav.js"></script>
+<script src="js/fo-footer.js"></script>
 <script src="js/mobile-nav.js?v=20260506" defer></script>
 <script>
 (function(){
@@ -213,7 +214,39 @@
   var PROFILE_RESYNC_KEY='tm_profile_photo_resync_v1';
   var pendingProfilePhoto=null;
 
+  var REGLIST_KEY='topik_mm_reglist_v1';
   function setVal(id,val){var el=document.getElementById(id);if(el)el.value=val||'';}
+  /* 0527 — 내정보 수정/사진 변경 시 진행 중 접수 건(reglist)에도 즉시 반영.
+     photoChanged=true 이면 해당 건들의 사진심사 상태를 미심사로 되돌려 BO 사진 심사 재실행을 유도. */
+  function syncReglistFromProfile(profile,photoDataUrl,photoChanged){
+    try{
+      var arr=JSON.parse(localStorage.getItem(REGLIST_KEY)||'[]');
+      if(!Array.isArray(arr)||!arr.length)return 0;
+      var email=(profile.email||'').toLowerCase();
+      var touched=0;
+      arr.forEach(function(r){
+        if(!r)return;
+        /* 본인 접수 건만(이메일 매칭). 종료/취소/반려 건은 건드리지 않음 */
+        var owns=!email||!r.email||String(r.email).toLowerCase()===email;
+        if(!owns)return;
+        if(r.status==='cancelled'||r.status==='rejected')return;
+        r.nameKo=profile.nameKo||profile.nameKr||r.nameKo;
+        r.nameEn=profile.nameEn||r.nameEn;
+        if(profile.birthdate)r.birth=String(profile.birthdate).replace(/-/g,'').slice(0,8)||r.birth;
+        r.gender=profile.gender||r.gender;
+        if(photoChanged&&photoDataUrl){
+          r.photo=photoDataUrl;
+          r.photoStatus='unreviewed';
+          if(r.status==='approved'||r.status==='exam-numbered')r.status='review';
+        }
+        touched++;
+      });
+      if(touched){
+        localStorage.setItem(REGLIST_KEY,JSON.stringify(arr));
+      }
+      return touched;
+    }catch(e){return 0;}
+  }
   function normalizeDateInput(value){
     var s=String(value||'').trim();
     if(/^\d{8}$/.test(s))return s.slice(0,4)+'-'+s.slice(4,6)+'-'+s.slice(6,8);
@@ -321,11 +354,22 @@
     profile.marketingConsent=!!(document.getElementById('pfMarketing')&&document.getElementById('pfMarketing').checked);
     profile.updatedAt=new Date().toISOString();
     TMProfile.save(profile);
+    var photoChanged=false;
+    var photoForSync=(window.TMProfile&&TMProfile.loadSignupPhoto&&TMProfile.loadSignupPhoto())||'';
     if(pendingProfilePhoto&&TMProfile.saveSignupPhoto(pendingProfilePhoto)){
       try{localStorage.setItem(PROFILE_RESYNC_KEY,JSON.stringify({at:new Date().toISOString(),status:'photo_review_pending'}));}catch(e){}
+      photoForSync=pendingProfilePhoto;
+      photoChanged=true;
       pendingProfilePhoto=null;
     }
-    alert('내정보가 저장되었습니다. 진행 중인 접수 건에도 변경 내용이 반영됩니다.');
+    /* 0527 — 진행 중 접수 건(reglist)에 성명·생년월일·성별·사진 동시 반영(사진 변경 시 사진심사 재실행) */
+    var synced=syncReglistFromProfile(profile,photoForSync,photoChanged);
+    var msg='내정보가 저장되었습니다.';
+    if(synced>0){
+      msg+='\n진행 중인 접수 '+synced+'건에도 변경 내용이 반영되었습니다.';
+      if(photoChanged)msg+='\n사진이 변경되어 해당 접수 건은 사진 심사가 재실행됩니다.';
+    }
+    alert(msg);
   }
 
   function changePw(){
@@ -365,11 +409,24 @@
     var double=prompt('탈퇴를 확인하려면 "탈퇴합니다"를 입력하세요.');
     if(double!=='탈퇴합니다'){alert('탈퇴가 취소되었습니다.');return;}
     try{
+      /* 0526 — 탈퇴 시 진행 중인 접수 자동 취소(BO 접수자 목록에서 '취소됨'으로 반영) */
+      var prof=window.TMProfile&&TMProfile.load&&TMProfile.load();
+      var email=(prof&&prof.email||'').toLowerCase();
+      var arr=JSON.parse(localStorage.getItem(REGLIST_KEY)||'[]');
+      if(Array.isArray(arr)){
+        arr.forEach(function(r){
+          if(!r)return;
+          var owns=!email||!r.email||String(r.email).toLowerCase()===email;
+          if(owns&&r.status!=='cancelled'){
+            r.status='cancelled';r.cancelable=false;r.cancelReason='회원 탈퇴로 인한 자동 취소';r.cancelDate=new Date().toISOString().slice(0,10);
+          }
+        });
+        localStorage.setItem(REGLIST_KEY,JSON.stringify(arr));
+      }
       if(window.TMProfile){TMProfile.clear();}
       localStorage.removeItem('tm_session');
-      localStorage.removeItem('topik_mm_reglist_v1');
     }catch(e){}
-    alert('탈퇴 처리가 완료되었습니다.');
+    alert('탈퇴 처리가 완료되었습니다. 진행 중이던 접수 내역은 모두 취소되었습니다.');
     window.location.href='index.html';
   }
 

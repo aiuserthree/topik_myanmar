@@ -42,6 +42,10 @@
     .faq-cat-chip{padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;border:1.5px solid var(--gray-light);background:white;cursor:pointer;font-family:inherit;color:var(--navy);transition:background .15s,border-color .15s,color .15s;}
     .faq-cat-chip:hover{background:#fafbfc;border-color:#cbd5e1;}
     .faq-cat-chip.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+    .faq-search{display:flex;align-items:center;gap:8px;background:white;border:1.5px solid var(--gray-light);border-radius:10px;padding:11px 14px;margin-bottom:14px;box-shadow:var(--shadow);}
+    .faq-search svg{color:var(--gray-text);flex-shrink:0;}
+    .faq-search input{flex:1;border:none;outline:none;font-size:14px;font-family:inherit;background:transparent;color:#1a1a2e;}
+    .faq-search input::placeholder{color:#9ca3af;}
     .faq-empty{font-size:14px;color:var(--gray-text);padding:24px;text-align:center;background:white;border-radius:12px;border:1px dashed var(--gray-light);}
     footer{background:#1a2a4a;color:#aab8cc;padding:28px 24px;}
     .footer-bottom{max-width:1200px;margin:0 auto;font-size:12px;}
@@ -107,8 +111,13 @@
 </div>
 
 <div class="content">
+  <div class="faq-search">
+    <svg class="icon" width="16" height="16"><use href="#ic-search"/></svg>
+    <input type="search" id="faqSearchInput" placeholder="질문·답변에서 검색" aria-label="FAQ 검색"/>
+  </div>
   <div id="faqCatBar" class="faq-cat-bar" role="toolbar" aria-label="FAQ 분류"></div>
   <div id="faqDynamicList" class="faq-list"></div>
+  <div id="faqNoResult" class="faq-empty" style="display:none;">검색 결과가 없습니다.</div>
   <div class="faq-official">
     <strong>TOPIK</strong> — <span data-i18n="faq_official"></span>
     <a href="https://www.topik.go.kr/" target="_blank" rel="noopener noreferrer">https://www.topik.go.kr/</a>
@@ -121,6 +130,7 @@
 <script src="js/i18n.js?v=20260506"></script>
 <script src="js/profile-store.js"></script>
 <script src="js/fo-nav.js"></script>
+<script src="js/fo-footer.js"></script>
 <script src="js/mobile-nav.js?v=20260506" defer></script>
 <script>
 (function(){
@@ -130,6 +140,7 @@
     d.textContent=String(s);
     return d.innerHTML;
   }
+  var currentFaqCat='all';
   function renderFaqChips(){
     if(!window.ContentStore)return;
     var bar=document.getElementById('faqCatBar');
@@ -144,19 +155,33 @@
       b.addEventListener('click',function(){
         bar.querySelectorAll('.faq-cat-chip').forEach(function(x){ x.classList.remove('active'); });
         b.classList.add('active');
-        applyFaqFilter(val);
+        currentFaqCat=val;
+        applyFaqFilter();
       });
       bar.appendChild(b);
     }
     addChip('전체','all',true);
     cats.forEach(function(c){ addChip(c.label,c.id,false); });
   }
-  function applyFaqFilter(catId){
+  function applyFaqFilter(){
+    var qEl=document.getElementById('faqSearchInput');
+    var q=(qEl?(qEl.value||''):'').toLowerCase().trim();
+    var shown=0;
     document.querySelectorAll('.faq-item').forEach(function(el){
       var c=el.getAttribute('data-faq-cat')||'';
-      var show=(catId==='all'||c===catId);
+      var catOk=(currentFaqCat==='all'||c===currentFaqCat);
+      var hay=(el.getAttribute('data-faq-text')||'');
+      var textOk=!q||hay.indexOf(q)>=0;
+      var show=catOk&&textOk;
       el.style.display=show?'':'none';
+      if(show)shown++;
     });
+    var noRes=document.getElementById('faqNoResult');
+    if(noRes){
+      var hasItems=document.querySelectorAll('.faq-item').length>0;
+      noRes.style.display=(hasItems&&shown===0)?'block':'none';
+      noRes.textContent=q?'\u0027'+q+'\u0027 에 대한 검색 결과가 없습니다.':'해당 분류의 FAQ가 없습니다.';
+    }
   }
   function renderManagedFaqs(){
     if(!window.ContentStore)return;
@@ -174,6 +199,7 @@
       var div=document.createElement('div');
       div.className='faq-item faq-item-managed';
       div.setAttribute('data-faq-cat',it.catId);
+      div.setAttribute('data-faq-text',((it.question||'')+' '+(it.answer||'')).toLowerCase());
       div.innerHTML='<button type="button" class="faq-q" onclick="this.parentElement.classList.toggle(\'open\')">'+
         '<span>'+esc(it.question)+'</span>'+
         '<svg class="icon" width="18" height="18"><use href="#ic-chev-d"/></svg></button>'+
@@ -184,14 +210,17 @@
   function refreshFaqPage(){
     renderFaqChips();
     renderManagedFaqs();
-    applyFaqFilter('all');
+    currentFaqCat='all';
     var bar=document.getElementById('faqCatBar');
     if(bar&&bar.querySelector('.faq-cat-chip')){
       bar.querySelectorAll('.faq-cat-chip').forEach(function(x,i){ x.classList.toggle('active',i===0); });
     }
+    applyFaqFilter();
   }
   document.addEventListener('DOMContentLoaded',function(){
     if(window.TMI18N) TMI18N.boot();
+    var sEl=document.getElementById('faqSearchInput');
+    if(sEl) sEl.addEventListener('input',applyFaqFilter);
     refreshFaqPage();
   });
   window.addEventListener('topik-content-change',refreshFaqPage);

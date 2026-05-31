@@ -53,6 +53,16 @@
   .badge-type-rfd { background: #fff4e3; color: #b86e00; border: 1px solid #f1d9aa; }
   .badge-type-cor { background: #eaf2fb; color: var(--primary); border: 1px solid #cfe0f1; }
 
+  /* Secret password modal */
+  .secret-lock { text-align: center; padding: 16px 0; }
+  .secret-lock .ico-lock {
+    width: 56px; height: 56px;
+    background: var(--bg-3); color: var(--text-3);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; margin: 0 auto 12px;
+  }
+
   /* Write form */
   .write-form { max-width: 760px; margin: 0 auto; }
   .file-list {
@@ -245,7 +255,7 @@
               <td class="col-date">2026.01.18</td>
               <td class="col-status"><span class="status status-photo">검토 중</span></td>
             </tr>
-            <tr>
+            <tr onclick="TPKM.openModal('modalSecretLock')">
               <td class="col-num">41</td>
               <td class="col-type"><span class="badge badge-type-cor">정보정정</span></td>
               <td><span class="lock">🔒</span> 영문 성명 표기 정정 신청 (여권 기준)</td>
@@ -261,7 +271,7 @@
               <td class="col-date">2026.01.10</td>
               <td class="col-status"><span class="status status-approved">처리완료</span></td>
             </tr>
-            <tr>
+            <tr onclick="TPKM.openModal('modalSecretLock')">
               <td class="col-num">39</td>
               <td class="col-type"><span class="badge badge-type-cor">정보정정</span></td>
               <td><span class="lock">🔒</span> 생년월일 정정 요청합니다</td>
@@ -429,6 +439,29 @@
 <div id="site-footer"></div>
 <div id="site-tabbar"></div>
 
+<!-- 비밀글 잠금 해제 -->
+<div class="modal-backdrop" id="modalSecretLock">
+  <div class="modal">
+    <div class="modal-head"><h3>비밀글</h3></div>
+    <div class="modal-body">
+      <div class="secret-lock">
+        <div class="ico-lock">🔒</div>
+        <p>비밀글입니다. 작성자·관리자만 열람할 수 있습니다.</p>
+        <p class="body-sm" style="margin-top: 6px;">비밀번호를 입력해 주세요.</p>
+      </div>
+      <div class="form-row" style="margin-top: 12px;">
+        <input class="input" type="password" id="secretPw" placeholder="비밀번호">
+        <span class="hint" id="secretPwErr" style="display:none; color: var(--danger);"></span>
+      </div>
+      <p class="body-sm" style="text-align: center; font-size: 11.5px;">최대 5회 실패 시 30분간 잠깁니다.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="TPKM.closeModal('modalSecretLock')">닫기</button>
+      <button class="btn btn-primary" id="btnSecretUnlock">확인</button>
+    </div>
+  </div>
+</div>
+
 <script src="assets/common.js"></script>
 <script>
   function show(id) {
@@ -445,6 +478,37 @@
       c.classList.add('active');
     });
   });
+
+  /* 비밀글 잠금 해제 (데모: 5회 실패 시 30분 잠금) */
+  (function () {
+    var fails = 0;
+    var btn = document.getElementById('btnSecretUnlock');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var input = document.getElementById('secretPw');
+      var err = document.getElementById('secretPwErr');
+      var pw = (input.value || '').trim();
+      if (!pw) { err.style.display = 'block'; err.textContent = '비밀번호를 입력해 주세요.'; input.focus(); return; }
+      /* 데모: '1234'를 정답으로 가정 */
+      if (pw === '1234') {
+        fails = 0;
+        TPKM.closeModal('modalSecretLock');
+        input.value = ''; err.style.display = 'none';
+        show('detailPane');
+      } else {
+        fails++;
+        if (fails >= 5) {
+          err.style.display = 'block';
+          err.textContent = '비밀번호 5회 오류로 30분간 잠금되었습니다.';
+          btn.disabled = true;
+        } else {
+          err.style.display = 'block';
+          err.textContent = '비밀번호가 일치하지 않습니다. (' + fails + '/5)';
+        }
+        input.value = ''; input.focus();
+      }
+    });
+  })();
 
   /* 대댓글 폼 토글 */
   function toggleReplyForm(btn) {

@@ -40,6 +40,11 @@
     }
   ];
 
+  // 로그인 필요 메뉴 (시험 접수/접수 확인/환불·정보정정신청/문의게시판)
+  // 수험표 출력(ticket.html)은 가드 제외 — 0527 정책
+  const PROTECTED = new Set();
+  MENU.forEach(m => m.children.forEach(c => { if (c.requireLogin) PROTECTED.add(c.href); }));
+
   const TAB = [
     { href: 'index.html',   key: 'home',  label: '홈',
       svg: '<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>' },
@@ -231,6 +236,19 @@
     };
     document.getElementById('btnLogout')?.addEventListener('click', onLogout);
     document.getElementById('btnLogoutMobile')?.addEventListener('click', onLogout);
+
+    // ---- Login guard on GNB/drawer protected menus ----
+    if (!Auth.user) {
+      wrap.querySelectorAll('a[href]').forEach(a => {
+        const href = a.getAttribute('href');
+        if (PROTECTED.has(href)) {
+          a.addEventListener('click', (e) => {
+            e.preventDefault();
+            location.href = 'login.html?next=' + encodeURIComponent(href);
+          });
+        }
+      });
+    }
   }
 
   // ---- Tabbar ----

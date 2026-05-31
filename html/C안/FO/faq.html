@@ -188,6 +188,8 @@
       </div>
     </div>
 
+    <p id="faqEmpty" style="display:none; text-align:center; padding:40px 16px; color:var(--text-3); font-size:14px;">검색 조건에 맞는 질문이 없습니다.</p>
+
   </div>
 </main>
 
@@ -196,12 +198,42 @@
 
 <script src="assets/common.js"></script>
 <script>
+  // ===== 카테고리 탭 + 질문/답변 실시간 검색 =====
+  const faqSearch = document.querySelector('.faq-search input');
+  let faqCat = '전체';
+
+  function filterFaq() {
+    const q = (faqSearch.value || '').trim().toLowerCase();
+    document.querySelectorAll('.faq-group').forEach(group => {
+      const head = group.querySelector('.group-head');
+      const catName = head && head.firstChild ? head.firstChild.textContent.trim() : '';
+      const catOk = faqCat === '전체' || catName === faqCat;
+      let visible = 0;
+      group.querySelectorAll('.accordion details').forEach(d => {
+        const text = (d.textContent || '').toLowerCase();
+        const show = catOk && (!q || text.includes(q));
+        d.style.display = show ? '' : 'none';
+        if (show) visible++;
+        d.open = !!q && show; // 검색 시 매칭 항목 펼치기, 검색어 없으면 접기
+      });
+      group.style.display = (catOk && visible > 0) ? '' : 'none';
+    });
+    const empty = document.getElementById('faqEmpty');
+    if (empty) {
+      const anyVisible = [...document.querySelectorAll('.faq-group')].some(g => g.style.display !== 'none');
+      empty.style.display = anyVisible ? 'none' : '';
+    }
+  }
+
   document.querySelectorAll('.faq-tabs .chip').forEach(c => {
     c.addEventListener('click', () => {
       document.querySelectorAll('.faq-tabs .chip').forEach(x => x.classList.remove('active'));
       c.classList.add('active');
+      faqCat = c.textContent.trim();
+      filterFaq();
     });
   });
+  faqSearch.addEventListener('input', filterFaq);
 </script>
 </body>
 </html>

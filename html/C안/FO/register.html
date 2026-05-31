@@ -184,6 +184,10 @@
       </ol>
     </div>
 
+    <div style="display:flex; justify-content:flex-end; margin-bottom: 12px;">
+      <button type="button" class="btn btn-ghost btn-sm" id="btnSaveDraft">저장 후 나가기</button>
+    </div>
+
     <!-- ============ STEP 1: 회차·급수 ============ -->
     <section class="step-pane active" data-s="1">
       <h2 class="h3" style="margin-bottom: 6px;">응시 회차 선택</h2>
@@ -450,8 +454,63 @@
     if (!document.getElementById('agreeTerms').checked) {
       alert('약관에 동의해 주세요.'); return;
     }
+    localStorage.removeItem(DRAFT_KEY); // 제출 완료 시 임시저장 제거
     TPKM.openModal('modalDone');
   });
+
+  // ===== 저장 후 나가기 (임시저장) / 재진입 시 복원 =====
+  const DRAFT_KEY = 'tpkm_reg_draft';
+
+  function collectDraft() {
+    const cards = [...document.querySelectorAll('.round-card')];
+    return {
+      step: +document.querySelector('.step-pane.active').dataset.s,
+      round: cards.findIndex(c => c.classList.contains('selected')),
+      lvl1: document.getElementById('lvl1').checked,
+      lvl2: document.getElementById('lvl2').checked,
+      photoChecks: [...document.querySelectorAll('.check-photo input')].map(c => c.checked),
+      agree: document.getElementById('agreeTerms').checked,
+      savedAt: new Date().toISOString()
+    };
+  }
+
+  document.getElementById('btnSaveDraft').addEventListener('click', () => {
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraft())); } catch (e) {}
+    alert('작성 중인 접수 정보가 임시 저장되었습니다.\n다음에 시험 접수 화면에 다시 들어오시면 이어서 작성할 수 있습니다.');
+    location.href = 'mypage.html';
+  });
+
+  function restoreDraft() {
+    let raw = null;
+    try { raw = localStorage.getItem(DRAFT_KEY); } catch (e) {}
+    if (!raw) return;
+    let d = null;
+    try { d = JSON.parse(raw); } catch (e) { return; }
+    if (!d) return;
+
+    const when = d.savedAt ? new Date(d.savedAt).toLocaleString('ko-KR') : '';
+    if (!confirm('임시 저장된 접수 정보가 있습니다' + (when ? ' (' + when + ' 저장)' : '') + '.\n이어서 작성하시겠습니까?\n[취소] 시 임시저장을 삭제하고 새로 시작합니다.')) {
+      localStorage.removeItem(DRAFT_KEY);
+      return;
+    }
+
+    const cards = [...document.querySelectorAll('.round-card')];
+    if (typeof d.round === 'number' && d.round >= 0 && cards[d.round] && !cards[d.round].classList.contains('disabled')) {
+      cards.forEach(x => x.classList.remove('selected'));
+      cards[d.round].classList.add('selected');
+    }
+    document.getElementById('lvl1').checked = !!d.lvl1;
+    document.getElementById('lvl2').checked = !!d.lvl2;
+    if (Array.isArray(d.photoChecks)) {
+      const inputs = [...document.querySelectorAll('.check-photo input')];
+      inputs.forEach((c, i) => { c.checked = !!d.photoChecks[i]; });
+      document.getElementById('btnGoStep4').disabled = !inputs.every(x => x.checked);
+    }
+    document.getElementById('agreeTerms').checked = !!d.agree;
+    updateSummary();
+    if (d.step) go(d.step);
+  }
+  restoreDraft();
 </script>
 </body>
 </html>

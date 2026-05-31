@@ -8,6 +8,7 @@ const NAV = [
 
   { section: '접수' },
   { id: 'applicants',  label: '접수자 목록',     icon: 'Users',  badge: 'unreviewed' },
+  { id: 'photos',      label: '사진 심사',       icon: 'Image',  badge: 'photoWait' },
 
   { section: '시험 운영' },
   { id: 'sessions',    label: '회차 관리',       icon: 'Calendar' },
@@ -33,6 +34,7 @@ const PANEL_TITLE = Object.fromEntries(NAV.filter(n => n.id).map(n => [n.id, n.l
 const CRUMB = {
   dashboard:  ['메인', '대시보드'],
   applicants: ['접수 관리', '접수자 목록'],
+  photos:     ['접수 관리', '사진 심사'],
   sessions:   ['시험 관리', '회차 관리'],
   venues:     ['시험 관리', '시험장 관리'],
   notices:    ['콘텐츠 관리', '공지사항'],
@@ -88,6 +90,7 @@ function App() {
   const PanelByRoute = {
     dashboard:  window.DashboardPanel,
     applicants: window.ApplicantsPanel,
+    photos:     window.PhotosPanel,
     sessions:   window.SessionsPanel,
     venues:     window.VenuesPanel,
     notices:    window.NoticesPanel,
@@ -157,7 +160,7 @@ function App() {
           <div className="tb-spacer"></div>
           <div className="tb-actions">
             {/* Session switcher — context for applicant/exam panels */}
-            {['dashboard','applicants'].includes(route) && (
+            {['dashboard','applicants','photos'].includes(route) && (
               <select
                 className="select"
                 style={{ height: 36, fontSize: 13, minWidth: 200 }}
@@ -170,7 +173,7 @@ function App() {
                 ))}
               </select>
             )}
-            <a className="tb-iconbtn" href="index.html" target="_blank" title="사이트 보기(새 창)">
+            <a className="tb-iconbtn" href="../../FO/index.html" target="_blank" rel="noopener" title="사이트 보기(새 창)">
               <I.ExternalLink/>
             </a>
             <button className="tb-iconbtn" title="알림">

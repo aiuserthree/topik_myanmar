@@ -40,6 +40,39 @@
     .topbar h1{font-size:17px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:8px;}
     .topbar-right{display:flex;align-items:center;gap:12px;}
     .admin-tag{background:#f0f4ff;color:var(--navy);padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:5px;}
+    /* 사진 심사 전용 패널 — 카드 그리드 */
+    .pr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:16px;}
+    .pr-card{background:white;border:1px solid var(--gray-light);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);}
+    .pr-card-photo{width:100%;aspect-ratio:3/4;background:#f0f4ff;object-fit:cover;cursor:pointer;display:block;}
+    .pr-card-body{padding:12px 14px;display:flex;flex-direction:column;gap:7px;}
+    .pr-card-name{font-size:14px;font-weight:700;color:var(--navy);}
+    .pr-card-meta{font-size:11.5px;color:var(--gray-text);line-height:1.55;}
+    .pr-card select.pr-reason{width:100%;font-size:12px;padding:6px 8px;border:1.5px solid var(--gray-light);border-radius:8px;font-family:inherit;background:white;color:#1a1a2e;}
+    .pr-card-actions{display:flex;gap:6px;margin-top:2px;}
+    .pr-card-actions .btn{flex:1;justify-content:center;font-size:12px;padding:7px 8px;}
+    .pr-empty{grid-column:1/-1;text-align:center;color:var(--gray-text);padding:44px 0;font-size:14px;background:white;border:1px dashed var(--gray-light);border-radius:12px;}
+    /* 접수자 상세 — 처리 이력 타임라인 */
+    .ap-timeline{list-style:none;margin:6px 0 0;padding:0;position:relative;}
+    .ap-timeline:before{content:"";position:absolute;left:5px;top:4px;bottom:4px;width:2px;background:var(--gray-light);}
+    .ap-tl-item{position:relative;padding:0 0 14px 22px;}
+    .ap-tl-item:last-child{padding-bottom:0;}
+    .ap-tl-dot{position:absolute;left:0;top:3px;width:12px;height:12px;border-radius:50%;background:var(--navy);border:2px solid #fff;box-shadow:0 0 0 1px var(--gray-light);}
+    .ap-tl-top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline;}
+    .ap-tl-action{font-size:13px;font-weight:700;color:var(--navy);}
+    .ap-tl-meta{font-size:11px;color:var(--gray-text);}
+    .ap-tl-change{font-size:12px;color:#374151;margin-top:2px;}
+    .ap-tl-memo{font-size:12px;color:var(--gray-text);margin-top:3px;background:#f8fafc;border:1px solid var(--gray-light);border-radius:6px;padding:5px 8px;}
+    /* 콘텐츠 폼 — 다국어 탭 / 노출 설정 */
+    .ml-tab-bar{display:flex;gap:4px;margin:14px 0 10px;border-bottom:1.5px solid var(--gray-light);}
+    .ml-tab{padding:7px 14px;font-size:12px;font-weight:600;border:none;background:none;cursor:pointer;color:var(--gray-text);font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-1.5px;}
+    .ml-tab.active{color:var(--navy);border-bottom-color:var(--navy);}
+    .ml-panel{display:none;}
+    .ml-panel.active{display:block;}
+    .content-toggle-row{display:flex;align-items:center;gap:8px;margin:12px 0 4px;font-size:13px;color:var(--navy);font-weight:600;cursor:pointer;}
+    .content-show-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+    .content-show-grid label{display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+    .content-show-grid input{width:100%;}
+    @media(max-width:560px){.content-show-grid{grid-template-columns:1fr;}}
 
     /* Page Content */
     .page-content{padding:24px 28px;flex:1;}
@@ -374,6 +407,7 @@
       body.print-applicants #panel-dashboard,
       body.print-applicants #panel-rounds,
       body.print-applicants #panel-notices,
+      body.print-applicants #panel-photo-review,
       body.print-applicants #panel-faq{display:none !important;}
       body.print-applicants #panel-applicants{display:block !important;}
       body.print-applicants .sb-menu-btn,
@@ -478,6 +512,10 @@
       <span class="sb-icon"><svg class="icon" width="16" height="16"><use href="#ic-users"/></svg></span>접수자 목록
       <span class="sb-badge-count alert" id="badgeApplicants">8</span>
     </button>
+    <button type="button" class="sb-link" id="sbPhotoReview" onclick="showPanel('photo-review',this)">
+      <span class="sb-icon"><svg class="icon" width="16" height="16"><use href="#ic-image"/></svg></span>사진 심사
+      <span class="sb-badge-count alert" id="badgePhotoReview"></span>
+    </button>
     <div class="sb-section">시험 관리</div>
     <button type="button" class="sb-link" onclick="showPanel('rounds',this)">
       <span class="sb-icon"><svg class="icon" width="16" height="16"><use href="#ic-calendar"/></svg></span>회차 관리
@@ -492,11 +530,11 @@
     <button type="button" class="sb-link" onclick="showPanel('faq',this)">
       <span class="sb-icon"><svg class="icon" width="16" height="16"><use href="#ic-info"/></svg></span>FAQ 관리
     </button>
-    <button type="button" class="sb-link" onclick="showPanel('refund-board',this)">
+    <button type="button" class="sb-link" id="sbRefundBoard" onclick="showPanel('refund-board',this)">
       <span class="sb-icon"><svg class="icon" width="16" height="16"><use href="#ic-folder"/></svg></span>환불·정보정정
       <span class="sb-badge-count alert" id="badgeRefund">2</span>
     </button>
-    <button type="button" class="sb-link" onclick="showPanel('inquiry-board',this)">
+    <button type="button" class="sb-link" id="sbInquiryBoard" onclick="showPanel('inquiry-board',this)">
       <span class="sb-icon"><svg class="icon" width="16" height="16"><use href="#ic-email"/></svg></span>문의게시판
       <span class="sb-badge-count" id="badgeInquiry">1</span>
     </button>
@@ -541,8 +579,8 @@
       </h1>
     </div>
     <div class="topbar-right">
-      <div class="admin-tag">
-        <svg class="icon" width="13" height="13"><use href="#ic-user"/></svg>관리자
+      <div class="admin-tag" id="topbarAdminTag" title="로그인한 관리자">
+        <svg class="icon" width="13" height="13"><use href="#ic-user"/></svg><span id="topbarAdminLabel">관리자</span>
       </div>
     </div>
   </div>
@@ -690,6 +728,9 @@
             <button type="button" class="btn btn-green" onclick="downloadExcel()">
               <svg class="icon" width="13" height="13"><use href="#ic-download"/></svg>엑셀 다운로드
             </button>
+            <button type="button" class="btn btn-navy" onclick="downloadPhotoZip()">
+              <svg class="icon" width="13" height="13"><use href="#ic-image"/></svg>사진 일괄 다운로드(ZIP)
+            </button>
             <button type="button" class="btn btn-gray" onclick="printApplicantList()">
               <svg class="icon" width="13" height="13"><use href="#ic-print"/></svg>인쇄
             </button>
@@ -709,22 +750,35 @@
               <option value="98" selected>제98회 (진행중 · 142명)</option>
             </select>
           </label>
-          <div class="filter-chip-scroll">
-          <button type="button" id="applicantChipAll" class="filter-chip active" onclick="filterStatus(this,'all')">전체 <span id="cntAll">142</span></button>
-          <button type="button" class="filter-chip" onclick="filterStatus(this,'pending')">
+          <label class="applicant-round-picker"><span class="applicant-round-picker-label">시험장</span>
+            <select id="applicantVenueSelect" aria-label="시험장 선택" onchange="onApplicantVenueFilterChange(this.value)">
+              <option value="all">전체</option>
+            </select>
+          </label>
+          <label class="applicant-round-picker"><span class="applicant-round-picker-label">급수</span>
+            <select id="applicantLevelSelect" aria-label="급수 선택" onchange="onApplicantLevelFilterChange(this.value)">
+              <option value="all">전체</option>
+              <option value="I">Ⅰ</option>
+              <option value="II">Ⅱ</option>
+              <option value="both">동시</option>
+            </select>
+          </label>
+          <div class="filter-chip-scroll" id="applicantStatusChips">
+          <button type="button" id="applicantChipAll" class="filter-chip active" data-status="all" onclick="filterStatus(this,'all')">전체 <span id="cntAll">142</span></button>
+          <button type="button" class="filter-chip" data-status="pending" onclick="filterStatus(this,'pending')">
             <svg class="icon" width="10" height="10"><use href="#ic-ticket"/></svg>접수완료 <span id="cntPending">7</span>
           </button>
-          <button type="button" class="filter-chip" onclick="filterStatus(this,'review')">
-            <svg class="icon" width="10" height="10"><use href="#ic-image"/></svg>검토중 <span id="cntReview">8</span>
+          <button type="button" class="filter-chip" data-status="review" onclick="filterStatus(this,'review')">
+            <svg class="icon" width="10" height="10"><use href="#ic-image"/></svg>사진심사중 <span id="cntReview">8</span>
           </button>
-          <button type="button" class="filter-chip" onclick="filterStatus(this,'approved')">
+          <button type="button" class="filter-chip" data-status="approved" onclick="filterStatus(this,'approved')">
             <svg class="icon" width="10" height="10"><use href="#ic-check"/></svg>승인 <span id="cntApproved">119</span>
           </button>
-          <button type="button" class="filter-chip" onclick="filterStatus(this,'rejected')">
+          <button type="button" class="filter-chip" data-status="rejected" onclick="filterStatus(this,'rejected')">
             <svg class="icon" width="10" height="10"><use href="#ic-x"/></svg>반려 <span id="cntRejected">3</span>
           </button>
-          <button type="button" class="filter-chip" onclick="filterStatus(this,'cancelled')">취소 <span id="cntCancelled">5</span></button>
-          <button class="filter-chip" onclick="filterPaidOnly(this)">수납 미완료</button>
+          <button type="button" class="filter-chip" data-status="cancelled" onclick="filterStatus(this,'cancelled')">취소 <span id="cntCancelled">5</span></button>
+          <button class="filter-chip" data-status="unpaid" onclick="filterPaidOnly(this)">수납 미완료</button>
           </div>
           <div class="search-mini">
             <input type="text" placeholder="이름 / 수험번호 검색" id="tableSearch" oninput="searchTable()"/>
@@ -750,6 +804,14 @@
               <th>사진</th>
               <th>이름(한글)</th>
               <th>이름(영문)</th>
+              <th>생년월일</th>
+              <th title="1=남성 · 2=여성">성별</th>
+              <th>국적</th>
+              <th>제1언어</th>
+              <th>직업</th>
+              <th>응시동기</th>
+              <th>응시목적</th>
+              <th>시험장</th>
               <th>급수</th>
               <th>접수일</th>
               <th>수납</th>
@@ -764,6 +826,25 @@
         <div class="table-footer">
           <span id="applicantPagingSummary">총 142명</span>
           <div class="pagination" id="applicantPagination" aria-label="접수자 목록 페이지"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 사진 심사 (전용 패널) ══ -->
+    <div id="panel-photo-review" style="display:none;">
+      <div class="panel">
+        <div class="panel-header">
+          <h2><svg class="icon" width="16" height="16" color="var(--red)"><use href="#ic-image"/></svg>사진 심사 <span style="font-size:11px;font-weight:400;color:var(--gray-text);margin-left:4px;">증명사진 승인·반려 (카드형)</span></h2>
+          <div class="panel-actions">
+            <button type="button" class="btn btn-gray" onclick="renderPhotoReviewPanel()"><svg class="icon" width="13" height="13"><use href="#ic-settings"/></svg>새로고침</button>
+          </div>
+        </div>
+        <div class="admin-callout" style="padding:12px 20px;background:#fffbeb;font-size:12px;color:#92400e;border-bottom:1px solid #fcd34d;line-height:1.55;">
+          <strong>미심사 사진</strong>만 카드로 표시됩니다. 카드에서 바로 <strong>승인</strong>하거나 <strong>반려 사유</strong>를 선택해 반려할 수 있습니다. 처리 결과는 접수자 목록·대시보드와 동기화됩니다.
+        </div>
+        <div style="padding:16px 20px;">
+          <div id="photoReviewSummary" style="font-size:13px;color:var(--gray-text);margin-bottom:14px;"></div>
+          <div id="photoReviewGrid" class="pr-grid"></div>
         </div>
       </div>
     </div>
@@ -1501,10 +1582,40 @@
         <p class="faq-form-hint" id="noticeFormHint">새 공지를 작성합니다.</p>
         <label for="noticeCatSelect" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">카테고리</label>
         <select id="noticeCatSelect"></select>
-        <label for="noticeTitleInput" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:12px 0 6px;">제목</label>
-        <input type="text" id="noticeTitleInput" placeholder="공지사항 제목을 입력하세요"/>
-        <label for="noticeBodyInput" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:12px 0 6px;">내용</label>
-        <textarea id="noticeBodyInput" placeholder="공지사항 내용을 입력하세요..." rows="8"></textarea>
+        <div class="content-show-grid">
+          <div>
+            <label for="noticeShowStart">노출 시작 일시</label>
+            <input type="datetime-local" id="noticeShowStart"/>
+          </div>
+          <div>
+            <label for="noticeShowEnd">노출 종료 일시</label>
+            <input type="datetime-local" id="noticeShowEnd"/>
+          </div>
+        </div>
+        <label class="content-toggle-row"><input type="checkbox" id="noticePinned"/> 상단 고정 (목록 최상단에 우선 노출)</label>
+        <div class="ml-tab-bar" role="tablist" aria-label="다국어 입력">
+          <button type="button" class="ml-tab active" onclick="noticeFormLang('ko',this)">한국어 (KO)</button>
+          <button type="button" class="ml-tab" onclick="noticeFormLang('my',this)">မြန်မာ (MY)</button>
+          <button type="button" class="ml-tab" onclick="noticeFormLang('en',this)">English (EN)</button>
+        </div>
+        <div class="ml-panel active" data-mlpanel="ko">
+          <label for="noticeTitleInput" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:6px 0 6px;">제목 (KO)</label>
+          <input type="text" id="noticeTitleInput" placeholder="공지사항 제목을 입력하세요"/>
+          <label for="noticeBodyInput" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:12px 0 6px;">내용 (KO)</label>
+          <textarea id="noticeBodyInput" placeholder="공지사항 내용을 입력하세요..." rows="8"></textarea>
+        </div>
+        <div class="ml-panel" data-mlpanel="my">
+          <label for="noticeTitleInputMy" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:6px 0 6px;">제목 (MY)</label>
+          <input type="text" id="noticeTitleInputMy" placeholder="ခေါင်းစဉ် (မြန်မာဘာသာ)"/>
+          <label for="noticeBodyInputMy" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:12px 0 6px;">내용 (MY)</label>
+          <textarea id="noticeBodyInputMy" placeholder="မြန်မာဘာသာဖြင့် အကြောင်းအရာ..." rows="8"></textarea>
+        </div>
+        <div class="ml-panel" data-mlpanel="en">
+          <label for="noticeTitleInputEn" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:6px 0 6px;">제목 (EN)</label>
+          <input type="text" id="noticeTitleInputEn" placeholder="Title (English)"/>
+          <label for="noticeBodyInputEn" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:12px 0 6px;">내용 (EN)</label>
+          <textarea id="noticeBodyInputEn" placeholder="Content in English..." rows="8"></textarea>
+        </div>
         <div class="notice-attach-block">
           <span class="notice-attach-label">첨부파일</span>
           <label class="notice-upload-zone" for="noticeFileInput">
@@ -1543,10 +1654,31 @@
         <p class="faq-form-hint" id="faqFormHint">새 FAQ를 등록합니다.</p>
         <label for="faqCat" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">분류</label>
         <select id="faqCat"></select>
-        <label for="faqQ" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">질문</label>
-        <input type="text" id="faqQ" placeholder="자주 묻는 질문을 입력하세요"/>
-        <label for="faqA" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">답변</label>
-        <textarea id="faqA" placeholder="답변 내용을 입력하세요..."></textarea>
+        <label for="faqOrder" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:12px 0 6px;">노출 순서</label>
+        <input type="number" id="faqOrder" min="1" step="1" placeholder="숫자(작을수록 상단)" style="width:180px;"/>
+        <div class="ml-tab-bar" role="tablist" aria-label="다국어 입력">
+          <button type="button" class="ml-tab active" onclick="faqFormLang('ko',this)">한국어 (KO)</button>
+          <button type="button" class="ml-tab" onclick="faqFormLang('my',this)">မြန်မာ (MY)</button>
+          <button type="button" class="ml-tab" onclick="faqFormLang('en',this)">English (EN)</button>
+        </div>
+        <div class="ml-panel active" data-mlpanel="ko">
+          <label for="faqQ" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:6px 0 6px;">질문 (KO)</label>
+          <input type="text" id="faqQ" placeholder="자주 묻는 질문을 입력하세요"/>
+          <label for="faqA" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:12px 0 6px;">답변 (KO)</label>
+          <textarea id="faqA" placeholder="답변 내용을 입력하세요..."></textarea>
+        </div>
+        <div class="ml-panel" data-mlpanel="my">
+          <label for="faqQMy" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:6px 0 6px;">질문 (MY)</label>
+          <input type="text" id="faqQMy" placeholder="မေးခွန်း (မြန်မာ)"/>
+          <label for="faqAMy" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:12px 0 6px;">답변 (MY)</label>
+          <textarea id="faqAMy" placeholder="အဖြေ (မြန်မာဘာသာ)..."></textarea>
+        </div>
+        <div class="ml-panel" data-mlpanel="en">
+          <label for="faqQEn" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:6px 0 6px;">질문 (EN)</label>
+          <input type="text" id="faqQEn" placeholder="Question (English)"/>
+          <label for="faqAEn" style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin:12px 0 6px;">답변 (EN)</label>
+          <textarea id="faqAEn" placeholder="Answer in English..."></textarea>
+        </div>
         <div class="notice-form-btns">
           <button type="button" class="btn btn-navy" id="faqSubmitBtn" onclick="submitFaqDemo()">
             <svg class="icon" width="13" height="13"><use href="#ic-info"/></svg><span id="faqSubmitLbl">등록</span>
@@ -1569,6 +1701,15 @@
     </div>
     <div class="modal-body">
       <p class="reject-reason-hint" id="rejectReasonContextHint">응시자에게 안내됩니다. 구체적으로 입력해 주세요.</p>
+      <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">반려 사유 분류 <span style="color:var(--red);">*</span></label>
+      <select id="rejectReasonCode" style="width:100%;padding:9px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-family:inherit;margin-bottom:10px;background:white;">
+        <option value="">분류 선택</option>
+        <option value="사진 부적합">사진 부적합</option>
+        <option value="정보 불일치">정보 불일치</option>
+        <option value="중복 접수">중복 접수</option>
+        <option value="기타">기타</option>
+      </select>
+      <label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">상세 사유</label>
       <textarea id="rejectReasonInput" class="reject-reason-textarea" placeholder="예) 증명사진 배경이 기준에 맞지 않음, 상반신이 잘림 등" title="반려 사유"></textarea>
     </div>
     <div class="modal-foot">
@@ -2077,6 +2218,8 @@
     rejectReasonBulkRows=null;
     var ta=document.getElementById('rejectReasonInput');
     if(ta)ta.value='';
+    var codeEl=document.getElementById('rejectReasonCode');
+    if(codeEl)codeEl.value='';
     var mh=document.getElementById('rejectReasonModalTitle');
     if(mh)mh.textContent='반려 사유';
   }
@@ -2137,11 +2280,15 @@
   }
   function submitRejectReason(){
     var ta=document.getElementById('rejectReasonInput');
-    var raw=(ta&&ta.value||'').trim();
-    if(!raw){
-      alert('반려 사유를 입력해 주세요.');
+    var codeEl=document.getElementById('rejectReasonCode');
+    var code=(codeEl&&codeEl.value||'').trim();
+    var detail=(ta&&ta.value||'').trim();
+    if(!code){
+      alert('반려 사유 분류를 선택해 주세요.');
       return;
     }
+    /* 정형 사유코드 + 상세 사유 결합 */
+    var raw=code+(detail?(' — '+detail):'');
     var ab=rejectReasonApplicantBtn;
     var bulk=rejectReasonBulkRows;
     closeRejectReasonModal();
@@ -2243,7 +2390,10 @@
       message:'관리자 세션을 종료합니다.',
       confirmLabel:'로그아웃',
       danger:true,
-      onConfirm:function(){ AdminAuth.logout(); }
+      onConfirm:function(){
+        if(typeof pushAudit==='function'){try{pushAudit({type:'관리자계정',target:AdminAuth.currentUser(),action:'로그아웃'});}catch(e){}}
+        AdminAuth.logout();
+      }
     });
   }
   function confirmOpenPublicSite(){
@@ -2613,6 +2763,33 @@
     alert('마케팅 이메일 발송 요청이 완료되었습니다.\n수신자 수: '+marketingCount+'명\n제목: '+subject.trim()+'\n\n※ 프로토타입 환경에서는 실제 발송되지 않습니다.');
   }
 
+  /* 공지 다국어·노출설정 메타 — ContentStore 외 별도 보관(데모) */
+  var NOTICE_META_KEY='tm_notice_meta_v1';
+  function noticeMetaLoad(id){
+    if(!id)return null;
+    try{var m=JSON.parse(localStorage.getItem(NOTICE_META_KEY)||'{}');return m[id]||null;}catch(e){return null;}
+  }
+  function noticeMetaSave(id,meta){
+    if(!id)return;
+    try{var m=JSON.parse(localStorage.getItem(NOTICE_META_KEY)||'{}');m[id]=meta;localStorage.setItem(NOTICE_META_KEY,JSON.stringify(m));}catch(e){}
+  }
+  function noticeFormLang(lang,btn){
+    var wrap=document.querySelector('#modalNoticeForm .notice-form-wrap');
+    if(!wrap)return;
+    wrap.querySelectorAll('.ml-tab').forEach(function(t){t.classList.remove('active');});
+    if(btn)btn.classList.add('active');
+    wrap.querySelectorAll('.ml-panel').forEach(function(p){
+      p.classList.toggle('active',p.getAttribute('data-mlpanel')===lang);
+    });
+  }
+  function noticeFormResetExtra(){
+    ['noticeTitleInputMy','noticeBodyInputMy','noticeTitleInputEn','noticeBodyInputEn','noticeShowStart','noticeShowEnd'].forEach(function(id){
+      var el=document.getElementById(id); if(el)el.value='';
+    });
+    var pin=document.getElementById('noticePinned'); if(pin)pin.checked=false;
+    var firstTab=document.querySelector('#modalNoticeForm .ml-tab');
+    if(firstTab)noticeFormLang('ko',firstTab);
+  }
   function openNoticeFormNew(){
     noticeEditingTr=null;
     resetNoticeAttachments();
@@ -2621,6 +2798,7 @@
     document.getElementById('noticeSubmitLbl').textContent='등록';
     document.getElementById('noticeTitleInput').value='';
     document.getElementById('noticeBodyInput').value='';
+    noticeFormResetExtra();
     refreshNoticeTaxonomyAdmin();
     openNoticeFormModal();
     document.getElementById('noticeTitleInput').focus();
@@ -2634,6 +2812,7 @@
     document.getElementById('noticeSubmitLbl').textContent='등록';
     document.getElementById('noticeTitleInput').value='';
     document.getElementById('noticeBodyInput').value='';
+    noticeFormResetExtra();
   }
   function editNoticeAdminRow(btn){
     var tr=btn.closest('tr');
@@ -2652,6 +2831,18 @@
       return { id:a.id||('at_legacy_'+Math.random().toString(36).slice(2)), name:a.name||'첨부', mime:a.mime||'', size:a.size, href:a.href||'' };
     }).filter(function(a){ return a.href; });
     renderNoticeDraftAttachments();
+    noticeFormResetExtra();
+    var meta=noticeMetaLoad(it.id);
+    if(meta){
+      var setv=function(id,v){var el=document.getElementById(id);if(el&&v!=null)el.value=v;};
+      setv('noticeShowStart',meta.showStart);
+      setv('noticeShowEnd',meta.showEnd);
+      setv('noticeTitleInputMy',meta.titleMy);
+      setv('noticeBodyInputMy',meta.bodyMy);
+      setv('noticeTitleInputEn',meta.titleEn);
+      setv('noticeBodyInputEn',meta.bodyEn);
+      var pin=document.getElementById('noticePinned'); if(pin)pin.checked=!!meta.pinned;
+    }
     document.getElementById('modalNoticeFormTitle').textContent='공지 수정';
     document.getElementById('noticeFormHint').textContent='선택한 공지를 수정합니다.';
     document.getElementById('noticeSubmitLbl').textContent='저장';
@@ -2686,8 +2877,21 @@
           alert('저장에 실패했습니다. 첨부 용량·개수를 줄이거나 내용을 짧게 한 뒤 다시 시도해 주세요.');
           return;
         }
+        /* 노출 일시·상단 고정·다국어(MY/EN) 메타 저장 (데모 — ContentStore 외 별도 보관) */
+        noticeMetaSave(saved.id,{
+          pinned:!!(document.getElementById('noticePinned')||{}).checked,
+          showStart:(document.getElementById('noticeShowStart')||{}).value||'',
+          showEnd:(document.getElementById('noticeShowEnd')||{}).value||'',
+          titleMy:(document.getElementById('noticeTitleInputMy')||{}).value||'',
+          bodyMy:(document.getElementById('noticeBodyInputMy')||{}).value||'',
+          titleEn:(document.getElementById('noticeTitleInputEn')||{}).value||'',
+          bodyEn:(document.getElementById('noticeBodyInputEn')||{}).value||''
+        });
         if(!editing){
           mockMarketingNoticeEmail(saved);
+        }
+        if(typeof pushAudit==='function'){
+          pushAudit({type:'공지',target:saved.id,action:editing?'수정':'생성',memo:saved.title||''});
         }
         renderNoticeAdminTable();
         cancelNoticeForm();
@@ -2735,7 +2939,9 @@
       danger:true,
       onConfirm:function(){
         if(noticeEditingTr===tr)cancelNoticeForm();
-        if(window.ContentStore&&tr&&tr.dataset.noticeId) ContentStore.removeNoticeItem(tr.dataset.noticeId);
+        var delId=tr&&tr.dataset.noticeId;
+        if(window.ContentStore&&delId) ContentStore.removeNoticeItem(delId);
+        if(typeof pushAudit==='function'&&delId)pushAudit({type:'공지',target:delId,action:'삭제',memo:title});
         renderNoticeAdminTable();
       }
     });
@@ -2904,12 +3110,36 @@
       rows[i].cells[0].textContent=String(total-i);
     }
   }
+  /* FAQ 노출 순서·다국어(MY/EN) 메타 — ContentStore 외 별도 보관(데모) */
+  var FAQ_META_KEY='tm_faq_meta_v1';
+  function faqMetaLoad(id){
+    if(!id)return null;
+    try{var m=JSON.parse(localStorage.getItem(FAQ_META_KEY)||'{}');return m[id]||null;}catch(e){return null;}
+  }
+  function faqMetaSave(id,meta){
+    if(!id)return;
+    try{var m=JSON.parse(localStorage.getItem(FAQ_META_KEY)||'{}');m[id]=meta;localStorage.setItem(FAQ_META_KEY,JSON.stringify(m));}catch(e){}
+  }
+  function faqFormLang(lang,btn){
+    var wrap=document.querySelector('#modalFaqForm .notice-form-wrap');
+    if(!wrap)return;
+    wrap.querySelectorAll('.ml-tab').forEach(function(t){t.classList.remove('active');});
+    if(btn)btn.classList.add('active');
+    wrap.querySelectorAll('.ml-panel').forEach(function(p){
+      p.classList.toggle('active',p.getAttribute('data-mlpanel')===lang);
+    });
+  }
   function clearFaqFormFields(){
     var cats=window.ContentStore?ContentStore.getFaqCategories():[];
     var fc=document.getElementById('faqCat');
     if(fc&&cats.length) fc.value=cats[0].id;
     document.getElementById('faqQ').value='';
     document.getElementById('faqA').value='';
+    ['faqOrder','faqQMy','faqAMy','faqQEn','faqAEn'].forEach(function(id){
+      var el=document.getElementById(id); if(el)el.value='';
+    });
+    var firstTab=document.querySelector('#modalFaqForm .ml-tab');
+    if(firstTab)faqFormLang('ko',firstTab);
   }
   function setFaqFormUi(isEdit){
     document.getElementById('faqFormHint').textContent=isEdit?'선택한 FAQ를 수정합니다.':'새 FAQ를 등록합니다.';
@@ -2937,6 +3167,13 @@
     document.getElementById('faqCat').value=tr.dataset.cat||'etc';
     document.getElementById('faqQ').value=(tr.cells[1].textContent||'').trim();
     document.getElementById('faqA').value=tr.dataset.answer||'';
+    var fmeta=faqMetaLoad(tr.dataset.itemId);
+    var setf=function(id,v){var el=document.getElementById(id);if(el&&v!=null)el.value=v;};
+    setf('faqOrder',fmeta&&fmeta.order!=null?fmeta.order:'');
+    setf('faqQMy',fmeta&&fmeta.qMy);
+    setf('faqAMy',fmeta&&fmeta.aMy);
+    setf('faqQEn',fmeta&&fmeta.qEn);
+    setf('faqAEn',fmeta&&fmeta.aEn);
     document.getElementById('modalFaqFormTitle').textContent='FAQ 수정';
     setFaqFormUi(true);
     openFaqFormModal();
@@ -2957,7 +3194,21 @@
         if(!window.ContentStore)return;
         var payload={ catId:cat, question:q, answer:a };
         if(editing&&editing.dataset.itemId) payload.id=editing.dataset.itemId;
-        ContentStore.upsertFaqItem(payload);
+        var savedFaq=ContentStore.upsertFaqItem(payload);
+        /* 노출 순서·다국어(MY/EN) 메타 저장 (데모) */
+        if(savedFaq&&savedFaq.id){
+          var ordRaw=(document.getElementById('faqOrder')||{}).value||'';
+          faqMetaSave(savedFaq.id,{
+            order:ordRaw===''?null:parseInt(ordRaw,10),
+            qMy:(document.getElementById('faqQMy')||{}).value||'',
+            aMy:(document.getElementById('faqAMy')||{}).value||'',
+            qEn:(document.getElementById('faqQEn')||{}).value||'',
+            aEn:(document.getElementById('faqAEn')||{}).value||''
+          });
+        }
+        if(typeof pushAudit==='function'&&savedFaq&&savedFaq.id){
+          pushAudit({type:'FAQ',target:savedFaq.id,action:editing?'수정':'생성',memo:q});
+        }
         renderFaqAdminTable();
         alert(editing?'FAQ가 수정되었습니다.':'FAQ가 등록되었습니다.');
         cancelFaqForm();
@@ -2977,7 +3228,9 @@
           faqEditingTr=null;
           cancelFaqForm();
         }
-        if(tr&&tr.dataset.itemId&&window.ContentStore) ContentStore.removeFaqItem(tr.dataset.itemId);
+        var faqDelId=tr&&tr.dataset.itemId;
+        if(faqDelId&&window.ContentStore) ContentStore.removeFaqItem(faqDelId);
+        if(typeof pushAudit==='function'&&faqDelId)pushAudit({type:'FAQ',target:faqDelId,action:'삭제',memo:title});
         renderFaqAdminTable();
       }
     });
@@ -3123,17 +3376,31 @@
     if(app)app.value=v;
     return v;
   }
+  /* 고객사 0526 — 수험번호는 수납 마감(7.26) 후 「수험번호 일괄 부여」로만 채번한다.
+     수납/승인 시 즉시 부여하지 않는다(자동 채번 비활성). */
   function applicantAssignExamIfEligible(row){
-    if(!row||!row.cells||row.cells.length<AP_COL.exam+1)return;
-    if(row.dataset.status!=='approved'||row.dataset.paid!=='1')return;
-    var cell=apCell(row,'exam');
-    var cur=(cell.textContent||'').trim();
-    if(cur&&cur!=='—')return;
-    var num=parseInt(row.getAttribute('data-applicant-no'),10);
-    if(!isFinite(num))return;
-    var pref=(currentApplicantRoundConfig&&currentApplicantRoundConfig.prefix)||'MM-98-';
-    if(num%4!==0) cell.textContent=pref+String(num).padStart(4,'0');
-    else cell.textContent=pref+String(nextExamSeq++).slice(-4);
+    return;
+  }
+  /* 13자리 수험번호: 국가(3) 025 + 지역(3) 001 + 수준(1) 7=Ⅰ·8=Ⅱ + 시험장(2) + 응시자(4) */
+  function examLevelCode(levelText){
+    var t=String(levelText||'');
+    if(t.indexOf('II')>=0||t.indexOf('Ⅱ')>=0)return '8';
+    return '7';
+  }
+  function examVenueCode2(row){
+    /* 시험장 셀 또는 data-venue-code 에서 2자리 코드 추출, 기본 01 */
+    var vc=row&&(row.getAttribute('data-venue-code')||'');
+    if(/^\d{2}$/.test(vc))return vc;
+    var cell=row&&apCell(row,'venue');
+    var txt=cell?(cell.textContent||''):'';
+    var m=txt.match(/(\d{2})\b/);
+    return m?m[1]:'01';
+  }
+  function buildExamNo13(row,seq){
+    var COUNTRY='025', REGION='001';
+    var lv=examLevelCode((apCell(row,'level')||{}).textContent);
+    var ven=examVenueCode2(row);
+    return COUNTRY+REGION+lv+ven+String(seq).padStart(4,'0');
   }
   function updateDashboardStatsFromApplicants(){
     var rows=document.querySelectorAll('#applicantBody tr');
@@ -3147,8 +3414,10 @@
       else if(s==='cancelled')n.cancelled++;
       if(r.dataset.paid==='0')n.paid0++;
       if(r.dataset.photoStatus==='unreviewed')n.photoUnreviewed++;
-      var lvl=apCell(r,'level')?apCell(r,'level').textContent:'';
-      if(lvl.indexOf('II')>=0)n.topik2++; else if(lvl.indexOf('I')>=0)n.topik1++;
+      var lvl=r.dataset.level||'';
+      if(lvl==='both'){n.topik1++;n.topik2++;}
+      else if(lvl==='II')n.topik2++;
+      else if(lvl==='I')n.topik1++;
     });
     function set(id,v){var el=document.getElementById(id); if(el)el.textContent=String(v);}
     set('dashReviewPending',n.review+n.pending);
@@ -3161,7 +3430,8 @@
     try{
       if(typeof BoardStore!=='undefined'){
         var refundList=BoardStore.list('refund')||[];
-        var refundWait=refundList.filter(function(p){return p.status!=='done';}).length;
+        /* 환불·정정 대기 = 답변없음(관리자 답변 미등록) 기준 */
+        var refundWait=refundList.filter(function(p){return !p.adminReply||!String(p.adminReply).trim();}).length;
         var inquiryList=BoardStore.list('inquiry')||[];
         var inquiryWait=inquiryList.filter(function(p){return p.status!=='answered';}).length;
         set('dashRefundWait',refundWait);
@@ -3173,11 +3443,16 @@
   function updateSidebarBadges(){
     var rows=document.querySelectorAll('#applicantBody tr');
     var pending=0;
-    rows.forEach(function(r){if(r.dataset.status==='pending'||r.dataset.status==='review')pending++;});
+    var photoUnreviewed=0;
+    rows.forEach(function(r){
+      if(r.dataset.status==='pending'||r.dataset.status==='review')pending++;
+      if((r.dataset.photoStatus||'unreviewed')==='unreviewed'&&r.dataset.status!=='cancelled')photoUnreviewed++;
+    });
     setBadge('badgeApplicants',pending);
+    setBadge('badgePhotoReview',photoUnreviewed);
     try{
       if(typeof BoardStore!=='undefined'){
-        var refundWait=(BoardStore.list('refund')||[]).filter(function(p){return p.status!=='done';}).length;
+        var refundWait=(BoardStore.list('refund')||[]).filter(function(p){return !p.adminReply||!String(p.adminReply).trim();}).length;
         var inquiryWait=(BoardStore.list('inquiry')||[]).filter(function(p){return p.status!=='answered';}).length;
         setBadge('badgeRefund',refundWait);
         setBadge('badgeInquiry',inquiryWait);
@@ -3215,10 +3490,13 @@
         if(rb){
           if(refundList.length){
             rb.innerHTML=refundList.map(function(p){
-              return '<tr><td>'+escapeHtml(p.title||p.subject||'')+'</td><td>'+escapeHtml(p.author||p.name||'')+'</td><td>'+escapeHtml(p.created||p.date||'')+'</td><td><span class="sb sb-pending" style="font-size:10px;">'+escapeHtml(refundStatusLabel(p.status))+'</span></td></tr>';
+              var typeLabel=p.type==='correction'?'정정':'환불';
+              var replied=p.adminReply&&String(p.adminReply).trim();
+              var replyChip=replied?'<span class="sb sb-approved" style="font-size:10px;">답변완료</span>':'<span class="sb sb-pending" style="font-size:10px;">미답변</span>';
+              return '<tr><td><span class="sb sb-review" style="font-size:10px;">'+typeLabel+'</span></td><td>'+escapeHtml(p.title||p.subject||'')+'</td><td>'+escapeHtml(p.date||p.created||'')+'</td><td><span class="sb sb-review" style="font-size:10px;">'+escapeHtml(refundStatusLabel(p.status))+'</span></td><td>'+replyChip+'</td></tr>';
             }).join('');
           }else{
-            rb.innerHTML='<tr><td colspan="4" style="color:var(--gray-text);text-align:center;padding:14px;">신규 신청 없음</td></tr>';
+            rb.innerHTML='<tr><td colspan="5" style="color:var(--gray-text);text-align:center;padding:14px;">신규 신청 없음</td></tr>';
           }
         }
         var inquiryList=(BoardStore.list('inquiry')||[]).slice(0,5);
@@ -3226,7 +3504,9 @@
         if(ib){
           if(inquiryList.length){
             ib.innerHTML=inquiryList.map(function(p){
-              return '<tr><td>'+escapeHtml(p.title||p.subject||'')+'</td><td>'+escapeHtml(p.author||p.name||'')+'</td><td>'+escapeHtml(p.created||p.date||'')+'</td><td><span class="sb sb-pending" style="font-size:10px;">'+escapeHtml(inquiryStatusLabel(p.status))+'</span></td></tr>';
+              var visLabel=(p.secret||p.visibility==='secret')?'비밀':'일반';
+              var stChip=p.status==='answered'?'<span class="sb sb-approved" style="font-size:10px;">답변완료</span>':'<span class="sb sb-pending" style="font-size:10px;">답변대기</span>';
+              return '<tr><td>'+visLabel+'</td><td>'+escapeHtml(p.title||p.subject||'')+'</td><td>'+escapeHtml(p.date||p.created||'')+'</td><td>'+stChip+'</td></tr>';
             }).join('');
           }else{
             ib.innerHTML='<tr><td colspan="4" style="color:var(--gray-text);text-align:center;padding:14px;">신규 문의 없음</td></tr>';
@@ -3279,14 +3559,14 @@
     document.querySelectorAll('.sb-link').forEach(b=>b.classList.remove('active'));
     if(clickedBtn) clickedBtn.classList.add('active');
     const icons = {
-      dashboard:'ic-chart', applicants:'ic-users',
+      dashboard:'ic-chart', applicants:'ic-users', 'photo-review':'ic-image',
       rounds:'ic-calendar', venues:'ic-pin', notices:'ic-notice', faq:'ic-info',
       'refund-board':'ic-folder', 'inquiry-board':'ic-email',
       members:'ic-users', terms:'ic-rules', 'admin-users':'ic-settings',
       permissions:'ic-lock', audit:'ic-chart'
     };
     const labels = {
-      dashboard:'대시보드', applicants:'접수자 목록',
+      dashboard:'대시보드', applicants:'접수자 목록', 'photo-review':'사진 심사',
       rounds:'회차 관리', venues:'시험장 관리', notices:'공지사항 관리', faq:'FAQ 관리',
       'refund-board':'환불·정보정정신청', 'inquiry-board':'문의게시판',
       members:'회원 관리', terms:'약관 관리', 'admin-users':'관리자 계정',
@@ -3296,6 +3576,7 @@
     var lbl=labels[name]||name;
     document.getElementById('page-title').innerHTML =
       `<svg class="icon" width="18" height="18" color="var(--navy)"><use href="#${icn}"/></svg>${lbl}`;
+    if(name==='photo-review') renderPhotoReviewPanel();
     if(name==='members') initMemberPanel();
     if(name==='terms') initTermsPanel();
     if(name==='refund-board') renderAdminRefundBoard();
@@ -3366,7 +3647,27 @@
   var applicantCurrentPage=1;
   /** @type {'all'|'paid0'|'pending'|'review'|'approved'|'rejected'|'cancelled'} */
   var applicantFilterKey='all';
-  var AP_COL={cb:0,no:1,photo:2,nameKo:3,nameEn:4,level:5,regDate:6,paid:7,exam:8,photoReview:9,status:10,actions:11};
+  /* 연명부 전체 컬럼 반영(0531): 이름(영문) 뒤에 생년월일·성별·국적·제1언어·직업·응시동기·응시목적·시험장 추가 */
+  var AP_COL={cb:0,no:1,photo:2,nameKo:3,nameEn:4,birth:5,gender:6,nationality:7,firstLang:8,job:9,motive:10,purpose:11,venue:12,level:13,regDate:14,paid:15,exam:16,photoReview:17,status:18,actions:19};
+  var APPLICANT_VENUES=['양곤 제1시험장','양곤 제2시험장','만달레이 시험장','네피도 시험장'];
+  var applicantVenueFilter='all';
+  var applicantLevelFilter='all';
+  function applicantGenderCode(g){
+    g=String(g||'');
+    if(g.indexOf('남')>=0)return '1';
+    if(g.indexOf('여')>=0)return '2';
+    return '—';
+  }
+  function applicantLevelInfo(num,fix){
+    if(fix&&fix.level){
+      var lv=String(fix.level);
+      var code=fix.levelCode||(lv.indexOf('II')>=0||lv.indexOf('Ⅱ')>=0?(lv.indexOf('Ⅰ')>=0?'both':'II'):'I');
+      return {code:code,label:lv};
+    }
+    var n=parseInt(num,10)||1;
+    if(n%16===0)return {code:'both',label:'TOPIK Ⅰ·Ⅱ'};
+    return (n%2===0)?{code:'I',label:'TOPIK I'}:{code:'II',label:'TOPIK II'};
+  }
   function apCell(row,key){return row&&row.cells?row.cells[AP_COL[key]]:null;}
   var _opCancelBulkRows=null;
   function applicantGetVisibleRows(){
@@ -3754,7 +4055,8 @@
       firstLang:(fix&&fix.firstLang)?String(fix.firstLang):firstLangList[n%firstLangList.length],
       job:(fix&&fix.job)?String(fix.job):jobList[n%jobList.length],
       motive:(fix&&fix.motive)?String(fix.motive):motiveList[n%motiveList.length],
-      purpose:(fix&&fix.purpose)?String(fix.purpose):purposeList[n%purposeList.length]
+      purpose:(fix&&fix.purpose)?String(fix.purpose):purposeList[n%purposeList.length],
+      venue:(fix&&fix.venue)?String(fix.venue):APPLICANT_VENUES[n%APPLICANT_VENUES.length]
     };
   }
   function applicantEncodeAttr(v){
@@ -3792,17 +4094,27 @@
       ' data-first-lang="'+applicantEncodeAttr(info.firstLang)+'"'+
       ' data-job="'+applicantEncodeAttr(info.job)+'"'+
       ' data-motive="'+applicantEncodeAttr(info.motive)+'"'+
-      ' data-purpose="'+applicantEncodeAttr(info.purpose)+'"';
+      ' data-purpose="'+applicantEncodeAttr(info.purpose)+'"'+
+      ' data-venue="'+applicantEncodeAttr(info.venue)+'"';
+    var lvInfo=applicantLevelInfo(num,fix||null);
     // 사진심사 상태(미심사/승인/반려) — TPKM_BO_2_1_3
     var photoSt=fix&&fix.photoStatus?fix.photoStatus:applicantInferPhotoStatus(st);
     var photoStAttr=' data-photo-status="'+photoSt+'"';
-    var html='<tr data-status="'+st+'" data-paid="'+pe.paid+'" data-applicant-no="'+num+'" data-round-id="'+ridForRow+'"'+photoStAttr+rrAttr+infoAttr+'>'+
+    var html='<tr data-status="'+st+'" data-paid="'+pe.paid+'" data-applicant-no="'+num+'" data-round-id="'+ridForRow+'" data-level="'+lvInfo.code+'"'+photoStAttr+rrAttr+infoAttr+'>'+
       '<td class="ap-cb"><input type="checkbox" class="ap-row-chk" aria-label="선택" onchange="applicantOnRowCheckChange()"/></td>'+
       '<td>'+num+'</td>'+
       applicantPhotoTd(st,num,ridForRow)+
       '<td>'+escapeHtml(fix?fix.ko:('데모응시자 '+num))+'</td>'+
       '<td>'+escapeHtml(fix?fix.en:('Applicant '+num))+'</td>'+
-      '<td>'+(fix&&fix.level?fix.level:(num%2===0?'TOPIK I':'TOPIK II'))+'</td>'+
+      '<td title="'+escapeHtml(info.birth)+'">'+escapeHtml(info.birth)+'</td>'+
+      '<td title="'+escapeHtml(info.gender)+'">'+applicantGenderCode(info.gender)+'</td>'+
+      '<td>'+escapeHtml(info.nationality)+'</td>'+
+      '<td>'+escapeHtml(info.firstLang)+'</td>'+
+      '<td>'+escapeHtml(info.job)+'</td>'+
+      '<td>'+escapeHtml(info.motive)+'</td>'+
+      '<td>'+escapeHtml(info.purpose)+'</td>'+
+      '<td>'+escapeHtml(info.venue)+'</td>'+
+      '<td>'+escapeHtml(lvInfo.label)+'</td>'+
       '<td>'+(fix&&fix.day?fix.day:(('04.')+String((num%28)+1).padStart(2,'0')))+'</td>'+
       '<td>'+escapeHtml(pe.paidLabel)+'</td>'+
       '<td>'+escapeHtml(pe.exam)+'</td>'+
@@ -3844,12 +4156,18 @@
   }
   function applicantResetFiltersToAll(){
     applicantFilterKey='all';
+    applicantVenueFilter='all';
+    applicantLevelFilter='all';
     var panel=document.getElementById('panel-applicants');
     if(panel)panel.querySelectorAll('.filter-chip').forEach(function(c){
       c.classList.toggle('active',c.id==='applicantChipAll');
     });
     var ts=document.getElementById('tableSearch');
     if(ts)ts.value='';
+    var vs=document.getElementById('applicantVenueSelect');
+    if(vs)vs.value='all';
+    var ls=document.getElementById('applicantLevelSelect');
+    if(ls)ls.value='all';
   }
   function onApplicantRoundChange(){
     syncExamRoundSelects(document.getElementById('applicantRoundSelect').value);
@@ -3859,6 +4177,7 @@
   function initApplicantDemoRows(){
     var tb=document.getElementById('applicantBody');
     if(!tb)return;
+    applicantPopulateVenueFilter();
     var sel=document.getElementById('applicantRoundSelect');
     currentApplicantRoundConfig=getApplicantRoundById(sel&&sel.value);
     applicantUpdateArchivedUi();
@@ -3907,7 +4226,36 @@
     applicantSyncRejectRowsToFoMap();
   }
   function applicantRowPassesFilters(row){
-    return applicantRowPassesApplicantFilter(row)&&applicantRowPassesApplicantSearch(row);
+    return applicantRowPassesApplicantFilter(row)&&applicantRowPassesVenueLevel(row)&&applicantRowPassesApplicantSearch(row);
+  }
+  function applicantRowPassesVenueLevel(row){
+    if(applicantVenueFilter!=='all'){
+      var v=applicantRowDataText(row,'venue','');
+      if(v!==applicantVenueFilter)return false;
+    }
+    if(applicantLevelFilter!=='all'){
+      if((row.dataset.level||'')!==applicantLevelFilter)return false;
+    }
+    return true;
+  }
+  function onApplicantVenueFilterChange(v){
+    applicantVenueFilter=v||'all';
+    applicantApplyPaging({resetPage:true});
+  }
+  function onApplicantLevelFilterChange(v){
+    applicantLevelFilter=v||'all';
+    applicantApplyPaging({resetPage:true});
+  }
+  function applicantPopulateVenueFilter(){
+    var sel=document.getElementById('applicantVenueSelect');
+    if(!sel)return;
+    var cur=sel.value||'all';
+    var html='<option value="all">전체</option>';
+    APPLICANT_VENUES.forEach(function(v){
+      html+='<option value="'+escapeHtml(v)+'">'+escapeHtml(v)+'</option>';
+    });
+    sel.innerHTML=html;
+    sel.value=(cur==='all'||APPLICANT_VENUES.indexOf(cur)>=0)?cur:'all';
   }
   function applicantRowPassesApplicantFilter(row){
     if(applicantFilterKey==='all')return true;
@@ -3996,9 +4344,11 @@
     fb.innerHTML='<svg class="icon" width="40" height="40" color="#aab8cc"><use href="#ic-user"/></svg>';
     wrap.appendChild(fb);
   }
+  var _applicantDetailRow=null;
   function viewApplicant(btn){
     var row=btn.closest('tr');
     if(!row||row.cells.length<AP_COL.actions+1)return;
+    _applicantDetailRow=row;
     var cells=row.cells;
     var num=(apCell(row,'no').textContent||'').trim();
     var appNoAttr=row.getAttribute('data-applicant-no');
@@ -4067,7 +4417,9 @@
       '<dt>수험번호</dt><dd>'+escapeHtml(examNo||'—')+'</dd>'+
       '<dt>진행상태</dt><dd>'+escapeHtml(status)+'</dd>'+rejDl+
       photoBlock+
-      '</dl>';
+      '</dl>'+
+      applicantMemoSectionHtml(applicantMemoKey(row))+
+      applicantTimelineHtml(appNo);
     var modal=document.getElementById('applicantModal');
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden','false');
@@ -4077,6 +4429,80 @@
     if(!modal)return;
     modal.classList.remove('is-open');
     modal.setAttribute('aria-hidden','true');
+  }
+  /* 접수자 상세 — 관리자 메모(내부용) + 처리 이력 타임라인 (0531) */
+  var APPLICANT_MEMO_KEY='tm_applicant_memo_v1';
+  function applicantMemoKey(row){
+    var rid=row?(row.dataset.roundId||'98'):'98';
+    var no=row?(row.dataset.applicantNo||''):'';
+    return rid+'#'+no;
+  }
+  function applicantLoadMemo(key){
+    try{var m=JSON.parse(localStorage.getItem(APPLICANT_MEMO_KEY)||'{}');return m[key]||'';}catch(e){return '';}
+  }
+  function applicantSaveMemoStore(key,val){
+    try{var m=JSON.parse(localStorage.getItem(APPLICANT_MEMO_KEY)||'{}');m[key]=val;localStorage.setItem(APPLICANT_MEMO_KEY,JSON.stringify(m));}catch(e){}
+  }
+  function applicantMemoSectionHtml(key){
+    var memo=applicantLoadMemo(key);
+    return '<div class="detail-section" style="margin-top:8px;">'
+      +'<div class="detail-section-title">관리자 메모 <span style="font-size:10px;font-weight:400;color:var(--gray-text);">내부용 · 응시자에게 노출되지 않음</span></div>'
+      +'<textarea id="applicantMemoInput" class="form-input" rows="3" style="width:100%;resize:vertical;border:1.5px solid var(--gray-light);border-radius:8px;padding:8px;font-size:13px;font-family:inherit;" placeholder="이 접수 건에 대한 관리자 메모를 입력하세요.">'+escapeHtml(memo)+'</textarea>'
+      +'<div style="margin-top:8px;display:flex;justify-content:flex-end;">'
+      +'<button type="button" class="btn btn-navy" onclick="saveApplicantMemo()"><svg class="icon" width="13" height="13"><use href="#ic-check"/></svg>메모 저장</button>'
+      +'</div></div>';
+  }
+  function applicantPrettyState(s){
+    if(!s)return '—';
+    try{
+      var o=JSON.parse(s);
+      var parts=[];
+      for(var k in o){ if(Object.prototype.hasOwnProperty.call(o,k)) parts.push(k+': '+o[k]); }
+      return parts.length?parts.join(', '):'—';
+    }catch(e){ return String(s); }
+  }
+  function applicantHistoryFor(appNo){
+    var raw=[];
+    try{raw=JSON.parse(localStorage.getItem(AUDIT_LOG_KEY)||'[]');}catch(e){}
+    if(!raw.length) raw=AUDIT_SEED.slice();
+    return raw.filter(function(r){
+      return (r.type==='접수자'||r.type==='사진'||r.type==='회원정보정정')&&String(r.target)===String(appNo);
+    });
+  }
+  function applicantTimelineHtml(appNo){
+    var items=applicantHistoryFor(appNo);
+    var inner;
+    if(!items.length){
+      inner='<li style="list-style:none;color:var(--gray-text);font-size:12px;">기록된 처리 이력이 없습니다.</li>';
+    }else{
+      inner=items.map(function(r){
+        var change=(r.before||r.after)?('<div class="ap-tl-change">'+escapeHtml(applicantPrettyState(r.before))+' → '+escapeHtml(applicantPrettyState(r.after))+'</div>'):'';
+        return '<li class="ap-tl-item">'
+          +'<span class="ap-tl-dot"></span>'
+          +'<div class="ap-tl-top"><span class="ap-tl-action">'+escapeHtml(r.action||'')+'</span><span class="ap-tl-meta">'+escapeHtml(r.by||'admin')+' · '+escapeHtml(r.at||'')+'</span></div>'
+          +change
+          +(r.memo?'<div class="ap-tl-memo">'+escapeHtml(r.memo)+'</div>':'')
+          +'</li>';
+      }).join('');
+    }
+    return '<div class="detail-section" id="applicantTimelineWrap" style="margin-top:8px;">'
+      +'<div class="detail-section-title">처리 이력 타임라인 <span style="font-size:10px;font-weight:400;color:var(--gray-text);">처리자 · 시각 · 액션 · 이전→이후</span></div>'
+      +'<ul class="ap-timeline">'+inner+'</ul></div>';
+  }
+  function saveApplicantMemo(){
+    if(!_applicantDetailRow)return;
+    var ta=document.getElementById('applicantMemoInput');
+    if(!ta)return;
+    var key=applicantMemoKey(_applicantDetailRow);
+    applicantSaveMemoStore(key,ta.value);
+    pushAudit({type:'접수자',target:_applicantDetailRow.dataset.applicantNo,action:'관리자 메모 저장',memo:(ta.value||'').slice(0,200)});
+    var wrap=document.getElementById('applicantTimelineWrap');
+    if(wrap){
+      var tmp=document.createElement('div');
+      tmp.innerHTML=applicantTimelineHtml(_applicantDetailRow.dataset.applicantNo);
+      wrap.parentNode.replaceChild(tmp.firstChild,wrap);
+    }
+    alert('관리자 메모가 저장되었습니다.');
   }
   function filterStatus(btn, status){
     var panel=document.getElementById('panel-applicants');
@@ -4113,7 +4539,8 @@
     var birth=applicantRowDataText(row,'birth','—');
     var photoSt=row.dataset.photoStatus||'unreviewed';
     var photoSrc=(row.querySelector('.photo-thumb-img')||{}).src||'';
-    var fee=level.indexOf('II')>=0?'12,500 MMK':'10,000 MMK';
+    var lvlCode=row.dataset.level||'';
+    var fee=lvlCode==='both'?'22,500 MMK (Ⅰ+Ⅱ)':(lvlCode==='II'?'12,500 MMK':'10,000 MMK');
     document.getElementById('opPayBody').innerHTML=
       '<div style="display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:start;margin-bottom:14px;padding:14px;background:#f8fafc;border:1px solid var(--gray-light);border-radius:10px;">'
       +'<div style="text-align:center;">'
@@ -4316,6 +4743,89 @@
     updateDashboardStatsFromApplicants();
   }
   /* ──────────────────────────────────
+     사진 심사 — 전용 패널(카드 그리드, TPKM_BO_2_1_3 확장 0531)
+     접수자 목록의 미심사 행을 카드로 노출하고, 인라인 심사 로직(photoApproveImplRow 등)을 재사용
+  ────────────────────────────────── */
+  var PHOTO_REVIEW_REASONS=['정면 아님','모자·선글라스 착용','흑백 사진','흐림·노이즈','본인 아님','기타'];
+  function photoReviewReasonOptions(){
+    return '<option value="">반려 사유 선택</option>'+PHOTO_REVIEW_REASONS.map(function(r){return '<option>'+escapeHtml(r)+'</option>';}).join('');
+  }
+  function renderPhotoReviewPanel(){
+    var grid=document.getElementById('photoReviewGrid');
+    var summary=document.getElementById('photoReviewSummary');
+    if(!grid)return;
+    var rows=Array.prototype.slice.call(document.querySelectorAll('#applicantBody tr')).filter(function(r){
+      return (r.dataset.photoStatus||'unreviewed')==='unreviewed' && r.dataset.status!=='cancelled';
+    });
+    var arch=applicantIsArchivedRound();
+    if(summary){
+      summary.innerHTML='미심사 사진 <strong style="color:var(--red);">'+rows.length+'</strong>건'+(arch?' · <span style="color:#b45309;font-weight:700;">과거 회차(조회 전용)</span>':'');
+    }
+    setBadge('badgePhotoReview',rows.length);
+    if(!rows.length){
+      grid.innerHTML='<div class="pr-empty">미심사 상태의 증명사진이 없습니다.</div>';
+      return;
+    }
+    grid.innerHTML=rows.map(function(r){
+      var no=r.dataset.applicantNo;
+      var rid=r.dataset.roundId||'98';
+      var src=(r.querySelector('.photo-thumb-img')||{}).src||applicantDemoPortraitUrl(no,rid,'detail');
+      var ko=apCell(r,'nameKo')?apCell(r,'nameKo').textContent:'';
+      var en=apCell(r,'nameEn')?apCell(r,'nameEn').textContent:'';
+      var birth=applicantRowDataText(r,'birth','—');
+      var gender=applicantRowDataText(r,'gender','—');
+      var nat=applicantRowDataText(r,'nationality','—');
+      var disabled=arch?' disabled':'';
+      return '<div class="pr-card" data-pr-no="'+escapeHtml(String(no))+'">'+
+        '<img class="pr-card-photo" src="'+escapeHtml(src)+'" alt="증명사진" loading="lazy" referrerpolicy="no-referrer" onclick="prZoomPhoto(this.src)"/>'+
+        '<div class="pr-card-body">'+
+        '<div class="pr-card-name">'+escapeHtml(ko)+' <span style="font-size:11px;font-weight:400;color:var(--gray-text);">No.'+escapeHtml(String(no))+'</span></div>'+
+        '<div class="pr-card-meta">'+escapeHtml(en)+'<br/>생년월일 '+escapeHtml(birth)+' · 성별 '+escapeHtml(gender)+'<br/>국적 '+escapeHtml(nat)+'</div>'+
+        '<select class="pr-reason" aria-label="반려 사유"'+disabled+'>'+photoReviewReasonOptions()+'</select>'+
+        '<div class="pr-card-actions">'+
+        '<button type="button" class="btn btn-green" onclick="photoReviewCardApprove(this)"'+disabled+'><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>승인</button>'+
+        '<button type="button" class="btn btn-red" onclick="photoReviewCardReject(this)"'+disabled+'><svg class="icon" width="11" height="11"><use href="#ic-x"/></svg>반려</button>'+
+        '</div>'+
+        '</div>'+
+        '</div>';
+    }).join('');
+  }
+  function photoReviewFindRow(el){
+    var c=el&&el.closest?el.closest('.pr-card'):null;
+    if(!c)return null;
+    var no=c.getAttribute('data-pr-no');
+    return document.querySelector('#applicantBody tr[data-applicant-no="'+no+'"]');
+  }
+  function photoReviewCardApprove(btn){
+    if(applicantIsArchivedRound()){alert('과거 회차는 조회 전용입니다.');return;}
+    var row=photoReviewFindRow(btn);
+    if(!row)return;
+    photoApproveImplRow(row);
+    applicantApplyPaging({resetPage:false});
+    applicantRefreshFilterChipCounts();
+    updateDashboardStatsFromApplicants();
+    renderPhotoReviewPanel();
+  }
+  function photoReviewCardReject(btn){
+    if(applicantIsArchivedRound()){alert('과거 회차는 조회 전용입니다.');return;}
+    var card=btn.closest('.pr-card');
+    if(!card)return;
+    var sel=card.querySelector('.pr-reason');
+    var code=(sel&&sel.value||'').trim();
+    if(!code){alert('반려 사유를 선택하세요.');return;}
+    var row=photoReviewFindRow(btn);
+    if(!row)return;
+    row.dataset.photoStatus='rejected';
+    var pc=apCell(row,'photoReview');
+    if(pc) pc.innerHTML=applicantPhotoStatusTd('rejected').replace(/^<td>|<\/td>$/g,'');
+    refreshApplicantActionsCell(row);
+    pushAudit({type:'사진',target:row.dataset.applicantNo,action:'반려('+code+')',before:'{"photoStatus":"unreviewed"}',after:'{"photoStatus":"rejected"}',memo:'사진 심사 패널'});
+    applicantApplyPaging({resetPage:false});
+    applicantRefreshFilterChipCounts();
+    updateDashboardStatsFromApplicants();
+    renderPhotoReviewPanel();
+  }
+  /* ──────────────────────────────────
      13자리 수험번호 일괄 부여 (TPKM_BO_2_1_8, 0527)
      형식: 회차(3) - 시험장(3) - 급수(1) - 일련순(2) - 응시번호(4)
      예시: 025-001-1-01-0001
@@ -4338,6 +4848,7 @@
     var msg='13자리 수험번호 일괄 부여\n\n';
     msg+='● 부여 대상 (영문 알파벳순): '+preview.candidates.length+'건\n';
     msg+='● 형식: '+preview.format+'\n';
+    msg+='● 예시: 국가(025)+지역(001)+수준(7·8)+시험장(2)+응시자(4)\n';
     msg+='● 첫 번호: '+preview.firstNo+'\n';
     msg+='● 마지막 번호: '+preview.lastNo+'\n\n';
     if(preview.skipped.length){
@@ -4348,43 +4859,43 @@
     batchAssignExamNumbersImpl(preview);
   }
   function batchAssignPreview(){
-    var pref=(currentApplicantRoundConfig&&currentApplicantRoundConfig.prefix)||'MM-98-';
-    // prefix 에서 회차 숫자 추출 (MM-98- → 098)
-    var roundMatch=pref.match(/MM-(\d+)-/);
-    var roundCode=roundMatch?String(roundMatch[1]).padStart(3,'0'):'098';
     var rows=Array.prototype.slice.call(document.querySelectorAll('#applicantBody tr'));
     var candidates=[];
     var skipped=[];
     rows.forEach(function(row){
+      /* 환불자(수납 취소)는 수험번호 유지 — 이미 부여된 번호가 있으면 그대로 두고 후보 제외 */
       if(row.dataset.paid!=='1')return;
       if(row.dataset.status!=='approved')return;
       var cell=apCell(row,'exam');
       if(!cell)return;
       var cur=(cell.textContent||'').trim();
-      if(cur&&cur!=='—'&&!/^MM-/.test(cur))return;
+      /* 이미 13자리 번호가 있으면 재부여하지 않음(구 MM- 형식은 재부여) */
+      if(/^\d{13}$/.test(cur))return;
       var nameEn=(apCell(row,'nameEn').textContent||'').trim();
       if(!nameEn){skipped.push({row:row,reason:'영문 성명 누락'});return;}
       var level=(apCell(row,'level').textContent||'').trim();
       candidates.push({row:row,nameEn:nameEn,level:level});
     });
+    /* 영문 성명 알파벳 오름차순(0526) */
     candidates.sort(function(a,b){
-      // 장애인 우선 처리는 데모 데이터에 정보 없으므로 알파벳순
-      return a.nameEn.toLowerCase()<b.nameEn.toLowerCase()?-1:1;
+      return a.nameEn.toLowerCase()<b.nameEn.toLowerCase()?-1:(a.nameEn.toLowerCase()>b.nameEn.toLowerCase()?1:0);
     });
-    var seq=1;
-    var fmt=function(c){
-      var ven='001'; // 데모 — 실서비스에선 시험장 매핑
-      var lv=c.level.indexOf('II')>=0?'2':'1';
-      var serial='01';
-      var no=String(seq).padStart(4,'0');
-      return roundCode+'-'+ven+'-'+lv+'-'+serial+'-'+no;
-    };
-    var firstNo=candidates.length?fmt(candidates[0]):'';
-    seq=candidates.length;
-    var lastNo=candidates.length?fmt(candidates[candidates.length-1]):'';
-    seq=1;
-    var assigned=candidates.map(function(c){var n=fmt(c);seq++;return {row:c.row,no:n};});
-    return {candidates:assigned,skipped:skipped,format:'회차(3)-시험장(3)-급수(1)-일련(2)-응시(4)',firstNo:firstNo,lastNo:lastNo};
+    /* 시험장×수준 단위 0001부터 순차 채번. 동시접수(Ⅰ+Ⅱ)는 동일 시험장 코드 사용. */
+    var seqMap={};
+    function nextSeq(venue,lv){
+      var k=venue+'-'+lv;
+      seqMap[k]=(seqMap[k]||0)+1;
+      return seqMap[k];
+    }
+    var assigned=candidates.map(function(c){
+      var ven=examVenueCode2(c.row);
+      var lv=examLevelCode(c.level);
+      var seq=nextSeq(ven,lv);
+      return {row:c.row,no:'025'+'001'+lv+ven+String(seq).padStart(4,'0')};
+    });
+    var firstNo=assigned.length?assigned[0].no:'';
+    var lastNo=assigned.length?assigned[assigned.length-1].no:'';
+    return {candidates:assigned,skipped:skipped,format:'국가(3)+지역(3)+수준(1)+시험장(2)+응시자(4) = 13자리',firstNo:firstNo,lastNo:lastNo};
   }
   function batchAssignExamNumbersImpl(preview){
     preview.candidates.forEach(function(c){apCell(c.row,'exam').textContent=c.no;});
@@ -4470,38 +4981,92 @@
   }
   function downloadExcel(){
     openConfirmModal({
-      title:'엑셀 다운로드',
-      message:'현재 목록을 CSV 파일로 저장합니다.',
+      title:'엑셀 다운로드 (연명부 양식)',
+      message:'현재 회차·시험장 목록을 연명부 양식(11컬럼, 연락처·이메일 제외)으로 저장합니다. 수험번호 순으로 정렬됩니다.',
       confirmLabel:'다운로드',
       onConfirm:function(){ downloadExcelImpl(); }
     });
   }
+  function csvCell(v){ return '"'+String(v==null?'':v).replace(/"/g,'""').replace(/\r?\n/g,' ').trim()+'"'; }
   function downloadExcelImpl(){
-    // 연명부 양식 — 11컬럼 (TPKM_BO_2_1_9, 0519)
-    const rows=document.querySelectorAll('#applicantBody tr');
-    let csv='\uFEFF번호,이름(한글),이름(영문),생년월일,성별,국적,급수,접수일,수납,수험번호,사진심사,상태,반려사유\n';
-    let included=0;
-    rows.forEach(row=>{
-      // 필터 적용 행만 — display:none 인 행 제외
-      if(row.style.display==='none')return;
-      const cells=row.querySelectorAll('td');
-      if(cells.length<AP_COL.actions+1)return;
-      const statusTxt=(apCell(row,'status').innerText||apCell(row,'status').textContent||'').replace(/\s+/g,' ').trim();
-      const photoTxt=(apCell(row,'photoReview').innerText||apCell(row,'photoReview').textContent||'').replace(/\s+/g,' ').trim();
-      const birth=applicantRowDataText(row,'birth','');
-      const gender=applicantRowDataText(row,'gender','');
-      const nat=applicantRowDataText(row,'nationality','');
-      const rr=row.getAttribute('data-reject-reason')?applicantSafeDecodeReject(row.getAttribute('data-reject-reason')).replace(/\r?\n/g,' '):'';
-      const rrEsc='"'+String(rr).replace(/"/g,'""')+'"';
-      csv+=`${apCell(row,'no').textContent.trim()},${apCell(row,'nameKo').textContent.trim()},${apCell(row,'nameEn').textContent.trim()},${birth},${gender},${nat},${apCell(row,'level').textContent.trim()},${apCell(row,'regDate').textContent.trim()},${apCell(row,'paid').textContent.trim()},${apCell(row,'exam').textContent.trim()},${photoTxt},${statusTxt},${rrEsc}\n`;
-      included++;
+    /* 연명부 양식 — 11컬럼(순번 + 신원 9 + 수험번호), 연락처·이메일 제외 (TPKM_BO_2_1_8, 0519)
+       응시자코드(수험번호) 순으로 정렬 */
+    const rows=Array.prototype.slice.call(document.querySelectorAll('#applicantBody tr')).filter(function(r){
+      if(r.style.display==='none')return false;
+      var st=r.dataset.status;
+      return st!=='cancelled'; /* 연명부는 유효 접수만 */
     });
+    rows.sort(function(a,b){
+      var ea=(apCell(a,'exam')&&apCell(a,'exam').textContent||'').trim();
+      var eb=(apCell(b,'exam')&&apCell(b,'exam').textContent||'').trim();
+      if(ea&&eb)return ea<eb?-1:(ea>eb?1:0);
+      if(ea)return -1; if(eb)return 1; return 0;
+    });
+    const header=['순번','한글성명','영문성명','생년월일','성별','국적','제1언어','직업','응시동기','응시목적','수험번호'];
+    let csv='\uFEFF'+header.join(',')+'\n';
+    let included=0;
+    rows.forEach(function(row){
+      var cells=row.querySelectorAll('td');
+      if(cells.length<AP_COL.actions+1)return;
+      included++;
+      var line=[
+        included,
+        apCell(row,'nameKo').textContent.trim(),
+        apCell(row,'nameEn').textContent.trim(),
+        applicantRowDataText(row,'birth',(apCell(row,'birth')||{}).textContent||''),
+        applicantGenderCode(applicantRowDataText(row,'gender',(apCell(row,'gender')||{}).textContent||'')),
+        applicantRowDataText(row,'nationality',(apCell(row,'nationality')||{}).textContent||''),
+        (apCell(row,'firstLang')||{}).textContent||'',
+        (apCell(row,'job')||{}).textContent||'',
+        (apCell(row,'motive')||{}).textContent||'',
+        (apCell(row,'purpose')||{}).textContent||'',
+        ((apCell(row,'exam')||{}).textContent||'').trim()
+      ].map(csvCell);
+      csv+=line.join(',')+'\n';
+    });
+    /* 파일명: 제{회차}회 TOPIK 지원자 연명부({국가}_{시험장}).csv */
+    var roundNo=String((currentApplicantRoundConfig&&currentApplicantRoundConfig.id)||'').replace(/\D/g,'')||'00';
+    var venueSel=document.getElementById('applicantVenueSelect');
+    var venueLabel=(venueSel&&venueSel.value&&venueSel.value!=='all'&&venueSel.options[venueSel.selectedIndex])?venueSel.options[venueSel.selectedIndex].textContent.trim():'양곤';
+    var fname='제'+roundNo+'회 TOPIK 지원자 연명부(미얀마_'+venueLabel+').csv';
     const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
     const a=document.createElement('a');
     a.href=URL.createObjectURL(blob);
-    a.download='TOPIK_Myanmar_연명부_'+((currentApplicantRoundConfig&&currentApplicantRoundConfig.shortLabel)||'회차').replace(/\s+/g,'_')+'_'+included+'명.csv';
+    a.download=fname;
     a.click();
-    pushAudit({type:'접수자',target:'연명부',action:'CSV 내보내기',memo:included+'건'});
+    pushAudit({type:'접수자',target:'연명부',action:'엑셀 내보내기',memo:fname+' / '+included+'건'});
+  }
+  /* 사진 일괄 다운로드(ZIP) — 데모(실제 압축 없음, TPKM_BO_2_1_x 0531) */
+  function downloadPhotoZip(){
+    var rows=Array.prototype.slice.call(document.querySelectorAll('#applicantBody tr'));
+    var region=(currentApplicantRoundConfig&&currentApplicantRoundConfig.region)||'미얀마';
+    var included=0, missing=[];
+    rows.forEach(function(r){
+      if(r.dataset.status==='cancelled')return;
+      var ps=r.dataset.photoStatus||'unreviewed';
+      var examCell=apCell(r,'exam');
+      var exam=examCell?(examCell.textContent||'').trim():'';
+      if(ps==='approved'&&exam&&exam!=='—'){
+        included++;
+      }else{
+        var ko=apCell(r,'nameKo')?apCell(r,'nameKo').textContent:'';
+        var why=ps==='rejected'?'사진 반려':(ps==='unreviewed'?'사진 미심사':'수험번호 미부여');
+        missing.push((r.dataset.applicantNo||'')+' '+ko+' — '+why);
+      }
+    });
+    var struct='{지역}/{시험장}/TOPIK_Ⅰ|Ⅱ/{13자리수험번호}.jpg';
+    var roundLbl=(currentApplicantRoundConfig&&currentApplicantRoundConfig.shortLabel)||'현재 회차';
+    openConfirmModal({
+      title:'사진 일괄 다운로드 (ZIP)',
+      message:'['+roundLbl+'] 승인·수험번호 부여 완료 증명사진을 ZIP으로 내려받습니다.\n\n● 폴더 구조: '+struct+'\n● 포함 대상: '+included+'건\n● 누락(미심사·반려·수험번호 미부여): '+missing.length+'건\n\n※ 프로토타입: 실제 ZIP 파일은 생성되지 않습니다.',
+      confirmLabel:'다운로드',
+      onConfirm:function(){
+        pushAudit({type:'사진',target:'ZIP',action:'사진 일괄 다운로드',memo:'포함 '+included+'건 / 누락 '+missing.length+'건'});
+        var lines=missing.slice(0,12).map(function(m){return '· '+m;});
+        if(missing.length>12) lines.push('  …외 '+(missing.length-12)+'건');
+        alert('사진 ZIP 다운로드 (데모)\n\n폴더 구조\n'+struct+'\n\n포함: '+included+'건\n\n[누락 리포트] '+missing.length+'건'+(missing.length?'\n'+lines.join('\n'):' — 없음'));
+      }
+    });
   }
   function printApplicantList(){
     document.body.classList.add('print-applicants');
@@ -4518,7 +5083,20 @@
   function searchTable(){
     applicantApplyPaging({resetPage:true});
   }
+  function renderTopbarAdmin(){
+    var el=document.getElementById('topbarAdminLabel');
+    if(!el)return;
+    var user='admin', role='최고관리자';
+    try{
+      if(window.AdminAuth){
+        if(typeof AdminAuth.currentUser==='function') user=AdminAuth.currentUser()||user;
+        if(typeof AdminAuth.currentRole==='function') role=AdminAuth.currentRole()||role;
+      }
+    }catch(e){}
+    el.textContent=user+' ('+role+')';
+  }
   document.addEventListener('DOMContentLoaded',function(){
+    renderTopbarAdmin();
     syncExamRoundSelects('98');
     initApplicantDemoRows();
     if(!window.ContentStore)return;
@@ -5913,8 +6491,11 @@
         +'</div>':'')
       +(p.type==='correction'?
         '<div style="margin-top:10px;padding:10px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-size:12px;color:#065f46;">'
-        +'<svg class="icon" width="12" height="12"><use href="#ic-check"/></svg> 정보정정 신청입니다. 회원 관리 패널에서 해당 회원의 정보를 직접 수정한 후 답변해주세요.'
-        +'<br><button type="button" class="btn btn-green" style="margin-top:6px;font-size:11px;padding:4px 10px;" onclick="showPanel(\'members\',null);closeRefundDetail();">회원 관리로 이동</button>'
+        +'<svg class="icon" width="12" height="12"><use href="#ic-check"/></svg> 정보정정 신청입니다. 아래 버튼으로 회원 정보를 직접 반영하거나, 회원 관리 패널에서 수정할 수 있습니다.'
+        +'<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">'
+        +'<button type="button" class="btn btn-navy" style="font-size:11px;padding:4px 10px;" onclick="applyMemberInfoCorrection(\''+p.id+'\')"><svg class="icon" width="11" height="11"><use href="#ic-edit"/></svg>회원정보 직접 반영</button>'
+        +'<button type="button" class="btn btn-green" style="font-size:11px;padding:4px 10px;" onclick="showPanel(\'members\',null);closeRefundDetail();">회원 관리로 이동</button>'
+        +'</div>'
         +'</div>':'')
       +'</div>'
 
@@ -5951,6 +6532,37 @@
     o.classList.remove('is-open');
     o.setAttribute('aria-hidden','true');
     _rfCurrentId=null;
+  }
+  /* 정보정정 — 회원 정보 직접 반영(이름·생년월일 변경) 흐름 (데모, 0531) */
+  function applyMemberInfoCorrection(id){
+    if(!window.BoardStore)return;
+    var p=BoardStore.getRefundPosts().find(function(x){return x.id===id;});
+    if(!p)return;
+    var curName=p.authorName||'';
+    var newName=prompt('회원 정보 직접 반영 — 한글 이름\n현재: '+(curName||'(미상')+')\n\n변경할 한글 이름을 입력하세요.',curName);
+    if(newName===null)return;
+    newName=String(newName).trim();
+    if(!newName){alert('이름을 입력해 주세요.');return;}
+    var newBirth=prompt('회원 정보 직접 반영 — 생년월일 (YYYYMMDD)\n\n변경할 생년월일을 입력하세요. (예: 19990101)','');
+    if(newBirth===null)return;
+    newBirth=String(newBirth).trim();
+    if(newBirth&&!/^\d{8}$/.test(newBirth)){alert('생년월일은 YYYYMMDD 8자리로 입력해 주세요.');return;}
+    openConfirmModal({
+      title:'회원 정보 직접 반영',
+      message:'아래 내용으로 회원 정보를 반영하고 신청을 처리완료로 변경합니다.\n\n● 이름: '+(curName||'—')+' → '+newName+'\n● 생년월일: '+(newBirth||'(변경 안 함)')+'\n\n※ 프로토타입: 실제 회원 DB 대신 데모로 반영됩니다.',
+      confirmLabel:'반영',
+      onConfirm:function(){
+        var before='{"name":"'+String(curName).replace(/"/g,'')+'"}';
+        var after='{"name":"'+newName.replace(/"/g,'')+(newBirth?('","birth":"'+newBirth):'')+'"}';
+        pushAudit({type:'회원정보정정',target:id,action:'직접 반영',before:before,after:after,memo:'환불·정보정정 상세에서 직접 반영'});
+        var note='[회원 정보 직접 반영 완료] 이름: '+newName+(newBirth?(' / 생년월일: '+newBirth):'');
+        var prevReply=(p.adminReply||'').trim();
+        BoardStore.updatePost('refund',id,{status:'done',adminReply:prevReply?(prevReply+'\n'+note):note});
+        renderAdminRefundBoard();
+        alert('회원 정보가 반영되었습니다. (데모)\n신청 상태가 처리완료로 변경되었습니다.');
+        openRefundDetail(id);
+      }
+    });
   }
 
   function saveRefundStatus(){

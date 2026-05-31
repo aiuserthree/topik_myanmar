@@ -66,6 +66,7 @@
     .s-review{background:#fef3c7;color:#b45309;}           /* 사진심사중 */
     .s-photo-rejected{background:#ffedd5;color:#9a3412;}   /* 사진반려 */
     .s-approved{background:#d1fae5;color:#065f46;}         /* 승인완료 */
+    .s-exam-numbered{background:#ede9fe;color:#6d28d9;}    /* 수험번호 부여(보라) */
     .s-rejected{background:#fee2e2;color:#b91c1c;}         /* 반려 */
     .s-cancelled{background:#f3f4f6;color:#6b7280;}        /* 취소 */
     .s-unable{background:#fce7f3;color:#9d174d;}           /* 응시불가 */
@@ -438,6 +439,7 @@
 <script src="js/i18n.js?v=20260506"></script>
 <script src="js/profile-store.js"></script>
 <script src="js/fo-nav.js"></script>
+<script src="js/fo-footer.js"></script>
 <script src="js/mobile-nav.js?v=20260506" defer></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -581,10 +583,12 @@
     // 7종 — 접수완료 / 사진심사중 / 수납대기 / 승인완료 / 수험번호부여 / 반려 / 취소됨 (TPKM_FO_4_3_1)
     if(status==='cancelled')return '<span class="status-badge s-cancelled"><svg class="icon" width="11" height="11"><use href="#ic-x"/></svg>취소됨</span>';
     if(status==='rejected')return '<span class="status-badge s-rejected"><svg class="icon" width="11" height="11"><use href="#ic-x"/></svg>반려</span>';
-    if(status==='exam-numbered')return '<span class="status-badge s-approved"><svg class="icon" width="11" height="11"><use href="#ic-ticket"/></svg>수험번호 부여</span>';
-    if(status==='approved')return '<span class="status-badge s-approved"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>승인완료</span>';
+    if(status==='exam-numbered')return '<span class="status-badge s-exam-numbered"><svg class="icon" width="11" height="11"><use href="#ic-ticket"/></svg>수험번호 부여</span>';
+    if(status==='approved')return paid
+      ?'<span class="status-badge s-approved"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>승인완료</span>'
+      :'<span class="status-badge s-unpaid"><svg class="icon" width="11" height="11"><use href="#ic-alert"/></svg>수납대기</span>';
     if(status==='review')return '<span class="status-badge s-review"><svg class="icon" width="11" height="11"><use href="#ic-image"/></svg>사진심사중</span>';
-    if(!paid)return '<span class="status-badge s-unpaid"><svg class="icon" width="11" height="11"><use href="#ic-alert"/></svg>수납대기</span>';
+    // 접수완료(접수 직후) — 사진 미심사면 사진심사중으로 안내
     return '<span class="status-badge s-pending"><svg class="icon" width="11" height="11"><use href="#ic-check"/></svg>접수완료</span>';
   }
   function renderDynamicRegList(){
@@ -601,9 +605,25 @@
     if(staticBox)staticBox.style.display='none';
     box.innerHTML=arr.map(function(r){
       var stHtml=statusBadgeHtml(r.status,r.paid);
-      var cancelBtn=(r.status==='cancelled'||r.status==='rejected'||r.status==='exam-numbered')
-        ?'<button type="button" class="btn-cancel" disabled><svg class="icon" width="14" height="14"><use href="#ic-x"/></svg>취소 불가</button>'
-        :'<button type="button" class="btn-cancel" onclick="cancelDynamicReg(\''+r.id+'\')"><svg class="icon" width="14" height="14"><use href="#ic-x"/></svg>접수 취소</button>';
+      var terminal=(r.status==='cancelled'||r.status==='rejected'||r.status==='exam-numbered');
+      var cancelBtn;
+      if(terminal){
+        cancelBtn='<button type="button" class="btn-cancel" disabled><svg class="icon" width="14" height="14"><use href="#ic-x"/></svg>취소 불가</button>';
+      }else if(r.paid){
+        /* 0526 — 수납 완료 후에는 직접 취소 불가(환불·정정신청 안내) */
+        cancelBtn='<button type="button" class="btn-cancel" disabled title="수납 완료 후에는 환불·정보정정신청 게시판을 이용해 주세요."><svg class="icon" width="14" height="14"><use href="#ic-x"/></svg>수납 후 취소 불가</button>';
+      }else{
+        cancelBtn='<button type="button" class="btn-cancel" onclick="cancelDynamicReg(\''+r.id+'\')"><svg class="icon" width="14" height="14"><use href="#ic-x"/></svg>접수 취소</button>';
+      }
+      var receiptNo=escapeMp(r.id?('TM-'+(r.round||'')+'-'+String(r.id).slice(-4)):'—');
+      var receipt='<div class="reg-receipt" data-receipt style="margin-top:16px;padding:16px;border:2px dashed var(--gray-light);border-radius:10px;background:#fafbfc;">'
+        +'<h4 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px;"><svg class="icon" width="15" height="15" color="var(--navy)"><use href="#ic-cert"/></svg> 접수 확인증</h4>'
+        +'<div class="rp-row" style="font-size:13px;padding:5px 0;border-bottom:1px solid var(--gray-light);display:flex;justify-content:space-between;"><span>회차</span><strong>'+escapeMp(r.roundName)+'</strong></div>'
+        +'<div class="rp-row" style="font-size:13px;padding:5px 0;border-bottom:1px solid var(--gray-light);display:flex;justify-content:space-between;"><span>접수번호</span><strong>'+receiptNo+'</strong></div>'
+        +'<div class="rp-row" style="font-size:13px;padding:5px 0;border-bottom:1px solid var(--gray-light);display:flex;justify-content:space-between;"><span>응시 급수</span><strong>'+escapeMp(r.level)+'</strong></div>'
+        +'<div class="rp-row" style="font-size:13px;padding:5px 0;border-bottom:1px solid var(--gray-light);display:flex;justify-content:space-between;"><span>접수일</span><strong>'+escapeMp(r.regDate||'—')+'</strong></div>'
+        +'<div class="rp-row" style="font-size:13px;padding:5px 0;display:flex;justify-content:space-between;"><span>수납</span><strong>'+(r.paid?'수납완료':'대기(오프라인 수납 후 확정)')+'</strong></div>'
+        +'</div>';
       return '<div class="reg-card"><div class="reg-card-header">'
         +'<h3><svg class="icon" width="16" height="16" color="var(--navy)"><use href="#ic-register"/></svg>'+escapeMp(r.roundName)+' — 접수 내역</h3>'
         +stHtml
@@ -616,14 +636,18 @@
         +'<div class="detail-item"><div class="di-label">수납</div><div class="di-value">'+(r.paid?'수납완료':'<span style="color:#c2410c;font-weight:700;">수납대기</span>')+'</div></div>'
         +(r.examNo?'<div class="detail-item" data-exam-number-wrap><div class="di-label">수험번호</div><div class="di-value highlight" data-exam-number="'+escapeMp(r.examNo)+'">'+escapeMp(r.examNo)+'</div></div>':'')
         +'</div>'
+        +(r.examNo?'<div class="exam-reveal-note" data-exam-reveal-note style="margin-top:10px;">수험번호는 정해진 노출일 이후 접수 확인 페이지에 표시됩니다.</div>':'')
         +(r.status==='rejected'&&r.rejectReason?'<div class="reject-reason-panel"><div class="rr-title">반려 사유</div><div class="rr-body">'+escapeMp(r.rejectReason)+'</div></div>':'')
         +(r.status==='cancelled'&&r.cancelReason?'<div class="info-notice" style="margin-top:14px;"><strong>취소 사유:</strong> '+escapeMp(r.cancelReason)+'</div>':'')
+        +receipt
         +'</div><div class="reg-card-footer">'
         +'<button type="button" class="btn-receipt" onclick="window.print()"><svg class="icon" width="14" height="14"><use href="#ic-print"/></svg>접수 확인증 출력</button>'
         +(r.status==='approved'||r.status==='exam-numbered'?'<a href="admit.html" class="btn-admit"><svg class="icon" width="14" height="14"><use href="#ic-link"/></svg>수험표 출력 안내</a>':'')
         +cancelBtn
         +'</div></div>';
     }).join('');
+    /* 동적 카드 렌더 후 수험번호 노출일 정책 재적용(0527) */
+    if(typeof applyExamRevealPolicy==='function')applyExamRevealPolicy();
   }
   function escapeMp(s){var d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML;}
 

@@ -655,11 +655,19 @@
     refreshSignupStep1Next();
     refreshSignupStep2Next();
   }
+  function isSignupDuplicateEmail(v){
+    if(!window.TMProfile||typeof TMProfile.load!=='function')return false;
+    var stored=TMProfile.load();
+    if(!stored||!stored.email)return false;
+    return normSignupEmail(stored.email)===normSignupEmail(v);
+  }
   function sendSignupEmailCode(){
     var el=document.getElementById('email');
     var v=el.value.trim();
     if(!v){showSignupFieldErr(el,'err-email',true,'아이디(이메일 주소)를 입력해 주세요.');refreshSignupStep1Next();return;}
     if(!isValidSignupEmail(v)){showSignupFieldErr(el,'err-email',true,'유효한 이메일 주소가 아닙니다.');refreshSignupStep1Next();return;}
+    /* 이메일 중복 가입 차단 */
+    if(isSignupDuplicateEmail(v)){showSignupFieldErr(el,'err-email',true,'이미 가입된 이메일입니다. 로그인 페이지를 이용해 주세요.');refreshSignupStep1Next();return;}
     showSignupFieldErr(el,'err-email',false);
     var code=String(Math.floor(100000+Math.random()*900000));
     setSignupEmailVerify({
@@ -731,6 +739,19 @@
   function previewSignupPhoto(e){
     var file=e.target&&e.target.files&&e.target.files[0];
     if(!file)return;
+    /* 규격 검증: 이미지(jpg 권장) + 2MB 이하(브라우저 저장 한도). 200KB 미만은 안내만 */
+    if(!/^image\//.test(file.type||'')){
+      alert('증명사진은 이미지 파일(JPG 권장)만 업로드할 수 있습니다.');
+      e.target.value='';return;
+    }
+    if(file.size>2*1024*1024){
+      alert('증명사진 파일 크기는 2MB 이하여야 합니다. 더 작은 파일로 다시 시도해 주세요.');
+      e.target.value='';return;
+    }
+    if(file.size<200*1024){
+      /* 권장 하한 미만 — 경고만, 진행은 허용 */
+      console.warn('증명사진 권장 용량(200KB) 미만');
+    }
     var reader=new FileReader();
     reader.onload=function(ev){
       signupPhotoDataUrl=String(ev.target.result||'');
@@ -922,7 +943,12 @@
         }
       }
     }
-    window.location.href='signup-complete.html?email='+encodeURIComponent(joinEmail);
+    /* 가입 완료 → 자동 로그인 처리(TPKM_FO_6_2_4) */
+    try{localStorage.setItem('tm_session','1');}catch(x){}
+    var nextParam=new URLSearchParams(location.search).get('next')||'';
+    var url='signup-complete.html?email='+encodeURIComponent(joinEmail);
+    if(nextParam&&/^[\w\-\.]+\.html/.test(nextParam.split('?')[0]))url+='&next='+encodeURIComponent(nextParam);
+    window.location.href=url;
   }
 
   function restoreSignupEmailVerifiedUI(){

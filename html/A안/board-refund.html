@@ -23,7 +23,8 @@
     .btn-navy{background:var(--navy);color:#fff;}
     .btn-red{background:var(--red);color:#fff;margin-left:auto;}
     .board-wrap{background:#fff;border-radius:12px;box-shadow:var(--shadow);overflow:hidden;}
-    .board-head,.board-row{display:grid;grid-template-columns:56px 1fr 110px;}
+    .board-head,.board-row{display:grid;grid-template-columns:56px 1fr 90px 100px;align-items:center;}
+    @media(max-width:600px){.board-head,.board-row{grid-template-columns:44px 1fr 84px;}.col-author{display:none;}}
     .board-head{background:var(--navy);color:#fff;font-size:12px;font-weight:700;}
     .board-head div,.board-row div{padding:12px 14px;}
     .board-row{border-bottom:1px solid var(--gray-light);cursor:pointer;}
@@ -85,7 +86,7 @@
     <button type="button" class="btn btn-red" id="btnWrite">글쓰기</button>
   </div>
   <div class="board-wrap">
-    <div class="board-head"><div>번호</div><div>제목</div><div>날짜</div></div>
+    <div class="board-head"><div>번호</div><div>제목</div><div>작성자</div><div>날짜</div></div>
     <div id="boardList"></div>
   </div>
   <div id="detailView" style="display:none;margin-top:16px"></div>
@@ -113,6 +114,7 @@
 <script src="js/board-page.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/fo-nav.js"></script>
+<script src="js/fo-footer.js"></script>
 <script src="js/mobile-nav.js" defer></script>
 <script>
 document.addEventListener('DOMContentLoaded',function(){if(window.TMI18N)TMI18N.boot();});

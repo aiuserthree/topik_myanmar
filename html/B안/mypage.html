@@ -314,45 +314,8 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
  </div>
  <a href="register.html" class="btn btn-solid" style="font-size:13px;padding:8px 16px">새 접수</a>
  </div>
- <!-- 접수 카드 -->
- <div class="apply-card-current">
- <div class="apply-card-current-head">
- <div>
- <div class="apply-card-round">제99회 TOPIK · 2026.07.12 (일) · 양곤 시험장</div>
- <div class="apply-card-exam">TOPIK Ⅰ·Ⅱ 동시 접수</div>
- <div class="apply-card-exam-sub">TOPIK Ⅰ (초급) · TOPIK Ⅱ (중·고급)</div>
- </div>
- <span class="apply-card-status status-badge s-photo">사진심사중</span>
- </div>
- <div class="apply-card-body" style="padding:0">
- <div class="apply-detail-grid">
- <div class="apply-detail-cell">
- <div class="apply-detail-label">수험번호</div>
- <div class="apply-detail-val pending">부여 전</div>
- </div>
- <div class="apply-detail-cell">
- <div class="apply-detail-label">사진심사</div>
- <div class="apply-detail-val">심사중</div>
- </div>
- <div class="apply-detail-cell">
- <div class="apply-detail-label">응시료수납</div>
- <div class="apply-detail-val">미수납</div>
- </div>
- <div class="apply-detail-cell">
- <div class="apply-detail-label">접수일</div>
- <div class="apply-detail-val">2026.05.10</div>
- </div>
- </div>
- </div>
- <div class="apply-card-foot">
- <div class="apply-card-foot-note">접수번호 #TK2026-00412 · 취소는 <strong>오프라인 응시료 수납 전</strong>까지만 가능합니다.</div>
- <div class="apply-card-foot-actions">
- <button type="button" class="action-btn" id="btn-confirm-receipt">접수 확인증</button>
- <button type="button" class="action-btn danger" id="btn-cancel-apply">접수 취소</button>
- <a href="admit-card.html" class="action-btn primary">수험표 출력</a>
- </div>
- </div>
- </div>
+ <!-- 접수 카드 (상태별 7종) -->
+ <div id="js-apply-cards"></div>
  <div class="notice-box notice-info">
  <strong style="display:block;font-weight:700;margin-bottom:3px">접수 취소 안내</strong>
  접수 취소는 <strong>오프라인 응시료 수납 전</strong>까지만 가능합니다. 수납 완료 후에는 <a href="refund-correction.html" style="color:var(--primary);font-weight:600">환불·정보정정신청</a> 게시판을 이용해 주세요. 환불 규정은 <a href="rules-fee.html" style="color:var(--primary);font-weight:600">응시료 규정</a>을 참고하세요.
@@ -484,10 +447,50 @@ document.addEventListener('keydown',function(e){
  if(e.key==='Escape'){closeDrawer();closeAllModals()}
 });
 document.getElementById('btn-logout').addEventListener('click',function(){TPKMAuth.logout()});
+/* ── 상태별 접수 카드 렌더 (7종 상태 배지) ── */
+const registrations=[
+ {round:'제99회 TOPIK · 2026.07.12 (일) · 양곤 시험장',exam:'TOPIK Ⅰ·Ⅱ 동시 접수',examSub:'TOPIK Ⅰ (초급) · TOPIK Ⅱ (중·고급)',status:'접수완료',cls:'s-apply',examNo:'부여 전',examNoPending:true,photo:'대기',pay:'미수납',date:'2026.05.12',regNo:'#TK2026-00461',note:'접수가 완료되었습니다. 사진 심사 후 수납 안내가 발송됩니다.'},
+ {round:'제99회 TOPIK · 2026.07.12 (일) · 양곤 시험장',exam:'TOPIK Ⅱ (중·고급)',examSub:'3~6급',status:'사진심사중',cls:'s-photo',examNo:'부여 전',examNoPending:true,photo:'심사중',pay:'미수납',date:'2026.05.10',regNo:'#TK2026-00412',note:'사진 심사가 진행 중입니다. 취소는 오프라인 응시료 수납 전까지 가능합니다.'},
+ {round:'제99회 TOPIK · 2026.07.12 (일) · 만달레이 시험장',exam:'TOPIK Ⅰ (초급)',examSub:'1~2급',status:'수납대기',cls:'s-pay',examNo:'부여 전',examNoPending:true,photo:'승인',pay:'수납 대기',date:'2026.05.08',regNo:'#TK2026-00388',note:'오프라인 응시료 수납 대기 중입니다. 수납 완료 후 승인됩니다.'},
+ {round:'제99회 TOPIK · 2026.07.12 (일) · 양곤 시험장',exam:'TOPIK Ⅱ (중·고급)',examSub:'3~6급',status:'승인완료',cls:'s-approved',examNo:'부여 전',examNoPending:true,photo:'승인',pay:'수납 완료',date:'2026.05.05',regNo:'#TK2026-00355',note:'수납·승인이 완료되었습니다. 수험번호 부여 후 수험표를 출력할 수 있습니다.'},
+ {round:'제99회 TOPIK · 2026.07.12 (일) · 양곤 시험장',exam:'TOPIK Ⅰ (초급)',examSub:'1~2급',status:'수험번호부여',cls:'s-examno',examNo:'0250017A20001',examNoPending:false,photo:'승인',pay:'수납 완료',date:'2026.05.01',regNo:'#TK2026-00301',note:'수험번호가 부여되었습니다. 수험표를 출력하세요.'},
+ {round:'제98회 TOPIK · 2026.04.19 (일) · 양곤 시험장',exam:'TOPIK Ⅱ (중·고급)',examSub:'3~6급',status:'반려',cls:'s-reject',examNo:'부여 불가',examNoPending:true,photo:'반려',pay:'미수납',date:'2026.02.09',regNo:'#TK2026-00120',note:'사진 규정 미준수로 반려되었습니다. 사진 재등록 후 다시 접수해 주세요.'},
+ {round:'제97회 TOPIK · 2025.10.19 (일) · 양곤 시험장',exam:'TOPIK Ⅰ (초급)',examSub:'1~2급',status:'취소됨',cls:'s-cancel',examNo:'부여 전',examNoPending:true,photo:'-',pay:'환불 완료',date:'2025.08.22',regNo:'#TK2025-00098',note:'본 접수 건은 취소되었습니다.'},
+];
+function renderRegistrations(){
+ const wrap=document.getElementById('js-apply-cards');
+ wrap.innerHTML=registrations.map(function(r){
+  const isLive=r.status!=='반려'&&r.status!=='취소됨';
+  const canCancel=r.status==='접수완료'||r.status==='사진심사중'||r.status==='수납대기';
+  const canTicket=r.status==='수험번호부여';
+  const receiptBtn=isLive?'<button type="button" class="action-btn js-receipt">접수 확인증</button>':'';
+  const cancelBtn=canCancel?'<button type="button" class="action-btn danger js-cancel">접수 취소</button>':'';
+  let ticketBtn='';
+  if(canTicket)ticketBtn='<a href="admit-card.html" class="action-btn primary">수험표 출력</a>';
+  else if(isLive)ticketBtn='<button type="button" class="action-btn" disabled title="수험번호 부여 후 출력 가능" style="opacity:.45;cursor:not-allowed">수험표 출력</button>';
+  return '<div class="apply-card-current" style="margin-bottom:16px">'
+   +'<div class="apply-card-current-head"><div>'
+   +'<div class="apply-card-round">'+r.round+'</div>'
+   +'<div class="apply-card-exam">'+r.exam+'</div>'
+   +'<div class="apply-card-exam-sub">'+r.examSub+'</div></div>'
+   +'<span class="apply-card-status status-badge '+r.cls+'">'+r.status+'</span></div>'
+   +'<div class="apply-card-body" style="padding:0"><div class="apply-detail-grid">'
+   +'<div class="apply-detail-cell"><div class="apply-detail-label">수험번호</div><div class="apply-detail-val'+(r.examNoPending?' pending':'')+'">'+r.examNo+'</div></div>'
+   +'<div class="apply-detail-cell"><div class="apply-detail-label">사진심사</div><div class="apply-detail-val">'+r.photo+'</div></div>'
+   +'<div class="apply-detail-cell"><div class="apply-detail-label">응시료수납</div><div class="apply-detail-val">'+r.pay+'</div></div>'
+   +'<div class="apply-detail-cell"><div class="apply-detail-label">접수일</div><div class="apply-detail-val">'+r.date+'</div></div>'
+   +'</div></div>'
+   +'<div class="apply-card-foot"><div class="apply-card-foot-note">접수번호 '+r.regNo+' · '+r.note+'</div>'
+   +'<div class="apply-card-foot-actions">'+receiptBtn+cancelBtn+ticketBtn+'</div></div>'
+   +'</div>';
+ }).join('');
+ wrap.querySelectorAll('.js-receipt').forEach(function(b){b.addEventListener('click',function(){TPKM.openModal('modalConfirm')})});
+ wrap.querySelectorAll('.js-cancel').forEach(function(b){b.addEventListener('click',openCancelModal)});
+}
 const cancelModal=document.getElementById('cancel-modal');
 function openCancelModal(){TPKM.openModal('cancel-modal')}
 function closeCancelModal(){TPKM.closeModal('cancel-modal')}
-document.getElementById('btn-cancel-apply').addEventListener('click',openCancelModal);
+renderRegistrations();
 document.getElementById('cancel-modal-close').addEventListener('click',closeCancelModal);
 document.getElementById('cancel-modal-confirm').addEventListener('click',function(){
  closeCancelModal();
@@ -495,7 +498,6 @@ document.getElementById('cancel-modal-confirm').addEventListener('click',functio
 });
 cancelModal.addEventListener('click',function(e){if(e.target===cancelModal)closeCancelModal()});
 const confirmModal=document.getElementById('modalConfirm');
-document.getElementById('btn-confirm-receipt').addEventListener('click',function(){TPKM.openModal('modalConfirm')});
 document.getElementById('confirm-modal-close').addEventListener('click',function(){TPKM.closeModal('modalConfirm')});
 confirmModal.addEventListener('click',function(e){if(e.target===confirmModal)TPKM.closeModal('modalConfirm')});
 document.getElementById('btn-print-receipt').addEventListener('click',function(){

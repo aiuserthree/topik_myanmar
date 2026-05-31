@@ -87,6 +87,8 @@
 
   function isAdmin() {
     try {
+      /* 관리자 세션은 admin-auth.js 가 sessionStorage(tm_admin_session_v1)에 저장한다 */
+      if (sessionStorage.getItem("tm_admin_session_v1")) return true;
       return !!localStorage.getItem("tm_admin_session");
     } catch (e) {
       return false;
@@ -145,6 +147,10 @@
     },
     getInquiryPosts: function () {
       return load().inquiryPosts.slice();
+    },
+    /** board 인자('refund'|'inquiry')로 해당 목록 반환 — BO 대시보드/배지에서 사용 */
+    list: function (board) {
+      return board === "refund" ? load().refundPosts.slice() : load().inquiryPosts.slice();
     },
     addRefundPost: function (item) {
       var s = load();

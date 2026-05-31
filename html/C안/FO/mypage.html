@@ -150,6 +150,26 @@
   }
   .empty h3 { font-size: 16px; margin-bottom: 8px; color: var(--text-2); }
   .empty p { font-size: 13.5px; margin-bottom: 16px; }
+
+  /* 접수 확인증 인쇄 — A4 1매 정돈 (열린 확인증 모달만 출력) */
+  @media print {
+    body.printing-confirm > *:not(#modalConfirm) { display: none !important; }
+    body.printing-confirm #modalConfirm {
+      position: static !important;
+      display: block !important;
+      background: #fff !important;
+      padding: 0 !important;
+    }
+    body.printing-confirm #modalConfirm .modal {
+      max-width: 100% !important;
+      max-height: none !important;
+      box-shadow: none !important;
+      border: 0 !important;
+      margin: 0 !important;
+    }
+    body.printing-confirm #modalConfirm .modal-head .btn-text,
+    body.printing-confirm #modalConfirm .modal-foot { display: none !important; }
+  }
 </style>
 </head>
 <body data-require-login>
@@ -171,14 +191,14 @@
     </div>
 
     <div class="my-tabs">
-      <button class="active" data-tab="active">진행 중인 접수 <span class="ct">2</span></button>
+      <button class="active" data-tab="active">진행 중인 접수 <span class="ct">5</span></button>
       <button data-tab="past">지난 접수 <span class="ct">3</span></button>
     </div>
 
     <section class="tab-pane active" data-tab="active">
 
-      <!-- 카드 1: 수험번호 부여됨 -->
-      <div class="app-card">
+      <!-- 카드 1: 수험번호 부여됨 (승인완료) -->
+      <div class="app-card" data-status="number">
         <div class="app-head">
           <div class="lt">
             <h3><span class="round-n">제98회</span> <span class="lvls">TOPIK Ⅰ · TOPIK Ⅱ (동시 접수)</span></h3>
@@ -196,13 +216,13 @@
           <div class="it"><div class="l">접수일</div><div class="v" style="color:var(--text-2); font-weight:500;">2026.02.03</div></div>
         </div>
         <div class="app-actions">
-          <button class="btn btn-secondary btn-sm" onclick="TPKM.openModal('modalConfirm')">접수 확인증</button>
-          <a href="ticket.html" class="btn btn-primary btn-sm">수험표 출력</a>
+          <button class="btn btn-secondary btn-sm" data-act="confirm" onclick="TPKM.openModal('modalConfirm')">접수 확인증</button>
+          <a href="ticket.html" class="btn btn-primary btn-sm" data-act="ticket">수험표 출력</a>
         </div>
       </div>
 
       <!-- 카드 2: 사진 심사 중 -->
-      <div class="app-card">
+      <div class="app-card" data-status="photo">
         <div class="app-head">
           <div class="lt">
             <h3><span class="round-n">제99회</span> <span class="lvls">TOPIK Ⅱ</span></h3>
@@ -220,8 +240,79 @@
           <div class="it"><div class="l">접수일</div><div class="v" style="color:var(--text-2); font-weight:500;">2026.05.04</div></div>
         </div>
         <div class="app-actions">
-          <button class="btn btn-secondary btn-sm" onclick="TPKM.openModal('modalConfirm')">접수 확인증</button>
-          <button class="btn btn-ghost btn-sm" onclick="TPKM.openModal('modalCancel')">접수 취소</button>
+          <button class="btn btn-secondary btn-sm" data-act="confirm" onclick="TPKM.openModal('modalConfirm')">접수 확인증</button>
+          <button class="btn btn-ghost btn-sm" data-act="cancel" onclick="TPKM.openModal('modalCancel')">접수 취소</button>
+        </div>
+      </div>
+
+      <!-- 카드 3: 접수완료 (사진 심사 전) -->
+      <div class="app-card" data-status="applied">
+        <div class="app-head">
+          <div class="lt">
+            <h3><span class="round-n">제99회</span> <span class="lvls">TOPIK Ⅰ</span></h3>
+            <div class="meta">시험일 2026.07.05 (일) · 양곤 시험장</div>
+          </div>
+          <div class="rt">
+            <span class="status status-applied">접수완료</span>
+            <span class="apply-n">접수번호 TPKM-99-000301</span>
+          </div>
+        </div>
+        <div class="app-grid">
+          <div class="it"><div class="l">수험번호</div><div class="v pending">부여 전</div></div>
+          <div class="it"><div class="l">사진 심사</div><div class="v" style="color: var(--text-3);">대기</div></div>
+          <div class="it"><div class="l">응시료 수납</div><div class="v" style="color: var(--st-pay);">대기</div></div>
+          <div class="it"><div class="l">접수일</div><div class="v" style="color:var(--text-2); font-weight:500;">2026.05.06</div></div>
+        </div>
+        <div class="app-actions">
+          <button class="btn btn-secondary btn-sm" data-act="confirm" onclick="TPKM.openModal('modalConfirm')">접수 확인증</button>
+          <button class="btn btn-ghost btn-sm" data-act="cancel" onclick="TPKM.openModal('modalCancel')">접수 취소</button>
+        </div>
+      </div>
+
+      <!-- 카드 4: 수납대기 (사진 승인, 응시료 수납 전) -->
+      <div class="app-card" data-status="pay">
+        <div class="app-head">
+          <div class="lt">
+            <h3><span class="round-n">제98회</span> <span class="lvls">TOPIK Ⅱ</span></h3>
+            <div class="meta">시험일 2026.04.12 (일) · 양곤 시험장</div>
+          </div>
+          <div class="rt">
+            <span class="status status-pay">수납대기</span>
+            <span class="apply-n">접수번호 TPKM-98-001277</span>
+          </div>
+        </div>
+        <div class="app-grid">
+          <div class="it"><div class="l">수험번호</div><div class="v pending">부여 전</div></div>
+          <div class="it"><div class="l">사진 심사</div><div class="v" style="color: var(--success);">승인 완료</div></div>
+          <div class="it"><div class="l">응시료 수납</div><div class="v" style="color: var(--st-pay);">대기</div></div>
+          <div class="it"><div class="l">접수일</div><div class="v" style="color:var(--text-2); font-weight:500;">2026.02.05</div></div>
+        </div>
+        <div class="app-actions">
+          <button class="btn btn-secondary btn-sm" data-act="confirm" onclick="TPKM.openModal('modalConfirm')">접수 확인증</button>
+          <button class="btn btn-ghost btn-sm" data-act="cancel" onclick="TPKM.openModal('modalCancel')">접수 취소</button>
+        </div>
+      </div>
+
+      <!-- 카드 5: 반려 (사진 부적합) -->
+      <div class="app-card" data-status="rejected">
+        <div class="app-head">
+          <div class="lt">
+            <h3><span class="round-n">제99회</span> <span class="lvls">TOPIK Ⅰ</span></h3>
+            <div class="meta">시험일 2026.07.05 (일) · 양곤 시험장</div>
+          </div>
+          <div class="rt">
+            <span class="status status-rejected">반려</span>
+            <span class="apply-n">접수번호 TPKM-99-000455</span>
+          </div>
+        </div>
+        <div class="app-grid">
+          <div class="it"><div class="l">수험번호</div><div class="v pending">부여 전</div></div>
+          <div class="it"><div class="l">사진 심사</div><div class="v" style="color: var(--st-rejected);">반려 (정면 아님)</div></div>
+          <div class="it"><div class="l">응시료 수납</div><div class="v" style="color: var(--st-pay);">대기</div></div>
+          <div class="it"><div class="l">접수일</div><div class="v" style="color:var(--text-2); font-weight:500;">2026.05.04</div></div>
+        </div>
+        <div class="app-actions">
+          <a href="mypage-profile.html" class="btn btn-primary btn-sm" data-act="rephoto">사진 재등록</a>
         </div>
       </div>
 
@@ -229,7 +320,7 @@
 
     <section class="tab-pane" data-tab="past" style="display:none;">
       <!-- 지난 접수 -->
-      <div class="app-card">
+      <div class="app-card" data-status="approved">
         <div class="app-head">
           <div class="lt">
             <h3><span class="round-n">제97회</span> <span class="lvls">TOPIK Ⅰ</span></h3>
@@ -248,7 +339,7 @@
         </div>
       </div>
 
-      <div class="app-card">
+      <div class="app-card" data-status="cancel">
         <div class="app-head">
           <div class="lt">
             <h3><span class="round-n">제96회</span> <span class="lvls">TOPIK Ⅰ</span></h3>
@@ -276,7 +367,7 @@
   <div class="modal" style="max-width: 540px;">
     <div class="modal-head" style="display:flex; justify-content:space-between; align-items:center;">
       <h3>접수 확인증</h3>
-      <button onclick="window.print()" class="btn btn-text btn-sm">인쇄</button>
+      <button onclick="printConfirm()" class="btn btn-text btn-sm">인쇄</button>
     </div>
     <div class="modal-body">
       <table class="table" style="margin: 0;">
@@ -329,6 +420,30 @@
       document.querySelectorAll('.tab-pane').forEach(p => p.style.display = (p.dataset.tab === b.dataset.tab ? '' : 'none'));
     });
   });
+
+  // ===== 상태별 액션 버튼 노출 제어 =====
+  // 취소: 수납 전(접수완료/사진심사중/수납대기)에만 가능
+  // 수험표 출력: 수험번호 부여 & 승인완료 상태에서만 가능
+  // 접수 확인증: 취소/반려를 제외한 진행 상태에서 노출
+  function gateActions() {
+    document.querySelectorAll('.app-card[data-status]').forEach(card => {
+      const st = card.dataset.status;
+      const beforePay  = ['applied', 'photo', 'pay'].includes(st);
+      const ticketOk   = st === 'number';
+      const confirmOk  = ['applied', 'photo', 'pay', 'number', 'approved'].includes(st);
+      card.querySelectorAll('[data-act="cancel"]').forEach(b => b.style.display = beforePay ? '' : 'none');
+      card.querySelectorAll('[data-act="ticket"]').forEach(b => b.style.display = ticketOk ? '' : 'none');
+      card.querySelectorAll('[data-act="confirm"]').forEach(b => b.style.display = confirmOk ? '' : 'none');
+    });
+  }
+  gateActions();
+
+  // 접수 확인증만 깔끔하게 인쇄 (A4 1매)
+  function printConfirm() {
+    document.body.classList.add('printing-confirm');
+    window.print();
+  }
+  window.addEventListener('afterprint', () => document.body.classList.remove('printing-confirm'));
 </script>
 </body>
 </html>

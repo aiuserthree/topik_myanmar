@@ -216,6 +216,8 @@
         </div>
       </div>
 
+      <p id="noticeEmpty" style="display:none; text-align:center; padding:32px 16px; color:var(--text-3); font-size:13.5px;">검색 조건에 맞는 공지가 없습니다.</p>
+
       <nav class="pager" aria-label="페이지">
         <span class="disabled">‹</span>
         <span class="current">1</span>
@@ -292,12 +294,36 @@
     document.getElementById('listView').classList.remove('hidden');
     document.getElementById('detailView').classList.remove('active');
   }
+  // ===== 분류 칩 + 제목 검색 필터 =====
+  const catMap = { imp: '중요', apply: '접수', exam: '시험', result: '결과' };
+  let activeCat = 'all';
+  const searchInput = document.querySelector('.board-tools .search input');
+
+  function filterNotices() {
+    const q = (searchInput.value || '').trim().toLowerCase();
+    let visible = 0;
+    document.querySelectorAll('#listView tbody tr').forEach(tr => {
+      const catText = (tr.querySelector('.col-cat')?.textContent || '').trim();
+      const title = (tr.querySelector('.col-title')?.textContent || '').toLowerCase();
+      const catOk = activeCat === 'all' || catText === catMap[activeCat];
+      const qOk = !q || title.includes(q);
+      const ok = catOk && qOk;
+      tr.style.display = ok ? '' : 'none';
+      if (ok) visible++;
+    });
+    const empty = document.getElementById('noticeEmpty');
+    if (empty) empty.style.display = visible ? 'none' : '';
+  }
+
   document.querySelectorAll('.filters .chip').forEach(c => {
     c.addEventListener('click', () => {
       document.querySelectorAll('.filters .chip').forEach(x => x.classList.remove('active'));
       c.classList.add('active');
+      activeCat = c.dataset.cat || 'all';
+      filterNotices();
     });
   });
+  searchInput.addEventListener('input', filterNotices);
 </script>
 </body>
 </html>

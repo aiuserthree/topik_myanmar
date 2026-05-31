@@ -255,9 +255,9 @@
         { id: "result", label: "결과 발표" },
       ],
       faqCategories: [
-        { id: "reg", label: "접수·결제" },
-        { id: "exam", label: "시험·당일" },
-        { id: "score", label: "성적·수험표" },
+        { id: "reg", label: "접수" },
+        { id: "exam", label: "시험" },
+        { id: "score", label: "결과" },
         { id: "etc", label: "기타" },
       ],
       faqItems: defaultFaqItems(),
@@ -513,6 +513,17 @@
         return x.id !== id;
       });
       save(s);
+    },
+
+    /** 조회수 1 증가 (세션당 1회는 호출 측에서 제어) */
+    incrementViews: function (id) {
+      if (!id) return 0;
+      var s = load();
+      var it = s.noticeItems.find(function (x) { return x.id === id; });
+      if (!it) return 0;
+      it.views = (typeof it.views === "number" ? it.views : 0) + 1;
+      saveAllowFail(s);
+      return it.views;
     },
 
     upsertFaqItem: function (item) {

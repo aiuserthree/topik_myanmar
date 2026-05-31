@@ -114,6 +114,13 @@ input{font-family:inherit}
 .search-bar input::placeholder{color:var(--neutral-400)}
 .search-bar button{padding:9px 14px;background:var(--primary);color:var(--white);font-size:13px;font-weight:600;border:none;cursor:pointer;transition:.15s var(--ease);white-space:nowrap;font-family:inherit}
 .search-bar button:hover{background:var(--primary-dark)}
+/* 카테고리 필터 칩 */
+.notice-filter{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 14px}
+.filter-chip{padding:6px 15px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;
+ border:1.5px solid var(--neutral-200);color:var(--neutral-500);background:var(--white);transition:.15s var(--ease);font-family:inherit}
+.filter-chip:hover{border-color:var(--primary);color:var(--primary)}
+.filter-chip.is-active{background:var(--primary);color:var(--white);border-color:var(--primary)}
+.notice-empty{text-align:center;color:var(--neutral-400);font-size:13.5px;padding:36px 16px}
 /* 고정 공지 배너 */
 .pinned-notice{display:flex;align-items:center;gap:12px;padding:13px 18px;
  background:var(--primary-light);border:1px solid rgba(26,58,107,.12);
@@ -299,12 +306,20 @@ input{font-family:inherit}
  <span class="pinned-title">수험표 사진 규정 변경 안내 (2026년 적용)</span>
  <span class="pinned-date">2026.03.10</span>
  </div>
+ <!-- 카테고리 필터 -->
+ <div class="notice-filter" id="js-notice-filter" role="group" aria-label="카테고리 필터">
+ <button type="button" class="filter-chip is-active" data-cat="all">전체</button>
+ <button type="button" class="filter-chip" data-cat="important">중요</button>
+ <button type="button" class="filter-chip" data-cat="reception">접수</button>
+ <button type="button" class="filter-chip" data-cat="exam">시험</button>
+ <button type="button" class="filter-chip" data-cat="result">결과</button>
+ </div>
  <!-- 툴바 -->
  <div class="board-toolbar">
- <div class="board-count">전체 <strong>24</strong>건</div>
+ <div class="board-count">전체 <strong id="js-notice-count">22</strong>건</div>
  <div class="search-bar">
- <input type="text" placeholder="검색어 입력" aria-label="공지사항 검색">
- <button type="button">검색</button>
+ <input type="text" id="js-notice-search" placeholder="검색어 입력" aria-label="공지사항 검색">
+ <button type="button" id="js-notice-search-btn">검색</button>
  </div>
  </div>
  <!-- 목록 -->
@@ -317,26 +332,11 @@ input{font-family:inherit}
  <th class="col-date">등록일</th>
  </tr>
  </thead>
- <tbody id="js-notice-tbody">
- <tr onclick="showDetail(2)"><td class="col-num">24</td><td class="col-title">제99회 TOPIK 접수 기간 안내<span class="new-badge">NEW</span></td><td class="col-date">2026.05.01</td></tr>
- <tr onclick="showDetail(3)"><td class="col-num">23</td><td class="col-title">2026년 하반기 TOPIK 시험 일정 공고</td><td class="col-date">2026.04.15</td></tr>
- <tr onclick="showDetail(4)"><td class="col-num">22</td><td class="col-title">시험 장소 변경 안내 (양곤 시험장)</td><td class="col-date">2026.03.22</td></tr>
- <tr onclick="showDetail(5)"><td class="col-num">21</td><td class="col-title">제97회 TOPIK 성적 발표 안내</td><td class="col-date">2026.02.18</td></tr>
- <tr onclick="showDetail(6)"><td class="col-num">20</td><td class="col-title">개인정보 처리방침 개정 안내</td><td class="col-date">2026.01.05</td></tr>
- <tr onclick="showDetail(7)"><td class="col-num">19</td><td class="col-title">제95회 TOPIK 접수 마감 안내</td><td class="col-date">2025.12.10</td></tr>
- <tr onclick="showDetail(8)"><td class="col-num">18</td><td class="col-title">TOPIK Myanmar 사이트 개편 안내</td><td class="col-date">2025.11.20</td></tr>
- <tr onclick="showDetail(9)"><td class="col-num">17</td><td class="col-title">미얀마 TOPIK 응시료 면제 대상 안내</td><td class="col-date">2025.10.02</td></tr>
- </tbody>
+ <tbody id="js-notice-tbody"></tbody>
  </table>
  </div>
  <!-- 페이지네이션 -->
- <div class="pagination" role="navigation" aria-label="페이지 이동">
- <button class="page-btn arrow" aria-label="이전 페이지">‹</button>
- <button class="page-btn is-active">1</button>
- <button class="page-btn">2</button>
- <button class="page-btn">3</button>
- <button class="page-btn arrow" aria-label="다음 페이지">›</button>
- </div>
+ <div class="pagination" id="js-pagination" role="navigation" aria-label="페이지 이동"></div>
  </div>
  <!-- ── 상세 뷰 ── -->
  <div class="detail-view" id="js-detail-view">
@@ -425,17 +425,91 @@ drawerClose.addEventListener('click',closeDrawer);
 overlay.addEventListener('click',closeDrawer);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer()});
 const notices=[
- {title:'제99회 TOPIK 미얀마 접수 안내 (2026.07.12 시행)',date:'2026.04.28'},
- {title:'수험표 사진 규정 변경 안내 (2026년 적용)',date:'2026.03.10'},
- {title:'제99회 TOPIK 접수 기간 안내',date:'2026.05.01'},
- {title:'2026년 하반기 TOPIK 시험 일정 공고',date:'2026.04.15'},
- {title:'시험 장소 변경 안내 (양곤 시험장)',date:'2026.03.22'},
- {title:'제97회 TOPIK 성적 발표 안내',date:'2026.02.18'},
- {title:'개인정보 처리방침 개정 안내',date:'2026.01.05'},
- {title:'제95회 TOPIK 접수 마감 안내',date:'2025.12.10'},
- {title:'TOPIK Myanmar 사이트 개편 안내',date:'2025.11.20'},
- {title:'미얀마 TOPIK 응시료 면제 대상 안내',date:'2025.10.02'},
+ {title:'제99회 TOPIK 미얀마 접수 안내 (2026.07.12 시행)',date:'2026.04.28',cat:'important',pinned:true},
+ {title:'수험표 사진 규정 변경 안내 (2026년 적용)',date:'2026.03.10',cat:'important',pinned:true},
+ {no:24,title:'제99회 TOPIK 접수 기간 안내',date:'2026.05.01',cat:'reception',isNew:true},
+ {no:23,title:'2026년 하반기 TOPIK 시험 일정 공고',date:'2026.04.15',cat:'exam'},
+ {no:22,title:'시험 장소 변경 안내 (양곤 시험장)',date:'2026.03.22',cat:'exam'},
+ {no:21,title:'제97회 TOPIK 성적 발표 안내',date:'2026.02.18',cat:'result'},
+ {no:20,title:'개인정보 처리방침 개정 안내',date:'2026.01.05',cat:'normal'},
+ {no:19,title:'제95회 TOPIK 접수 마감 안내',date:'2025.12.10',cat:'reception'},
+ {no:18,title:'TOPIK Myanmar 사이트 개편 안내',date:'2025.11.20',cat:'normal'},
+ {no:17,title:'미얀마 TOPIK 응시료 면제 대상 안내',date:'2025.10.02',cat:'reception'},
+ {no:16,title:'제98회 TOPIK 성적 발표 및 성적증명서 발급 안내',date:'2025.09.15',cat:'result'},
+ {no:15,title:'시험 당일 유의사항 및 준비물 안내',date:'2025.09.01',cat:'exam'},
+ {no:14,title:'제96회 TOPIK 접수 기간 안내',date:'2025.08.20',cat:'reception'},
+ {no:13,title:'추석 연휴 대사관 휴무 안내',date:'2025.08.05',cat:'normal'},
+ {no:12,title:'제95회 TOPIK 성적 발표 안내',date:'2025.07.18',cat:'result'},
+ {no:11,title:'시험장 입실 시간 변경 안내',date:'2025.07.01',cat:'exam'},
+ {no:10,title:'응시료 인상 안내 (2025년 하반기)',date:'2025.06.15',cat:'important'},
+ {no:9,title:'제94회 TOPIK 접수 마감 임박 안내',date:'2025.06.01',cat:'reception'},
+ {no:8,title:'부정행위 처리 규정 안내',date:'2025.05.20',cat:'important'},
+ {no:7,title:'제93회 TOPIK 성적 발표 안내',date:'2025.05.02',cat:'result'},
+ {no:6,title:'시험 결과 이의신청 절차 안내',date:'2025.04.18',cat:'result'},
+ {no:5,title:'여름철 시험장 냉방 운영 안내',date:'2025.04.01',cat:'exam'},
+ {no:4,title:'제92회 TOPIK 접수 기간 안내',date:'2025.03.15',cat:'reception'},
+ {no:3,title:'대사관 민원실 운영시간 변경 안내',date:'2025.03.01',cat:'normal'},
 ];
+const PER_PAGE=8;
+let curCat='all',curPage=1,curSearch='';
+const listIdx=notices.map((n,i)=>i).filter(i=>!notices[i].pinned);
+function filteredIdx(){
+ return listIdx.filter(i=>{
+ const n=notices[i];
+ if(curCat!=='all'&&n.cat!==curCat)return false;
+ if(curSearch&&n.title.toLowerCase().indexOf(curSearch)===-1)return false;
+ return true;
+ });
+}
+function renderList(){
+ const items=filteredIdx();
+ const tbody=document.getElementById('js-notice-tbody');
+ document.getElementById('js-notice-count').textContent=items.length;
+ const totalPages=Math.max(1,Math.ceil(items.length/PER_PAGE));
+ if(curPage>totalPages)curPage=totalPages;
+ if(!items.length){
+ tbody.innerHTML='<tr><td colspan="3" class="notice-empty">검색 결과가 없습니다.</td></tr>';
+ }else{
+ const start=(curPage-1)*PER_PAGE;
+ tbody.innerHTML=items.slice(start,start+PER_PAGE).map(i=>{
+  const n=notices[i];
+  const badge=n.isNew?'<span class="new-badge">NEW</span>':'';
+  return '<tr onclick="showDetail('+i+')"><td class="col-num">'+n.no+'</td><td class="col-title">'+n.title+badge+'</td><td class="col-date">'+n.date+'</td></tr>';
+ }).join('');
+ }
+ renderPagination(totalPages);
+}
+function renderPagination(totalPages){
+ const pag=document.getElementById('js-pagination');
+ let html='<button class="page-btn arrow" data-page="prev" aria-label="이전 페이지">‹</button>';
+ for(let p=1;p<=totalPages;p++){html+='<button class="page-btn'+(p===curPage?' is-active':'')+'" data-page="'+p+'">'+p+'</button>';}
+ html+='<button class="page-btn arrow" data-page="next" aria-label="다음 페이지">›</button>';
+ pag.innerHTML=html;
+ pag.querySelectorAll('.page-btn').forEach(btn=>{
+ btn.addEventListener('click',function(){
+  const v=this.getAttribute('data-page');
+  if(v==='prev')curPage=Math.max(1,curPage-1);
+  else if(v==='next')curPage=Math.min(totalPages,curPage+1);
+  else curPage=parseInt(v,10);
+  renderList();
+  const tb=document.querySelector('.board-toolbar');
+  if(tb)window.scrollTo({top:tb.getBoundingClientRect().top+window.scrollY-90,behavior:'smooth'});
+ });
+ });
+}
+document.querySelectorAll('#js-notice-filter .filter-chip').forEach(chip=>{
+ chip.addEventListener('click',function(){
+ document.querySelectorAll('#js-notice-filter .filter-chip').forEach(c=>c.classList.remove('is-active'));
+ this.classList.add('is-active');
+ curCat=this.getAttribute('data-cat');curPage=1;renderList();
+ });
+});
+function doSearch(){
+ curSearch=(document.getElementById('js-notice-search').value||'').trim().toLowerCase();
+ curPage=1;renderList();
+}
+document.getElementById('js-notice-search-btn').addEventListener('click',doSearch);
+document.getElementById('js-notice-search').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doSearch();}});
 function showDetail(idx){
  document.getElementById('js-list-view').classList.add('is-hide');
  document.getElementById('js-detail-view').classList.add('is-show');
@@ -448,12 +522,8 @@ document.getElementById('js-back-btn').addEventListener('click',function(){
  document.getElementById('js-detail-view').classList.remove('is-show');
  window.scrollTo({top:0,behavior:'smooth'});
 });
-document.querySelectorAll('.page-btn:not(.arrow)').forEach(btn=>{
- btn.addEventListener('click',function(){
- document.querySelectorAll('.page-btn:not(.arrow)').forEach(b=>b.classList.remove('is-active'));
- this.classList.add('is-active');
- });
-});
+renderList();
 </script>
+<script src="js/tm-auth.js"></script>
 </body>
 </html>

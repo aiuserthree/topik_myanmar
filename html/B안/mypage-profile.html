@@ -177,6 +177,34 @@ input,select{font-family:inherit}
 .alert-error{background:var(--accent-light);border:1px solid rgba(200,35,44,.15);color:var(--accent)}
 /* PW change section */
 .pw-row{display:flex;flex-direction:column;gap:14px}
+/* 비밀번호 변경 주기 안내 배너 */
+.pw-cycle-banner{display:flex;flex-direction:column;gap:3px;padding:12px 14px;border-radius:var(--radius-md);
+ font-size:13px;line-height:1.6;margin-bottom:18px;background:#fef9ec;border:1px solid rgba(180,83,9,.2);color:#b45309}
+.pw-cycle-banner strong{font-weight:700}
+/* select 화살표 (코드 기반 select) */
+select.form-control{appearance:none;-webkit-appearance:none;padding-right:34px;
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16'%3E%3Cpolyline points='4,6 8,10 12,6' stroke='%239099aa' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+ background-repeat:no-repeat;background-position:right 12px center}
+/* 증명사진 변경 */
+.photo-upload-wrap{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.photo-preview{width:120px;height:156px;border:1.5px solid var(--neutral-200);border-radius:var(--radius-md);
+ overflow:hidden;background:var(--neutral-100);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.photo-preview img{width:100%;height:100%;object-fit:cover}
+.photo-upload-area{flex:1;min-width:200px}
+.file-upload{border:1.5px dashed var(--neutral-300);border-radius:var(--radius-md);padding:14px;position:relative;cursor:pointer;transition:.15s var(--ease)}
+.file-upload:hover{border-color:var(--primary);background:var(--primary-light)}
+.file-upload input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.file-upload-text{font-size:13px;color:var(--neutral-500);line-height:1.6}
+.file-upload-text strong{color:var(--neutral-700)}
+.photo-warn{margin-top:12px;padding:10px 13px;border-radius:var(--radius-md);font-size:12.5px;line-height:1.6;
+ background:var(--accent-light);border:1px solid rgba(200,35,44,.15);color:var(--accent)}
+/* 회원 탈퇴 */
+.withdraw-warn{padding:13px 16px;border-radius:var(--radius-md);font-size:13px;line-height:1.65;
+ background:var(--accent-light);border:1px solid rgba(200,35,44,.15);color:var(--accent)}
+.withdraw-warn strong{display:block;font-weight:700;margin-bottom:4px}
+.withdraw-apply-list{display:flex;flex-direction:column;gap:6px}
+.withdraw-apply-list li{padding:10px 13px;background:var(--neutral-50);border:1px solid var(--neutral-200);
+ border-radius:var(--radius-md);font-size:13px;color:var(--neutral-700)}
 /* footer */
 .footer{background:var(--neutral-800);color:rgba(255,255,255,.65);padding:36px 0 20px}
 .footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:24px}
@@ -356,8 +384,10 @@ input,select{font-family:inherit}
  </div>
  <nav class="aside-nav" aria-label="마이페이지 메뉴">
  <a href="#section-info"  class="aside-nav-item is-active" data-tab="info">내 정보</a>
+ <a href="#section-photo" class="aside-nav-item" data-tab="photo">증명사진</a>
  <a href="#section-apply" class="aside-nav-item" data-tab="apply">접수 내역</a>
  <a href="#section-pw"  class="aside-nav-item" data-tab="pw">비밀번호 변경</a>
+ <a href="#section-withdraw" class="aside-nav-item danger" data-tab="withdraw">회원 탈퇴</a>
  <a href="#" class="aside-nav-item danger" id="aside-logout-btn">로그아웃</a>
  </nav>
  </aside>
@@ -406,6 +436,18 @@ input,select{font-family:inherit}
  <div class="info-key">이메일</div>
  <div class="info-val" id="view-email">gildong@email.com</div>
  </div>
+ <div class="info-row">
+ <div class="info-key">직업</div>
+ <div class="info-val" id="view-job">2. 회사원</div>
+ </div>
+ <div class="info-row">
+ <div class="info-key">응시동기</div>
+ <div class="info-val" id="view-motivation">1. 유학 및 진학</div>
+ </div>
+ <div class="info-row">
+ <div class="info-key">응시목적</div>
+ <div class="info-val" id="view-purpose">1. 대학 입학</div>
+ </div>
  </div>
  <!-- ── 수정 모드 ── -->
  <form id="info-edit-form" style="display:none" novalidate>
@@ -453,11 +495,70 @@ input,select{font-family:inherit}
  <div class="form-hint">변경 시 이메일 인증이 필요합니다.</div>
  <div class="form-error" id="err-edit-email">유효한 이메일을 입력해 주세요.</div>
  </div>
+ <div class="form-group">
+ <label class="form-label" for="edit-job">직업 <span class="req">*</span> <span style="font-weight:400;color:var(--neutral-400)">(코드 1~12)</span></label>
+ <select id="edit-job" class="form-control">
+ <option value="1">1. 학생</option><option value="2" selected>2. 회사원</option><option value="3">3. 공무원</option>
+ <option value="4">4. 자영업</option><option value="5">5. 전문직</option><option value="6">6. 주부</option>
+ <option value="7">7. 무직</option><option value="8">8. 교사</option><option value="9">9. 군인</option>
+ <option value="10">10. 농업·어업</option><option value="11">11. 기타</option><option value="12">12. 미상</option>
+ </select>
+ </div>
+ <div class="form-row-2">
+ <div class="form-group">
+ <label class="form-label" for="edit-motivation">응시동기 <span class="req">*</span></label>
+ <select id="edit-motivation" class="form-control">
+ <option value="1" selected>1. 유학 및 진학</option><option value="2">2. 취업 및 이민</option>
+ <option value="3">3. 자격 취득</option><option value="4">4. 개인적 관심</option>
+ <option value="5">5. 학업 요건</option><option value="6">6. 장학금 신청</option>
+ <option value="7">7. 비자 발급</option><option value="8">8. 기업 요구</option>
+ <option value="9">9. 한국 문화 관심</option><option value="10">10. 기타</option><option value="11">11. 미상</option>
+ </select>
+ </div>
+ <div class="form-group">
+ <label class="form-label" for="edit-purpose">응시목적 <span class="req">*</span></label>
+ <select id="edit-purpose" class="form-control">
+ <option value="1" selected>1. 대학 입학</option><option value="2">2. 대학원 입학</option>
+ <option value="3">3. 취업</option><option value="4">4. 비자 발급</option>
+ <option value="5">5. 장학금</option><option value="6">6. 자격증</option>
+ <option value="7">7. 개인 학습</option><option value="8">8. 기업 요구</option>
+ <option value="9">9. 유학</option><option value="10">10. 이민</option>
+ <option value="11">11. 한국어 교육</option><option value="12">12. 연구</option>
+ <option value="13">13. 교환학생</option><option value="14">14. 기타</option><option value="15">15. 미상</option>
+ </select>
+ </div>
+ </div>
  <div style="display:flex;gap:10px;margin-top:6px">
  <button type="button" class="btn btn-ghost" id="btn-edit-cancel" style="padding:10px 16px;font-size:13.5px">취소</button>
  <button type="submit" class="btn btn-solid" style="flex:1;padding:10px 16px;font-size:13.5px">저장</button>
  </div>
  </form>
+ </div>
+ </div>
+ <!-- ═══ 증명사진 변경 ═══ -->
+ <div class="section-card" id="section-photo">
+ <div class="section-card-head">
+ <div>
+ <h2>증명사진</h2>
+ <p>여권용 정면 사진(JPG/PNG · 200KB~2MB)을 등록·변경합니다.</p>
+ </div>
+ </div>
+ <div class="section-card-body">
+ <div class="alert-box alert-success" id="photo-save-alert">증명사진이 변경되었습니다. BO 사진 심사가 재실행됩니다.</div>
+ <div class="photo-upload-wrap">
+ <div class="photo-preview" id="photo-preview">
+ <img id="photo-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='156'%3E%3Crect fill='%23e2e6ef' width='120' height='156'/%3E%3Ctext x='60' y='82' text-anchor='middle' fill='%239099aa' font-size='11'%3E등록된 사진%3C/text%3E%3C/svg%3E" alt="증명사진 미리보기">
+ </div>
+ <div class="photo-upload-area">
+ <div class="file-upload">
+ <input type="file" id="photo-file" accept=".jpg,.jpeg,.png" aria-label="증명사진 파일 선택">
+ <div class="file-upload-text"><strong>클릭하여 사진 변경</strong><br>JPG 또는 PNG · 200KB ~ 2MB · 여권용 정면 사진</div>
+ </div>
+ <div class="photo-warn">사진 변경 시 진행 중인 접수 건에 즉시 반영되며 BO 사진 심사가 재실행됩니다.</div>
+ <div class="form-error" id="err-photo">JPG/PNG · 200KB~2MB 파일만 업로드할 수 있습니다.</div>
+ <button type="button" class="btn btn-solid" id="btn-photo-save" style="margin-top:12px;padding:9px 18px;font-size:13.5px">사진 저장</button>
+ </div>
+ </div>
  </div>
  </div>
  <!-- ═══ 접수 내역 ═══ -->
@@ -525,6 +626,10 @@ input,select{font-family:inherit}
  </div>
  </div>
  <div class="section-card-body">
+ <div class="pw-cycle-banner" id="pw-cycle-banner" style="display:none">
+ <strong>비밀번호 변경 권고</strong>
+ <span id="pw-cycle-text"></span>
+ </div>
  <div class="alert-box alert-success" id="pw-save-alert">비밀번호가 성공적으로 변경되었습니다.</div>
  <div class="alert-box alert-error" id="pw-err-alert">현재 비밀번호가 올바르지 않습니다.</div>
  <form id="js-pw-form" novalidate>
@@ -549,6 +654,29 @@ input,select{font-family:inherit}
  </form>
  </div>
  </div>
+ <!-- ═══ 회원 탈퇴 ═══ -->
+ <div class="section-card" id="section-withdraw">
+ <div class="section-card-head">
+ <div>
+ <h2>회원 탈퇴</h2>
+ <p>계정을 삭제하면 복구할 수 없습니다.</p>
+ </div>
+ </div>
+ <div class="section-card-body">
+ <div class="withdraw-warn">
+ <strong>탈퇴 전 확인해 주세요</strong>
+ 탈퇴 시 진행 중인 접수 내역이 모두 취소됩니다. 환불 가능 여부는 <a href="rules-fee.html" style="color:var(--accent);font-weight:600;text-decoration:underline">응시료 규정</a>을 따릅니다.
+ </div>
+ <div style="margin-top:14px">
+ <div style="font-size:13px;font-weight:600;color:var(--neutral-700);margin-bottom:8px">진행 중인 접수 내역</div>
+ <ul class="withdraw-apply-list">
+ <li>제99회 TOPIK Ⅱ · 사진심사중 · 2026.05.10 접수</li>
+ <li>제99회 TOPIK Ⅰ · 수납대기 · 2026.05.08 접수</li>
+ </ul>
+ </div>
+ <button type="button" class="btn" id="btn-withdraw" style="margin-top:16px;background:var(--accent);color:#fff;padding:10px 18px">회원 탈퇴</button>
+ </div>
+ </div>
  </main>
  </div>
 </div>
@@ -560,6 +688,24 @@ input,select{font-family:inherit}
  <div class="modal-actions">
  <button class="modal-cancel" id="logout-cancel">취소</button>
  <button class="modal-confirm" id="logout-confirm">로그아웃</button>
+ </div>
+ </div>
+</div>
+<!-- 회원 탈퇴 확인 모달 -->
+<div class="modal-overlay" id="withdraw-modal">
+ <div class="modal" role="dialog" aria-modal="true" aria-label="회원 탈퇴 확인">
+ <div class="modal-title">회원 탈퇴</div>
+ <div class="modal-desc">
+ <strong style="color:var(--accent)">탈퇴 시 진행 중인 접수 내역이 모두 취소됩니다.</strong><br><br>
+ 아래 진행 중 접수 건이 즉시 취소되며, 환불은 응시료 규정을 따릅니다. 정말 탈퇴하시겠습니까?
+ </div>
+ <ul class="withdraw-apply-list" style="margin-bottom:22px">
+ <li>제99회 TOPIK Ⅱ · 사진심사중</li>
+ <li>제99회 TOPIK Ⅰ · 수납대기</li>
+ </ul>
+ <div class="modal-actions">
+ <button class="modal-cancel" id="withdraw-cancel">취소</button>
+ <button class="modal-confirm" id="withdraw-confirm">탈퇴하기</button>
  </div>
  </div>
 </div>
@@ -642,6 +788,10 @@ editForm.addEventListener('submit',function(e){
  document.getElementById('view-gender').textContent=genderMap[document.getElementById('edit-gender').value]||'-';
  document.getElementById('view-phone').textContent=phone;
  document.getElementById('view-email').textContent=email;
+ function selText(id){const s=document.getElementById(id);return s.options[s.selectedIndex].textContent;}
+ document.getElementById('view-job').textContent=selText('edit-job');
+ document.getElementById('view-motivation').textContent=selText('edit-motivation');
+ document.getElementById('view-purpose').textContent=selText('edit-purpose');
  toggleEdit(false);
  const alert=document.getElementById('info-save-alert');
  alert.classList.add('is-show');
@@ -669,6 +819,48 @@ document.getElementById('js-pw-form').addEventListener('submit',function(e){
  this.reset();
  setTimeout(()=>ok.classList.remove('is-show'),4000);
 });
+/* ── 증명사진 변경 ── */
+document.getElementById('photo-file').addEventListener('change',function(){
+ const f=this.files[0];
+ const err=document.getElementById('err-photo');
+ if(!f)return;
+ const okType=/\.(jpe?g|png)$/i.test(f.name);
+ const okSize=f.size>=200*1024&&f.size<=2*1024*1024;
+ if(!okType||!okSize){err.classList.add('is-show');return;}
+ err.classList.remove('is-show');
+ const r=new FileReader();
+ r.onload=function(e){document.getElementById('photo-img').src=e.target.result;};
+ r.readAsDataURL(f);
+});
+document.getElementById('btn-photo-save').addEventListener('click',function(){
+ const a=document.getElementById('photo-save-alert');
+ a.classList.add('is-show');
+ setTimeout(function(){a.classList.remove('is-show');},4000);
+});
+/* ── 비밀번호 변경 주기 안내 (마지막 변경 후 6개월 경과 시 권고) ── */
+(function pwCycleNotice(){
+ const last=new Date('2025-11-12');
+ const now=new Date();
+ const months=(now.getFullYear()-last.getFullYear())*12+(now.getMonth()-last.getMonth());
+ const banner=document.getElementById('pw-cycle-banner');
+ const f=last.getFullYear()+'년 '+(last.getMonth()+1)+'월 '+last.getDate()+'일';
+ if(months>=6){
+ banner.style.display='flex';
+ document.getElementById('pw-cycle-text').textContent='마지막 변경일('+f+') 기준 '+months+'개월이 경과했습니다. 보안을 위해 비밀번호를 변경해 주세요.';
+ }
+})();
+/* ── 회원 탈퇴 ── */
+const withdrawModal=document.getElementById('withdraw-modal');
+function openWithdraw(){withdrawModal.classList.add('is-show');document.body.style.overflow='hidden';}
+function closeWithdraw(){withdrawModal.classList.remove('is-show');document.body.style.overflow='';}
+document.getElementById('btn-withdraw').addEventListener('click',openWithdraw);
+document.getElementById('withdraw-cancel').addEventListener('click',closeWithdraw);
+document.getElementById('withdraw-confirm').addEventListener('click',function(){
+ alert('회원 탈퇴가 완료되었습니다. 진행 중이던 접수가 모두 취소되었습니다.');
+ if(window.TPKMAuth){TPKMAuth.logout();}else{window.location.href='index.html';}
+});
+withdrawModal.addEventListener('click',function(e){if(e.target===withdrawModal)closeWithdraw();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeWithdraw();});
 /* ── Aside tab scroll ── */
 document.querySelectorAll('.aside-nav-item[data-tab]').forEach(link=>{
  link.addEventListener('click',function(e){
@@ -676,7 +868,7 @@ document.querySelectorAll('.aside-nav-item[data-tab]').forEach(link=>{
  document.querySelectorAll('.aside-nav-item').forEach(l=>l.classList.remove('is-active'));
  this.classList.add('is-active');
  const id=this.dataset.tab;
- const map={info:'section-info',apply:'section-apply',pw:'section-pw'};
+ const map={info:'section-info',photo:'section-photo',apply:'section-apply',pw:'section-pw',withdraw:'section-withdraw'};
  const target=document.getElementById(map[id]);
  if(target){
  const offset=target.getBoundingClientRect().top+window.scrollY-80;

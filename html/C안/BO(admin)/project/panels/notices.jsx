@@ -125,11 +125,18 @@ function NoticeEditLP({ edit, onClose, onSave }) {
   const state = useStore();
   const n = edit.id ? state.notices.find(x => x.id === edit.id) : null;
   const [f, setF] = useState(n ? { ...n } : {
-    cat: '접수', title: '', body: '', public: true, pin: false, showStart: '', showEnd: ''
+    cat: '접수', title: '', body: '', titleMy: '', titleEn: '', bodyMy: '', bodyEn: '',
+    public: true, pin: false, showStart: '', showEnd: ''
   });
   const set = (k, v) => setF(s => ({ ...s, [k]: v }));
   const valid = f.title.trim();
   const isNew = !n;
+
+  // 다국어(KO/MY/EN) 입력 — KO 필수, MY/EN 선택
+  const [lang, setLang] = useState('KO');
+  const titleKey = lang === 'KO' ? 'title' : lang === 'MY' ? 'titleMy' : 'titleEn';
+  const bodyKey  = lang === 'KO' ? 'body'  : lang === 'MY' ? 'bodyMy'  : 'bodyEn';
+  const titlePh  = lang === 'KO' ? '예) 제106회 TOPIK 접수 안내' : lang === 'MY' ? 'ဥပမာ - ၁၀၆ ကြိမ်မြောက် TOPIK လျှောက်ထားရန်' : 'e.g. 106th TOPIK Application Guide';
   const marketingTargets = state.members.filter(m => m.marketing && m.status === 'active').length;
 
   return (
@@ -154,9 +161,6 @@ function NoticeEditLP({ edit, onClose, onSave }) {
             </label>
           </div>
         </FormRow>
-        <FormRow label="제목" required span={2}>
-          <input className="input" value={f.title} onChange={e => set('title', e.target.value)} maxLength={80} placeholder="예) 제106회 TOPIK 접수 안내"/>
-        </FormRow>
         <FormRow label="노출 시작">
           <input type="datetime-local" className="input" value={f.showStart} onChange={e => set('showStart', e.target.value)}/>
         </FormRow>
@@ -165,9 +169,21 @@ function NoticeEditLP({ edit, onClose, onSave }) {
         </FormRow>
       </FieldSet>
 
-      <FieldSet legend="본문 (KO 필수 · MY/EN 선택)" cols={1}>
-        <FormRow label="본문(KO)" required>
-          <textarea className="textarea" rows="10" value={f.body} onChange={e => set('body', e.target.value)} placeholder="공지 본문을 입력하세요. HTML 서식 가능."/>
+      <FieldSet legend="다국어 입력 (KO 필수 · MY/EN 선택)" cols={1}>
+        <FormRow label="언어 선택">
+          <div className="seg">
+            {['KO','MY','EN'].map(l => (
+              <button key={l} type="button" className={lang === l ? 'active' : ''} onClick={() => setLang(l)}>
+                {l}{l === 'KO' ? ' · 필수' : ''}
+              </button>
+            ))}
+          </div>
+        </FormRow>
+        <FormRow label={`제목 (${lang})`} required={lang === 'KO'}>
+          <input className="input" value={f[titleKey] || ''} onChange={e => set(titleKey, e.target.value)} maxLength={80} placeholder={titlePh}/>
+        </FormRow>
+        <FormRow label={`본문 (${lang})`} required={lang === 'KO'}>
+          <textarea className="textarea" rows="10" value={f[bodyKey] || ''} onChange={e => set(bodyKey, e.target.value)} placeholder="본문을 입력하세요. HTML 서식 가능."/>
         </FormRow>
       </FieldSet>
 

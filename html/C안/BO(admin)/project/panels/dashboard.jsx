@@ -49,6 +49,11 @@ function DashboardPanel() {
   // 최근 처리 이력
   const recentLog = useMemo(() => state.audit.slice(0, 8), [state.audit]);
 
+  // 최근 게시판 (공지 / 환불·정정 / 문의)
+  const recentNotices = useMemo(() => state.notices.slice().sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')).slice(0, 4), [state.notices]);
+  const recentRefunds = useMemo(() => state.refunds.slice().sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')).slice(0, 4), [state.refunds]);
+  const recentInquiries = useMemo(() => state.inquiries.slice().sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')).slice(0, 4), [state.inquiries]);
+
   return (
     <>
       <div className="panel-head">
@@ -203,8 +208,58 @@ function DashboardPanel() {
         </div>
       </div>
 
+      {/* 최근 게시판 (공지 / 환불·정정 / 문의) */}
+      <div className="acard" style={{ marginTop: 16 }}>
+        <div className="acard-head">
+          <h3>최근 게시판</h3>
+          <div className="meta">공지사항 · 환불·정보정정 · 문의 게시판 최신 글</div>
+        </div>
+        <div className="acard-body">
+          <div className="board-recent">
+            <div className="col">
+              <div className="col-head"><span>공지사항</span><a className="ibtn ghost" href="#notices">전체 <I.ChevronRight style={{ width: 12, height: 12 }}/></a></div>
+              {recentNotices.map(n => (
+                <a key={n.id} className="bi" href="#notices">
+                  <span className="t">{n.pin && <I.Bookmark style={{ width: 11, height: 11, color: 'var(--accent)', verticalAlign: '-1px', marginRight: 3 }}/>}{n.title}</span>
+                  <span className="d">{(n.createdAt || '').split(' ')[0]}</span>
+                </a>
+              ))}
+              {!recentNotices.length && <div className="empty">데이터 없음</div>}
+            </div>
+            <div className="col">
+              <div className="col-head"><span>환불·정보정정</span><a className="ibtn ghost" href="#refunds">전체 <I.ChevronRight style={{ width: 12, height: 12 }}/></a></div>
+              {recentRefunds.map(r => (
+                <a key={r.id} className="bi" href="#refunds">
+                  <span className="t"><span className="pill" style={{ background: 'var(--bg-3)', marginRight: 4 }}>{r.type}</span>{r.title}</span>
+                  <span className="d">{(r.createdAt || '').split(' ')[0]}</span>
+                </a>
+              ))}
+              {!recentRefunds.length && <div className="empty">데이터 없음</div>}
+            </div>
+            <div className="col">
+              <div className="col-head"><span>문의 게시판</span><a className="ibtn ghost" href="#inquiries">전체 <I.ChevronRight style={{ width: 12, height: 12 }}/></a></div>
+              {recentInquiries.map(q => (
+                <a key={q.id} className="bi" href="#inquiries">
+                  <span className="t">{q.secret && <I.Lock style={{ width: 11, height: 11, verticalAlign: '-1px', marginRight: 3 }}/>}{q.title}</span>
+                  <span className="d">{(q.createdAt || '').split(' ')[0]}</span>
+                </a>
+              ))}
+              {!recentInquiries.length && <div className="empty">데이터 없음</div>}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <style>{`
         @media (max-width: 1023px) { .dash-row { grid-template-columns: 1fr !important; } }
+        .board-recent { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        @media (max-width: 1023px) { .board-recent { grid-template-columns: 1fr; } }
+        .board-recent .col-head { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+        .board-recent .bi { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 12.5px; color: var(--text-2); }
+        .board-recent .bi:last-child { border-bottom: 0; }
+        .board-recent .bi:hover { color: var(--primary); }
+        .board-recent .bi .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .board-recent .bi .d { color: var(--text-4); white-space: nowrap; font-size: 11.5px; }
       `}</style>
     </>
   );

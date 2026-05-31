@@ -112,9 +112,14 @@ function FaqPanel() {
 function FaqEditLP({ edit, onClose, onSave }) {
   const state = useStore();
   const f0 = edit.id ? state.faqs.find(x => x.id === edit.id) : null;
-  const [f, setF] = useState(f0 ? { ...f0 } : { cat: '접수', question: '', answer: '', order: 1 });
+  const [f, setF] = useState(f0 ? { ...f0 } : { cat: '접수', question: '', answer: '', questionMy: '', questionEn: '', answerMy: '', answerEn: '', order: 1 });
   const set = (k, v) => setF(s => ({ ...s, [k]: v }));
   const valid = f.question.trim() && f.answer.trim();
+
+  // 다국어(KO/MY/EN) 입력 — KO 필수, MY/EN 선택
+  const [lang, setLang] = useState('KO');
+  const qKey = lang === 'KO' ? 'question' : lang === 'MY' ? 'questionMy' : 'questionEn';
+  const aKey = lang === 'KO' ? 'answer'   : lang === 'MY' ? 'answerMy'   : 'answerEn';
   return (
     <LP open title={f0 ? `FAQ 수정` : 'FAQ 등록'} onClose={onClose}
       footer={<>
@@ -131,12 +136,21 @@ function FaqEditLP({ edit, onClose, onSave }) {
           <input type="number" className="input" value={f.order} min={1} onChange={e => set('order', parseInt(e.target.value || '1'))}/>
         </FormRow>
       </FieldSet>
-      <FieldSet legend="내용 (KO/MY/EN 입력 필수 — 데모는 KO만)" cols={1}>
-        <FormRow label="질문" required>
-          <input className="input" value={f.question} onChange={e => set('question', e.target.value)} maxLength={120}/>
+      <FieldSet legend="내용 (KO 필수 · MY/EN 선택)" cols={1}>
+        <FormRow label="언어 선택">
+          <div className="seg">
+            {['KO','MY','EN'].map(l => (
+              <button key={l} type="button" className={lang === l ? 'active' : ''} onClick={() => setLang(l)}>
+                {l}{l === 'KO' ? ' · 필수' : ''}
+              </button>
+            ))}
+          </div>
         </FormRow>
-        <FormRow label="답변" required>
-          <textarea className="textarea" rows="6" value={f.answer} onChange={e => set('answer', e.target.value)} maxLength={3000}/>
+        <FormRow label={`질문 (${lang})`} required={lang === 'KO'}>
+          <input className="input" value={f[qKey] || ''} onChange={e => set(qKey, e.target.value)} maxLength={120}/>
+        </FormRow>
+        <FormRow label={`답변 (${lang})`} required={lang === 'KO'}>
+          <textarea className="textarea" rows="6" value={f[aKey] || ''} onChange={e => set(aKey, e.target.value)} maxLength={3000}/>
         </FormRow>
       </FieldSet>
     </LP>

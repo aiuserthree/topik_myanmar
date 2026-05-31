@@ -172,7 +172,7 @@
     <a href="#fee" style="padding:8px 14px;background:white;border-radius:8px;font-size:13px;font-weight:600;color:var(--navy);text-decoration:none;box-shadow:var(--shadow)">응시료 규정</a>
     <a href="#id" style="padding:8px 14px;background:white;border-radius:8px;font-size:13px;font-weight:600;color:var(--navy);text-decoration:none;box-shadow:var(--shadow)">신분증 규정</a>
   </nav>
-  <div class="intro-grid" id="id">
+  <div class="intro-grid">
     <div class="intro-card">
       <div class="intro-icon-box navy"><svg class="icon" width="26" height="26" color="#003478"><use href="#ic-user"/></svg></div>
       <h3>응시 자격·신분 확인</h3>
@@ -216,26 +216,73 @@
   <div class="guide-section" id="answer">
     <h2><svg class="icon" width="20" height="20" color="var(--red)"><use href="#ic-edit"/></svg>답안 작성 요령</h2>
     <ul>
-      <li>OMR 답안지는 지정된 연필로만 마킹하며, 수정테이프·수정액 사용 금지</li>
-      <li>쓰기 영역은 지정된 칸에만 작성, 초과 작성분은 채점하지 않음</li>
-      <li>수험번호·응시자 정보를 정확히 기재</li>
+      <li><strong>컴퓨터용 사인펜</strong>으로만 OMR 답안지를 마킹합니다. (연필·볼펜 마킹은 인식되지 않을 수 있음)</li>
+      <li>마킹은 칸을 벗어나지 않게 진하고 균일하게 채우며, <strong>수정테이프·수정액 사용은 금지</strong>됩니다. 잘못 마킹한 경우 감독관에게 답안지 교체를 요청하세요.</li>
+      <li>쓰기(작문) 영역은 지정된 원고지 칸 안에만 작성하고, 칸을 초과한 작성분은 채점하지 않습니다.</li>
+      <li>답안지 상단의 <strong>수험번호·응시자 코드·성명</strong>을 정확히 기재·마킹합니다.</li>
     </ul>
+    <div class="callout warn" style="margin-top:6px;"><svg class="icon" width="18" height="18" color="#b07800" style="flex-shrink:0;margin-top:2px;"><use href="#ic-info"/></svg><span>OMR 마킹 예시(올바른 마킹 / 잘못된 마킹)는 시험장 안내 및 공지사항에 게시되는 예시 이미지를 참고하세요. 컴퓨터용 사인펜은 시험장에서 지급됩니다.</span></div>
   </div>
 
   <div class="guide-section" id="fee">
     <h2><svg class="icon" width="20" height="20" color="var(--red)"><use href="#ic-register"/></svg>응시료 규정 · 환불</h2>
+
+    <h3 style="font-size:15px;color:var(--navy);margin:4px 0 12px;">응시료</h3>
+    <div style="overflow-x:auto;margin-bottom:8px;">
+      <table class="score-table">
+        <caption class="sr-only" style="position:absolute;left:-9999px;">급수별 응시료</caption>
+        <thead><tr><th scope="col">급수</th><th scope="col">MMK (짯)</th><th scope="col">USD</th><th scope="col">시험 시간</th></tr></thead>
+        <tbody>
+          <tr><td>TOPIK Ⅰ (초급)</td><td>55,000 MMK</td><td>약 USD 25</td><td>100분</td></tr>
+          <tr><td>TOPIK Ⅱ (중·고급)</td><td>75,000 MMK</td><td>약 USD 35</td><td>180분</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:12px;color:var(--gray-text);margin-bottom:18px;">※ 실제 응시료·환율은 회차별 공지사항을 따릅니다. (운영 합의 후 확정)</p>
+
+    <h3 style="font-size:15px;color:var(--navy);margin:4px 0 10px;">결제 방법 · 오프라인 수납</h3>
     <ul>
-      <li>접수 기간 내 온라인으로만 접수 가능하며, 기간 경과 후에는 추가 접수가 되지 않습니다.</li>
-      <li>접수 취소 및 수수료 환불 가능 기간은 회차별 공지를 따릅니다.</li>
-      <li>접수 정보 수정이 필요한 경우 공지된 기한 내 마이페이지 또는 문의처를 통해 요청해야 합니다.</li>
+      <li>응시료는 <strong>오프라인 수납(시행 기관 안내 접수처/계좌)</strong>으로만 납부합니다. 온라인 결제는 운영하지 않습니다.</li>
+      <li><strong>TOPIK Ⅰ·Ⅱ 동시 접수 시 각 수준별로 개별 오프라인 수납</strong>하며, 합산 일괄 납부가 아닙니다. <span style="color:var(--gray-text);">(고객사 수정 0526)</span></li>
+      <li>수납처 위치·운영시간·계좌는 공지사항에 게시됩니다. 납부 후 영수증을 보관해 주세요.</li>
     </ul>
+
+    <h3 style="font-size:15px;color:var(--navy);margin:18px 0 10px;">접수 취소 · 환불</h3>
+    <div class="callout warn" style="margin:0 0 14px;"><svg class="icon" width="18" height="18" color="#b07800" style="flex-shrink:0;margin-top:2px;"><use href="#ic-info"/></svg><span><strong>접수 취소 가능 시점은 오프라인 수납 전까지</strong>입니다. 수납 완료 후에는 직접 취소가 불가하며, 환불은 <a href="board-refund.html" style="color:var(--navy);font-weight:700;">환불·정보정정신청</a> 게시판을 통해 신청합니다. <span style="color:var(--gray-text);">(고객사 수정 0526)</span></span></div>
+    <div style="overflow-x:auto;">
+      <table class="score-table">
+        <caption class="sr-only" style="position:absolute;left:-9999px;">환불률 표</caption>
+        <thead><tr><th scope="col">신청 시점</th><th scope="col">환불률</th><th scope="col">비고</th></tr></thead>
+        <tbody>
+          <tr><td>수납 전 접수 취소</td><td>해당 없음</td><td>응시료 미납 상태</td></tr>
+          <tr><td>접수 기간 내(수납 후)</td><td>100%</td><td>전액 환불</td></tr>
+          <tr><td>접수 마감 ~ 시험 7일 전</td><td>50%</td><td>수수료 제외</td></tr>
+          <tr><td>시험 7일 전 이후 / 시험일 이후</td><td>환불 불가</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:12px;color:var(--gray-text);margin-top:10px;">※ 환불률·기준일은 회차별 운영 정책에 따라 변경될 수 있으며, 확정 값은 공지사항에 게시됩니다.</p>
+  </div>
+
+  <div class="guide-section" id="id">
+    <h2><svg class="icon" width="20" height="20" color="var(--red)"><use href="#ic-user"/></svg>신분증 규정</h2>
+    <p style="font-size:14px;color:#444;line-height:1.8;margin-bottom:14px;">시험 당일 본인 확인을 위해 아래 신분증 중 하나를 반드시 지참해야 합니다. 신분증의 사진·성명·생년월일이 접수 정보와 일치해야 합니다.</p>
+    <ul>
+      <li><strong>미얀마 NRC(국민등록증)</strong> — 사진이 부착된 유효한 NRC</li>
+      <li><strong>여권</strong> — 유효기간 내 여권 (외국 국적·해외 응시자 포함)</li>
+      <li>기타 국가 발행 사진 부착 신분증(거주증 등) — 시행 기관이 인정하는 경우</li>
+    </ul>
+    <div class="callout danger" style="margin-top:6px;"><svg class="icon" width="18" height="18" color="#b91c1c" style="flex-shrink:0;margin-top:2px;"><use href="#ic-alert"/></svg><span>신분증 <strong>미소지·유효기간 만료·사본</strong>은 인정되지 않으며, 본인 확인이 불가한 경우 <strong>응시가 제한</strong>될 수 있습니다. 학생증·사진 없는 증명서는 단독 신분증으로 인정되지 않습니다.</span></div>
   </div>
 
   <div class="guide-section">
     <h2><svg class="icon" width="20" height="20" color="var(--red)"><use href="#ic-link"/></svg>관련 안내</h2>
     <p style="font-size:14px;color:var(--gray-text);line-height:1.8;">급수·시험 구성·합격 기준 등 시험 내용은 <a href="guide.html" style="color:var(--navy);font-weight:600;">TOPIK 안내</a> 페이지를 참고하시고, 최신 공지는 <a href="notice.html" style="color:var(--navy);font-weight:600;">공지사항</a>을 확인하세요.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;">
+      <a href="board-refund.html" style="padding:10px 16px;background:#f0f4ff;border:1.5px solid var(--navy);border-radius:8px;font-size:13px;font-weight:600;color:var(--navy);text-decoration:none;display:inline-flex;align-items:center;gap:6px;"><svg class="icon" width="14" height="14"><use href="#ic-folder"/></svg>환불·정보정정신청</a>
+      <a href="board-inquiry.html" style="padding:10px 16px;background:#f0f4ff;border:1.5px solid var(--navy);border-radius:8px;font-size:13px;font-weight:600;color:var(--navy);text-decoration:none;display:inline-flex;align-items:center;gap:6px;"><svg class="icon" width="14" height="14"><use href="#ic-email"/></svg>문의게시판</a>
+    </div>
   </div>
-</div>
 </div>
 
 <footer>
@@ -247,6 +294,7 @@
 <script src="js/i18n.js?v=20260506"></script>
 <script src="js/profile-store.js"></script>
 <script src="js/fo-nav.js"></script>
+<script src="js/fo-footer.js"></script>
 <script src="js/mobile-nav.js?v=20260506" defer></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {

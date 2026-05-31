@@ -775,6 +775,11 @@ function DashboardPanel() {
   // 최근 처리 이력
   const recentLog = useMemo(() => state.audit.slice(0, 8), [state.audit]);
 
+  // 최근 게시판 (공지 / 환불·정정 / 문의)
+  const recentNotices = useMemo(() => state.notices.slice().sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')).slice(0, 4), [state.notices]);
+  const recentRefunds = useMemo(() => state.refunds.slice().sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')).slice(0, 4), [state.refunds]);
+  const recentInquiries = useMemo(() => state.inquiries.slice().sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')).slice(0, 4), [state.inquiries]);
+
   return (
     <>
       <div className="panel-head">
@@ -928,8 +933,58 @@ function DashboardPanel() {
         </div>
       </div>
 
+      {/* 최근 게시판 (공지 / 환불·정정 / 문의) */}
+      <div className="acard" style={{ marginTop: 16 }}>
+        <div className="acard-head">
+          <h3>최근 게시판</h3>
+          <div className="meta">공지사항 · 환불·정보정정 · 문의 게시판 최신 글</div>
+        </div>
+        <div className="acard-body">
+          <div className="board-recent">
+            <div className="col">
+              <div className="col-head"><span>공지사항</span><a className="ibtn ghost" href="#notices">전체 <I.ChevronRight style={{ width: 12, height: 12 }}/></a></div>
+              {recentNotices.map(n => (
+                <a key={n.id} className="bi" href="#notices">
+                  <span className="t">{n.pin && <I.Bookmark style={{ width: 11, height: 11, color: 'var(--accent)', verticalAlign: '-1px', marginRight: 3 }}/>}{n.title}</span>
+                  <span className="d">{(n.createdAt || '').split(' ')[0]}</span>
+                </a>
+              ))}
+              {!recentNotices.length && <div className="empty">데이터 없음</div>}
+            </div>
+            <div className="col">
+              <div className="col-head"><span>환불·정보정정</span><a className="ibtn ghost" href="#refunds">전체 <I.ChevronRight style={{ width: 12, height: 12 }}/></a></div>
+              {recentRefunds.map(r => (
+                <a key={r.id} className="bi" href="#refunds">
+                  <span className="t"><span className="pill" style={{ background: 'var(--bg-3)', marginRight: 4 }}>{r.type}</span>{r.title}</span>
+                  <span className="d">{(r.createdAt || '').split(' ')[0]}</span>
+                </a>
+              ))}
+              {!recentRefunds.length && <div className="empty">데이터 없음</div>}
+            </div>
+            <div className="col">
+              <div className="col-head"><span>문의 게시판</span><a className="ibtn ghost" href="#inquiries">전체 <I.ChevronRight style={{ width: 12, height: 12 }}/></a></div>
+              {recentInquiries.map(q => (
+                <a key={q.id} className="bi" href="#inquiries">
+                  <span className="t">{q.secret && <I.Lock style={{ width: 11, height: 11, verticalAlign: '-1px', marginRight: 3 }}/>}{q.title}</span>
+                  <span className="d">{(q.createdAt || '').split(' ')[0]}</span>
+                </a>
+              ))}
+              {!recentInquiries.length && <div className="empty">데이터 없음</div>}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <style>{`
         @media (max-width: 1023px) { .dash-row { grid-template-columns: 1fr !important; } }
+        .board-recent { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        @media (max-width: 1023px) { .board-recent { grid-template-columns: 1fr; } }
+        .board-recent .col-head { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+        .board-recent .bi { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 12.5px; color: var(--text-2); }
+        .board-recent .bi:last-child { border-bottom: 0; }
+        .board-recent .bi:hover { color: var(--primary); }
+        .board-recent .bi .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .board-recent .bi .d { color: var(--text-4); white-space: nowrap; font-size: 11.5px; }
       `}</style>
     </>
   );
@@ -1934,6 +1989,201 @@ function ZipExportModal({ onClose, rows }) {
 I.Hash = (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/></svg>;
 
 window.ApplicantsPanel = ApplicantsPanel;
+// 사진 심사 패널(photos.jsx)에서 재사용할 수 있도록 노출
+window.PhotoReviewLP = PhotoReviewLP;
+window.PhotoLarge = PhotoLarge;
+window.PhotoStatusPill = PhotoStatusPill;
+window.PhotoThumb = PhotoThumb;
+
+</script>
+<!-- inlined: panels/photos.jsx -->
+<script type="text/babel">
+/* ============================================================
+   panels/photos.jsx — 사진 심사 (카드 갤러리)
+   접수자 목록(applicants.jsx)의 사진 심사 로직(PhotoReviewLP / DataStore)을
+   재사용한 카드형 갤러리 뷰. 각 카드에서 인라인 승인/반려(사유 코드) 처리.
+   ============================================================ */
+
+const PHOTO_PANEL_REASONS = ['정면 아님', '모자·선글라스', '흑백', '흐림', '본인 아님', '기타'];
+
+function PhotosPanel() {
+  const state = useStore();
+  const sessionId = state.activeSessionId;
+  const apps = useMemo(() => state.applicants.filter(a => a.sessionId === sessionId), [state.applicants, sessionId]);
+
+  const [statusF, setStatusF] = useState('pending'); // pending | approved | rejected | all
+  const [q, setQ] = useState('');
+  const [lpId, setLpId] = useState(null);            // 상세 심사 LP (applicants.jsx의 PhotoReviewLP 재사용)
+
+  const counts = useMemo(() => ({
+    all: apps.length,
+    pending: apps.filter(a => a.photoStatus === 'pending').length,
+    approved: apps.filter(a => a.photoStatus === 'approved').length,
+    rejected: apps.filter(a => a.photoStatus === 'rejected').length,
+  }), [apps]);
+
+  const list = useMemo(() => {
+    let r = apps;
+    if (statusF !== 'all') r = r.filter(a => a.photoStatus === statusF);
+    if (q) {
+      const qq = q.trim().toLowerCase();
+      r = r.filter(a => a.nameKo.includes(qq) || a.nameEn.toLowerCase().includes(qq) || a.dob.includes(qq));
+    }
+    return r;
+  }, [apps, statusF, q]);
+
+  // 사진 심사 로직 — applicants.jsx의 doPhotoApprove / doPhotoReject 와 동일하게 동작
+  const approve = (id) => {
+    const a = state.applicants.find(x => x.id === id);
+    if (!a) return;
+    const before = { photoStatus: a.photoStatus, status: a.status };
+    a.photoStatus = 'approved';
+    a.photoOk = true;
+    if (a.status === 'photo') a.status = a.paid ? 'approved' : 'pay';
+    DataStore.addAudit({ type: '사진', targetId: id, action: '승인', before, after: { photoStatus: 'approved', status: a.status }, memo: '' });
+    DataStore.notify();
+    toastOk('사진이 승인되었습니다.', { title: '사진 심사', type: 'success' });
+  };
+  const reject = (id, reason) => {
+    const a = state.applicants.find(x => x.id === id);
+    if (!a) return;
+    if (!reason || !reason.trim()) { toastErr('반려 사유를 선택해주세요.'); return; }
+    const before = { photoStatus: a.photoStatus, status: a.status, rejectReason: a.rejectReason };
+    a.photoStatus = 'rejected';
+    a.photoOk = false;
+    a.status = 'rejected';
+    a.rejectReason = reason;
+    DataStore.addAudit({ type: '사진', targetId: id, action: '반려', before, after: { photoStatus: 'rejected', status: 'rejected', rejectReason: reason }, memo: reason });
+    DataStore.notify();
+    toastOk('사진이 반려되었습니다. 응시자에게 이메일이 발송됩니다.', { title: '사진 심사', type: 'success' });
+  };
+
+  const CHIPS = [
+    { id: 'pending',  label: '미심사' },
+    { id: 'approved', label: '승인' },
+    { id: 'rejected', label: '반려' },
+    { id: 'all',      label: '전체' },
+  ];
+
+  return (
+    <>
+      <div className="panel-head">
+        <div>
+          <h1>사진 심사</h1>
+          <div className="sub">증명사진을 카드 갤러리로 빠르게 검토합니다. 접수자 목록의 사진 심사 로직과 동일하게 처리되며, 처리 즉시 이력에 기록됩니다.</div>
+        </div>
+        <div className="actions">
+          <a className="btn btn-secondary" href="#applicants"><I.Users style={{ width: 14, height: 14 }}/> 접수자 목록</a>
+        </div>
+      </div>
+
+      <div className="filterbar">
+        <div className="chips">
+          {CHIPS.map(c => (
+            <button key={c.id} className={`chip ${statusF === c.id ? 'active' : ''}`} onClick={() => setStatusF(c.id)}>
+              {c.label}<span className="cnt">{DataStore.fmtNum(counts[c.id] || 0)}</span>
+            </button>
+          ))}
+        </div>
+        <div className="controls">
+          <input className="input search" type="text" placeholder="한글·영문 성명/생년월일" value={q} onChange={e => setQ(e.target.value)}/>
+        </div>
+      </div>
+
+      <div className="photo-gallery">
+        {list.map(a => (
+          <PhotoReviewCard key={a.id} a={a} reasons={PHOTO_PANEL_REASONS}
+            onApprove={approve} onReject={reject} onOpen={() => setLpId(a.id)}/>
+        ))}
+        {!list.length && (
+          <div className="empty" style={{ gridColumn: '1 / -1' }}>
+            <div className="icon"><I.Image/></div>
+            <div className="ttl">표시할 사진이 없습니다</div>
+            <div className="sub">필터/검색 조건을 변경해 보세요.</div>
+          </div>
+        )}
+      </div>
+
+      {/* 상세 심사 — applicants.jsx의 PhotoReviewLP 재사용 */}
+      {lpId && <PhotoReviewLP id={lpId} onClose={() => setLpId(null)} onApprove={approve} onReject={reject}/>}
+
+      <style>{`
+        .photo-gallery {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+          gap: 14px;
+        }
+        .photo-rc .acard-body { display: flex; flex-direction: column; }
+        .photo-rc .pic { width: 130px; align-self: center; }
+        .photo-rc .nm { font-size: 15px; font-weight: 700; color: var(--text); margin-top: 12px; }
+        .photo-rc .nm small { font-weight: 500; color: var(--text-3); font-size: 12.5px; margin-left: 4px; }
+        .photo-rc dl.kv2 { display: grid; grid-template-columns: 64px 1fr; gap: 3px 8px; margin-top: 8px; font-size: 12.5px; align-items: center; }
+        .photo-rc dl.kv2 dt { color: var(--text-3); }
+        .photo-rc dl.kv2 dd { color: var(--text-2); }
+        .photo-rc .rc-actions { margin-top: 12px; display: flex; gap: 6px; align-items: center; }
+        .photo-rc .rc-actions .btn { flex: 1; }
+        .photo-rc .rc-reject { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
+      `}</style>
+    </>
+  );
+}
+
+// ----- 사진 심사 카드 (인라인 승인/반려 + 반려 사유 코드) -----
+function PhotoReviewCard({ a, reasons, onApprove, onReject, onOpen }) {
+  const [mode, setMode] = useState(null); // null | 'reject'
+  const [reason, setReason] = useState(reasons[0]);
+  const [other, setOther] = useState('');
+  const finalReason = reason === '기타' ? other : (other ? `${reason} — ${other}` : reason);
+  const doReject = () => {
+    if (reason === '기타' && !other.trim()) { toastErr('상세 사유를 입력해주세요.'); return; }
+    onReject(a.id, finalReason);
+    setMode(null); setOther('');
+  };
+  return (
+    <div className="acard photo-rc">
+      <div className="acard-body">
+        <div className="pic">
+          <PhotoLarge status={a.photoStatus} name={a.nameKo} seed={a.id}/>
+        </div>
+        <div className="nm">{a.nameKo} <small>{a.nameEn}</small></div>
+        <dl className="kv2">
+          <dt>생년월일</dt><dd><code className="code-id">{a.dob}</code></dd>
+          <dt>성별</dt><dd>{a.sx === 1 ? '남(1)' : '여(2)'}</dd>
+          <dt>국적</dt><dd>{a.nation}</dd>
+          <dt>급수</dt><dd>TOPIK {a.level}</dd>
+          <dt>심사</dt><dd><PhotoStatusPill status={a.photoStatus}/></dd>
+        </dl>
+
+        {mode === 'reject' ? (
+          <div className="rc-reject">
+            <FormRow label="반려 사유" required hint="사유는 응시자에게 안내됩니다(사진 재등록 요청).">
+              <select className="select" value={reason} onChange={e => setReason(e.target.value)}>
+                {reasons.map(r => <option key={r}>{r}</option>)}
+              </select>
+            </FormRow>
+            {reason === '기타' && (
+              <FormRow label="상세 사유" required>
+                <input className="input" value={other} onChange={e => setOther(e.target.value)} placeholder="상세 사유 입력"/>
+              </FormRow>
+            )}
+            <div className="rc-actions">
+              <button className="btn btn-secondary" onClick={() => setMode(null)}>뒤로</button>
+              <button className="btn btn-danger" onClick={doReject}>반려 처리</button>
+            </div>
+          </div>
+        ) : (
+          <div className="rc-actions">
+            <button className="ibtn ghost" title="상세 보기" onClick={onOpen}><I.Eye style={{ width: 14, height: 14 }}/></button>
+            <button className="btn btn-secondary" onClick={() => setMode('reject')} disabled={a.photoStatus === 'rejected'}>반려</button>
+            <button className="btn btn-primary" onClick={() => onApprove(a.id)} disabled={a.photoStatus === 'approved'}>승인</button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+window.PhotosPanel = PhotosPanel;
 
 </script>
 <!-- inlined: panels/sessions.jsx -->
@@ -2419,11 +2669,18 @@ function NoticeEditLP({ edit, onClose, onSave }) {
   const state = useStore();
   const n = edit.id ? state.notices.find(x => x.id === edit.id) : null;
   const [f, setF] = useState(n ? { ...n } : {
-    cat: '접수', title: '', body: '', public: true, pin: false, showStart: '', showEnd: ''
+    cat: '접수', title: '', body: '', titleMy: '', titleEn: '', bodyMy: '', bodyEn: '',
+    public: true, pin: false, showStart: '', showEnd: ''
   });
   const set = (k, v) => setF(s => ({ ...s, [k]: v }));
   const valid = f.title.trim();
   const isNew = !n;
+
+  // 다국어(KO/MY/EN) 입력 — KO 필수, MY/EN 선택
+  const [lang, setLang] = useState('KO');
+  const titleKey = lang === 'KO' ? 'title' : lang === 'MY' ? 'titleMy' : 'titleEn';
+  const bodyKey  = lang === 'KO' ? 'body'  : lang === 'MY' ? 'bodyMy'  : 'bodyEn';
+  const titlePh  = lang === 'KO' ? '예) 제106회 TOPIK 접수 안내' : lang === 'MY' ? 'ဥပမာ - ၁၀၆ ကြိမ်မြောက် TOPIK လျှောက်ထားရန်' : 'e.g. 106th TOPIK Application Guide';
   const marketingTargets = state.members.filter(m => m.marketing && m.status === 'active').length;
 
   return (
@@ -2448,9 +2705,6 @@ function NoticeEditLP({ edit, onClose, onSave }) {
             </label>
           </div>
         </FormRow>
-        <FormRow label="제목" required span={2}>
-          <input className="input" value={f.title} onChange={e => set('title', e.target.value)} maxLength={80} placeholder="예) 제106회 TOPIK 접수 안내"/>
-        </FormRow>
         <FormRow label="노출 시작">
           <input type="datetime-local" className="input" value={f.showStart} onChange={e => set('showStart', e.target.value)}/>
         </FormRow>
@@ -2459,9 +2713,21 @@ function NoticeEditLP({ edit, onClose, onSave }) {
         </FormRow>
       </FieldSet>
 
-      <FieldSet legend="본문 (KO 필수 · MY/EN 선택)" cols={1}>
-        <FormRow label="본문(KO)" required>
-          <textarea className="textarea" rows="10" value={f.body} onChange={e => set('body', e.target.value)} placeholder="공지 본문을 입력하세요. HTML 서식 가능."/>
+      <FieldSet legend="다국어 입력 (KO 필수 · MY/EN 선택)" cols={1}>
+        <FormRow label="언어 선택">
+          <div className="seg">
+            {['KO','MY','EN'].map(l => (
+              <button key={l} type="button" className={lang === l ? 'active' : ''} onClick={() => setLang(l)}>
+                {l}{l === 'KO' ? ' · 필수' : ''}
+              </button>
+            ))}
+          </div>
+        </FormRow>
+        <FormRow label={`제목 (${lang})`} required={lang === 'KO'}>
+          <input className="input" value={f[titleKey] || ''} onChange={e => set(titleKey, e.target.value)} maxLength={80} placeholder={titlePh}/>
+        </FormRow>
+        <FormRow label={`본문 (${lang})`} required={lang === 'KO'}>
+          <textarea className="textarea" rows="10" value={f[bodyKey] || ''} onChange={e => set(bodyKey, e.target.value)} placeholder="본문을 입력하세요. HTML 서식 가능."/>
         </FormRow>
       </FieldSet>
 
@@ -2594,9 +2860,14 @@ function FaqPanel() {
 function FaqEditLP({ edit, onClose, onSave }) {
   const state = useStore();
   const f0 = edit.id ? state.faqs.find(x => x.id === edit.id) : null;
-  const [f, setF] = useState(f0 ? { ...f0 } : { cat: '접수', question: '', answer: '', order: 1 });
+  const [f, setF] = useState(f0 ? { ...f0 } : { cat: '접수', question: '', answer: '', questionMy: '', questionEn: '', answerMy: '', answerEn: '', order: 1 });
   const set = (k, v) => setF(s => ({ ...s, [k]: v }));
   const valid = f.question.trim() && f.answer.trim();
+
+  // 다국어(KO/MY/EN) 입력 — KO 필수, MY/EN 선택
+  const [lang, setLang] = useState('KO');
+  const qKey = lang === 'KO' ? 'question' : lang === 'MY' ? 'questionMy' : 'questionEn';
+  const aKey = lang === 'KO' ? 'answer'   : lang === 'MY' ? 'answerMy'   : 'answerEn';
   return (
     <LP open title={f0 ? `FAQ 수정` : 'FAQ 등록'} onClose={onClose}
       footer={<>
@@ -2613,12 +2884,21 @@ function FaqEditLP({ edit, onClose, onSave }) {
           <input type="number" className="input" value={f.order} min={1} onChange={e => set('order', parseInt(e.target.value || '1'))}/>
         </FormRow>
       </FieldSet>
-      <FieldSet legend="내용 (KO/MY/EN 입력 필수 — 데모는 KO만)" cols={1}>
-        <FormRow label="질문" required>
-          <input className="input" value={f.question} onChange={e => set('question', e.target.value)} maxLength={120}/>
+      <FieldSet legend="내용 (KO 필수 · MY/EN 선택)" cols={1}>
+        <FormRow label="언어 선택">
+          <div className="seg">
+            {['KO','MY','EN'].map(l => (
+              <button key={l} type="button" className={lang === l ? 'active' : ''} onClick={() => setLang(l)}>
+                {l}{l === 'KO' ? ' · 필수' : ''}
+              </button>
+            ))}
+          </div>
         </FormRow>
-        <FormRow label="답변" required>
-          <textarea className="textarea" rows="6" value={f.answer} onChange={e => set('answer', e.target.value)} maxLength={3000}/>
+        <FormRow label={`질문 (${lang})`} required={lang === 'KO'}>
+          <input className="input" value={f[qKey] || ''} onChange={e => set(qKey, e.target.value)} maxLength={120}/>
+        </FormRow>
+        <FormRow label={`답변 (${lang})`} required={lang === 'KO'}>
+          <textarea className="textarea" rows="6" value={f[aKey] || ''} onChange={e => set(aKey, e.target.value)} maxLength={3000}/>
         </FormRow>
       </FieldSet>
     </LP>
@@ -4341,6 +4621,7 @@ const NAV = [
 
   { section: '접수' },
   { id: 'applicants',  label: '접수자 목록',     icon: 'Users',  badge: 'unreviewed' },
+  { id: 'photos',      label: '사진 심사',       icon: 'Image',  badge: 'photoWait' },
 
   { section: '시험 운영' },
   { id: 'sessions',    label: '회차 관리',       icon: 'Calendar' },
@@ -4366,6 +4647,7 @@ const PANEL_TITLE = Object.fromEntries(NAV.filter(n => n.id).map(n => [n.id, n.l
 const CRUMB = {
   dashboard:  ['메인', '대시보드'],
   applicants: ['접수 관리', '접수자 목록'],
+  photos:     ['접수 관리', '사진 심사'],
   sessions:   ['시험 관리', '회차 관리'],
   venues:     ['시험 관리', '시험장 관리'],
   notices:    ['콘텐츠 관리', '공지사항'],
@@ -4421,6 +4703,7 @@ function App() {
   const PanelByRoute = {
     dashboard:  window.DashboardPanel,
     applicants: window.ApplicantsPanel,
+    photos:     window.PhotosPanel,
     sessions:   window.SessionsPanel,
     venues:     window.VenuesPanel,
     notices:    window.NoticesPanel,
@@ -4490,7 +4773,7 @@ function App() {
           <div className="tb-spacer"></div>
           <div className="tb-actions">
             {/* Session switcher — context for applicant/exam panels */}
-            {['dashboard','applicants'].includes(route) && (
+            {['dashboard','applicants','photos'].includes(route) && (
               <select
                 className="select"
                 style={{ height: 36, fontSize: 13, minWidth: 200 }}
@@ -4503,7 +4786,7 @@ function App() {
                 ))}
               </select>
             )}
-            <a className="tb-iconbtn" href="https://topik-myanmar-c.vercel.app/index.html" target="_blank" rel="noopener noreferrer" title="사이트 보기(새 창)">
+            <a className="tb-iconbtn" href="../../FO/index.html" target="_blank" rel="noopener noreferrer" title="사이트 보기(새 창)">
               <I.ExternalLink/>
             </a>
             <div className="tb-user" title={me?.id}>

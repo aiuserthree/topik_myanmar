@@ -77,6 +77,19 @@
     .id-find-google{display:none;margin-top:14px;padding:14px;background:#f0f4ff;border:1px solid #bfdbfe;border-radius:8px;}
     .id-find-google.show{display:block;}
     .id-find-google .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:white;border:1px solid #dadce0;border-radius:20px;font-size:12px;font-weight:600;color:#3c4043;margin-bottom:10px;}
+    /* 아이디 찾기 — 일반·구글 다중 계정 케이스 */
+    .id-find-multi{display:none;margin-top:16px;}
+    .id-find-multi.show{display:block;}
+    .id-find-multi .multi-head{font-size:12px;color:var(--gray-text);margin-bottom:8px;}
+    .id-find-acct{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 14px;background:#f0f4ff;border:1px solid #bfdbfe;border-radius:8px;margin-top:10px;}
+    .id-find-acct .acct-row{display:flex;align-items:center;gap:8px;min-width:0;}
+    .id-find-acct .acct-email{font-size:14px;font-weight:700;color:var(--navy);word-break:break-all;}
+    .acct-type-badge{flex-shrink:0;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;}
+    .acct-type-badge.badge-general{background:var(--navy);color:#fff;}
+    .acct-type-badge.badge-google{background:#fff;color:#3c4043;border:1px solid #dadce0;}
+    .id-find-acct .acct-go{font-size:13px;font-weight:600;color:var(--navy);text-decoration:none;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;cursor:pointer;}
+    .id-find-acct .acct-go:hover{color:var(--red);}
+    .id-find-acct .btn-google{width:auto;margin:0;padding:9px 14px;font-size:13px;}
     /* 비밀번호 찾기 구글 케이스 */
     .pw-google-guide{display:none;padding:14px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;margin-top:12px;}
     .pw-google-guide.show{display:block;}
@@ -188,7 +201,7 @@
           </div>
         </div>
         <div class="login-options">
-          <label><input type="checkbox"/> 로그인 상태 유지</label>
+          <label><input type="checkbox" id="rememberMe"/> 로그인 상태 유지</label>
         </div>
         <div class="login-find-links">
           <a href="#" id="idFindOpen"><svg class="icon" width="13" height="13"><use href="#ic-user"/></svg>아이디 찾기</a>
@@ -232,7 +245,8 @@
     </div>
     <div class="modal-body">
       <p class="modal-note">
-        프로토타입에서는 브라우저에 저장된 회원 정보(<code style="font-size:10px;">localStorage</code>)와 비교합니다.
+        프로토타입에서는 브라우저에 저장된 회원 정보(<code style="font-size:10px;">localStorage</code>)와 비교합니다.<br/>
+        <span style="color:var(--gray-text);">데모: 이름(한글)에 <strong>김다중</strong> 입력 시 일반·구글 다중 계정 결과 예시가 표시됩니다.</span>
       </p>
       <div class="form-group">
         <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-user"/></svg>이름 (한글)</label>
@@ -263,7 +277,10 @@
       <div class="id-find-result" id="idFindResult">
         <div style="font-size:12px;color:var(--gray-text);">회원 아이디(이메일 주소)</div>
         <div class="email" id="idFindResultEmail"></div>
-        <a href="#" style="display:block;margin-top:10px;font-size:13px;font-weight:600;color:var(--navy);text-decoration:none;" id="idFindToLogin" onclick="closeIdFindModal()">→ 로그인하러 가기</a>
+        <div style="display:flex;gap:14px;align-items:center;margin-top:10px;">
+          <a href="#" style="font-size:13px;font-weight:600;color:var(--navy);text-decoration:none;" id="idFindToLogin" onclick="closeIdFindModal()">→ 로그인하러 가기</a>
+          <a href="#" style="font-size:13px;font-weight:600;color:var(--gray-text);text-decoration:none;" id="idFindToPwReset" onclick="closeIdFindModal();openPwResetModal();return false;">비밀번호 찾기</a>
+        </div>
       </div>
       <!-- 구글 가입 계정 결과 -->
       <div class="id-find-google" id="idFindGoogleResult">
@@ -276,6 +293,27 @@
           <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.14 0 5.95 1.08 8.17 2.85l6.07-6.07C34.42 3.07 29.47 1 24 1 14.73 1 6.78 6.49 3.11 14.38l7.04 5.47C11.82 13.82 17.42 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.65-.15-3.25-.42-4.8H24v9.09h12.69c-.55 2.98-2.18 5.5-4.64 7.19l7.18 5.57C43.6 37.55 46.5 31.49 46.5 24.5z"/><path fill="#FBBC05" d="M10.15 28.15C9.68 26.73 9.4 25.2 9.4 23.6c0-1.58.28-3.1.75-4.53L3.11 13.6C1.14 17.26 0 21.3 0 25.6c0 4.27 1.14 8.28 3.09 11.78l7.06-9.23z"/><path fill="#34A853" d="M24 47c5.46 0 10.04-1.81 13.38-4.91l-7.18-5.57c-1.79 1.2-4.08 1.9-6.2 1.9-6.55 0-12.14-4.29-14.12-10.17l-7.06 9.23C6.78 43.49 14.73 47 24 47z"/></svg>
           Google로 로그인하기
         </button>
+      </div>
+      <!-- 동일 정보로 일반·구글 계정이 모두 존재하는 경우 (다중 계정) -->
+      <div class="id-find-multi" id="idFindMultiResult">
+        <div class="multi-head">동일한 정보로 가입된 계정이 <strong>2건</strong> 확인되었습니다. 로그인할 계정을 선택해 주세요.</div>
+        <div class="id-find-acct">
+          <div class="acct-row">
+            <span class="acct-type-badge badge-general">일반</span>
+            <span class="acct-email" id="idFindMultiGeneralEmail">—</span>
+          </div>
+          <a href="#" class="acct-go" id="idFindMultiGeneralGo">로그인하러 가기 <svg class="icon" width="14" height="14"><use href="#ic-arrow-r"/></svg></a>
+        </div>
+        <div class="id-find-acct">
+          <div class="acct-row">
+            <span class="acct-type-badge badge-google">구글</span>
+            <span class="acct-email" id="idFindMultiGoogleEmail">—</span>
+          </div>
+          <button type="button" class="btn-google" onclick="doGoogleLogin();closeIdFindModal();">
+            <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.14 0 5.95 1.08 8.17 2.85l6.07-6.07C34.42 3.07 29.47 1 24 1 14.73 1 6.78 6.49 3.11 14.38l7.04 5.47C11.82 13.82 17.42 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.65-.15-3.25-.42-4.8H24v9.09h12.69c-.55 2.98-2.18 5.5-4.64 7.19l7.18 5.57C43.6 37.55 46.5 31.49 46.5 24.5z"/><path fill="#FBBC05" d="M10.15 28.15C9.68 26.73 9.4 25.2 9.4 23.6c0-1.58.28-3.1.75-4.53L3.11 13.6C1.14 17.26 0 21.3 0 25.6c0 4.27 1.14 8.28 3.09 11.78l7.06-9.23z"/><path fill="#34A853" d="M24 47c5.46 0 10.04-1.81 13.38-4.91l-7.18-5.57c-1.79 1.2-4.08 1.9-6.2 1.9-6.55 0-12.14-4.29-14.12-10.17l-7.06 9.23C6.78 43.49 14.73 47 24 47z"/></svg>
+            Google로 로그인하기
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -416,6 +454,21 @@
   function normEmail(s){return String(s||'').trim().toLowerCase();}
   function normName(s){return String(s||'').trim().replace(/\s+/g,' ');}
   function normPhone(s){return String(s||'').replace(/\D/g,'');}
+  /** 이메일 마스킹 — hong****@naver.com */
+  function maskEmail(email){
+    var s=String(email||'');
+    var at=s.indexOf('@');
+    if(at<1)return s;
+    var local=s.slice(0,at), domain=s.slice(at);
+    var keep=Math.min(4,Math.max(1,Math.ceil(local.length/2)));
+    return local.slice(0,keep)+'****'+domain;
+  }
+  function rememberLoginPref(){
+    try{
+      var cb=document.getElementById('rememberMe');
+      localStorage.setItem('tm_remember_v1',cb&&cb.checked?'1':'0');
+    }catch(e){}
+  }
 
   function showPwResetBanner(){
     var b=document.getElementById('pwResetBanner');
@@ -485,6 +538,7 @@
   }
 
   function redirectAfterLogin(){
+    rememberLoginPref();
     var next=new URLSearchParams(location.search).get('next');
     if(next&&/^[\w\-\.]+\.html/.test(next.split('?')[0])){
       window.location.href=next;
@@ -503,18 +557,28 @@
     document.getElementById('idFindPhone').value='';
     document.getElementById('idFindResult').classList.remove('show');
     document.getElementById('idFindGoogleResult').classList.remove('show');
+    document.getElementById('idFindMultiResult').classList.remove('show');
     showModal(document.getElementById('idFindModal'));
     document.getElementById('idFindNameKr').focus();
   }
   function closeIdFindModal(){
     hideModal(document.getElementById('idFindModal'));
   }
+  function showIdFindMulti(generalEmail, googleEmail){
+    document.getElementById('idFindResult').classList.remove('show');
+    document.getElementById('idFindGoogleResult').classList.remove('show');
+    document.getElementById('idFindMultiGeneralEmail').textContent=generalEmail;
+    document.getElementById('idFindMultiGoogleEmail').textContent=googleEmail;
+    var goLink=document.getElementById('idFindMultiGeneralGo');
+    goLink.onclick=function(e){
+      e.preventDefault();
+      var le=document.getElementById('loginEmail');
+      if(le) le.value=generalEmail;
+      closeIdFindModal();
+    };
+    document.getElementById('idFindMultiResult').classList.add('show');
+  }
   function submitIdFind(){
-    var profile=window.TMProfile&&TMProfile.load();
-    if(!profile||!profile.email){
-      alert('저장된 회원 정보가 없습니다.\n먼저 회원가입을 완료해 주세요.');
-      return;
-    }
     var nameKr=normName(document.getElementById('idFindNameKr').value);
     var birth=document.getElementById('idFindBirth').value;
     var phone=normPhone(document.getElementById('idFindPhone').value);
@@ -523,10 +587,24 @@
       alert('이름, 생년월일, 연락처를 모두 입력해 주세요.');
       return;
     }
+
+    /* 데모 트리거: 동일 이름·생년월일·연락처로 일반(일반)·구글(구글) 계정이
+       모두 존재하는 다중 계정 케이스를 시연 */
+    if(nameKr==='김다중'||nameKr==='다중'){
+      showIdFindMulti('kim.dajung@example.com','kim.dajung.g@gmail.com');
+      return;
+    }
+
+    var profile=window.TMProfile&&TMProfile.load();
+    if(!profile||!profile.email){
+      alert('저장된 회원 정보가 없습니다.\n먼저 회원가입을 완료해 주세요.');
+      return;
+    }
     if(normName(profile.nameKr)!==nameKr||String(profile.birthdate||'')!==birth||normPhone(profile.phone)!==phone){
       alert('입력하신 정보가 저장된 회원 정보와 일치하지 않습니다.');
       return;
     }
+    document.getElementById('idFindMultiResult').classList.remove('show');
     if(profile.googleSignup){
       // 구글 가입 계정 → 구글 로그인 안내
       document.getElementById('idFindGoogleResult').classList.add('show');
@@ -534,7 +612,7 @@
       return;
     }
     document.getElementById('idFindGoogleResult').classList.remove('show');
-    document.getElementById('idFindResultEmail').textContent=profile.email;
+    document.getElementById('idFindResultEmail').textContent=maskEmail(profile.email);
     document.getElementById('idFindResult').classList.add('show');
     document.getElementById('loginEmail').value=profile.email.trim();
   }

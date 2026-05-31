@@ -12,6 +12,24 @@
     return d.innerHTML;
   }
 
+  /** 첨부 파일 입력에서 메타데이터(파일명·크기)만 추출 — 데모는 용량 보호 위해 원본 미저장 */
+  function collectAttachmentMeta(inputId) {
+    var el = document.getElementById(inputId);
+    if (!el || !el.files || !el.files.length) return [];
+    return Array.prototype.slice.call(el.files).slice(0, 5).map(function (f) {
+      return { name: f.name, size: f.size, mime: f.type };
+    });
+  }
+  /** 첨부 목록 HTML (상세에서 표시) */
+  function attachmentsHtml(files) {
+    if (!Array.isArray(files) || !files.length) return "";
+    var items = files.map(function (a) {
+      var kb = a.size ? " (" + Math.round(a.size / 1024) + "KB)" : "";
+      return '<li style="display:flex;align-items:center;gap:6px;font-size:13px;color:#374151;"><svg class="icon" width="13" height="13"><use href="#ic-download"/></svg>' + esc(a.name) + kb + "</li>";
+    }).join("");
+    return '<div class="detail-attach" style="margin-top:14px;padding:12px 14px;background:#f8fafc;border:1px solid #e8ecf0;border-radius:8px;"><strong style="font-size:12px;color:#003478;">첨부파일</strong><ul style="margin-top:6px;list-style:none;display:flex;flex-direction:column;gap:4px;">' + items + "</ul></div>";
+  }
+
   /* ──────────────────────────────────
      비밀글 LP (TPKM_FO_5_2_4, 5_3_4)
      prompt 대신 모달 사용 + 5회 30분 잠금
@@ -106,20 +124,38 @@
 
     var prof = window.TMProfile && TMProfile.load();
     var myEmail = prof ? (prof.email || "") : "";
+    var isAdminViewer = false;
+    try { isAdminViewer = !!sessionStorage.getItem("tm_admin_session_v1"); } catch (e) {}
+    /* 부모 글 작성자(게시물 소유자) 이메일 — 본인 글의 댓글은 열람 가능 */
+    var thePost = (board === "refund" ? BoardStore.getRefundPosts() : BoardStore.getInquiryPosts())
+      .find(function (x) { return x.id === postId; });
+    var postOwnerEmail = thePost ? (thePost.authorEmail || "") : "";
+    /* 비공개/비밀 댓글 열람 권한: 댓글 작성자 · 게시물 작성자 · 관리자 */
+    function canViewComment(c) {
+      if (!c.secret) return true;
+      if (isAdminViewer) return true;
+      if (myEmail && c.authorEmail && myEmail === c.authorEmail) return true;
+      if (myEmail && postOwnerEmail && myEmail === postOwnerEmail) return true;
+      return false;
+    }
 
     function commentHTML(c, isReply) {
       var replies = repliesOf[c.id] || [];
       var replyHtml = replies.map(function (r) { return commentHTML(r, true); }).join("");
+      var bodyHtml = canViewComment(c)
+        ? esc(c.body).replace(/\n/g, "<br>")
+        : '<span style="color:#9ca3af;">🔒 비공개 댓글입니다. (작성자·관리자만 열람)</span>';
       return (
         '<div class="cm-item' + (isReply ? " cm-reply" : "") + '" data-cmid="' + esc(c.id) + '">' +
         '<div class="cm-meta"><span class="cm-author">' + esc(c.author) + (c.secret ? ' 🔒' : '') + '</span>' +
         '<span class="cm-date">' + esc(c.date) + '</span></div>' +
-        '<div class="cm-body">' + esc(c.body).replace(/\n/g, "<br>") + '</div>' +
+        '<div class="cm-body">' + bodyHtml + '</div>' +
         (!isReply ? '<button type="button" class="cm-reply-btn" data-parent="' + esc(c.id) + '">답글</button>' : '') +
         (replyHtml ? '<div class="cm-replies">' + replyHtml + '</div>' : '') +
         '<div class="cm-reply-form" id="rf_' + esc(c.id) + '" style="display:none;">' +
         '<textarea class="cm-input" placeholder="답글을 입력하세요..." rows="2"></textarea>' +
-        '<div style="display:flex;gap:6px;margin-top:6px;">' +
+        '<div style="display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap;">' +
+        '<label style="font-size:12px;color:#6b7280;display:flex;align-items:center;gap:5px;"><input type="checkbox" class="cm-secret-chk"/> 비공개</label>' +
         '<button type="button" class="cm-submit-btn" data-parent="' + esc(c.id) + '">등록</button>' +
         '<button type="button" class="cm-cancel-btn" data-parent="' + esc(c.id) + '">취소</button>' +
         '</div></div>' +
@@ -136,7 +172,8 @@
       '<div class="cm-list">' + (commentsHtml || '<p class="cm-empty">첫 번째 댓글을 남겨보세요.</p>') + '</div>' +
       '<div class="cm-write">' +
       '<textarea class="cm-input" id="cmNewBody" placeholder="댓글을 입력하세요..." rows="3"></textarea>' +
-      '<div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px;">' +
+      '<div style="display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:6px;">' +
+      '<label style="font-size:12px;color:#6b7280;display:flex;align-items:center;gap:5px;"><input type="checkbox" id="cmNewSecret"/> 비공개(작성자·관리자만)</label>' +
       '<button type="button" class="cm-submit-btn" id="cmNewSubmit">댓글 등록</button>' +
       '</div></div>' +
       '</section>';
@@ -167,10 +204,11 @@
         var rf = document.getElementById("rf_" + pid);
         var input = rf ? rf.querySelector(".cm-input") : null;
         if (!input || !input.value.trim()) { alert("내용을 입력하세요."); return; }
-        // 0526 — 부모 글이 비밀글이면 댓글도 자동 secret
+        var secretChk = rf ? rf.querySelector(".cm-secret-chk") : null;
+        // 0526 — 부모 글이 비밀글이면 댓글도 자동 secret, 아니면 비공개 옵션 적용
         var parentPost = (board === "refund" ? BoardStore.getRefundPosts() : BoardStore.getInquiryPosts())
           .find(function (x) { return x.id === postId; });
-        var inheritSecret = !!(parentPost && parentPost.secret);
+        var inheritSecret = !!(parentPost && parentPost.secret) || !!(secretChk && secretChk.checked);
         BoardStore.addComment(board, postId, {
           parentId: pid,
           body: input.value.trim(),
@@ -191,10 +229,11 @@
       newSubmit.addEventListener("click", function () {
         var ta = document.getElementById("cmNewBody");
         if (!ta || !ta.value.trim()) { alert("댓글 내용을 입력하세요."); return; }
-        // 0526 — 부모 글이 비밀글이면 댓글도 자동 secret
+        var newSecretChk = document.getElementById("cmNewSecret");
+        // 0526 — 부모 글이 비밀글이면 댓글도 자동 secret, 아니면 비공개 옵션 적용
         var parentPost = (board === "refund" ? BoardStore.getRefundPosts() : BoardStore.getInquiryPosts())
           .find(function (x) { return x.id === postId; });
-        var inheritSecret = !!(parentPost && parentPost.secret);
+        var inheritSecret = !!(parentPost && parentPost.secret) || !!(newSecretChk && newSecretChk.checked);
         BoardStore.addComment(board, postId, {
           parentId: null,
           body: ta.value.trim(),
@@ -229,6 +268,7 @@
       });
       listEl.innerHTML = posts
         .map(function (p, i) {
+          var typeLabel = p.type === "correction" ? "정정" : "환불";
           return (
             '<div class="board-row" data-id="' +
             esc(p.id) +
@@ -237,11 +277,13 @@
             (i + 1) +
             "</div>" +
             '<div class="col-title">' +
+            '<span class="chip" style="background:#eef2ff;color:#1d4ed8;">' + typeLabel + "</span> " +
             (p.secret ? "🔒 " : "") +
             esc(p.title) +
             ' <span class="chip">' +
             BoardStore.statusLabel("refund", p.status) +
             "</span></div>" +
+            '<div class="col-author">' + esc(p.authorName || "—") + "</div>" +
             '<div class="col-date">' +
             esc(p.date) +
             "</div></div>"
@@ -294,6 +336,7 @@
         BoardStore.statusLabel("refund", p.status) +
         '</span></div></div><div class="detail-body">' +
         esc(p.body).replace(/\n/g, "<br>") +
+        attachmentsHtml(p.attachments) +
         (p.adminReply
           ? '<hr style="margin:16px 0"><p><strong>관리자 답변</strong><br>' +
             esc(p.adminReply) +
@@ -332,6 +375,7 @@
           body: document.getElementById("wBody").value,
           secret: secret,
           secretPw: pw,
+          attachments: collectAttachmentMeta("wAttachments"),
         });
         alert("등록되었습니다.");
         writeEl.style.display = "none";
@@ -377,21 +421,22 @@
         if (q && p.title.indexOf(q) < 0) return false;
         return true;
       });
+      var CAT = { reg: "접수", exam: "시험", etc: "기타" };
       listEl.innerHTML = posts
         .map(function (p, i) {
+          var catLabel = CAT[p.category] || p.category || "기타";
           return (
-            '<div class="board-row" data-id="' +
-            esc(p.id) +
-            '"><div class="col-num">' +
-            (i + 1) +
-            '</div><div class="col-title">' +
+            '<div class="board-row" data-id="' + esc(p.id) + '">' +
+            '<div class="col-num">' + (i + 1) + "</div>" +
+            '<div class="col-title">' +
             (p.secret ? "🔒 " : "") +
             esc(p.title) +
-            ' <span class="chip">' +
-            BoardStore.statusLabel("inquiry", p.status) +
-            "</span></div><div class="col-date'>" +
-            esc(p.date) +
-            "</div></div>"
+            ' <span class="chip">' + esc(catLabel) + "</span>" +
+            ' <span class="chip">' + BoardStore.statusLabel("inquiry", p.status) + "</span>" +
+            "</div>" +
+            '<div class="col-author">' + esc(p.authorName || "—") + "</div>" +
+            '<div class="col-date">' + esc(p.date) + "</div>" +
+            "</div>"
           );
         })
         .join("");
@@ -439,6 +484,7 @@
         esc(p.date) +
         "</span></div></div><div class=\"detail-body\">" +
         esc(p.body).replace(/\n/g, "<br>") +
+        attachmentsHtml(p.attachments) +
         (p.adminReply
           ? '<hr style="margin:16px 0"><strong>답변</strong><p>' +
             esc(p.adminReply) +
@@ -478,6 +524,7 @@
           title: document.getElementById("wTitle").value,
           body: document.getElementById("wBody").value,
           secretPw: pw,
+          attachments: collectAttachmentMeta("wAttachments"),
         });
         alert("등록되었습니다.");
         writeEl.style.display = "none";

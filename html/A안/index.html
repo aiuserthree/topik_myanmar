@@ -416,7 +416,7 @@
         <h4 data-i18n="foot_contact">문의처</h4>
         <ul>
           <li><a href="#"><svg class="icon" width="12" height="12"><use href="#ic-phone"/></svg>+95-1-234-5678</a></li>
-          <li><a href="#"><svg class="icon" width="12" height="12"><use href="#ic-email"/></svg>topik.myanmar@kr.go</a></li>
+          <li><a href="#"><svg class="icon" width="12" height="12"><use href="#ic-email"/></svg>topik.myanmar@koica.go.kr</a></li>
           <li><a href="#"><svg class="icon" width="12" height="12"><use href="#ic-clock"/></svg>평일 09:00~17:00</a></li>
         </ul>
       </div>
@@ -447,12 +447,15 @@
   });
   function homeNoticeBadge(catId) {
     if (catId === 'new') {
-      return '<span class="notice-badge badge-new"><svg class="icon" width="10" height="10"><use href="#ic-notice"/></svg>NEW</span>';
+      return '<span class="notice-badge badge-new"><svg class="icon" width="10" height="10"><use href="#ic-notice"/></svg>접수</span>';
     }
     if (catId === 'imp') {
       return '<span class="notice-badge badge-imp"><svg class="icon" width="10" height="10"><use href="#ic-alert"/></svg>중요</span>';
     }
-    return '<span class="notice-badge badge-gen"><svg class="icon" width="10" height="10"><use href="#ic-rules"/></svg>일반</span>';
+    if (catId === 'result') {
+      return '<span class="notice-badge badge-gen"><svg class="icon" width="10" height="10"><use href="#ic-trophy"/></svg>결과</span>';
+    }
+    return '<span class="notice-badge badge-gen"><svg class="icon" width="10" height="10"><use href="#ic-rules"/></svg>시험</span>';
   }
   function escapeHomeText(str) {
     if (str == null) return '';
@@ -483,17 +486,29 @@
   }
 </script>
 <script>
-  const target = new Date('2026-04-14T23:59:59');
+  /* 접수 마감 카운트다운(미얀마 시각 기준). 마감 후 '다음 회차 안내'로 전환. */
+  const target = new Date('2026-04-14T23:59:59+06:30');
+  const NEXT_ROUND = { label: '제99회 TOPIK', period: '2026.07.07 ~ 2026.07.21' };
+  let cdTimer = null;
   function updateCD(){
     const diff = target - new Date();
-    if(diff<=0){document.querySelector('.countdown').innerHTML='<span style="color:#aab8cc;font-size:14px;">접수 마감</span>';return;}
+    if(diff<=0){
+      var cd=document.querySelector('.countdown');
+      if(cd){
+        cd.innerHTML='<div style="text-align:center;color:#fff;"><div style="font-size:14px;font-weight:700;margin-bottom:6px;">접수가 마감되었습니다</div>'
+          +'<div style="font-size:13px;color:#aab8cc;line-height:1.6;">다음 회차 안내<br/><strong style="color:#fff;">'+NEXT_ROUND.label+'</strong><br/>접수기간 '+NEXT_ROUND.period+'</div></div>';
+      }
+      if(cdTimer){clearInterval(cdTimer);cdTimer=null;}
+      return;
+    }
     const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
-    document.getElementById('cd-days').textContent=String(d).padStart(2,'0');
-    document.getElementById('cd-hours').textContent=String(h).padStart(2,'0');
-    document.getElementById('cd-mins').textContent=String(m).padStart(2,'0');
-    document.getElementById('cd-secs').textContent=String(s).padStart(2,'0');
+    var el;
+    if((el=document.getElementById('cd-days')))el.textContent=String(d).padStart(2,'0');
+    if((el=document.getElementById('cd-hours')))el.textContent=String(h).padStart(2,'0');
+    if((el=document.getElementById('cd-mins')))el.textContent=String(m).padStart(2,'0');
+    if((el=document.getElementById('cd-secs')))el.textContent=String(s).padStart(2,'0');
   }
-  setInterval(updateCD,1000); updateCD();
+  cdTimer=setInterval(updateCD,1000); updateCD();
 </script>
 </body>
 </html>
