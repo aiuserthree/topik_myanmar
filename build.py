@@ -17,4 +17,11 @@ if dst.exists():
     shutil.rmtree(dst)
 
 shutil.copytree(src, dst)
+shared = pathlib.Path("html/shared")
+if shared.is_dir():
+    dst_shared = dst / "shared"
+    if dst_shared.exists():
+        shutil.rmtree(dst_shared)
+    shutil.copytree(shared, dst_shared)
+    print(f"Copied {shared} → {dst_shared}")
 print(f"Copied {src} → {dst}")

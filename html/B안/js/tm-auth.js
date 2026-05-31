@@ -144,9 +144,36 @@
     });
   }
 
+  function wireLangToggle() {
+    var map = { 'KO': 'KO', 'MY': 'MY', 'EN': 'EN', '한국어': 'KO', 'မြန်မာ': 'MY', 'English': 'EN' };
+    function setLang(code) {
+      try { localStorage.setItem('tm_lang', code); } catch (e) {}
+      document.documentElement.setAttribute('data-lang', code.toLowerCase());
+      document.querySelectorAll('.lang-toggle button, .drawer-lang button').forEach(function (btn) {
+        var t = (btn.textContent || '').trim();
+        var c = btn.dataset.lang || map[t] || t;
+        btn.classList.toggle('is-active', c === code);
+      });
+      if (window.TOPIKPageI18n) TOPIKPageI18n.apply(code);
+    }
+    document.querySelectorAll('.lang-toggle button, .drawer-lang button').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var t = (btn.textContent || '').trim();
+        setLang(btn.dataset.lang || map[t] || 'KO');
+      });
+    });
+    var saved = localStorage.getItem('tm_lang') || 'KO';
+    setLang(saved);
+    window.TMI18n = { getLang: function () { return localStorage.getItem('tm_lang') || 'KO'; }, setLang: setLang };
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     checkGuard();
     renderAuthArea();
     wireProtectedLinks();
+    var sc = document.createElement('script');
+    sc.src = 'shared/topik-i18n-content.js';
+    sc.onload = wireLangToggle;
+    document.head.appendChild(sc);
   });
 })();

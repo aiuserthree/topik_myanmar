@@ -439,8 +439,12 @@
     return v ? v.nameKo : '—';
   }
 
+  function getAdminSession() {
+    try { return JSON.parse(sessionStorage.getItem('tpkm_bo_admin') || 'null'); } catch (e) { return null; }
+  }
+
   window.DataStore = {
-    state, subscribe, notify, addAudit, setSession,
+    state, subscribe, notify, addAudit, setSession, getAdminSession,
     badges, fmtNum, fmtCurrency, statusLabel, levelLabel, roleLabel, venueName, pad,
     permSections: PERM_SECTIONS, permActions: PERM_ACTIONS, recommendedPerms,
   };

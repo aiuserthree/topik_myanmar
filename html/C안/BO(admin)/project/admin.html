@@ -16,6 +16,12 @@
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
+<script src="shared/topik-lib-loader.js"></script>
+<script src="shared/topik-mail.js"></script>
+<script src="shared/topik-bo-core.js"></script>
+<script src="shared/topik-export.js"></script>
+<script src="assets/bo-export-bridge.js"></script>
+
 <!-- Data store (plain JS) -->
 
 <!-- Common UI primitives -->
@@ -467,8 +473,12 @@
     return v ? v.nameKo : '—';
   }
 
+  function getAdminSession() {
+    try { return JSON.parse(sessionStorage.getItem('tpkm_bo_admin') || 'null'); } catch (e) { return null; }
+  }
+
   window.DataStore = {
-    state, subscribe, notify, addAudit, setSession,
+    state, subscribe, notify, addAudit, setSession, getAdminSession,
     badges, fmtNum, fmtCurrency, statusLabel, levelLabel, roleLabel, venueName, pad,
     permSections: PERM_SECTIONS, permActions: PERM_ACTIONS, recommendedPerms,
   };
@@ -1910,9 +1920,18 @@ function ExcelExportModal({ onClose, rows }) {
   const session = state.sessions.find(s => s.id === state.activeSessionId);
 
   const doExport = () => {
-    DataStore.addAudit({ type: '접수자', targetId: '—', action: '게시', memo: `연명부 엑셀 내보내기(${rows.length}건, ${mode === 'full' ? '회차전체 zip' : '현재 필터'})` });
-    toastOk(`${rows.length}건의 연명부 엑셀 파일을 생성했습니다.`, { title: '엑셀 생성 완료' });
-    onClose();
+    const role = (DataStore.getAdminSession && DataStore.getAdminSession()?.role) || 'super';
+    if (window.TOPIKBoBridge && !TOPIKBoBridge.enforcePerm(role, '접수 관리|엑셀·사진 zip 다운로드', 'execute')) return;
+    const run = () => {
+      DataStore.addAudit({ type: '접수자', targetId: '—', action: '게시', memo: `연명부 엑셀 내보내기(${rows.length}건, ${mode === 'full' ? '회차전체 zip' : '현재 필터'})` });
+      toastOk(`${rows.length}건의 연명부 엑셀 파일을 생성했습니다.`, { title: '엑셀 생성 완료' });
+      onClose();
+    };
+    if (window.TOPIKBoBridge) {
+      TOPIKBoBridge.exportRosterExcel({ mode, rows, state }).then(run).catch(e => toastErr(e.message || '엑셀 생성 실패'));
+      return;
+    }
+    run();
   };
   return (
     <Modal open onClose={onClose} title="연명부 양식 엑셀 내보내기"
@@ -1950,9 +1969,18 @@ function ZipExportModal({ onClose, rows }) {
   const includeMissing = useMemo(() => rows.some(a => !a.photoOk || a.status === 'rejected'), [rows]);
   const missingCount = rows.filter(a => !a.photoOk || a.status === 'rejected').length;
   const doExport = () => {
-    DataStore.addAudit({ type: '접수자', targetId: '—', action: '게시', memo: `사진 zip 다운로드(${rows.length}건, 폴더구조 {지역}/{시험장}/TOPIK_{급수}/{수험번호}.jpg)` });
-    toastOk(`${rows.length - missingCount}장의 사진 zip 파일을 생성했습니다.`, { title: 'ZIP 생성 완료' });
-    onClose();
+    const role = (DataStore.getAdminSession && DataStore.getAdminSession()?.role) || 'super';
+    if (window.TOPIKBoBridge && !TOPIKBoBridge.enforcePerm(role, '접수 관리|엑셀·사진 zip 다운로드', 'execute')) return;
+    const done = () => {
+      DataStore.addAudit({ type: '접수자', targetId: '—', action: '게시', memo: `사진 zip 다운로드(${rows.length}건, 폴더구조 {지역}/{시험장}/TOPIK_{급수}/{수험번호}.jpg)` });
+      toastOk(`${rows.length - missingCount}장의 사진 zip 파일을 생성했습니다.`, { title: 'ZIP 생성 완료' });
+      onClose();
+    };
+    if (window.TOPIKBoBridge) {
+      TOPIKBoBridge.exportPhotosZip({ rows, state }).then(done).catch(e => toastErr(e.message || 'ZIP 생성 실패'));
+      return;
+    }
+    done();
   };
   return (
     <Modal open onClose={onClose} title="사진 일괄 다운로드 (zip)"
@@ -4675,6 +4703,8 @@ function App() {
     const me = JSON.parse(raw);
     DataStore.state.me = me;
     DataStore.notify();
+    try { sessionStorage.setItem('tpkm_bo_admin', JSON.stringify({ role: me.role || 'super', name: me.name || me.id })); } catch (e) {}
+    if (window.TOPIKBoCore) TOPIKBoCore.startSessionHeartbeat(me.id || me.name, me.name);
   }, []);
 
   useEffect(() => {

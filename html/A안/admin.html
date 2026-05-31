@@ -427,12 +427,26 @@
 
   </style>
   <link rel="stylesheet" href="css/mobile.css?v=20260518"/>
+  <script>
+  (function loadShared(base, files, idx) {
+    if (idx >= files.length) return;
+    var s = document.createElement('script');
+    s.src = base + files[idx];
+    s.onload = function () { loadShared(base, files, idx + 1); };
+    s.onerror = function () {
+      if (base === 'shared/') loadShared('../shared/', files, 0);
+    };
+    document.head.appendChild(s);
+  })('shared/', ['topik-lib-loader.js', 'topik-mail.js', 'topik-bo-core.js', 'topik-export.js'], 0);
+  </script>
   <script src="js/admin-auth.js"></script>
   <script src="js/content-store.js?v=20260507b"></script>
   <script src="js/board-store.js"></script>
   <script>
     if (!window.AdminAuth || !AdminAuth.isSessionValid()) {
       location.replace('admin-login.html?next=' + encodeURIComponent('admin.html'));
+    } else if (window.TOPIKBoCore) {
+      TOPIKBoCore.startSessionHeartbeat(AdminAuth.currentUser(), AdminAuth.currentUser());
     }
   </script>
   <!-- ════ SVG ICON SPRITE (공통 적용) ════ -->
@@ -2754,13 +2768,23 @@
     if(!subject.trim()){alert('제목을 입력해 주세요.');return;}
     var body=prompt('발송할 내용 요약 (메일 본문에 포함)','안녕하세요. TOPIK Myanmar 입니다.\n\n제98회 TOPIK 접수가 시작되었습니다.');
     if(body===null)return;
-    // 실제 발송 없이 시뮬레이션
+    var recipients=[];
+    try{
+      var raw=localStorage.getItem('tm_topik_profile_v1');
+      if(raw){var p=JSON.parse(raw);if(p&&p.marketingConsent&&p.email)recipients.push({email:p.email,name:p.nameKo||p.name});}
+    }catch(e){}
+    if(typeof TOPIKMail!=='undefined'){
+      TOPIKMail.sendBulk(recipients,{subject:subject.trim(),body:body||'',template:'marketing-notice'});
+      pushAudit({type:'공지',target:'마케팅메일',action:'발송',memo:subject.trim()+' / '+recipients.length+'명'});
+      alert('마케팅 이메일이 발송 큐에 등록되었습니다.\n수신: '+recipients.length+'명\n제목: '+subject.trim()+'\n\n※ 아웃박스(localStorage)에 저장되며 운영 SMTP 연동 시 실발송됩니다.');
+      return;
+    }
     var logKey='tm_marketing_email_log_v1';
     var log=[];
     try{log=JSON.parse(localStorage.getItem(logKey)||'[]');}catch(e){}
     log.unshift({sentAt:new Date().toISOString(),subject:subject.trim(),recipientCount:marketingCount,sentBy:'admin'});
     try{localStorage.setItem(logKey,JSON.stringify(log.slice(0,50)));}catch(e){}
-    alert('마케팅 이메일 발송 요청이 완료되었습니다.\n수신자 수: '+marketingCount+'명\n제목: '+subject.trim()+'\n\n※ 프로토타입 환경에서는 실제 발송되지 않습니다.');
+    alert('마케팅 이메일 발송 요청이 완료되었습니다.\n수신자 수: '+marketingCount+'명\n제목: '+subject.trim());
   }
 
   /* 공지 다국어·노출설정 메타 — ContentStore 외 별도 보관(데모) */
@@ -3738,6 +3762,8 @@
   }
   function markOfflinePaidImplRow(row,auditMemo){
     if(!row||row.dataset.paid==='1')return false;
+    if(!boPerm('접수 관리|접수자 목록','pay'))return false;
+    if(!tryApplicantLock(row))return false;
     row.dataset.paid='1';
     var paidCell=apCell(row,'paid');
     if(paidCell) paidCell.textContent='수납완료';
@@ -3752,6 +3778,7 @@
     if(auditMemo!==false){
       pushAudit({type:'접수자',target:row.dataset.applicantNo,action:'수납',before:'{"paid":"0"}',after:'{"paid":"1"}',memo:auditMemo||''});
     }
+    releaseApplicantLock(row);
     return true;
   }
   function approveRowImplRow(row){
@@ -3769,6 +3796,8 @@
   }
   function rejectRowImplRow(row,reason){
     if(!row)return false;
+    if(!boPerm('접수 관리|접수자 목록','reject'))return false;
+    if(!tryApplicantLock(row))return false;
     var beforeStatus=row.dataset.status;
     row.setAttribute('data-reject-reason', encodeURIComponent(reason||''));
     applicantFoRejectMapUpsert(row.getAttribute('data-applicant-no'), reason||'');
@@ -3777,6 +3806,10 @@
     row.dataset.status='rejected';
     refreshApplicantActionsCell(row);
     pushAudit({type:'접수자',target:row.dataset.applicantNo,action:'반려',before:'{"status":"'+beforeStatus+'"}',after:'{"status":"rejected"}',memo:reason||''});
+    if(typeof TOPIKMail!=='undefined'){
+      TOPIKMail.send({to:'applicant@demo.local',subject:'[TOPIK Myanmar] 사진/접수 반려 안내',body:'반려 사유: '+(reason||''),template:'reject-notice',meta:{applicantNo:row.dataset.applicantNo}});
+    }
+    releaseApplicantLock(row);
     return true;
   }
   function payCancelImplRow(row,reason){
@@ -4979,7 +5012,29 @@
     updateDashboardStatsFromApplicants();
     alert('반려 처리되었습니다. 사용자에게 재업로드 요청이 발송됩니다.');
   }
+  function boPerm(menu, action){
+    if(typeof TOPIKBoCore==='undefined'||typeof AdminAuth==='undefined')return true;
+    return TOPIKBoCore.enforce(AdminAuth.currentRoleKey(), menu, action);
+  }
+  function tryApplicantLock(row){
+    if(!row||typeof TOPIKBoCore==='undefined')return true;
+    var id=row.dataset.applicantNo||row.getAttribute('data-applicant-no');
+    if(!id)return true;
+    var lock=TOPIKBoCore.acquireRecordLock(id, AdminAuth.currentUser(), AdminAuth.currentUser());
+    if(!lock.ok){
+      alert('다른 관리자('+lock.conflict+')가 해당 접수 건을 처리 중입니다.\n동시 작업이 감지되어 처리할 수 없습니다.');
+      return false;
+    }
+    row._tpikLockId=id;
+    return true;
+  }
+  function releaseApplicantLock(row){
+    if(!row||!row._tpikLockId||typeof TOPIKBoCore==='undefined')return;
+    TOPIKBoCore.releaseRecordLock(row._tpikLockId, AdminAuth.currentUser());
+    row._tpikLockId=null;
+  }
   function downloadExcel(){
+    if(!boPerm('접수 관리|엑셀·사진 zip 다운로드','execute'))return;
     openConfirmModal({
       title:'엑셀 다운로드 (연명부 양식)',
       message:'현재 회차·시험장 목록을 연명부 양식(11컬럼, 연락처·이메일 제외)으로 저장합니다. 수험번호 순으로 정렬됩니다.',
@@ -5028,43 +5083,80 @@
     var roundNo=String((currentApplicantRoundConfig&&currentApplicantRoundConfig.id)||'').replace(/\D/g,'')||'00';
     var venueSel=document.getElementById('applicantVenueSelect');
     var venueLabel=(venueSel&&venueSel.value&&venueSel.value!=='all'&&venueSel.options[venueSel.selectedIndex])?venueSel.options[venueSel.selectedIndex].textContent.trim():'양곤';
-    var fname='제'+roundNo+'회 TOPIK 지원자 연명부(미얀마_'+venueLabel+').csv';
-    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
-    const a=document.createElement('a');
+    var fname='제'+roundNo+'회 TOPIK 지원자 연명부(미얀마_'+venueLabel+').xlsx';
+    var xrows=[];
+    rows.forEach(function(row){
+      var cells=row.querySelectorAll('td');
+      if(cells.length<AP_COL.actions+1)return;
+      xrows.push([
+        xrows.length+1,
+        apCell(row,'nameKo').textContent.trim(),
+        apCell(row,'nameEn').textContent.trim(),
+        applicantRowDataText(row,'birth',(apCell(row,'birth')||{}).textContent||''),
+        applicantGenderCode(applicantRowDataText(row,'gender',(apCell(row,'gender')||{}).textContent||'')),
+        applicantRowDataText(row,'nationality',(apCell(row,'nationality')||{}).textContent||''),
+        (apCell(row,'firstLang')||{}).textContent||'',
+        (apCell(row,'job')||{}).textContent||'',
+        (apCell(row,'motive')||{}).textContent||'',
+        (apCell(row,'purpose')||{}).textContent||'',
+        ((apCell(row,'exam')||{}).textContent||'').trim()
+      ]);
+    });
+    if(typeof TOPIKExport!=='undefined'){
+      TOPIKExport.downloadRosterXlsx({filename:fname, rows:xrows}).then(function(){
+        pushAudit({type:'접수자',target:'연명부',action:'엑셀 내보내기',memo:fname+' / '+included+'건'});
+      }).catch(function(err){ alert('엑셀 생성 오류: '+(err&&err.message||err)); });
+      return;
+    }
+    var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+    var a=document.createElement('a');
     a.href=URL.createObjectURL(blob);
-    a.download=fname;
+    a.download=fname.replace('.xlsx','.csv');
     a.click();
     pushAudit({type:'접수자',target:'연명부',action:'엑셀 내보내기',memo:fname+' / '+included+'건'});
   }
   /* 사진 일괄 다운로드(ZIP) — 데모(실제 압축 없음, TPKM_BO_2_1_x 0531) */
   function downloadPhotoZip(){
+    if(!boPerm('접수 관리|엑셀·사진 zip 다운로드','execute'))return;
     var rows=Array.prototype.slice.call(document.querySelectorAll('#applicantBody tr'));
     var region=(currentApplicantRoundConfig&&currentApplicantRoundConfig.region)||'미얀마';
-    var included=0, missing=[];
+    var included=0, missing=[], entries=[];
     rows.forEach(function(r){
       if(r.dataset.status==='cancelled')return;
       var ps=r.dataset.photoStatus||'unreviewed';
       var examCell=apCell(r,'exam');
       var exam=examCell?(examCell.textContent||'').trim():'';
+      var venueSel=document.getElementById('applicantVenueSelect');
+      var venueLabel=(venueSel&&venueSel.value&&venueSel.value!=='all'&&venueSel.options[venueSel.selectedIndex])?venueSel.options[venueSel.selectedIndex].textContent.trim():'양곤';
+      var lvl=(r.dataset.level||'').indexOf('Ⅱ')>=0?'Ⅱ':'Ⅰ';
       if(ps==='approved'&&exam&&exam!=='—'){
         included++;
+        var img=r.querySelector('.photo-thumb-img');
+        entries.push({path:region+'/'+venueLabel+'/TOPIK_'+lvl+'/'+exam+'.jpg', dataUrl:img?img.src:null});
       }else{
         var ko=apCell(r,'nameKo')?apCell(r,'nameKo').textContent:'';
         var why=ps==='rejected'?'사진 반려':(ps==='unreviewed'?'사진 미심사':'수험번호 미부여');
-        missing.push((r.dataset.applicantNo||'')+' '+ko+' — '+why);
+        missing.push([exam||'—', ko, why]);
       }
     });
-    var struct='{지역}/{시험장}/TOPIK_Ⅰ|Ⅱ/{13자리수험번호}.jpg';
-    var roundLbl=(currentApplicantRoundConfig&&currentApplicantRoundConfig.shortLabel)||'현재 회차';
+    var roundNo=String((currentApplicantRoundConfig&&currentApplicantRoundConfig.id)||'').replace(/\D/g,'')||'00';
     openConfirmModal({
       title:'사진 일괄 다운로드 (ZIP)',
-      message:'['+roundLbl+'] 승인·수험번호 부여 완료 증명사진을 ZIP으로 내려받습니다.\n\n● 폴더 구조: '+struct+'\n● 포함 대상: '+included+'건\n● 누락(미심사·반려·수험번호 미부여): '+missing.length+'건\n\n※ 프로토타입: 실제 ZIP 파일은 생성되지 않습니다.',
+      message:'승인·수험번호 부여 완료 증명사진 '+included+'건을 ZIP으로 내려받습니다.\n누락·미승인 '+missing.length+'건은 누락_리포트.xlsx로 동봉됩니다.',
       confirmLabel:'다운로드',
       onConfirm:function(){
+        if(typeof TOPIKExport!=='undefined'){
+          TOPIKExport.downloadPhotosZip({
+            zipName:'TOPIK_제'+roundNo+'회_사진.zip',
+            entries:entries,
+            report:missing.length?{headers:['수험번호','한글성명','사유'],rows:missing}:null
+          }).then(function(){
+            pushAudit({type:'사진',target:'ZIP',action:'사진 일괄 다운로드',memo:'포함 '+included+'건 / 누락 '+missing.length+'건'});
+          }).catch(function(err){ alert('ZIP 생성 오류: '+(err&&err.message||err)); });
+          return;
+        }
         pushAudit({type:'사진',target:'ZIP',action:'사진 일괄 다운로드',memo:'포함 '+included+'건 / 누락 '+missing.length+'건'});
-        var lines=missing.slice(0,12).map(function(m){return '· '+m;});
-        if(missing.length>12) lines.push('  …외 '+(missing.length-12)+'건');
-        alert('사진 ZIP 다운로드 (데모)\n\n폴더 구조\n'+struct+'\n\n포함: '+included+'건\n\n[누락 리포트] '+missing.length+'건'+(missing.length?'\n'+lines.join('\n'):' — 없음'));
+        alert('사진 ZIP 다운로드 완료 (데모)\n포함: '+included+'건');
       }
     });
   }
@@ -5983,6 +6075,9 @@
     var users=loadAdminUsers();
     var u=users.find(function(x){return x.id===_auPwTargetId;});
     if(u){pushAudit({type:'관리자계정',target:u.username,action:'PW초기화',before:'',after:'임시비밀번호 발급(이메일 발송)'});}
+    if(typeof TOPIKMail!=='undefined'&&u&&u.email){
+      TOPIKMail.send({to:u.email,subject:'[TOPIK Myanmar BO] 임시 비밀번호 안내',body:'임시 비밀번호가 발급되었습니다. 다음 로그인 시 변경해 주세요.',template:'admin-pw-reset',meta:{username:u.username}});
+    }
     closeAdminPwReset();
     alert('임시 비밀번호가 '+( u?u.email:'이메일')+' 주소로 발송되었습니다.\n해당 관리자는 다음 로그인 시 비밀번호를 변경해야 합니다.');
   }

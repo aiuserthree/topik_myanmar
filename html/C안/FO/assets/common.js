@@ -64,6 +64,18 @@
   };
   window.TPKMAuth = Auth;
 
+  const MENU_I18N = { guide: 'menu.guide', rules: 'menu.rules', apply: 'menu.apply', board: 'menu.board' };
+  const SUB_I18N = {
+    'guide-overview.html': 'guide.overview', 'guide-intro.html': 'guide.intro',
+    'guide-questions.html': 'guide.questions', 'guide-evaluation.html': 'guide.evaluation',
+    'rules-notice.html': 'rules.notice', 'rules-answer.html': 'rules.answer',
+    'rules-fee.html': 'rules.fee', 'rules-id.html': 'rules.id',
+    'apply-howto.html': 'sub.apply_howto', 'register.html': 'sub.apply_reg',
+    'mypage.html': 'sub.apply_confirm', 'ticket.html': 'sub.apply_ticket',
+    'notice.html': 'sub.board_notice', 'refund-correction.html': 'sub.board_refund',
+    'qna.html': 'sub.board_qna', 'faq.html': 'sub.board_faq'
+  };
+
   const Lang = {
     get() { return localStorage.getItem('tpkm_lang') || 'KO'; },
     set(l) {
@@ -72,6 +84,12 @@
       document.querySelectorAll('.lang-toggle button').forEach(b => {
         b.classList.toggle('active', b.dataset.lang === l);
       });
+      if (window.TOPIKPageI18n) TOPIKPageI18n.apply(l);
+      if (typeof window.__tpkmRebuildNav === 'function') window.__tpkmRebuildNav();
+    },
+    t(key) {
+      if (window.TOPIKPageI18n) return TOPIKPageI18n.text(key, Lang.get()) || null;
+      return null;
     }
   };
   window.TPKMLang = Lang;
@@ -108,9 +126,9 @@
 
     const menuHTML = MENU.map(m => `
       <li class="${m.key === ak ? 'active' : ''}">
-        <a href="${m.children[0].href}" data-key="${m.key}">${m.label}</a>
+        <a href="${m.children[0].href}" data-key="${m.key}">${Lang.t(MENU_I18N[m.key]) || m.label}</a>
         <ul class="dropdown">
-          ${m.children.map(c => `<li><a href="${c.href}">${c.label}</a></li>`).join('')}
+          ${m.children.map(c => `<li><a href="${c.href}">${Lang.t(SUB_I18N[c.href]) || c.label}</a></li>`).join('')}
         </ul>
       </li>
     `).join('');
@@ -328,15 +346,24 @@
 
   // ---- DOM ready ----
   function init() {
+    window.__tpkmRebuildNav = function () { buildHeader(); buildFooter(); buildTabbar(); };
     buildHeader();
     buildFooter();
     buildTabbar();
     checkLoginGuard();
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', function () {
+      var sc = document.createElement('script');
+      sc.src = 'shared/topik-i18n-content.js';
+      sc.onload = init;
+      document.head.appendChild(sc);
+    });
   } else {
-    init();
+    var sc = document.createElement('script');
+    sc.src = 'shared/topik-i18n-content.js';
+    sc.onload = init;
+    document.head.appendChild(sc);
   }
 
   // ---- Public helpers ----

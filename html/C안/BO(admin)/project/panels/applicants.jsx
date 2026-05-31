@@ -917,9 +917,18 @@ function ExcelExportModal({ onClose, rows }) {
   const session = state.sessions.find(s => s.id === state.activeSessionId);
 
   const doExport = () => {
-    DataStore.addAudit({ type: '접수자', targetId: '—', action: '게시', memo: `연명부 엑셀 내보내기(${rows.length}건, ${mode === 'full' ? '회차전체 zip' : '현재 필터'})` });
-    toastOk(`${rows.length}건의 연명부 엑셀 파일을 생성했습니다.`, { title: '엑셀 생성 완료' });
-    onClose();
+    const role = (DataStore.getAdminSession && DataStore.getAdminSession()?.role) || 'super';
+    if (window.TOPIKBoBridge && !TOPIKBoBridge.enforcePerm(role, '접수 관리|엑셀·사진 zip 다운로드', 'execute')) return;
+    const run = () => {
+      DataStore.addAudit({ type: '접수자', targetId: '—', action: '게시', memo: `연명부 엑셀 내보내기(${rows.length}건, ${mode === 'full' ? '회차전체 zip' : '현재 필터'})` });
+      toastOk(`${rows.length}건의 연명부 엑셀 파일을 생성했습니다.`, { title: '엑셀 생성 완료' });
+      onClose();
+    };
+    if (window.TOPIKBoBridge) {
+      TOPIKBoBridge.exportRosterExcel({ mode, rows, state }).then(run).catch(e => toastErr(e.message || '엑셀 생성 실패'));
+      return;
+    }
+    run();
   };
   return (
     <Modal open onClose={onClose} title="연명부 양식 엑셀 내보내기"
@@ -957,9 +966,18 @@ function ZipExportModal({ onClose, rows }) {
   const includeMissing = useMemo(() => rows.some(a => !a.photoOk || a.status === 'rejected'), [rows]);
   const missingCount = rows.filter(a => !a.photoOk || a.status === 'rejected').length;
   const doExport = () => {
-    DataStore.addAudit({ type: '접수자', targetId: '—', action: '게시', memo: `사진 zip 다운로드(${rows.length}건, 폴더구조 {지역}/{시험장}/TOPIK_{급수}/{수험번호}.jpg)` });
-    toastOk(`${rows.length - missingCount}장의 사진 zip 파일을 생성했습니다.`, { title: 'ZIP 생성 완료' });
-    onClose();
+    const role = (DataStore.getAdminSession && DataStore.getAdminSession()?.role) || 'super';
+    if (window.TOPIKBoBridge && !TOPIKBoBridge.enforcePerm(role, '접수 관리|엑셀·사진 zip 다운로드', 'execute')) return;
+    const done = () => {
+      DataStore.addAudit({ type: '접수자', targetId: '—', action: '게시', memo: `사진 zip 다운로드(${rows.length}건, 폴더구조 {지역}/{시험장}/TOPIK_{급수}/{수험번호}.jpg)` });
+      toastOk(`${rows.length - missingCount}장의 사진 zip 파일을 생성했습니다.`, { title: 'ZIP 생성 완료' });
+      onClose();
+    };
+    if (window.TOPIKBoBridge) {
+      TOPIKBoBridge.exportPhotosZip({ rows, state }).then(done).catch(e => toastErr(e.message || 'ZIP 생성 실패'));
+      return;
+    }
+    done();
   };
   return (
     <Modal open onClose={onClose} title="사진 일괄 다운로드 (zip)"

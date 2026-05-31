@@ -62,6 +62,8 @@ function App() {
     const me = JSON.parse(raw);
     DataStore.state.me = me;
     DataStore.notify();
+    try { sessionStorage.setItem('tpkm_bo_admin', JSON.stringify({ role: me.role || 'super', name: me.name || me.id })); } catch (e) {}
+    if (window.TOPIKBoCore) TOPIKBoCore.startSessionHeartbeat(me.id || me.name, me.name);
   }, []);
 
   useEffect(() => {
