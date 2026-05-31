@@ -261,7 +261,7 @@
     <div class="container">
       <div class="hero-inner">
         <div>
-          <div class="round-badge"><strong>제98회</strong> 한국어능력시험 (2026.04.12) 접수 진행 중</div>
+          <div class="round-badge"><strong>제106회</strong> 한국어능력시험 (2026.09.19) 접수 진행 중</div>
           <h1 style="margin-top:18px;">
             미얀마 <span class="accent">한국어능력시험</span><br>
             공식 접수 시스템
@@ -276,7 +276,7 @@
         <!-- D-Day card -->
         <div class="dday" aria-live="polite">
           <div class="dday-head">
-            <div class="ttl"><strong>제98회</strong> 접수 마감까지</div>
+            <div class="ttl"><strong>제106회</strong> 접수 마감까지</div>
             <span class="live">LIVE</span>
           </div>
           <div class="dday-grid" id="ddayGrid">
@@ -286,8 +286,8 @@
             <div class="dday-cell"><div class="n" id="dd-s">--</div><div class="u">SEC</div></div>
           </div>
           <div class="dday-foot">
-            <span>접수 기간 <strong>2026.02.01 ~ 02.15</strong></span>
-            <span>시험일 <strong>2026.04.12</strong></span>
+            <span>접수 기간 <strong>2026.06.01 ~ 07.26</strong></span>
+            <span>시험일 <strong>2026.09.19</strong></span>
           </div>
         </div>
       </div>
@@ -464,10 +464,10 @@
 
 <script src="assets/common.js"></script>
 <script>
-  // D-Day countdown (target: 2026-02-15 23:59:59 GMT+6:30)
+  // D-Day countdown (target: 2026-07-26 23:59:59 GMT+6:30 — 제106회 접수 마감, 데모: 접수 진행 중)
   // 접수 마감 시각 도달 시 '접수 마감 / 다음 회차 안내' 상태로 자동 전환 (기능정의서 FO 메인)
   (function () {
-    const target = new Date('2026-02-15T23:59:59+06:30').getTime();
+    const target = new Date('2026-07-26T23:59:59+06:30').getTime();
     const grid = document.getElementById('ddayGrid');
     const dday = document.querySelector('.dday');
     const head = dday ? dday.querySelector('.dday-head') : null;
@@ -497,7 +497,7 @@
         const live = head.querySelector('.live');
         if (live) live.remove();
         const ttl = head.querySelector('.ttl');
-        if (ttl) ttl.innerHTML = '<strong>제98회</strong> 접수 마감';
+        if (ttl) ttl.innerHTML = '<strong>제106회</strong> 접수 마감';
       }
       // 카운트다운 그리드 → 마감 안내 + 다음 회차 CTA
       if (grid) {
