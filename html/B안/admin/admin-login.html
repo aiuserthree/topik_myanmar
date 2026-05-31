@@ -7,6 +7,16 @@
  const form=document.getElementById('loginForm'); const idEl=document.getElementById('adminId'); const pwEl=document.getElementById('adminPw'); const idErr=document.getElementById('idError'); const pwErr=document.getElementById('pwError'); const loginErr=document.getElementById('loginError'); const lockNotice=document.getElementById('lockNotice'); const pwToggle=document.getElementById('pwToggle');
  // Check lock function checkLock(){ const until=localStorage.getItem(LOCK_KEY); if(until&&Date.now()<+until){ lockNotice.classList.add('show'); return true; } lockNotice.classList.remove('show'); return false; }
  pwToggle.addEventListener('click',function(){ const isText=pwEl.type==='text'; pwEl.type=isText?'password':'text'; });
- form.addEventListener('submit',function(e){ e.preventDefault(); if(checkLock())return; let valid=true; const id=idEl.value.trim(); const pw=pwEl.value; idErr.style.display='none'; pwErr.style.display='none'; loginErr.style.display='none'; idEl.classList.remove('is-error'); pwEl.classList.remove('is-error'); if(!id){idErr.style.display='block';idEl.classList.add('is-error');valid=false;} if(!pw){pwErr.style.display='block';pwEl.classList.add('is-error');valid=false;} if(!valid)return;
- const admin=ADMINS.find(a=>a.id===id&&a.pw===pw); if(admin){ localStorage.removeItem(FAIL_KEY); localStorage.removeItem(LOCK_KEY); sessionStorage.setItem('bo_admin',JSON.stringify({id:admin.id,name:admin.name,role:admin.role})); const next=new URLSearchParams(location.search).get('next'); location.href=(next&&next.startsWith('admin'))?next:'admin-dashboard.html'; } else { let fail=+(localStorage.getItem(FAIL_KEY)||0)+1; localStorage.setItem(FAIL_KEY,fail); if(fail>=MAX_FAIL){ localStorage.setItem(LOCK_KEY,Date.now()+LOCK_MIN*60*1000); lockNotice.classList.add('show'); loginErr.style.display='none'; } else { loginErr.textContent=`아이디 또는 비밀번호가 올바르지 않습니다. (${fail}/${MAX_FAIL}회 실패)`; loginErr.style.display='block'; } } });
- checkLock();})();</script></body></html>
+ function doDemoLogin(){
+  localStorage.removeItem(FAIL_KEY); localStorage.removeItem(LOCK_KEY);
+  lockNotice.classList.remove('show');
+  const id=idEl.value.trim();
+  const admin=ADMINS.find(a=>a.id===id)||ADMINS[0];
+  sessionStorage.setItem('bo_admin',JSON.stringify({id:admin.id,name:admin.name,role:admin.role}));
+  const next=new URLSearchParams(location.search).get('next');
+  location.href=(next&&next.startsWith('admin'))?next:'admin-dashboard.html';
+ }
+ form.addEventListener('submit',function(e){ e.preventDefault(); doDemoLogin(); });
+ checkLock();
+ if(sessionStorage.getItem('bo_admin')){ const next=new URLSearchParams(location.search).get('next'); location.replace((next&&next.startsWith('admin'))?next:'admin-dashboard.html'); }
+})();</script></body></html>
