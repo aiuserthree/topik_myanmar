@@ -790,6 +790,9 @@ function DashboardPanel() {
   const recentRefunds = useMemo(() => state.refunds.slice().sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')).slice(0, 4), [state.refunds]);
   const recentInquiries = useMemo(() => state.inquiries.slice().sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')).slice(0, 4), [state.inquiries]);
 
+  // 게시판 대기 KPI — 사이드바 배지와 동일 집계(환불·정정 대기 / 문의 답변 대기)
+  const boardBadges = DataStore.badges();
+
   return (
     <>
       <div className="panel-head">
@@ -816,6 +819,8 @@ function DashboardPanel() {
         <Kpi color="var(--st-rejected)"  label="반려"         val={cnt.rejected} hint=""/>
         <Kpi color="var(--st-cancel)"    label="취소"         val={cnt.cancel}   hint=""/>
         <Kpi color="var(--st-number)"    label="수험번호 부여" val={cnt.exam}     hint="13자리 채번 완료"/>
+        <Kpi color="var(--st-rejected)"  label="환불·정정 대기" val={boardBadges.refundNew}  hint="답변 대기"/>
+        <Kpi color="var(--st-photo)"     label="문의 답변 대기" val={boardBadges.inquiryWait} hint="미답변"/>
       </div>
 
       {/* Two-column row */}

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>내정보 수정 — TOPIK Myanmar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+Myanmar:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--red:#CD2E3A;--navy:#003478;--gold:#C8963E;--gray-bg:#f4f6f9;--gray-light:#e8ecf0;--gray-text:#6b7280;--shadow:0 2px 12px rgba(0,0,0,0.08);}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--gray-bg);color:#1a1a2e;}
+    svg.icon{display:inline-block;vertical-align:middle;flex-shrink:0;}
+    header{background:var(--navy);position:sticky;top:0;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+    .header-main{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;max-width:1200px;margin:0 auto;}
+    .logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
+    .logo-text .main{font-size:18px;font-weight:700;color:white;}
+    .logo-text .sub{font-size:11px;color:#aab8cc;}
+    nav{display:flex;gap:2px;}
+    nav a{color:#dce8f5;text-decoration:none;padding:8px 13px;border-radius:6px;font-size:13.5px;font-weight:500;transition:all .2s;display:flex;align-items:center;gap:6px;}
+    nav a:hover,nav a.active{background:rgba(255,255,255,0.12);color:white;}
+    .header-actions{display:flex;gap:8px;}
+    .btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-family:inherit;}
+    .btn-outline{border:1.5px solid #aab8cc;color:#dce8f5;background:transparent;}
+    .btn-outline:hover{border-color:white;color:white;}
+    .page-hero{background:linear-gradient(135deg,var(--navy),#002060);color:white;padding:40px 24px;}
+    .page-hero-inner{max-width:720px;margin:0 auto;}
+    .breadcrumb{font-size:12px;color:#aab8cc;margin-bottom:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+    .breadcrumb a{color:#aab8cc;text-decoration:none;}
+    .page-hero h1{font-size:clamp(20px,3.5vw,28px);font-weight:700;display:flex;align-items:center;gap:10px;}
+    .page-hero .lead{font-size:13px;color:#c5d4e8;margin-top:8px;line-height:1.55;max-width:560px;}
+    .content{max-width:720px;margin:0 auto;padding:28px 24px 48px;}
+    .profile-card{background:white;border-radius:12px;box-shadow:var(--shadow);padding:24px;margin-bottom:20px;border:1px solid #dbe4f0;}
+    .profile-card h2{font-size:16px;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--gray-light);}
+    .profile-note{font-size:12px;color:#475569;line-height:1.6;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 12px;margin-bottom:16px;}
+    .profile-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;}
+    .profile-form-grid label{font-size:12px;font-weight:700;color:var(--navy);display:block;margin-bottom:5px;}
+    .profile-form-grid input,.profile-form-grid select{width:100%;padding:10px 12px;border:1.5px solid var(--gray-light);border-radius:8px;font-family:inherit;font-size:13px;background:#fff;}
+    .profile-form-grid input:focus,.profile-form-grid select:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(0,52,120,0.08);}
+    .profile-form-grid input.error{border-color:var(--red);}
+    .profile-form-actions{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;}
+    .profile-photo-row{display:flex;align-items:flex-start;gap:14px;margin-top:14px;flex-wrap:wrap;}
+    .profile-photo-thumb{width:96px;height:124px;border:1.5px solid var(--gray-light);border-radius:8px;background:#f8fafc;object-fit:cover;}
+    .profile-check-row{margin-top:14px;padding:12px 14px;background:#f8fafc;border:1px solid var(--gray-light);border-radius:10px;}
+    .profile-check-row label{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:#334155;cursor:pointer;line-height:1.5;}
+    .profile-check-row input{margin-top:3px;flex-shrink:0;accent-color:var(--navy);}
+    .pw-change-banner{display:none;margin-bottom:16px;padding:12px 14px;background:#fff8e1;border:1px solid #fde68a;border-radius:10px;font-size:12.5px;color:#92400e;line-height:1.6;}
+    .pw-change-banner.is-visible{display:block;}
+    .google-pw-note{padding:14px;background:#f0f4ff;border:1px solid #bfdbfe;border-radius:10px;font-size:13px;color:#1e3a5f;line-height:1.6;margin-bottom:12px;}
+    .btn-admit{padding:10px 18px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+    .btn-admit:hover{background:#002060;}
+    .btn-cancel{padding:10px 16px;background:white;color:var(--red);border:1.5px solid var(--red);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+    .btn-ghost{padding:10px 16px;background:white;color:var(--navy);border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .btn-ghost:hover{background:#f8fafc;}
+    .pw-field-wrap{position:relative;}
+    .pw-field-wrap input{padding-right:40px;}
+    .pw-toggle-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;padding:4px;cursor:pointer;color:var(--gray-text);display:flex;}
+    .pw-strength{margin-top:8px;}
+    .pw-strength-track{height:4px;background:var(--gray-light);border-radius:4px;overflow:hidden;}
+    .pw-strength-bar{height:100%;width:0;border-radius:4px;transition:width .25s,background .25s;}
+    .pw-strength-bar.weak{background:#ef4444;}
+    .pw-strength-bar.medium{background:#f59e0b;}
+    .pw-strength-bar.strong{background:#10b981;}
+    .pw-strength-label{font-size:11px;color:var(--gray-text);margin-top:4px;min-height:16px;}
+    .pw-hint{font-size:11px;color:var(--gray-text);margin-top:6px;line-height:1.5;}
+    .error-inline{font-size:12px;color:var(--red);margin-top:4px;display:none;}
+    .error-inline.show{display:block;}
+    .danger-zone{margin-top:8px;padding:18px;border:1px solid #fecaca;border-radius:10px;background:#fff5f5;}
+    .danger-zone h2{font-size:15px;color:#b91c1c;border:none;padding:0;margin:0 0 8px;}
+    .danger-zone p{font-size:12px;color:#6b7280;line-height:1.6;}
+  </style>
+  <link rel="stylesheet" href="css/mobile.css?v=20260510"/>
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <symbol id="ic-mypage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="ic-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="ic-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></symbol>
+    <symbol id="ic-email" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></symbol>
+    <symbol id="ic-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></symbol>
+    <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></symbol>
+    <symbol id="ic-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="ic-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></symbol>
+    <symbol id="ic-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></symbol>
+    <symbol id="ic-arrow-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></symbol>
+    <symbol id="ic-topik-logo" viewBox="0 0 44 44"><rect width="44" height="44" rx="8" fill="#CD2E3A"/><text x="22" y="17" text-anchor="middle" fill="white" font-size="9" font-weight="700" font-family="sans-serif">TOPIK</text><line x1="8" y1="21" x2="36" y2="21" stroke="white" stroke-width="1.2" opacity="0.5"/><text x="22" y="33" text-anchor="middle" fill="white" font-size="8" font-weight="600" font-family="sans-serif">MYANMAR</text></symbol>
+  </svg>
+</head>
+<body>
+
+<header>
+  <div class="header-main">
+    <div class="header-main-bg" aria-hidden="true"></div>
+    <a href="index.html" class="logo">
+      <svg width="44" height="44"><use href="#ic-topik-logo"/></svg>
+      <div class="logo-text"><div class="main">TOPIK Myanmar</div><div class="sub">တိုပစ် မြန်မာ</div></div>
+    </a>
+    <nav id="mainNav">
+      <a href="mypage.html" class="active"><svg class="icon" width="15" height="15"><use href="#ic-mypage"/></svg><span data-i18n="nav_mypage">접수 확인</span></a>
+    </nav>
+    <div class="header-actions">
+      <a href="login.html" class="btn btn-outline"><svg class="icon" width="14" height="14"><use href="#ic-mypage"/></svg><span data-i18n="nav_logout">로그아웃</span></a>
+    </div>
+  </div>
+</header>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="breadcrumb">
+      <a href="index.html">홈</a> › <a href="mypage.html">접수 확인</a> › 내정보 수정
+    </div>
+    <h1><svg class="icon" width="24" height="24" color="#fff"><use href="#ic-user"/></svg>내정보 수정</h1>
+    <p class="lead">연락처·이메일·비밀번호·증명사진·성명·생년월일 등 가입 정보를 직접 수정할 수 있습니다. 변경 내용은 진행 중인 접수 건에도 반영됩니다.</p>
+  </div>
+</div>
+
+<div class="content">
+
+  <div id="pwChangeBanner" class="pw-change-banner" role="status">
+    <strong>비밀번호 변경 권고</strong> — 마지막 변경일 기준 6개월이 경과했습니다. 계정 보안 및 대리접수 방지를 위해 비밀번호를 변경해 주세요.
+  </div>
+
+  <section class="profile-card" aria-labelledby="profileBasicTitle">
+    <h2 id="profileBasicTitle"><svg class="icon" width="16" height="16"><use href="#ic-user"/></svg>기본정보</h2>
+    <p class="profile-note">한글·영문 성명, 생년월일, 성별, 국적은 내정보수정에서 직접 변경할 수 있으며, BO 접수자 정보에도 자동 반영됩니다.</p>
+    <div class="profile-form-grid">
+      <div><label for="pfNameKo">한글 성명</label><input type="text" id="pfNameKo" autocomplete="name"/></div>
+      <div><label for="pfNameEn">영문 성명</label><input type="text" id="pfNameEn" autocomplete="off"/></div>
+      <div><label for="pfBirth">생년월일</label><input type="date" id="pfBirth" autocomplete="bday"/></div>
+      <div><label for="pfGender">성별</label><select id="pfGender"><option value="M">남성</option><option value="F">여성</option></select></div>
+      <div><label for="pfNationality">국적</label><select id="pfNationality"><option value="MM">미얀마 (Myanmar)</option><option value="KR">대한민국 (Korea)</option><option value="OTHER">기타 (Other)</option></select></div>
+      <div><label for="pfFirstLang">제1언어</label><select id="pfFirstLang"><option value="MM">버마어 (Myanmar)</option><option value="KO">한국어 (Korean)</option><option value="EN">영어 (English)</option><option value="OTHER">기타</option></select></div>
+      <div><label for="pfPhone">연락처</label><input type="tel" id="pfPhone" autocomplete="tel"/></div>
+      <div><label for="pfEmail">이메일 (로그인 ID)</label><input type="email" id="pfEmail" autocomplete="email"/></div>
+      <div><label for="pfOccupation">직업</label><select id="pfOccupation"><option value="">선택</option><option value="1">학생</option><option value="2">공무원(군인)</option><option value="3">회사원</option><option value="4">자영업</option><option value="5">주부</option><option value="6">교사</option><option value="7">무직</option><option value="8">기타</option></select></div>
+      <div><label for="pfMotive">응시동기</label><select id="pfMotive"><option value="">선택</option><option value="1">방송</option><option value="2">신문</option><option value="3">잡지</option><option value="4">교육기관</option><option value="5">포스터</option><option value="6">친지</option><option value="7">친구</option><option value="8">인터넷</option><option value="9">TOPIK 홈페이지</option><option value="10">기타</option></select></div>
+      <div><label for="pfPurpose">응시목적</label><select id="pfPurpose"><option value="">선택</option><option value="1">유학</option><option value="2">취업</option><option value="3">관광</option><option value="4">학술연구</option><option value="5">한국어 실력 확인</option><option value="6">한국문화 이해</option><option value="7">기타</option><option value="8">비자/영주권</option><option value="9">학점취득</option><option value="10">사회통합프로그램</option></select></div>
+    </div>
+    <div class="profile-check-row">
+      <label for="pfMarketing">
+        <input type="checkbox" id="pfMarketing"/>
+        <span>마케팅·시험 안내 이메일 수신 동의 (선택)</span>
+      </label>
+    </div>
+    <div class="profile-photo-row">
+      <img class="profile-photo-thumb" id="pfPhotoPreview" alt="등록된 증명사진"/>
+      <div>
+        <label for="pfPhoto" style="font-size:12px;font-weight:700;color:var(--navy);display:block;margin-bottom:6px;">증명사진 재등록</label>
+        <input type="file" id="pfPhoto" accept="image/jpeg,image/jpg"/>
+        <p class="pw-hint">JPG, 200KB~2MB. 변경 시 진행 중인 모든 접수 건에 즉시 반영되며 BO 사진 심사가 재실행됩니다.</p>
+      </div>
+    </div>
+    <div class="profile-form-actions">
+      <button type="button" class="btn-admit" id="btnSaveProfile"><svg class="icon" width="14" height="14"><use href="#ic-check"/></svg>기본정보 저장</button>
+      <a href="mypage.html" class="btn-ghost"><svg class="icon" width="14" height="14"><use href="#ic-arrow-l"/></svg>접수 확인으로</a>
+    </div>
+  </section>
+
+  <section class="profile-card" id="pwChangeSection" aria-labelledby="profilePwTitle">
+    <h2 id="profilePwTitle"><svg class="icon" width="16" height="16"><use href="#ic-lock"/></svg>비밀번호 변경</h2>
+    <div id="googlePwNote" class="google-pw-note" style="display:none;">
+      이 계정은 <strong>Google 간편가입</strong>으로 가입되었습니다. 비밀번호는 Google에서 관리하므로 이 화면에서 변경할 수 없습니다.
+    </div>
+    <div id="pwChangeForm">
+      <p class="pw-hint">8자 이상, 영문·숫자·특수문자를 각각 포함해 주세요. 6개월마다 변경을 권장합니다.</p>
+      <div class="profile-form-grid" style="margin-top:12px;">
+        <div>
+          <label for="pfPwCurrent">현재 비밀번호</label>
+          <div class="pw-field-wrap">
+            <input type="password" id="pfPwCurrent" placeholder="현재 비밀번호" autocomplete="current-password"/>
+            <button type="button" class="pw-toggle-btn" data-pw-toggle="pfPwCurrent" aria-label="비밀번호 표시"><svg class="icon" width="16" height="16"><use href="#ic-eye"/></svg></button>
+          </div>
+        </div>
+        <div>
+          <label for="pfPwNew">새 비밀번호</label>
+          <div class="pw-field-wrap">
+            <input type="password" id="pfPwNew" placeholder="영문+숫자+특수문자 8자 이상" autocomplete="new-password"/>
+            <button type="button" class="pw-toggle-btn" data-pw-toggle="pfPwNew" aria-label="비밀번호 표시"><svg class="icon" width="16" height="16"><use href="#ic-eye"/></svg></button>
+          </div>
+          <div class="pw-strength"><div class="pw-strength-track"><div class="pw-strength-bar" id="pfPwStrengthBar"></div></div><div class="pw-strength-label" id="pfPwStrengthLabel"></div></div>
+          <div class="error-inline" id="errPfPwNew"></div>
+        </div>
+        <div>
+          <label for="pfPwConfirm">새 비밀번호 확인</label>
+          <div class="pw-field-wrap">
+            <input type="password" id="pfPwConfirm" placeholder="새 비밀번호 재입력" autocomplete="new-password"/>
+            <button type="button" class="pw-toggle-btn" data-pw-toggle="pfPwConfirm" aria-label="비밀번호 표시"><svg class="icon" width="16" height="16"><use href="#ic-eye"/></svg></button>
+          </div>
+          <div class="error-inline" id="errPfPwConfirm"></div>
+        </div>
+      </div>
+      <div class="profile-form-actions">
+        <button type="button" class="btn-admit" id="btnChangePw"><svg class="icon" width="14" height="14"><use href="#ic-lock"/></svg>비밀번호 변경</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="profile-card danger-zone">
+    <h2><svg class="icon" width="15" height="15"><use href="#ic-trash"/></svg>회원 탈퇴</h2>
+    <p>탈퇴 시 진행 중인 접수 내역이 모두 취소됩니다. 탈퇴 후에는 계정·접수 정보를 복구할 수 없습니다.</p>
+    <div class="profile-form-actions" style="margin-top:12px;">
+      <button type="button" class="btn-cancel" id="btnWithdraw"><svg class="icon" width="14" height="14"><use href="#ic-trash"/></svg>회원 탈퇴하기</button>
+    </div>
+  </section>
+
+</div>
+
+<script src="js/i18n.js?v=20260506"></script>
+<script src="js/profile-store.js"></script>
+<script src="js/account-password.js"></script>
+<script src="js/fo-nav.js"></script>
+<script src="js/fo-footer.js"></script>
+<script src="js/mobile-nav.js?v=20260506" defer></script>
+<script>
+(function(){
+  var PW_CHANGE_INTERVAL_MS=183*24*60*60*1000;
+  var PROFILE_RESYNC_KEY='tm_profile_photo_resync_v1';
+  var pendingProfilePhoto=null;
+
+  var REGLIST_KEY='topik_mm_reglist_v1';
+  function setVal(id,val){var el=document.getElementById(id);if(el)el.value=val||'';}
+  /* 0527 — 내정보 수정/사진 변경 시 진행 중 접수 건(reglist)에도 즉시 반영.
+     photoChanged=true 이면 해당 건들의 사진심사 상태를 미심사로 되돌려 BO 사진 심사 재실행을 유도. */
+  function syncReglistFromProfile(profile,photoDataUrl,photoChanged){
+    try{
+      var arr=JSON.parse(localStorage.getItem(REGLIST_KEY)||'[]');
+      if(!Array.isArray(arr)||!arr.length)return 0;
+      var email=(profile.email||'').toLowerCase();
+      var touched=0;
+      arr.forEach(function(r){
+        if(!r)return;
+        /* 본인 접수 건만(이메일 매칭). 종료/취소/반려 건은 건드리지 않음 */
+        var owns=!email||!r.email||String(r.email).toLowerCase()===email;
+        if(!owns)return;
+        if(r.status==='cancelled'||r.status==='rejected')return;
+        r.nameKo=profile.nameKo||profile.nameKr||r.nameKo;
+        r.nameEn=profile.nameEn||r.nameEn;
+        if(profile.birthdate)r.birth=String(profile.birthdate).replace(/-/g,'').slice(0,8)||r.birth;
+        r.gender=profile.gender||r.gender;
+        if(photoChanged&&photoDataUrl){
+          r.photo=photoDataUrl;
+          r.photoStatus='unreviewed';
+          if(r.status==='approved'||r.status==='exam-numbered')r.status='review';
+        }
+        touched++;
+      });
+      if(touched){
+        localStorage.setItem(REGLIST_KEY,JSON.stringify(arr));
+      }
+      return touched;
+    }catch(e){return 0;}
+  }
+  function normalizeDateInput(value){
+    var s=String(value||'').trim();
+    if(/^\d{8}$/.test(s))return s.slice(0,4)+'-'+s.slice(4,6)+'-'+s.slice(6,8);
+    if(/^\d{4}[./-]\d{2}[./-]\d{2}$/.test(s))return s.replace(/[./]/g,'-');
+    return '';
+  }
+  function showInlineErr(id,msg){
+    var el=document.getElementById(id);
+    if(!el)return;
+    el.textContent=msg||'';
+    el.classList.toggle('show',!!msg);
+  }
+
+  function updatePwChangeBanner(){
+    var banner=document.getElementById('pwChangeBanner');
+    if(!banner)return;
+    var prof=window.TMProfile&&TMProfile.load&&TMProfile.load();
+    if(!prof||prof.googleSignup){banner.classList.remove('is-visible');return;}
+    var ref=prof.pwChangedAt||prof.savedAt||'';
+    if(!ref){banner.classList.add('is-visible');return;}
+    banner.classList.toggle('is-visible',Date.now()-new Date(ref).getTime()>=PW_CHANGE_INTERVAL_MS);
+  }
+
+  function syncGooglePwUi(){
+    var prof=window.TMProfile&&TMProfile.load&&TMProfile.load();
+    var isGoogle=!!(prof&&prof.googleSignup);
+    var note=document.getElementById('googlePwNote');
+    var form=document.getElementById('pwChangeForm');
+    if(note)note.style.display=isGoogle?'block':'none';
+    if(form)form.style.display=isGoogle?'none':'block';
+  }
+
+  function loadProfileForm(){
+    var profile=(window.TMProfile&&TMProfile.load&&TMProfile.load())||{
+      nameKr:'홍길동',nameEn:'HONG GILDONG',birthdate:'1990-01-01',gender:'M',
+      nationality:'MM',firstLang:'MM',phone:'+95-9-1234567',email:'hong@example.com',
+      occupation:'',motive:'',purpose:'',marketingConsent:false
+    };
+    setVal('pfNameKo',profile.nameKo||profile.nameKr||'');
+    setVal('pfNameEn',profile.nameEn||'');
+    setVal('pfBirth',normalizeDateInput(profile.birthdate||profile.birth||'')||'1990-01-01');
+    setVal('pfGender',profile.gender||'M');
+    setVal('pfNationality',profile.nationality||'MM');
+    setVal('pfFirstLang',profile.firstLang||'MM');
+    setVal('pfPhone',profile.phone||'');
+    setVal('pfEmail',profile.email||'');
+    setVal('pfOccupation',profile.occupation||'');
+    setVal('pfMotive',profile.motive||'');
+    setVal('pfPurpose',profile.purpose||'');
+    var m=document.getElementById('pfMarketing');
+    if(m)m.checked=!!profile.marketingConsent;
+    var img=document.getElementById('pfPhotoPreview');
+    var photo=window.TMProfile&&TMProfile.loadSignupPhoto&&TMProfile.loadSignupPhoto();
+    if(img){
+      if(photo){img.src=photo;img.style.display='block';}
+      else if(window.TMProfile&&TMProfile.getDefaultPhoto){
+        img.src=TMProfile.getDefaultPhoto();
+        img.style.display='block';
+      }else{img.removeAttribute('src');img.style.display='none';}
+    }
+    updatePwChangeBanner();
+    syncGooglePwUi();
+  }
+
+  function previewProfilePhoto(ev){
+    var file=ev&&ev.target&&ev.target.files&&ev.target.files[0];
+    if(!file)return;
+    if(!/jpe?g$/i.test(file.name||'')&&!/^image\/jpeg$/i.test(file.type||'')){
+      alert('증명사진은 JPG 파일을 권장합니다.');
+      ev.target.value='';
+      return;
+    }
+    var reader=new FileReader();
+    reader.onload=function(){
+      pendingProfilePhoto=String(reader.result||'');
+      var img=document.getElementById('pfPhotoPreview');
+      if(img){img.src=pendingProfilePhoto;img.style.display='block';}
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function saveProfileEdit(){
+    if(!window.TMProfile){alert('프로필 저장 모듈을 불러오지 못했습니다.');return;}
+    var nameKo=document.getElementById('pfNameKo').value.trim();
+    var nameEn=document.getElementById('pfNameEn').value.trim();
+    var birth=document.getElementById('pfBirth').value;
+    var phone=document.getElementById('pfPhone').value.trim();
+    var email=document.getElementById('pfEmail').value.trim();
+    if(!nameKo){alert('한글 성명을 입력해 주세요.');return;}
+    if(!nameEn){alert('영문 성명을 입력해 주세요.');return;}
+    if(!birth){alert('생년월일을 입력해 주세요.');return;}
+    if(!phone){alert('연락처를 입력해 주세요.');return;}
+    if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){alert('유효한 이메일 주소를 입력해 주세요.');return;}
+    var profile=TMProfile.load()||{};
+    var prevEmail=(profile.email||'').toLowerCase();
+    if(email.toLowerCase()!==prevEmail){
+      if(!confirm('이메일(로그인 ID)을 변경하면 다음 로그인부터 새 이메일을 사용합니다.\n계속하시겠습니까?'))return;
+    }
+    profile.nameKo=nameKo;profile.nameKr=nameKo;profile.nameEn=nameEn;
+    profile.birthdate=birth;
+    profile.gender=document.getElementById('pfGender').value;
+    profile.nationality=document.getElementById('pfNationality').value;
+    profile.firstLang=document.getElementById('pfFirstLang').value;
+    profile.phone=phone;profile.email=email;
+    profile.occupation=document.getElementById('pfOccupation').value;
+    profile.motive=document.getElementById('pfMotive').value;
+    profile.purpose=document.getElementById('pfPurpose').value;
+    profile.marketingConsent=!!(document.getElementById('pfMarketing')&&document.getElementById('pfMarketing').checked);
+    profile.updatedAt=new Date().toISOString();
+    TMProfile.save(profile);
+    var photoChanged=false;
+    var photoForSync=(window.TMProfile&&TMProfile.loadSignupPhoto&&TMProfile.loadSignupPhoto())||'';
+    if(pendingProfilePhoto&&TMProfile.saveSignupPhoto(pendingProfilePhoto)){
+      try{localStorage.setItem(PROFILE_RESYNC_KEY,JSON.stringify({at:new Date().toISOString(),status:'photo_review_pending'}));}catch(e){}
+      photoForSync=pendingProfilePhoto;
+      photoChanged=true;
+      pendingProfilePhoto=null;
+    }
+    /* 0527 — 진행 중 접수 건(reglist)에 성명·생년월일·성별·사진 동시 반영(사진 변경 시 사진심사 재실행) */
+    var synced=syncReglistFromProfile(profile,photoForSync,photoChanged);
+    var msg='내정보가 저장되었습니다.';
+    if(synced>0){
+      msg+='\n진행 중인 접수 '+synced+'건에도 변경 내용이 반영되었습니다.';
+      if(photoChanged)msg+='\n사진이 변경되어 해당 접수 건은 사진 심사가 재실행됩니다.';
+    }
+    alert(msg);
+  }
+
+  function changePw(){
+    var cur=document.getElementById('pfPwCurrent');
+    var nw=document.getElementById('pfPwNew');
+    var cf=document.getElementById('pfPwConfirm');
+    var apw=window.TMAccountPw;
+    showInlineErr('errPfPwNew','');showInlineErr('errPfPwConfirm','');
+    if(!cur.value.trim()){alert('현재 비밀번호를 입력해 주세요.');return;}
+    if(!apw.isValid(nw.value)){
+      showInlineErr('errPfPwNew',apw.MSG);
+      nw.classList.add('error');
+      return;
+    }
+    nw.classList.remove('error');
+    if(nw.value!==cf.value){
+      showInlineErr('errPfPwConfirm','비밀번호가 일치하지 않습니다.');
+      return;
+    }
+    var prof=window.TMProfile&&TMProfile.load();
+    if(!prof){alert('저장된 회원 정보가 없습니다.');return;}
+    if(prof.googleSignup){alert('구글 간편가입 계정은 비밀번호를 변경할 수 없습니다.');return;}
+    if(prof.password&&prof.password!==cur.value){
+      alert('현재 비밀번호가 일치하지 않습니다.');
+      return;
+    }
+    prof.password=nw.value;
+    prof.pwChangedAt=new Date().toISOString();
+    TMProfile.save(prof);
+    cur.value='';nw.value='';cf.value='';
+    updatePwChangeBanner();
+    alert('비밀번호가 변경되었습니다.');
+  }
+
+  function doWithdraw(){
+    if(!confirm('탈퇴 시 진행 중인 접수 내역이 모두 취소됩니다.\n\n정말 탈퇴하시겠습니까?'))return;
+    var double=prompt('탈퇴를 확인하려면 "탈퇴합니다"를 입력하세요.');
+    if(double!=='탈퇴합니다'){alert('탈퇴가 취소되었습니다.');return;}
+    try{
+      /* 0526 — 탈퇴 시 진행 중인 접수 자동 취소(BO 접수자 목록에서 '취소됨'으로 반영) */
+      var prof=window.TMProfile&&TMProfile.load&&TMProfile.load();
+      var email=(prof&&prof.email||'').toLowerCase();
+      var arr=JSON.parse(localStorage.getItem(REGLIST_KEY)||'[]');
+      if(Array.isArray(arr)){
+        arr.forEach(function(r){
+          if(!r)return;
+          var owns=!email||!r.email||String(r.email).toLowerCase()===email;
+          if(owns&&r.status!=='cancelled'){
+            r.status='cancelled';r.cancelable=false;r.cancelReason='회원 탈퇴로 인한 자동 취소';r.cancelDate=new Date().toISOString().slice(0,10);
+          }
+        });
+        localStorage.setItem(REGLIST_KEY,JSON.stringify(arr));
+      }
+      if(window.TMProfile){TMProfile.clear();}
+      localStorage.removeItem('tm_session');
+    }catch(e){}
+    alert('탈퇴 처리가 완료되었습니다. 진행 중이던 접수 내역은 모두 취소되었습니다.');
+    window.location.href='index.html';
+  }
+
+  document.addEventListener('DOMContentLoaded',function(){
+    if(window.TMI18N)TMI18N.boot();
+    loadProfileForm();
+    document.getElementById('pfPhoto').addEventListener('change',previewProfilePhoto);
+    document.getElementById('btnSaveProfile').addEventListener('click',saveProfileEdit);
+    document.getElementById('btnChangePw').addEventListener('click',changePw);
+    document.getElementById('btnWithdraw').addEventListener('click',doWithdraw);
+    document.querySelectorAll('[data-pw-toggle]').forEach(function(btn){
+      var id=btn.getAttribute('data-pw-toggle');
+      if(window.TMAccountPw)TMAccountPw.bindToggle(btn,document.getElementById(id));
+    });
+    if(window.TMAccountPw){
+      TMAccountPw.bindStrengthMeter(document.getElementById('pfPwNew'),document.getElementById('pfPwStrengthBar'),document.getElementById('pfPwStrengthLabel'));
+    }
+    var qs=new URLSearchParams(location.search);
+    if(qs.get('tab')==='password'){
+      var sec=document.getElementById('pwChangeSection');
+      if(sec)sec.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+  });
+})();
+</script>
+</body>
+</html>

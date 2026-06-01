@@ -9,6 +9,37 @@
   var STORE_ORIG = 'data-i18n-orig';
 
   var T = {
+    /* ── 푸터 (TPKM_FO_0_2_0_0_0_C) ── */
+    'foot.org_sub': {
+      ko: 'Embassy of the Republic of Korea in Myanmar',
+      my: 'Embassy of the Republic of Korea in Myanmar',
+      en: 'Embassy of the Republic of Korea in Myanmar'
+    },
+    'foot.desc': {
+      ko: '한국어능력시험(TOPIK) 미얀마 시행 공식 안내·접수 사이트입니다.<br>운영기관 <strong>주미얀마 대한민국 대사관</strong>',
+      my: 'TOPIK မြန်မာ တရားဝင် အချက်အလက်·လျှောက်လွှာဆိုဒ်။<br>ကျင်းပရေး <strong>မြန်မာနိုင်ငံရှိ ကorea သံရုံး</strong>',
+      en: 'Official TOPIK Myanmar information and registration site.<br>Operated by the <strong>Embassy of the Republic of Korea in Myanmar</strong>'
+    },
+    'foot.org_line': {
+      ko: '운영기관 주미얀마 대한민국 대사관',
+      my: 'ကျင်းပရေး — မြန်မာနိုင်ငံရှိ Korea သံရုံး',
+      en: 'Operated by the Embassy of the Republic of Korea in Myanmar'
+    },
+    'foot.menu': { ko: '바로가기', my: 'အမြန်လင့်များ', en: 'Quick links' },
+    'foot.ext': { ko: '외부 링크', my: 'ပြင်ပလင့်များ', en: 'External links' },
+    'foot.mofa': { ko: '재외공관 안내', my: 'နိုင်ငံခြားသံရုံး', en: 'Overseas missions' },
+    'foot.privacy': { ko: '개인정보처리방침', my: 'ကိုယ်ရေးအချက်အလက်', en: 'Privacy policy' },
+    'foot.terms': { ko: '이용약관', my: 'အသုံးပြုမှု', en: 'Terms of use' },
+    'foot.contact': {
+      ko: '<strong>문의</strong><br>topik.myanmar@mofa.go.kr<br>업무시간 월–금 09:00–17:00 (UTC+6:30)',
+      my: '<strong>ဆက်သွယ်ရန်</strong><br>topik.myanmar@mofa.go.kr<br>တနင်္လ–သောကြ 09:00–17:00 (UTC+6:30)',
+      en: '<strong>Contact</strong><br>topik.myanmar@mofa.go.kr<br>Mon–Fri 09:00–17:00 (UTC+6:30)'
+    },
+    'foot.copy': {
+      ko: '© 2025–2026 Embassy of the Republic of Korea in Myanmar. All rights reserved.',
+      my: '© 2025–2026 Embassy of the Republic of Korea in Myanmar. All rights reserved.',
+      en: '© 2025–2026 Embassy of the Republic of Korea in Myanmar. All rights reserved.'
+    },
     /* ── 공통 ── */
     'reg.title': {
       ko: '시험 접수',

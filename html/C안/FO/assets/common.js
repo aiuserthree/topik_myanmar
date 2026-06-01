@@ -76,16 +76,20 @@
     'qna.html': 'sub.board_qna', 'faq.html': 'sub.board_faq'
   };
 
+  function applyLangUI(lang) {
+    const l = lang || Lang.get();
+    document.documentElement.setAttribute('data-lang', l);
+    document.querySelectorAll('.lang-toggle button').forEach(b => {
+      b.classList.toggle('active', b.dataset.lang === l);
+    });
+  }
+
   const Lang = {
     get() { return localStorage.getItem('tpkm_lang') || 'KO'; },
     set(l) {
       localStorage.setItem('tpkm_lang', l);
-      document.documentElement.setAttribute('data-lang', l);
-      document.querySelectorAll('.lang-toggle button').forEach(b => {
-        b.classList.toggle('active', b.dataset.lang === l);
-      });
+      applyLangUI(l);
       if (window.TOPIKPageI18n) TOPIKPageI18n.apply(l);
-      if (typeof window.__tpkmRebuildNav === 'function') window.__tpkmRebuildNav();
     },
     t(key) {
       if (window.TOPIKPageI18n) return TOPIKPageI18n.text(key, Lang.get()) || null;
@@ -243,7 +247,7 @@
     document.querySelectorAll('.lang-toggle button').forEach(b => {
       b.addEventListener('click', () => Lang.set(b.dataset.lang));
     });
-    Lang.set(Lang.get());
+    applyLangUI(Lang.get());
 
     // Logout
     const onLogout = () => {
@@ -286,27 +290,45 @@
     `;
   }
 
-  // ---- Footer ----
+  // ---- Footer (TPKM_FO_0_2_0_0_0_C) ----
   function buildFooter() {
     const wrap = document.querySelector('#site-footer');
     if (!wrap) return;
-    wrap.innerHTML = `
-      <footer class="footer">
+    const compact = document.body.hasAttribute('data-footer-compact');
+    wrap.innerHTML = compact ? `
+      <footer class="footer footer-compact" role="contentinfo">
+        <div class="container">
+          <p class="meta" data-i18n-content="foot.org_line">
+            운영기관 <strong>주미얀마 대한민국 대사관</strong>
+          </p>
+          <div class="ft-policy">
+            <a href="#" onclick="alert('개인정보처리방침은 별도 페이지로 제공됩니다.');return false;" data-i18n-content="foot.privacy">개인정보처리방침</a>
+            <a href="rules-notice.html" data-i18n-content="foot.terms">이용약관</a>
+          </div>
+          <p class="copy" data-i18n-content="foot.copy">© 2025–2026 Embassy of the Republic of Korea in Myanmar. All rights reserved.</p>
+        </div>
+      </footer>
+    ` : `
+      <footer class="footer" role="contentinfo">
         <div class="container">
           <div class="ft-top">
-            <div>
+            <div class="ft-brand-col">
               <div class="brand">
                 TOPIK Myanmar
-                <small>Embassy of the Republic of Korea in Myanmar</small>
+                <small data-i18n-content="foot.org_sub">Embassy of the Republic of Korea in Myanmar</small>
               </div>
-              <p class="meta" style="margin-top:12px;">
-                한국어능력시험(TOPIK) 미얀마 시행 공식 안내·접수 사이트입니다.
+              <p class="meta" data-i18n-content="foot.desc" data-i18n-content-html>
+                한국어능력시험(TOPIK) 미얀마 시행 공식 안내·접수 사이트입니다.<br>
                 운영기관 <strong>주미얀마 대한민국 대사관</strong>
               </p>
+              <div class="ft-policy">
+                <a href="#" onclick="alert('개인정보처리방침은 별도 페이지로 제공됩니다.');return false;" data-i18n-content="foot.privacy">개인정보처리방침</a>
+                <a href="rules-notice.html" data-i18n-content="foot.terms">이용약관</a>
+              </div>
             </div>
             <div>
-              <div style="color:#fff; font-weight:600; font-size:13px; margin-bottom:10px;">바로가기</div>
-              <div class="links" style="flex-direction:column; gap:8px;">
+              <div class="ft-col-ttl" data-i18n-content="foot.menu">바로가기</div>
+              <div class="links ft-links-col">
                 <a href="guide-overview.html">TOPIK 안내</a>
                 <a href="rules-notice.html">TOPIK 규정</a>
                 <a href="apply-howto.html">TOPIK 접수</a>
@@ -315,23 +337,24 @@
               </div>
             </div>
             <div>
-              <div style="color:#fff; font-weight:600; font-size:13px; margin-bottom:10px;">외부 링크</div>
-              <div class="links" style="flex-direction:column; gap:8px;">
+              <div class="ft-col-ttl" data-i18n-content="foot.ext">외부 링크</div>
+              <div class="links ft-links-col">
                 <a href="https://www.topik.go.kr" target="_blank" rel="noopener noreferrer">TOPIK 본부 (topik.go.kr)</a>
-                <a href="https://www.niied.go.kr" target="_blank" rel="noopener noreferrer">국립국제교육원 (NIIED)</a>
-                <a href="https://www.facebook.com/share/18VtSUtzTh/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">대사관 Facebook</a>
+                <a href="https://www.niied.go.kr" target="_blank" rel="noopener noreferrer">NIIED (niied.go.kr)</a>
+                <a href="https://overseas.mofa.go.kr/mm-ko/index.do" target="_blank" rel="noopener noreferrer" data-i18n-content="foot.mofa">재외공관 안내</a>
               </div>
-              <p class="meta" style="margin-top:16px;">
+              <p class="meta ft-contact" data-i18n-content="foot.contact" data-i18n-content-html>
                 <strong>문의</strong><br>
                 topik.myanmar@mofa.go.kr<br>
                 업무시간 월–금 09:00–17:00 (UTC+6:30)
               </p>
             </div>
           </div>
-          <p class="copy">© 2025–2026 Embassy of the Republic of Korea in Myanmar. All rights reserved.</p>
+          <p class="copy" data-i18n-content="foot.copy">© 2025–2026 Embassy of the Republic of Korea in Myanmar. All rights reserved.</p>
         </div>
       </footer>
     `;
+    if (window.TOPIKPageI18n) TOPIKPageI18n.apply(Lang.get());
   }
 
   // ---- Login guard ----

@@ -184,9 +184,7 @@
       <a href="register.html" class="active"><svg class="icon" width="15" height="15"><use href="#ic-register"/></svg><span data-i18n="nav_register">시험 접수</span></a>
       <a href="mypage.html"><svg class="icon" width="15" height="15"><use href="#ic-mypage"/></svg><span data-i18n="nav_mypage">접수 확인</span></a>
       <a href="notice.html"><svg class="icon" width="15" height="15"><use href="#ic-notice"/></svg><span data-i18n="nav_notice">공지사항</span></a>
-      <a href="faq.html"><svg class="icon" width="15" height="15"><use href="#ic-info"/></svg><span data-i18n="nav_faq">FAQ</span></a>
-      <a href="lookup.html"><svg class="icon" width="15" height="15"><use href="#ic-search"/></svg><span data-i18n="nav_lookup">수험번호 조회</span></a>
-    </nav>
+      <a href="faq.html"><svg class="icon" width="15" height="15"><use href="#ic-info"/></svg><span data-i18n="nav_faq">FAQ</span></a>    </nav>
     <div class="header-actions">
       <div class="hdr-lang-pc lang-switch">
         <svg class="icon" width="13" height="13"><use href="#ic-globe"/></svg>
@@ -471,9 +469,9 @@
 <script>
   var NATIONALITY_MAP={'MM':'미얀마 (Myanmar)','KR':'대한민국','EN':'영어','OTHER':'기타'};
   var FIRST_LANG_MAP={'MM':'버마어(미얀마어)','KO':'한국어','EN':'영어','OTHER':'기타'};
-  var JOB_MAP={'1':'학생','2':'공무원(군인)','3':'회사원','4':'자영업','5':'주부','6':'교사','7':'무직','8':'기타'};
-  var MOTIVE_MAP={'1':'방송','2':'신문','3':'잡지','4':'교육기관','5':'포스터','6':'친지','7':'친구','8':'인터넷','9':'TOPIK 홈페이지','10':'기타'};
-  var PURPOSE_MAP={'1':'유학','2':'취업','3':'관광','4':'학술연구','5':'한국어 실력 확인','6':'한국문화 이해','7':'기타','8':'비자/영주권','9':'학점취득','10':'사회통합프로그램'};
+  var JOB_MAP={'1':'학생','2':'회사원','3':'공무원','4':'자영업','5':'전문직','6':'주부','7':'무직','8':'교사','9':'군인','10':'농업·어업','11':'기타','12':'미상'};
+  var MOTIVE_MAP={'1':'유학 및 진학','2':'취업 및 이민','3':'자격 취득','4':'개인적 관심','5':'학업 요건','6':'장학금 신청','7':'비자 발급','8':'기업 요구','9':'한국 문화 관심','10':'기타','11':'미상'};
+  var PURPOSE_MAP={'1':'대학 입학','2':'대학원 입학','3':'취업','4':'비자 발급','5':'장학금','6':'자격증','7':'개인 학습','8':'기업 요구','9':'유학','10':'이민','11':'한국어 교육','12':'연구','13':'교환학생','14':'기타','15':'미상'};
 
   function setROField(id,val){
     var el=document.getElementById(id);
@@ -637,8 +635,9 @@
     var stored=window.TMProfile&&TMProfile.loadSignupPhoto&&TMProfile.loadSignupPhoto();
     if(stored){
       applySignupPhotoDataUrl(stored);
+    } else if(window.TMProfile&&TMProfile.getDefaultPhoto){
+      applySignupPhotoDataUrl(TMProfile.getDefaultPhoto());
     } else {
-      // 사진 없는 경우 안내 텍스트만
       var img=document.getElementById('previewImg');
       if(img){img.src='';img.style.display='none';}
       var ic=document.getElementById('phIcon');if(ic)ic.style.display='';

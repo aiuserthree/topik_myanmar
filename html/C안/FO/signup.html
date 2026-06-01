@@ -111,7 +111,7 @@
   }
 </style>
 </head>
-<body>
+<body data-footer-compact>
 
 <div id="site-header"></div>
 
@@ -252,28 +252,38 @@
       <div class="row-2">
         <div class="form-row">
           <label class="label">직업 <span class="req">*</span></label>
-          <select class="select">
+          <select class="select" id="su-job">
             <option value="">선택</option>
-            <option>학생</option><option>회사원</option><option>공무원</option>
-            <option>교사</option><option>자영업</option><option>기타</option>
+            <option value="1">학생</option><option value="2">회사원</option><option value="3">공무원</option>
+            <option value="4">자영업</option><option value="5">전문직</option><option value="6">주부</option>
+            <option value="7">무직</option><option value="8">교사</option><option value="9">군인</option>
+            <option value="10">농업·어업</option><option value="11">기타</option><option value="12">미상</option>
           </select>
         </div>
         <div class="form-row">
           <label class="label">응시동기 <span class="req">*</span></label>
-          <select class="select">
+          <select class="select" id="su-motive">
             <option value="">선택</option>
-            <option>한국 유학</option><option>한국 취업</option><option>한국어 학습 평가</option>
-            <option>이민</option><option>기타</option>
+            <option value="1">유학 및 진학</option><option value="2">취업 및 이민</option>
+            <option value="3">자격 취득</option><option value="4">개인적 관심</option>
+            <option value="5">학업 요건</option><option value="6">장학금 신청</option>
+            <option value="7">비자 발급</option><option value="8">기업 요구</option>
+            <option value="9">한국 문화 관심</option><option value="10">기타</option><option value="11">미상</option>
           </select>
         </div>
       </div>
 
       <div class="form-row">
         <label class="label">응시목적 <span class="req">*</span></label>
-        <select class="select">
+        <select class="select" id="su-purpose">
           <option value="">선택</option>
-          <option>대학(원) 입학</option><option>취업·이직</option>
-          <option>EPS(고용허가제)</option><option>한국어 능력 측정</option><option>기타</option>
+          <option value="1">대학 입학</option><option value="2">대학원 입학</option>
+          <option value="3">취업</option><option value="4">비자 발급</option>
+          <option value="5">장학금</option><option value="6">자격증</option>
+          <option value="7">개인 학습</option><option value="8">기업 요구</option>
+          <option value="9">유학</option><option value="10">이민</option>
+          <option value="11">한국어 교육</option><option value="12">연구</option>
+          <option value="13">교환학생</option><option value="14">기타</option><option value="15">미상</option>
         </select>
       </div>
 
@@ -383,6 +393,9 @@
     zone: document.getElementById('signupPhotoZone'),
     placeholder: '사진<br>미리보기'
   });
+  if (signupPhotoCtrl && signupPhotoCtrl.setDataUrl) {
+    signupPhotoCtrl.setDataUrl('assets/dummy-portrait.jpg');
+  }
 
   // Step navigation
   const steps = document.querySelectorAll('.step-pane');

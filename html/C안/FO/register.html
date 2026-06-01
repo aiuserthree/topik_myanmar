@@ -163,7 +163,7 @@
   .form-actions .btn-secondary { flex: 0 0 auto; min-width: 100px; }
 </style>
 </head>
-<body data-require-login>
+<body data-require-login data-footer-compact>
 
 <div id="site-header"></div>
 
@@ -438,6 +438,17 @@
     const all = [...photoChecks].every(x => x.checked);
     document.getElementById('btnGoStep4').disabled = !all;
   }));
+
+  (function showDummyPortrait() {
+    const url = 'assets/dummy-portrait.jpg';
+    document.querySelectorAll('.photo-frame .pf').forEach((pf) => {
+      pf.classList.add('has-photo');
+      pf.style.padding = '0';
+      pf.style.overflow = 'hidden';
+      pf.innerHTML =
+        '<img src="' + url + '" alt="증명사진" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">';
+    });
+  })();
 
   // STEP 4 — summary
   function updateSummary() {

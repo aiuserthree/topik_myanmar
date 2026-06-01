@@ -47,7 +47,7 @@
   .danger-zone .btn { margin-top: 12px; }
 </style>
 </head>
-<body data-require-login>
+<body data-require-login data-footer-compact>
 
 <div id="site-header"></div>
 
@@ -207,6 +207,9 @@
     zone: document.getElementById('profilePhotoZone'),
     placeholder: '현재 사진'
   });
+  if (profilePhotoCtrl && profilePhotoCtrl.setDataUrl) {
+    profilePhotoCtrl.setDataUrl('assets/dummy-portrait.jpg');
+  }
 
   document.querySelectorAll('.profile-tabs button').forEach(b => {
     b.addEventListener('click', () => {

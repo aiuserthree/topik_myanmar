@@ -42,8 +42,33 @@
   pwToggle.addEventListener('click',function(){
     pwEl.type=pwEl.type==='text'?'password':'text';
   });
+
+  var idError=document.getElementById('idError');
+  var pwError=document.getElementById('pwError');
+  var loginError=document.getElementById('loginError');
+
+  function clearErrors(){
+    idEl.classList.remove('is-error');
+    pwEl.classList.remove('is-error');
+    idError.classList.remove('show');
+    pwError.classList.remove('show');
+    loginError.style.display='none';
+  }
+  idEl.addEventListener('input',function(){ idEl.classList.remove('is-error'); idError.classList.remove('show'); });
+  pwEl.addEventListener('input',function(){ pwEl.classList.remove('is-error'); pwError.classList.remove('show'); });
+
+  function validate(){
+    clearErrors();
+    var ok=true;
+    if(!idEl.value.trim()){ idEl.classList.add('is-error'); idError.classList.add('show'); ok=false; }
+    if(!pwEl.value){ pwEl.classList.add('is-error'); pwError.classList.add('show'); ok=false; }
+    return ok;
+  }
+
   form.addEventListener('submit',function(e){
     e.preventDefault();
+    if(checkLock()) return;
+    if(!validate()) return;
     doDemoLogin();
   });
 

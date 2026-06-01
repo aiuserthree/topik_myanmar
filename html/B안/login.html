@@ -333,6 +333,9 @@ input{font-family:inherit}
  <p class="auth-desc">TOPIK Myanmar 시험 접수 계정으로 로그인하세요</p>
  </div>
  <div class="auth-body">
+ <div class="alert-box alert-info" id="js-login-reset-ok" style="display:none">
+ 비밀번호가 변경되었습니다. 새 비밀번호로 로그인해 주세요.
+ </div>
  <div class="alert-box alert-error" id="js-login-error">
  이메일 또는 비밀번호가 올바르지 않습니다. 다시 확인해 주세요.
  </div>
@@ -410,7 +413,7 @@ input{font-family:inherit}
  <input type="tel" id="fi-tel" class="form-control" placeholder="+95 9 xxx xxxx">
  </div>
  <div class="form-group" style="margin-bottom:0;margin-top:14px">
- <label class="checkbox-label" style="font-size:12.5px;color:var(--neutral-500)">
+ <label class="checkbox-label demo-only" style="font-size:12.5px;color:var(--neutral-500)">
  <input type="checkbox" id="fi-google-demo"> 데모: 구글 간편가입 계정으로 조회
  </label>
  </div>
@@ -444,7 +447,7 @@ input{font-family:inherit}
  <input type="email" id="fp-email" class="form-control" placeholder="example@email.com">
  </div>
  <div class="form-group" style="margin-bottom:0;margin-top:14px">
- <label class="checkbox-label" style="font-size:12.5px;color:var(--neutral-500)">
+ <label class="checkbox-label demo-only" style="font-size:12.5px;color:var(--neutral-500)">
  <input type="checkbox" id="fp-google-demo"> 데모: 구글 간편가입 계정 (@gmail.com)
  </label>
  </div>
@@ -452,6 +455,7 @@ input{font-family:inherit}
  <div class="modal-result" id="find-pw-result">
  <p class="modal-result-note" style="margin:0"><strong style="color:var(--primary)">재설정 링크를 발송했습니다.</strong><br>
  <span id="find-pw-sent-email">example@email.com</span> 으로 발송된 메일의 링크를 통해 새 비밀번호를 설정해 주세요. 메일이 보이지 않으면 스팸함도 확인해 주세요. (유효시간 30분)</p>
+ <p class="modal-result-note demo-only" style="margin:12px 0 0;font-size:12px"><strong>데모</strong> — <a href="./password-reset.html?token=demo" id="find-pw-demo-link" style="color:var(--primary);font-weight:600">password-reset.html?token=demo</a></p>
  </div>
  <div class="modal-result" id="find-pw-result-google" style="background:#e8f0fe;border-color:rgba(26,115,232,.18)">
  <div class="google-badge">구글(Google) 계정으로 가입된 계정입니다</div>
@@ -574,6 +578,10 @@ document.getElementById('btn-find-id').addEventListener('click',function(){
  }
 });
 document.getElementById('btn-find-pw').addEventListener('click',function(){
+ if(document.getElementById('find-pw-result').classList.contains('is-show')||
+    document.getElementById('find-pw-result-google').classList.contains('is-show')){
+  TPKM.closeModal('modalFindPw');resetFindPw();return;
+ }
  var em=document.getElementById('fp-email').value.trim();
  if(!em||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){alert('유효한 이메일을 입력해 주세요.');return}
  var isGoogle=document.getElementById('fp-google-demo').checked||/@gmail\.com$/i.test(em);
@@ -585,8 +593,14 @@ document.getElementById('btn-find-pw').addEventListener('click',function(){
  }else{
   document.getElementById('find-pw-sent-email').textContent=em;
   document.getElementById('find-pw-result').classList.add('is-show');
+  this.textContent='재설정 화면 열기';
  }
 });
+if(new URLSearchParams(location.search).get('reset')==='ok'){
+ var ok=document.getElementById('js-login-reset-ok');
+ if(ok)ok.style.display='block';
+ try{history.replaceState({},'',location.pathname+location.hash);}catch(e){}
+}
 document.getElementById('fi-google-login').addEventListener('click',function(){
  TPKMAuth.login({name:'Google 사용자',email:'demo@gmail.com',provider:'google'});
  redirectAfterLogin();

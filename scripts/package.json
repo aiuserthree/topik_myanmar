@@ -1,0 +1,16 @@
+{
+  "name": "myanmar-html-export",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "jpg": "node html-to-jpg.mjs",
+    "jpg:mobile": "node html-to-jpg.mjs --mobile",
+    "jpg:both": "node html-to-jpg.mjs --both",
+    "jpg:watch": "node html-to-jpg.mjs --watch",
+    "jpg:watch:mobile": "node html-to-jpg.mjs --watch --mobile",
+    "jpg:watch:both": "node html-to-jpg.mjs --watch --both"
+  },
+  "dependencies": {
+    "puppeteer-core": "^24.2.0"
+  }
+}

@@ -14,15 +14,19 @@
  --neutral-300:#c8cdd8;--neutral-400:#9099aa;--neutral-500:#636b7a;
  --neutral-600:#464d5c;--neutral-700:#2d3340;--neutral-800:#1a1e28;
  --white:#ffffff;--success:#1a8c5b;--success-light:#eaf5f0;
+ --warn:#b45309;--warn-light:#fef3c7;
  --radius-sm:6px;--radius-md:10px;--radius-lg:16px;
- --shadow-md:0 4px 16px rgba(0,0,0,.10);
+ --shadow-sm:0 1px 4px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(0,0,0,.10);
  --font-base:'Noto Sans KR',sans-serif;--ease:cubic-bezier(.4,0,.2,1);
  --header-h:64px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-base);font-size:15px;color:var(--neutral-700);background:var(--white);line-height:1.6;padding-top:var(--header-h)}
-a{color:inherit;text-decoration:none}ul{list-style:none}
-button,input,select,textarea{font-family:inherit}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-base);font-size:15px;color:var(--neutral-700);
+ background:var(--white);line-height:1.6;padding-top:var(--header-h)}
+a{color:inherit;text-decoration:none}ul,ol{list-style:none}
+button,input,select,textarea{font-family:inherit;cursor:pointer}
+input,select,textarea{cursor:text}
 .gnb{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--white);border-bottom:1px solid var(--neutral-200);height:var(--header-h);display:flex;align-items:center}
 .gnb-inner{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:1100px;margin:0 auto;padding:0 20px;gap:12px}
 .gnb-logo{display:flex;align-items:center;gap:10px}
@@ -31,145 +35,195 @@ button,input,select,textarea{font-family:inherit}
 .gnb-logo-text span{font-size:10px;color:var(--neutral-500)}
 .gnb-nav{display:flex;gap:2px}
 .gnb-menu{position:relative}
-.gnb-menu-btn{display:flex;align-items:center;gap:4px;padding:8px 13px;font-size:14px;font-weight:500;color:var(--neutral-600);border-radius:var(--radius-sm);border:none;background:none;cursor:pointer}
-.gnb-menu-btn.is-active{color:var(--primary);background:var(--primary-light)}
-.gnb-dropdown{position:absolute;top:calc(100% + 8px);left:0;min-width:172px;background:var(--white);border:1px solid var(--neutral-200);border-radius:var(--radius-md);box-shadow:var(--shadow-md);opacity:0;visibility:hidden;z-index:200}
-.gnb-menu:hover .gnb-dropdown{opacity:1;visibility:visible}
+.gnb-menu-btn{display:flex;align-items:center;gap:4px;padding:8px 13px;font-size:14px;font-weight:500;color:var(--neutral-600);border-radius:var(--radius-sm);border:none;background:none}
+.gnb-menu-btn:hover,.gnb-menu-btn.is-active{color:var(--primary);background:var(--primary-light)}
+.gnb-menu-btn svg{width:14px;height:14px}
+.gnb-dropdown{position:absolute;top:calc(100% + 8px);left:0;min-width:172px;background:var(--white);border:1px solid var(--neutral-200);border-radius:var(--radius-md);box-shadow:var(--shadow-md);opacity:0;visibility:hidden;transform:translateY(-6px);transition:.18s var(--ease);z-index:200}
+.gnb-menu:hover .gnb-dropdown{opacity:1;visibility:visible;transform:translateY(0)}
 .gnb-dropdown a{display:block;padding:10px 16px;font-size:13.5px;color:var(--neutral-600)}
 .gnb-dropdown a:hover,.gnb-dropdown a.is-current{color:var(--primary);background:var(--primary-light)}
-.gnb-actions{display:flex;gap:8px}
-.lang-toggle{display:flex;border:1px solid var(--neutral-200);border-radius:20px;font-size:12px}
-.lang-toggle button{padding:4px 9px;border:none;background:none;cursor:pointer}
+.gnb-actions{display:flex;align-items:center;gap:8px}
+.lang-toggle{display:flex;border:1px solid var(--neutral-200);border-radius:20px;overflow:hidden;font-size:12px}
+.lang-toggle button{padding:4px 9px;color:var(--neutral-500);border:none;background:none}
 .lang-toggle button.is-active{background:var(--primary);color:var(--white)}
-.btn{display:inline-flex;align-items:center;padding:8px 16px;font-size:13px;font-weight:600;border-radius:var(--radius-sm);border:none;cursor:pointer}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;font-size:13px;font-weight:600;border-radius:var(--radius-sm);border:none;transition:.2s var(--ease)}
 .btn-ghost{color:var(--neutral-600);border:1px solid var(--neutral-200);background:transparent}
 .btn-solid{background:var(--primary);color:var(--white)}
-.gnb-hamburger{display:none;flex-direction:column;gap:5px;padding:8px;border:none;background:none}
-.gnb-hamburger span{width:22px;height:2px;background:var(--neutral-700)}
-.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.46);z-index:1999;opacity:0;visibility:hidden}
+.btn-solid:hover{background:var(--primary-dark)}
+.btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary)}
+.gnb-hamburger{display:none;flex-direction:column;gap:5px;padding:8px;background:none;border:none}
+.gnb-hamburger span{display:block;width:22px;height:2px;background:var(--neutral-700)}
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.46);z-index:1999;opacity:0;visibility:hidden;transition:.25s}
 .drawer-overlay.is-show{opacity:1;visibility:visible}
-.mobile-drawer{position:fixed;top:0;right:0;bottom:0;width:82%;max-width:320px;background:var(--white);z-index:2000;transform:translateX(100%);transition:.28s;display:flex;flex-direction:column}
+.mobile-drawer{position:fixed;top:0;right:0;bottom:0;width:82%;max-width:320px;background:var(--white);z-index:2000;transform:translateX(100%);transition:.28s;box-shadow:var(--shadow-md);display:flex;flex-direction:column}
 .mobile-drawer.is-open{transform:translateX(0)}
-.drawer-head{display:flex;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--neutral-100)}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--neutral-100)}
 .drawer-close-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--neutral-200);background:none}
-.drawer-link{display:block;padding:10px 20px;font-size:14px}
+.drawer-body{flex:1;overflow-y:auto}
+.drawer-group{border-bottom:1px solid var(--neutral-100)}
+.drawer-group-title{padding:14px 20px 6px;font-size:10.5px;font-weight:700;color:var(--neutral-400);text-transform:uppercase}
+.drawer-link{display:block;padding:10px 20px;font-size:14px;color:var(--neutral-600)}
 .drawer-link.is-current{color:var(--primary);background:var(--primary-light)}
-.drawer-foot{padding:14px 20px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--neutral-100)}
-.container{max-width:1100px;margin:0 auto;padding:0 20px}
+.drawer-foot{padding:14px 20px 20px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--neutral-100)}
+.container{width:100%;max-width:1100px;margin:0 auto;padding:0 20px}
 .page-hero{background:linear-gradient(135deg,var(--primary),#0d2550);color:var(--white);padding:44px 0 36px}
 .breadcrumb{display:flex;gap:6px;font-size:12px;color:rgba(255,255,255,.5);margin-bottom:14px}
+.breadcrumb a{color:rgba(255,255,255,.5)}
+.breadcrumb .current{color:rgba(255,255,255,.85)}
+.page-hero-label{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:8px}
 .page-hero-title{font-size:clamp(22px,4vw,30px);font-weight:700;margin-bottom:6px}
 .page-hero-desc{font-size:14px;color:rgba(255,255,255,.65)}
 .sub-nav{background:var(--white);border-bottom:1px solid var(--neutral-200);position:sticky;top:var(--header-h);z-index:100}
 .sub-nav-inner{display:flex;max-width:1100px;margin:0 auto;padding:0 20px;overflow-x:auto}
-.sub-nav-link{padding:14px 16px;font-size:13.5px;color:var(--neutral-500);border-bottom:2px solid transparent;white-space:nowrap}
+.sub-nav-link{flex-shrink:0;padding:14px 16px;font-size:13.5px;font-weight:500;color:var(--neutral-500);border-bottom:2px solid transparent}
 .sub-nav-link.is-active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}
 .content-wrap{display:grid;grid-template-columns:1fr 240px;gap:40px;padding:40px 0 64px}
 .board-pane{display:none}
 .board-pane.is-active{display:block}
 .vis-tabs{display:flex;border-bottom:2px solid var(--neutral-200);margin-bottom:16px}
-.vis-tab{flex:1;padding:12px;font-size:14px;font-weight:600;text-align:center;color:var(--neutral-500);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer}
+.vis-tab{flex:1;max-width:120px;padding:12px;font-size:14px;font-weight:600;text-align:center;color:var(--neutral-500);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px}
 .vis-tab.is-active{color:var(--primary);border-bottom-color:var(--primary)}
-.board-toolbar{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;margin-bottom:14px}
+.board-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
 .board-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.filter-select{padding:8px 12px;font-size:13px;border:1.5px solid var(--neutral-200);border-radius:var(--radius-md)}
+.filter-select{padding:8px 12px;font-size:13px;border:1.5px solid var(--neutral-200);border-radius:var(--radius-md);background:var(--white);color:var(--neutral-700)}
 .status-chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{padding:6px 12px;font-size:12px;font-weight:600;border-radius:20px;border:1.5px solid var(--neutral-200);background:var(--white);cursor:pointer}
+.chip{padding:6px 12px;font-size:12px;font-weight:600;border-radius:20px;border:1.5px solid var(--neutral-200);background:var(--white);color:var(--neutral-600)}
 .chip.is-active{background:var(--primary);color:var(--white);border-color:var(--primary)}
 .search-bar{display:flex;border:1.5px solid var(--neutral-200);border-radius:var(--radius-md);overflow:hidden}
-.search-bar input{padding:8px 12px;border:none;outline:none;width:160px;font-size:13px}
-.search-bar button{padding:8px 12px;background:var(--primary);color:var(--white);border:none;font-weight:600;font-size:13px}
-.write-btn{padding:9px 16px;background:var(--primary);color:var(--white);border:none;border-radius:var(--radius-md);font-weight:600;font-size:13px}
+.search-bar input{padding:8px 12px;font-size:13px;border:none;outline:none;width:160px}
+.search-bar button{padding:8px 12px;background:var(--primary);color:var(--white);font-size:13px;font-weight:600;border:none}
+.write-btn{padding:9px 16px;font-size:13px;font-weight:600;background:var(--primary);color:var(--white);border:none;border-radius:var(--radius-md)}
 .board-table{width:100%;border-collapse:collapse;font-size:13.5px;border-top:2px solid var(--neutral-800)}
-.board-table th{padding:10px 12px;text-align:left;font-size:12px;color:var(--neutral-500);background:var(--neutral-50)}
-.board-table td{padding:12px;border-bottom:1px solid var(--neutral-100)}
-.board-table tbody tr{cursor:pointer}
+.board-table th{padding:10px 12px;text-align:left;font-size:12px;font-weight:600;color:var(--neutral-500);background:var(--neutral-50);border-bottom:1px solid var(--neutral-200)}
+.board-table td{padding:12px;border-bottom:1px solid var(--neutral-100);color:var(--neutral-700)}
+.board-table tbody tr{cursor:pointer;transition:.15s}
 .board-table tbody tr:hover{background:var(--neutral-50)}
-.cat-badge{padding:2px 8px;border-radius:3px;font-size:11px;font-weight:700;background:var(--primary-light);color:var(--primary)}
-.status-badge{padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:600}
+.cat-badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:700;background:var(--primary-light);color:var(--primary)}
+.vis-badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600}
+.vis-public{background:var(--neutral-100);color:var(--neutral-600)}
+.vis-secret{background:var(--accent-light);color:var(--accent)}
+.status-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:600}
 .s-wait{background:var(--neutral-100);color:var(--neutral-500)}
 .s-done{background:var(--success-light);color:var(--success)}
-.lock-icon{margin-left:4px;font-size:12px}
-.form-card{border:1px solid var(--neutral-200);border-radius:var(--radius-lg);overflow:hidden}
-.form-card-head{padding:18px 24px;border-bottom:1px solid var(--neutral-100)}
-.form-card-title{font-size:16px;font-weight:700}
+.lock-icon{margin-left:4px;font-size:12px;color:var(--neutral-400)}
+.form-card{background:var(--white);border:1px solid var(--neutral-200);border-radius:var(--radius-lg);overflow:hidden}
+.form-card-head{padding:18px 24px 14px;border-bottom:1px solid var(--neutral-100)}
+.form-card-title{font-size:16px;font-weight:700;color:var(--neutral-800)}
 .form-card-body{padding:22px 24px}
-.form-group{margin-bottom:16px}
+.form-group{margin-bottom:18px}
 .form-label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}
 .form-label .req{color:var(--accent)}
-.form-control{width:100%;padding:10px 13px;border:1.5px solid var(--neutral-200);border-radius:var(--radius-md);font-size:14px}
-textarea.form-control{min-height:110px;resize:vertical}
-.form-error{font-size:12px;color:var(--accent);display:none;margin-top:5px}
+.form-control{width:100%;padding:11px 14px;font-size:14px;border:1.5px solid var(--neutral-200);border-radius:var(--radius-md);outline:none}
+.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(26,58,107,.08)}
+textarea.form-control{resize:vertical;min-height:120px;line-height:1.65}
+.form-error{font-size:12px;color:var(--accent);margin-top:5px;display:none}
 .form-error.is-show{display:block}
-.radio-group{display:flex;gap:16px}
+.form-hint{font-size:12px;color:var(--neutral-500);margin-top:5px}
+.radio-group{display:flex;gap:16px;flex-wrap:wrap}
 .radio-label{display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer}
-.secret-row{display:none;margin-top:10px;padding:12px;background:var(--neutral-50);border-radius:var(--radius-md)}
-.secret-row.is-show{display:block}
-.submit-row{display:flex;gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid var(--neutral-100)}
-.btn-submit{flex:1;padding:12px;background:var(--primary);color:var(--white);border:none;border-radius:var(--radius-md);font-weight:600}
-.btn-cancel{padding:12px 16px;border:1.5px solid var(--neutral-200);background:transparent;border-radius:var(--radius-md)}
-.back-link{display:inline-flex;gap:4px;font-size:13px;font-weight:600;color:var(--primary);margin-bottom:16px;background:none;border:none;padding:0;cursor:pointer}
-.detail-title{font-size:18px;font-weight:700;margin-bottom:10px}
-.detail-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:13px;color:var(--neutral-500);margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--neutral-200)}
-.detail-body{font-size:14px;line-height:1.8;margin-bottom:20px;white-space:pre-wrap}
+.radio-label input{accent-color:var(--primary)}
+.secret-fields{display:none;margin-top:12px;padding:14px;background:var(--neutral-50);border-radius:var(--radius-md);border:1px solid var(--neutral-200)}
+.secret-fields.is-show{display:block}
+.file-list{font-size:13px;color:var(--primary);margin-top:6px}
+.checkbox-label{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
+.checkbox-label input{accent-color:var(--primary)}
+.submit-row{display:flex;gap:10px;margin-top:20px;padding-top:18px;border-top:1px solid var(--neutral-100)}
+.btn-submit{flex:1;padding:13px;font-size:15px;font-weight:600;background:var(--primary);color:var(--white);border:none;border-radius:var(--radius-md)}
+.btn-cancel{padding:13px 18px;font-size:14px;font-weight:600;color:var(--neutral-600);border:1.5px solid var(--neutral-200);background:transparent;border-radius:var(--radius-md)}
+.detail-head{margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--neutral-200)}
+.detail-title{font-size:18px;font-weight:700;color:var(--neutral-800);margin-bottom:10px}
+.detail-meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:13px;color:var(--neutral-500)}
+.detail-body{font-size:14px;line-height:1.8;color:var(--neutral-700);margin-bottom:20px;white-space:pre-wrap}
+.detail-attach{font-size:13px;color:var(--primary);margin-bottom:20px}
+.detail-actions{display:flex;gap:8px;margin-bottom:20px}
+.detail-actions button{padding:8px 14px;font-size:13px;font-weight:600;border-radius:var(--radius-sm);border:1.5px solid var(--neutral-200);background:var(--white);color:var(--neutral-600)}
+.detail-actions .btn-danger{color:var(--accent);border-color:var(--accent-light);background:var(--accent-light)}
 .admin-reply{padding:18px;background:var(--primary-light);border-left:3px solid var(--primary);border-radius:var(--radius-md);margin-bottom:24px}
-.admin-reply-label{font-size:11px;font-weight:700;color:var(--primary);margin-bottom:8px}
-.comment-list{display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
+.admin-reply-label{font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.admin-reply-body{font-size:14px;line-height:1.75}
+.comments-title{font-size:15px;font-weight:700;margin-bottom:14px}
+.comment-list{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
 .comment-item{padding:14px;background:var(--neutral-50);border:1px solid var(--neutral-100);border-radius:var(--radius-md)}
 .comment-item.is-reply{margin-left:28px;border-left:3px solid var(--neutral-300)}
 .comment-meta{font-size:12px;color:var(--neutral-400);margin-bottom:6px}
-.comment-form textarea{width:100%;padding:10px;border:1.5px solid var(--neutral-200);border-radius:var(--radius-md);min-height:72px;margin-bottom:8px}
-.comment-form button{padding:8px 14px;background:var(--primary);color:var(--white);border:none;border-radius:var(--radius-sm);font-weight:600;font-size:13px}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden}
+.comment-meta strong{color:var(--neutral-700)}
+.comment-body{font-size:13.5px;line-height:1.65}
+.comment-form textarea{width:100%;padding:10px;border:1.5px solid var(--neutral-200);border-radius:var(--radius-md);min-height:72px;font-size:14px;margin-bottom:8px}
+.comment-form button{padding:8px 14px;font-size:13px;font-weight:600;background:var(--primary);color:var(--white);border:none;border-radius:var(--radius-sm)}
+.back-link{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--primary);margin-bottom:16px;background:none;border:none;padding:0}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:.2s}
 .modal-overlay.is-show,.modal-overlay.open{opacity:1;visibility:visible}
-.modal-box{background:var(--white);border-radius:var(--radius-lg);padding:28px 24px;max-width:400px;width:100%}
+.modal-box{background:var(--white);border-radius:var(--radius-lg);padding:28px 24px;max-width:400px;width:100%;box-shadow:var(--shadow-md)}
 .modal-title{font-size:17px;font-weight:700;margin-bottom:8px}
-.modal-desc{font-size:13.5px;color:var(--neutral-500);margin-bottom:16px}
+.modal-desc{font-size:13.5px;color:var(--neutral-500);line-height:1.65;margin-bottom:16px}
 .modal-actions{display:flex;gap:8px;margin-top:14px}
-.modal-actions button{flex:1;padding:11px;font-weight:600;border:none;border-radius:var(--radius-md)}
+.modal-actions button{flex:1;padding:11px;font-size:14px;font-weight:600;border-radius:var(--radius-md);border:none}
 .modal-btn-primary{background:var(--primary);color:var(--white)}
-.modal-btn-secondary{background:var(--neutral-100)}
-.modal-error{color:var(--accent);font-size:12px;display:none;margin-top:8px}
+.modal-btn-secondary{background:var(--neutral-100);color:var(--neutral-600)}
+.modal-error{color:var(--accent);font-size:12px;margin-top:8px;display:none}
 .modal-error.is-show{display:block}
 .aside-card{background:var(--neutral-50);border:1px solid var(--neutral-200);border-radius:var(--radius-lg);padding:18px 16px;margin-bottom:14px}
-.aside-nav-link{display:block;padding:9px 12px;font-size:13.5px;border-radius:var(--radius-sm)}
+.aside-card-title{font-size:12px;font-weight:700;color:var(--neutral-500);text-transform:uppercase;margin-bottom:10px}
+.aside-nav-link{display:block;padding:9px 12px;font-size:13.5px;color:var(--neutral-600);border-radius:var(--radius-sm)}
 .aside-nav-link.is-current{color:var(--primary);background:var(--primary-light);font-weight:600}
+.aside-info{font-size:13px;color:var(--neutral-600);padding:8px 10px;background:var(--white);border:1px solid var(--neutral-100);border-radius:var(--radius-sm);margin-bottom:6px;line-height:1.6}
 .footer{background:var(--neutral-800);color:rgba(255,255,255,.65);padding:40px 0 24px}
 .footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:28px}
-@media(max-width:900px){.content-wrap{grid-template-columns:1fr}}
-@media(max-width:768px){.gnb-nav,.gnb-actions .btn-ghost,.gnb-actions .btn-solid,.lang-toggle{display:none}.gnb-hamburger{display:flex}}
+.footer-brand strong{display:block;font-size:14px;color:var(--white);margin-bottom:6px}
+.footer-brand p{font-size:12px}
+.footer-ext{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.footer-ext a{font-size:12px;color:rgba(255,255,255,.45)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:18px;display:flex;justify-content:space-between;flex-wrap:wrap}
+.footer-copy{font-size:11px;color:rgba(255,255,255,.3)}
+@media(max-width:900px){.content-wrap{grid-template-columns:1fr}.content-aside{display:none}}
+@media(max-width:768px){
+ .gnb-nav,.gnb-actions .btn-ghost,.gnb-actions .btn-solid,.lang-toggle{display:none}
+ .gnb-hamburger{display:flex}
+ .board-table{font-size:12px}
+ .col-author{display:none}
+ .footer-grid{grid-template-columns:1fr}
+}
 </style>
- <link rel="stylesheet" href="css/layout-mobile.css">
+<link rel="stylesheet" href="css/layout-mobile.css">
 </head>
 <body data-require-login>
 <header class="gnb">
  <div class="gnb-inner">
  <a href="index.html" class="gnb-logo"><div class="gnb-logo-mark">TK</div><div class="gnb-logo-text"><strong>TOPIK Myanmar</strong><span>한국어능력시험</span></div></a>
  <nav class="gnb-nav">
- <div class="gnb-menu"><button class="gnb-menu-btn">TOPIK 안내</button><div class="gnb-dropdown"><a href="guide-overview.html">시험 개요</a></div></div>
- <div class="gnb-menu"><button class="gnb-menu-btn is-active">게시판</button>
- <div class="gnb-dropdown"><a href="notice.html">공지사항</a><a href="refund-correction.html">환불·정보정정신청</a>
- <a href="qna.html" class="is-current">문의게시판</a><a href="faq.html">FAQ</a></div></div>
+ <div class="gnb-menu"><button class="gnb-menu-btn" type="button">TOPIK 안내<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4,6 8,10 12,6"/></svg></button>
+ <div class="gnb-dropdown"><a href="guide-overview.html">시험 개요</a><a href="guide-intro.html">시험 소개</a><a href="guide-questions.html">문항 구성</a><a href="guide-evaluation.html">평가 기준</a></div></div>
+ <div class="gnb-menu"><button class="gnb-menu-btn" type="button">TOPIK 규정<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4,6 8,10 12,6"/></svg></button>
+ <div class="gnb-dropdown"><a href="rules-notice.html">유의 사항</a><a href="rules-answer.html">답안 작성 요령</a><a href="rules-fee.html">응시료 규정</a><a href="rules-id.html">신분증 규정</a></div></div>
+ <div class="gnb-menu"><button class="gnb-menu-btn" type="button">TOPIK 접수<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4,6 8,10 12,6"/></svg></button>
+ <div class="gnb-dropdown"><a href="apply-howto.html">접수 방법</a><a href="register.html">시험 접수</a><a href="mypage.html">접수 확인</a><a href="admit-card.html">수험표 출력</a></div></div>
+ <div class="gnb-menu"><button class="gnb-menu-btn is-active" type="button">게시판<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4,6 8,10 12,6"/></svg></button>
+ <div class="gnb-dropdown"><a href="notice.html">공지사항</a><a href="refund-correction.html">환불·정보정정신청</a><a href="qna.html" class="is-current">문의게시판</a><a href="faq.html">FAQ</a></div></div>
  </nav>
  <div class="gnb-actions">
- <div class="lang-toggle"><button class="is-active">KO</button><button>MY</button><button>EN</button></div>
+ <div class="lang-toggle"><button class="is-active" type="button">KO</button><button type="button">MY</button><button type="button">EN</button></div>
  <a href="login.html" class="btn btn-ghost">로그인</a>
  <a href="signup.html" class="btn btn-solid">회원가입</a>
  </div>
- <button class="gnb-hamburger" id="js-hamburger"><span></span><span></span><span></span></button>
+ <button class="gnb-hamburger" id="js-hamburger" type="button" aria-label="메뉴"><span></span><span></span><span></span></button>
  </div>
 </header>
 <div class="drawer-overlay" id="js-overlay"></div>
 <div class="mobile-drawer" id="js-drawer">
- <div class="drawer-head"><span>TOPIK Myanmar</span><button class="drawer-close-btn" id="js-drawer-close">✕</button></div>
- <a href="qna.html" class="drawer-link is-current">문의게시판</a>
- <div class="drawer-foot"><a href="login.html" class="btn btn-ghost">로그인</a></div>
+ <div class="drawer-head"><div class="gnb-logo"><div class="gnb-logo-mark">TK</div><div class="gnb-logo-text"><strong>TOPIK Myanmar</strong></div></div><button class="drawer-close-btn" id="js-drawer-close" type="button">✕</button></div>
+ <div class="drawer-body">
+ <div class="drawer-group"><div class="drawer-group-title">게시판</div>
+ <a href="notice.html" class="drawer-link">공지사항</a><a href="refund-correction.html" class="drawer-link">환불·정보정정신청</a>
+ <a href="qna.html" class="drawer-link is-current">문의게시판</a><a href="faq.html" class="drawer-link">FAQ</a></div>
+ </div>
+ <div class="drawer-foot"><a href="login.html" class="btn btn-outline">로그인</a><a href="signup.html" class="btn btn-solid">회원가입</a></div>
 </div>
 <div class="page-hero">
  <div class="container">
- <nav class="breadcrumb"><a href="index.html">홈</a><span>›</span><span>게시판</span><span>›</span><span>문의게시판</span></nav>
+ <nav class="breadcrumb"><a href="index.html">홈</a><span>›</span><span>게시판</span><span>›</span><span class="current">문의게시판</span></nav>
+ <div class="page-hero-label">게시판</div>
  <h1 class="page-hero-title">문의게시판</h1>
- <p class="page-hero-desc">시험 접수, 일정 등 궁금한 사항을 남겨 주세요.</p>
+ <p class="page-hero-desc">시험 접수, 일정 등 궁금한 사항을 남겨 주세요. 영업일 기준 1~3일 내 답변드립니다.</p>
  </div>
 </div>
 <div class="sub-nav"><div class="sub-nav-inner">
@@ -180,7 +234,7 @@ textarea.form-control{min-height:110px;resize:vertical}
 </div></div>
 <div class="container">
  <div class="content-wrap">
- <main>
+ <main class="content-main">
  <!-- LIST -->
  <div class="board-pane is-active" id="pane-list">
  <div class="vis-tabs" role="tablist">
@@ -190,7 +244,7 @@ textarea.form-control{min-height:110px;resize:vertical}
  </div>
  <div class="board-toolbar">
  <div class="board-filters">
- <select class="filter-select" id="filter-cat">
+ <select class="filter-select" id="filter-cat" aria-label="카테고리 필터">
  <option value="all">카테고리 전체</option>
  <option value="apply">접수</option>
  <option value="exam">시험</option>
@@ -202,37 +256,38 @@ textarea.form-control{min-height:110px;resize:vertical}
  <button type="button" class="chip" data-status="answered">답변완료</button>
  </div>
  </div>
- <div style="display:flex;gap:8px">
- <div class="search-bar"><input type="text" id="search-input" placeholder="검색"><button type="button" id="btn-search">검색</button></div>
- <button type="button" class="write-btn" onclick="showPane('write')">문의 작성</button>
+ <div style="display:flex;gap:8px;align-items:center">
+ <div class="search-bar"><input type="text" id="search-input" placeholder="제목 검색" aria-label="문의 검색"><button type="button" id="btn-search">검색</button></div>
+ <a href="qna.html?view=write" class="write-btn" id="btn-go-write">문의 작성</a>
  </div>
  </div>
  <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
  <table class="board-table">
- <thead><tr><th>번호</th><th>카테고리</th><th>제목</th><th>작성일</th><th>상태</th></tr></thead>
+ <thead><tr><th>번호</th><th>카테고리</th><th>제목</th><th class="col-author">작성자</th><th>작성일</th><th>상태</th></tr></thead>
  <tbody id="board-tbody">
  <tr data-id="4" data-vis="public" data-cat="apply" data-status="answered" data-secret="0" data-owner="1">
  <td>4</td><td><span class="cat-badge">접수</span></td>
- <td>제99회 접수 기간이 언제까지인가요?</td><td>2026.05.15</td>
+ <td>제99회 접수 기간이 언제까지인가요?</td><td class="col-author">Hong**</td><td>2026.05.15</td>
  <td><span class="status-badge s-done">답변완료</span></td></tr>
  <tr data-id="3" data-vis="public" data-cat="exam" data-status="answered" data-secret="0" data-owner="0">
  <td>3</td><td><span class="cat-badge">시험</span></td>
- <td>수험표 출력은 언제부터 가능한가요?</td><td>2026.05.10</td>
+ <td>수험표 출력은 언제부터 가능한가요?</td><td class="col-author">Kim**</td><td>2026.05.10</td>
  <td><span class="status-badge s-done">답변완료</span></td></tr>
  <tr data-id="2" data-vis="secret" data-cat="other" data-status="waiting" data-secret="1" data-owner="1" data-pw="5678">
  <td>2</td><td><span class="cat-badge">기타</span></td>
- <td>개인 성적 문의 <span class="lock-icon">🔒</span></td><td>2026.05.18</td>
+ <td>개인 성적 문의 <span class="lock-icon" title="비밀글">🔒</span></td><td class="col-author">Hong**</td><td>2026.05.18</td>
  <td><span class="status-badge s-wait">답변대기</span></td></tr>
  <tr data-id="1" data-vis="public" data-cat="exam" data-status="waiting" data-secret="0" data-owner="0">
  <td>1</td><td><span class="cat-badge">시험</span></td>
- <td>성적표 발급 방법 문의</td><td>2026.05.18</td>
+ <td>성적표 발급 방법 문의</td><td class="col-author">Lee**</td><td>2026.05.18</td>
  <td><span class="status-badge s-wait">답변대기</span></td></tr>
  </tbody>
  </table>
  </div>
+ </div>
  <!-- WRITE -->
  <div class="board-pane" id="pane-write">
- <button type="button" class="back-link" onclick="showPane('list')">← 목록으로</button>
+ <a href="qna.html" class="back-link">← 목록으로</a>
  <div class="form-card">
  <div class="form-card-head"><div class="form-card-title">문의 작성</div></div>
  <div class="form-card-body">
@@ -247,30 +302,39 @@ textarea.form-control{min-height:110px;resize:vertical}
  <div class="form-group">
  <span class="form-label">공개 범위 <span class="req">*</span></span>
  <div class="radio-group">
- <label class="radio-label"><input type="radio" name="w-vis" value="public" checked>일반</label>
- <label class="radio-label"><input type="radio" name="w-vis" value="secret">비밀</label>
+ <label class="radio-label"><input type="radio" name="w-vis" value="public" checked>일반 (전체 공개)</label>
+ <label class="radio-label"><input type="radio" name="w-vis" value="secret">비밀 (작성자·관리자만)</label>
  </div>
- <div class="secret-row" id="secret-row">
- <label class="form-label" for="w-pw">비밀번호 (4자 이상)</label>
- <input type="password" id="w-pw" class="form-control" minlength="4">
+ <div class="secret-fields" id="secret-fields">
+ <div class="form-group" style="margin-bottom:10px">
+ <label class="form-label" for="w-pw">비밀번호 (4자 이상) <span class="req">*</span></label>
+ <input type="password" id="w-pw" class="form-control" minlength="4" autocomplete="new-password">
+ </div>
+ <div class="form-group" style="margin-bottom:0">
+ <label class="form-label" for="w-pw2">비밀번호 확인 <span class="req">*</span></label>
+ <input type="password" id="w-pw2" class="form-control" autocomplete="new-password">
+ <div class="form-error" id="err-w-pw">비밀번호가 일치하지 않습니다.</div>
+ </div>
  </div>
  </div>
  <div class="form-group">
  <label class="form-label" for="w-title">제목 <span class="req">*</span></label>
- <input type="text" id="w-title" class="form-control" placeholder="문의 제목">
+ <input type="text" id="w-title" class="form-control" maxlength="80" placeholder="문의 제목 (80자 이내)">
  <div class="form-error" id="err-w-title">제목을 입력해 주세요.</div>
  </div>
  <div class="form-group">
  <label class="form-label" for="w-body">내용 <span class="req">*</span></label>
- <textarea id="w-body" class="form-control" rows="5"></textarea>
+ <textarea id="w-body" class="form-control" rows="6" placeholder="문의 내용을 상세히 작성해 주세요."></textarea>
  <div class="form-error" id="err-w-body">내용을 입력해 주세요.</div>
  </div>
  <div class="form-group">
  <label class="form-label" for="w-file">첨부파일 (선택)</label>
  <input type="file" id="w-file" class="form-control" accept=".jpg,.jpeg,.png,.pdf">
+ <div class="form-hint">JPG, PNG, PDF · 파일당 5MB 이하</div>
+ <div class="file-list" id="w-file-list"></div>
  </div>
  <div class="submit-row">
- <button type="button" class="btn-cancel" onclick="showPane('list')">취소</button>
+ <a href="qna.html" class="btn-cancel">취소</a>
  <button type="submit" class="btn-submit">등록</button>
  </div>
  </form>
@@ -279,22 +343,35 @@ textarea.form-control{min-height:110px;resize:vertical}
  </div>
  <!-- DETAIL -->
  <div class="board-pane" id="pane-detail">
- <button type="button" class="back-link" onclick="showPane('list')">← 목록으로</button>
+ <a href="qna.html" class="back-link" id="detail-back-link">← 목록으로</a>
  <div class="form-card">
  <div class="form-card-body">
+ <div class="detail-head">
  <h2 class="detail-title" id="d-title">—</h2>
- <div class="detail-meta"><span id="d-cat"></span><span id="d-date"></span><span id="d-status"></span></div>
+ <div class="detail-meta">
+ <span id="d-cat"></span>
+ <span id="d-vis"></span>
+ <span id="d-author"></span>
+ <span id="d-date"></span>
+ <span id="d-status"></span>
+ </div>
+ </div>
  <div class="detail-body" id="d-body"></div>
+ <div class="detail-attach" id="d-attach"></div>
+ <div class="detail-actions" id="d-owner-actions" style="display:none">
+ <button type="button" id="btn-edit-post">수정</button>
+ <button type="button" class="btn-danger" id="btn-delete-post">삭제</button>
+ </div>
  <div class="admin-reply" id="d-reply" style="display:none">
  <div class="admin-reply-label">관리자 답변</div>
- <div id="d-reply-body"></div>
+ <div class="admin-reply-body" id="d-reply-body"></div>
  </div>
- <p style="font-size:15px;font-weight:700;margin-bottom:12px">댓글</p>
+ <div class="comments-title">댓글</div>
  <div class="comment-list" id="comment-list"></div>
  <div class="comment-form">
  <textarea id="new-comment" placeholder="댓글을 입력하세요."></textarea>
  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
- <label class="checkbox-label" id="comment-private-label" style="font-size:13px"><input type="checkbox" id="comment-private"> 비공개 댓글 (작성자·관리자만 열람)</label>
+ <label class="checkbox-label" id="comment-private-label"><input type="checkbox" id="comment-private"> 비공개 댓글 (작성자·관리자만 열람)</label>
  <span id="comment-secret-note" style="display:none;font-size:12px;color:var(--accent)">🔒 비밀글의 댓글·대댓글은 자동으로 비공개 처리됩니다.</span>
  </div>
  <button type="button" id="btn-add-comment">댓글 등록</button>
@@ -305,19 +382,22 @@ textarea.form-control{min-height:110px;resize:vertical}
  </main>
  <aside class="content-aside">
  <div class="aside-card">
+ <div class="aside-card-title">게시판</div>
  <a href="notice.html" class="aside-nav-link">공지사항</a>
  <a href="refund-correction.html" class="aside-nav-link">환불·정보정정신청</a>
  <a href="qna.html" class="aside-nav-link is-current">문의게시판</a>
  <a href="faq.html" class="aside-nav-link">FAQ</a>
  </div>
- <div class="aside-card" style="font-size:12.5px;color:var(--primary);line-height:1.6;padding:14px">
- <strong style="display:block;margin-bottom:4px">답변 안내</strong>
- 영업일 기준 1~3일 내 답변됩니다.
+ <div class="aside-card">
+ <div class="aside-card-title">안내</div>
+ <div class="aside-info"><strong>일반 글</strong>모든 회원이 열람 가능</div>
+ <div class="aside-info"><strong>비밀 글</strong>작성자·관리자만 열람</div>
+ <div class="aside-info"><strong>답변</strong>영업일 1~3일 내 처리</div>
  </div>
  </aside>
  </div>
 </div>
-<div class="modal-overlay" id="secret-modal">
+<div class="modal-overlay" id="secret-modal" role="dialog" aria-modal="true">
  <div class="modal-box">
  <div class="modal-title">비밀글입니다</div>
  <p class="modal-desc">비밀글입니다. 작성 시 설정한 비밀번호를 입력해 주세요.</p>
@@ -330,50 +410,73 @@ textarea.form-control{min-height:110px;resize:vertical}
  </div>
  </div>
 </div>
-<footer class="footer"><div class="container"><div class="footer-grid">
- <div><strong style="color:#fff">주미얀마 대한민국 대사관</strong></div>
-</div></div></footer>
+<footer class="footer">
+ <div class="container">
+ <div class="footer-grid">
+ <div class="footer-brand"><strong>주미얀마 대한민국 대사관</strong><p>Embassy of the Republic of Korea in Myanmar</p></div>
+ <div class="footer-ext"><a href="https://topik.go.kr" target="_blank" rel="noopener">TOPIK 본부</a></div>
+ </div>
+ <div class="footer-bottom"><span class="footer-copy">© 2025–2026 Embassy of the Republic of Korea in Myanmar.</span></div>
+ </div>
+</footer>
 <script src="js/tm-auth.js"></script>
 <script>
-const drawer=document.getElementById('js-drawer'),overlay=document.getElementById('js-overlay');
-document.getElementById('js-hamburger').onclick=()=>{drawer.classList.add('is-open');overlay.classList.add('is-show')};
-document.getElementById('js-drawer-close').onclick=()=>{drawer.classList.remove('is-open');overlay.classList.remove('is-show')};
-overlay.onclick=()=>{drawer.classList.remove('is-open');overlay.classList.remove('is-show')};
+const hamburger=document.getElementById('js-hamburger'),drawer=document.getElementById('js-drawer'),overlay=document.getElementById('js-overlay'),drawerClose=document.getElementById('js-drawer-close');
+function openDrawer(){drawer.classList.add('is-open');overlay.classList.add('is-show');document.body.style.overflow='hidden'}
+function closeDrawer(){drawer.classList.remove('is-open');overlay.classList.remove('is-show');document.body.style.overflow=''}
+hamburger.addEventListener('click',openDrawer);drawerClose.addEventListener('click',closeDrawer);overlay.addEventListener('click',closeDrawer);
 
 const CAT={apply:'접수',exam:'시험',other:'기타'};
 const POSTS={
- 4:{vis:'public',cat:'apply',title:'제99회 접수 기간이 언제까지인가요?',date:'2026.05.15',status:'answered',secret:false,owner:true,
- body:'제99회 TOPIK 접수 기간이 정확히 언제까지인지 알고 싶습니다.',
- reply:'제99회 미얀마 접수 기간은 2026년 5월 1일(금)부터 5월 31일(일)까지입니다.',comments:[]},
- 3:{vis:'public',cat:'exam',title:'수험표 출력은 언제부터 가능한가요?',date:'2026.05.10',status:'answered',secret:false,owner:false,
- body:'수험표 출력 가능 시점을 알고 싶습니다.',
- reply:'시험일 약 1주일 전부터 TOPIK 홈페이지(topik.go.kr)에서 출력 가능합니다.',comments:[
- {author:'관리자',date:'2026.05.11',body:'추가 문의는 FAQ를 참고해 주세요.',replies:[]}
+ 4:{vis:'public',cat:'apply',title:'제99회 접수 기간이 언제까지인가요?',author:'Hong**',date:'2026.05.15',status:'answered',secret:false,owner:true,
+ body:'제99회 TOPIK 접수 기간이 정확히 언제까지인지 알고 싶습니다.\n\n접수 마감일과 시간(한국 시간 기준)을 알려주시면 감사하겠습니다.',
+ reply:'제99회 미얀마 접수 기간은 2026년 5월 1일(금)부터 5월 31일(일) 23:59(한국 시간)까지입니다. 마감 직전 접속이 몰릴 수 있으니 여유 있게 접수해 주세요.',comments:[]},
+ 3:{vis:'public',cat:'exam',title:'수험표 출력은 언제부터 가능한가요?',author:'Kim**',date:'2026.05.10',status:'answered',secret:false,owner:false,
+ body:'수험표 출력 가능 시점을 알고 싶습니다.\n\n시험일 약 1주일 전부터 출력 가능하다고 들었는데, 정확한 일정이 궁금합니다.',
+ reply:'시험일 약 1주일 전부터 TOPIK 홈페이지(topik.go.kr) 및 본 사이트 마이페이지에서 수험표 출력이 가능합니다. 출력 기간 안내는 별도 공지로 안내됩니다.',comments:[
+ {author:'관리자',date:'2026.05.11',body:'추가 문의는 FAQ의 수험표 관련 항목을 참고해 주세요.',secret:false,replies:[]}
  ]},
- 2:{vis:'secret',cat:'other',title:'개인 성적 문의',date:'2026.05.18',status:'waiting',secret:true,owner:true,pw:'5678',
- body:'제95회 개인 성적 확인 방법을 문의드립니다.',reply:null,comments:[]},
- 1:{vis:'public',cat:'exam',title:'성적표 발급 방법 문의',date:'2026.05.18',status:'waiting',secret:false,owner:false,
- body:'성적표를 발급받고 싶은데 절차를 알려주세요.',reply:null,comments:[]}
+ 2:{vis:'secret',cat:'other',title:'개인 성적 문의',author:'Hong**',date:'2026.05.18',status:'waiting',secret:true,owner:true,pw:'5678',
+ body:'제95회 개인 성적 확인 방법을 문의드립니다.\n\n성적표를 재발급받고 싶은데 절차를 알려주세요.',reply:null,comments:[]},
+ 1:{vis:'public',cat:'exam',title:'성적표 발급 방법 문의',author:'Lee**',date:'2026.05.18',status:'waiting',secret:false,owner:false,
+ body:'성적표를 발급받고 싶은데 절차를 알려주세요.\n\n온라인으로 발급 가능한지, 대사관 방문이 필요한지 궁금합니다.',reply:null,comments:[]}
 };
 let secretFails=0,secretLockedUntil=0,pendingPostId=null,currentDetailId=null;
 
-function showPane(name){
+function showPane(name,updateUrl){
  document.querySelectorAll('.board-pane').forEach(p=>p.classList.remove('is-active'));
  document.getElementById('pane-'+name).classList.add('is-active');
  window.scrollTo({top:0,behavior:'smooth'});
+ if(updateUrl!==false){
+  const url=new URL(window.location.href);
+  if(name==='list'){url.searchParams.delete('view');url.searchParams.delete('id')}
+  else if(name==='write'){url.searchParams.set('view','write');url.searchParams.delete('id')}
+  else if(name==='detail'&&currentDetailId){url.searchParams.delete('view');url.searchParams.set('id',currentDetailId)}
+  history.replaceState(null,'',url.pathname+(url.search||''));
+ }
 }
 window.showPane=showPane;
 
 function statusHtml(s){return s==='answered'?'<span class="status-badge s-done">답변완료</span>':'<span class="status-badge s-wait">답변대기</span>'}
+function visHtml(v){return v==='secret'?'<span class="vis-badge vis-secret">비밀</span>':'<span class="vis-badge vis-public">일반</span>'}
 
 function openDetail(id){
  const p=POSTS[id];if(!p)return;
  currentDetailId=id;
  document.getElementById('d-title').textContent=p.title;
  document.getElementById('d-cat').innerHTML='<span class="cat-badge">'+CAT[p.cat]+'</span>';
- document.getElementById('d-date').textContent=p.date;
+ document.getElementById('d-vis').innerHTML=visHtml(p.vis);
+ document.getElementById('d-author').textContent='작성자: '+p.author;
+ document.getElementById('d-date').textContent='작성일: '+p.date;
  document.getElementById('d-status').innerHTML=statusHtml(p.status);
  document.getElementById('d-body').textContent=p.body;
+ document.getElementById('d-attach').textContent=p.attach?'📎 첨부: '+p.attach:'';
+ const ownerActions=document.getElementById('d-owner-actions');
+ if(p.owner&&p.status==='waiting'){
+  ownerActions.style.display='flex';
+ }else{
+  ownerActions.style.display='none';
+ }
  const re=document.getElementById('d-reply');
  if(p.reply){re.style.display='block';document.getElementById('d-reply-body').textContent=p.reply}
  else re.style.display='none';
@@ -381,8 +484,10 @@ function openDetail(id){
  var pv=document.getElementById('comment-private'),lbl=document.getElementById('comment-private-label'),note=document.getElementById('comment-secret-note');
  if(p.secret){pv.checked=true;pv.disabled=true;lbl.style.display='none';note.style.display='inline';}
  else{pv.checked=false;pv.disabled=false;lbl.style.display='inline-flex';note.style.display='none';}
+ document.getElementById('detail-back-link').href='qna.html';
  showPane('detail');
 }
+window.openDetail=openDetail;
 
 function commentMeta(c,isReply){
  var sec=c.secret?' <span style="font-size:11px;color:var(--accent)">🔒 비공개</span>':'';
@@ -393,8 +498,8 @@ function renderComments(p){
  var list=p.comments||[];
  if(!list.length){box.innerHTML='<div style="font-size:13px;color:var(--neutral-400);padding:6px 0">등록된 댓글이 없습니다.</div>';return;}
  box.innerHTML=list.map(function(c,ci){
- var replies=(c.replies||[]).map(function(r){return '<div class="comment-item is-reply">'+commentMeta(r,true)+'<div>'+r.body+'</div></div>';}).join('');
- return '<div class="comment-item">'+commentMeta(c,false)+'<div>'+c.body+'</div>'+replies
+ var replies=(c.replies||[]).map(function(r){return '<div class="comment-item is-reply">'+commentMeta(r,true)+'<div class="comment-body">'+r.body+'</div></div>';}).join('');
+ return '<div class="comment-item">'+commentMeta(c,false)+'<div class="comment-body">'+c.body+'</div>'+replies
  +'<div style="margin-top:6px"><button type="button" class="reply-toggle" data-ci="'+ci+'" style="font-size:12px;color:var(--primary);font-weight:600;background:none;border:none;padding:0;cursor:pointer">답글</button></div>'
  +'<div class="reply-box" id="reply-box-'+ci+'" style="display:none;margin-top:8px"><textarea id="reply-input-'+ci+'" placeholder="답글을 입력하세요." style="width:100%;padding:8px;border:1.5px solid var(--neutral-200);border-radius:var(--radius-md);min-height:56px;font-size:13px;margin-bottom:6px"></textarea><button type="button" class="reply-submit" data-ci="'+ci+'" style="padding:6px 12px;font-size:12px;font-weight:600;background:var(--primary);color:#fff;border:none;border-radius:var(--radius-sm)">답글 등록</button></div>'
  +'</div>';
@@ -421,9 +526,11 @@ window.closeSecretModal=closeSecretModal;
 
 function tryOpenPost(id){
  const p=POSTS[id];
+ if(!p)return;
  if(!p.secret||p.owner){openDetail(id);return}
  if(Date.now()<secretLockedUntil){
  document.getElementById('secret-lock-msg').classList.add('is-show');
+ document.getElementById('secret-modal-error').classList.remove('is-show');
  if(window.TPKM)window.TPKM.openModal('secret-modal');
  else document.getElementById('secret-modal').classList.add('is-show');
  return;
@@ -434,30 +541,37 @@ function tryOpenPost(id){
  else document.getElementById('secret-modal').classList.add('is-show');
 }
 
-document.getElementById('board-tbody').addEventListener('click',e=>{
+document.getElementById('board-tbody').addEventListener('click',function(e){
  const tr=e.target.closest('tr[data-id]');
  if(tr)tryOpenPost(tr.dataset.id);
 });
 
-document.getElementById('btn-secret-confirm').addEventListener('click',()=>{
- if(Date.now()<secretLockedUntil){document.getElementById('secret-lock-msg').classList.add('is-show');return}
+document.getElementById('btn-secret-confirm').addEventListener('click',function(){
+ if(Date.now()<secretLockedUntil){
+ document.getElementById('secret-lock-msg').classList.add('is-show');return;
+ }
+ const pw=document.getElementById('secret-pw-input').value;
  const p=POSTS[pendingPostId];
- if(p&&document.getElementById('secret-pw-input').value===p.pw){
+ if(p&&pw===p.pw){
  secretFails=0;closeSecretModal();openDetail(pendingPostId);
-}else{
+ }else{
  secretFails++;
  document.getElementById('secret-modal-error').classList.add('is-show');
- if(secretFails>=5)secretLockedUntil=Date.now()+30*60*1000;
-}
+ if(secretFails>=5){secretLockedUntil=Date.now()+30*60*1000;document.getElementById('secret-lock-msg').classList.add('is-show')}
+ }
 });
 
-document.querySelectorAll('input[name="w-vis"]').forEach(r=>{
- r.addEventListener('change',()=>{
- document.getElementById('secret-row').classList.toggle('is-show',document.querySelector('input[name="w-vis"]:checked').value==='secret');
+document.querySelectorAll('input[name="w-vis"]').forEach(function(r){
+ r.addEventListener('change',function(){
+ document.getElementById('secret-fields').classList.toggle('is-show',document.querySelector('input[name="w-vis"]:checked').value==='secret');
  });
 });
 
-document.getElementById('write-form').addEventListener('submit',e=>{
+document.getElementById('w-file').addEventListener('change',function(){
+ document.getElementById('w-file-list').textContent=this.files.length?[...this.files].map(function(f){return f.name}).join(', '):'';
+});
+
+document.getElementById('write-form').addEventListener('submit',function(e){
  e.preventDefault();
  let ok=true;
  if(!document.getElementById('w-cat').value){document.getElementById('err-w-cat').classList.add('is-show');ok=false}
@@ -466,34 +580,46 @@ document.getElementById('write-form').addEventListener('submit',e=>{
  else document.getElementById('err-w-title').classList.remove('is-show');
  if(!document.getElementById('w-body').value.trim()){document.getElementById('err-w-body').classList.add('is-show');ok=false}
  else document.getElementById('err-w-body').classList.remove('is-show');
- if(document.querySelector('input[name="w-vis"]:checked').value==='secret'&&document.getElementById('w-pw').value.length<4)ok=false;
+ if(document.querySelector('input[name="w-vis"]:checked').value==='secret'){
+ var pw=document.getElementById('w-pw').value,pw2=document.getElementById('w-pw2').value;
+ if(pw.length<4||pw!==pw2){document.getElementById('err-w-pw').classList.add('is-show');ok=false}
+ else document.getElementById('err-w-pw').classList.remove('is-show');
+ }
  if(!ok)return;
  alert('문의가 등록되었습니다. (데모)');
- e.target.reset();
- document.getElementById('secret-row').classList.remove('is-show');
+ this.reset();
+ document.getElementById('secret-fields').classList.remove('is-show');
+ document.getElementById('w-file-list').textContent='';
  showPane('list');
 });
 
-document.getElementById('btn-add-comment').addEventListener('click',()=>{
+document.getElementById('btn-add-comment').addEventListener('click',function(){
  var p=POSTS[currentDetailId];if(!p)return;
  var ta=document.getElementById('new-comment');var t=ta.value.trim();if(!t)return;
  if(!p.comments)p.comments=[];
  var isSecret=p.secret||document.getElementById('comment-private').checked;
  p.comments.push({author:'나',date:new Date().toLocaleDateString('ko-KR'),body:t,secret:isSecret,replies:[]});
- ta.value='';document.getElementById('comment-private').checked=false;
+ ta.value='';if(!p.secret)document.getElementById('comment-private').checked=false;
  renderComments(p);
 });
 
-document.querySelectorAll('.vis-tab').forEach(tab=>{
+document.getElementById('btn-edit-post').addEventListener('click',function(){
+ alert('답변 전까지 본인 글 수정이 가능합니다. (데모)');
+});
+document.getElementById('btn-delete-post').addEventListener('click',function(){
+ if(confirm('문의 글을 삭제하시겠습니까?')){alert('삭제되었습니다. (데모)');showPane('list');}
+});
+
+document.querySelectorAll('.vis-tab').forEach(function(tab){
  tab.addEventListener('click',function(){
- document.querySelectorAll('.vis-tab').forEach(t=>t.classList.remove('is-active'));
+ document.querySelectorAll('.vis-tab').forEach(function(t){t.classList.remove('is-active')});
  this.classList.add('is-active');
  filterList();
  });
 });
-document.querySelectorAll('#status-chips .chip').forEach(chip=>{
+document.querySelectorAll('#status-chips .chip').forEach(function(chip){
  chip.addEventListener('click',function(){
- document.querySelectorAll('#status-chips .chip').forEach(c=>c.classList.remove('is-active'));
+ document.querySelectorAll('#status-chips .chip').forEach(function(c){c.classList.remove('is-active')});
  this.classList.add('is-active');
  filterList();
  });
@@ -506,12 +632,20 @@ function filterList(){
  const cat=document.getElementById('filter-cat').value;
  const status=document.querySelector('#status-chips .chip.is-active').dataset.status;
  const q=document.getElementById('search-input').value.trim().toLowerCase();
- document.querySelectorAll('#board-tbody tr').forEach(tr=>{
+ document.querySelectorAll('#board-tbody tr').forEach(function(tr){
  const show=(vis==='all'||tr.dataset.vis===vis)&&(cat==='all'||tr.dataset.cat===cat)&&
  (status==='all'||tr.dataset.status===status)&&(!q||tr.cells[2].textContent.toLowerCase().includes(q));
  tr.style.display=show?'':'none';
  });
 }
+
+(function initFromUrl(){
+ const params=new URLSearchParams(window.location.search);
+ if(params.get('view')==='write'){showPane('write',false);return}
+ const id=params.get('id');
+ if(id&&POSTS[id]){tryOpenPost(id);return}
+ if(params.get('view')==='detail'&&params.get('id')){tryOpenPost(params.get('id'))}
+})();
 </script>
 </body>
 </html>
