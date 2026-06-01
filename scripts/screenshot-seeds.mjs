@@ -32,6 +32,8 @@ export const BOARD_PAGES = new Set([
 ]);
 
 export const REGISTER_PAGE = 'register.html';
+export const SIGNUP_PAGE = 'signup.html';
+export const SIGNUP_STEPS = 3;
 
 export function isBoardPage(basename) {
   return BOARD_PAGES.has(basename.toLowerCase());
@@ -39,6 +41,30 @@ export function isBoardPage(basename) {
 
 export function isRegisterPage(basename) {
   return basename.toLowerCase() === REGISTER_PAGE;
+}
+
+export function isSignupPage(basename) {
+  return basename.toLowerCase() === SIGNUP_PAGE;
+}
+
+/** Mobile confirm JPG: flat Korean display names under A안/B안/C안 */
+export function mobileVariantDir(htmlFile, htmlRoot) {
+  return path.relative(htmlRoot, htmlFile).split(path.sep)[0];
+}
+
+export function signupStepOutPath(htmlFile, htmlRoot, outRoot, step, { mobile = false } = {}) {
+  if (mobile) {
+    return path.join(outRoot, mobileVariantDir(htmlFile, htmlRoot), `회원가입_step${step}.jpg`);
+  }
+  const rel = path.relative(htmlRoot, htmlFile).replace(/signup\.html$/i, `signup-step${step}.jpg`);
+  return path.join(outRoot, rel);
+}
+
+export function signupStepRelPath(htmlFile, htmlRoot, step, { mobile = false } = {}) {
+  if (mobile) {
+    return `${mobileVariantDir(htmlFile, htmlRoot)}/회원가입_step${step}.jpg`;
+  }
+  return path.relative(htmlRoot, htmlFile).replace(/signup\.html$/i, `signup-step${step}.jpg`);
 }
 
 /** A안 게시판·접수 더미 localStorage (ContentStore/BoardStore) */
@@ -251,7 +277,8 @@ export const PHOTO_PREP_PAGES = new Set(['mypage-profile.html', 'signup.html']);
 
 export function needsProfilePhotoPrep(base, step) {
   if (base === 'register.html' && step != null && step >= 3) return true;
-  return PHOTO_PREP_PAGES.has(base.toLowerCase());
+  if (base === 'signup.html' && step != null && step >= 2) return true;
+  return PHOTO_PREP_PAGES.has(base.toLowerCase()) && step == null;
 }
 
 /** @param {import('puppeteer').Page} page */
@@ -488,7 +515,115 @@ export async function prepareBoardPage(page, basename) {
   await prepareBoardList(page, basename);
 }
 
-/** @param {import('puppeteer').Page} page @param {number} step @param {VariantKind} kind */
+/** @param {import('puppeteer').Page} page @param {number} step @param {string} kind */
+export async function prepareSignupStep(page, step, kind) {
+  const photo = getDummyPortraitDataUrl();
+  await page.evaluate(
+    (s, variant, photoUrl) => {
+      if (variant === 'A_FO') {
+        const demoEmail = 'demo.signup@topik-myanmar.example';
+        const emailEl = document.getElementById('email');
+        if (emailEl) emailEl.value = demoEmail;
+        try {
+          sessionStorage.setItem(
+            'tm_signup_email_verify_v1',
+            JSON.stringify({
+              code: '123456',
+              email: demoEmail.toLowerCase(),
+              verified: true,
+              exp: Date.now() + 3600000,
+              expVerified: Date.now() + 86400000,
+            })
+          );
+        } catch (e) {}
+        const badge = document.getElementById('signupEmailVerifiedBadge');
+        if (badge) badge.classList.add('show');
+        if (typeof refreshSignupStep1Next === 'function') refreshSignupStep1Next();
+
+        if (s >= 2) {
+          document.getElementById('nameKr').value = '홍길동';
+          document.getElementById('nameEn').value = 'HONG GILDONG';
+          document.getElementById('birthdate').value = '1990-01-15';
+          document.getElementById('phone').value = '+95-9-1234567';
+          const g = document.querySelector('input[name="gender"][value="M"]');
+          if (g) g.checked = true;
+          document.getElementById('pw').value = 'Topik@99';
+          document.getElementById('pwConfirm').value = 'Topik@99';
+          if (typeof signupPhotoDataUrl !== 'undefined') signupPhotoDataUrl = photoUrl;
+          const img = document.getElementById('signupPreviewImg');
+          if (img) {
+            img.src = photoUrl;
+            img.style.display = 'block';
+          }
+          const phIcon = document.getElementById('signupPhIcon');
+          const phText = document.getElementById('signupPhText');
+          if (phIcon) phIcon.style.display = 'none';
+          if (phText) phText.style.display = 'none';
+          if (typeof refreshSignupStep2Next === 'function') refreshSignupStep2Next();
+        }
+
+        if (typeof goStep === 'function') goStep(s);
+        return;
+      }
+
+      if (variant === 'B_FO') {
+        if (s === 1) {
+          document.getElementById('signup-email').value = 'demo.signup@topik-myanmar.example';
+          document.getElementById('otp-section').style.display = 'block';
+          document.getElementById('verified-badge').classList.add('is-show');
+          if (typeof emailVerified !== 'undefined') emailVerified = true;
+          if (typeof setStep1Next === 'function') setStep1Next(true);
+          if (typeof goStep === 'function') goStep(1);
+          return;
+        }
+        document.getElementById('signup-email').value = 'demo.signup@topik-myanmar.example';
+        document.getElementById('verified-badge').classList.add('is-show');
+        if (typeof emailVerified !== 'undefined') emailVerified = true;
+        if (typeof isGoogleSignup !== 'undefined') isGoogleSignup = false;
+        document.getElementById('name-ko').value = '홍길동';
+        document.getElementById('name-en').value = 'HONG GILDONG';
+        document.getElementById('birth').value = '1990-01-15';
+        document.getElementById('gender').value = 'M';
+        document.getElementById('nationality').value = 'MM';
+        document.getElementById('lang1').value = 'MM';
+        document.getElementById('phone').value = '+95-9-1234567';
+        document.getElementById('job').value = '1';
+        document.getElementById('motivation').value = '1';
+        document.getElementById('purpose').value = '1';
+        document.getElementById('pw').value = 'Topik@99';
+        document.getElementById('pw-confirm').value = 'Topik@99';
+        const pimg = document.getElementById('photo-img');
+        if (pimg) pimg.src = photoUrl;
+        if (typeof photoUploaded !== 'undefined') photoUploaded = true;
+        if (typeof goStep === 'function') goStep(s);
+        return;
+      }
+
+      if (variant === 'C_FO') {
+        if (s === 1) {
+          const em = document.getElementById('su-email');
+          if (em) em.value = 'demo.signup@topik-myanmar.example';
+          document.getElementById('otpRow')?.classList.remove('hidden');
+          document.getElementById('emailOk')?.classList.remove('hidden');
+          const b2 = document.getElementById('btnGoStep2');
+          if (b2) b2.disabled = false;
+          if (typeof go === 'function') go(1);
+          return;
+        }
+        document.getElementById('emailOk')?.classList.remove('hidden');
+        const b2 = document.getElementById('btnGoStep2');
+        if (b2) b2.disabled = false;
+        if (window.signupPhotoCtrl?.setDataUrl) signupPhotoCtrl.setDataUrl(photoUrl);
+        if (typeof go === 'function') go(s);
+      }
+    },
+    step,
+    kind,
+    photo
+  );
+}
+
+/** @param {import('puppeteer').Page} page @param {number} step @param {string} kind */
 export async function prepareRegisterStep(page, step, kind) {
   await page.evaluate(
     (s, variant, photo) => {

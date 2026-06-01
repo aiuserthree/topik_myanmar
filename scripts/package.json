@@ -8,7 +8,9 @@
     "jpg:both": "node html-to-jpg.mjs --both",
     "jpg:watch": "node html-to-jpg.mjs --watch",
     "jpg:watch:mobile": "node html-to-jpg.mjs --watch --mobile",
-    "jpg:watch:both": "node html-to-jpg.mjs --watch --both"
+    "jpg:watch:both": "node html-to-jpg.mjs --watch --both",
+    "jpg:signup": "node html-to-jpg.mjs --signup-only",
+    "jpg:signup:mobile": "node html-to-jpg.mjs --signup-only --mobile"
   },
   "dependencies": {
     "puppeteer-core": "^24.2.0"

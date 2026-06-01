@@ -13,6 +13,8 @@
  *   node scripts/html-to-jpg.mjs --watch
  *   node scripts/html-to-jpg.mjs --watch --mobile
  *   node scripts/html-to-jpg.mjs --watch --both
+ *   node scripts/html-to-jpg.mjs --signup-only   # 회원가입 1~3단계만
+ *   node scripts/html-to-jpg.mjs --signup-only --mobile   # 모바일 회원가입 1~3단계
  *   npm run jpg:watch          # (scripts/ 디렉터리에서)
  */
 import fs from 'fs';
@@ -29,7 +31,11 @@ import {
 import {
   isBoardPage,
   isRegisterPage,
+  isSignupPage,
   registerStepOutPath,
+  signupStepOutPath,
+  signupStepRelPath,
+  SIGNUP_STEPS,
   getBoardViews,
   boardViewOutPath,
   buildAuthClearSeed,
@@ -40,6 +46,7 @@ import {
   prepareBoardView,
   prepareProfilePhoto,
   prepareRegisterStep,
+  prepareSignupStep,
 } from './screenshot-seeds.mjs';
 
 const CAPTURE_AUTH_SEED = buildCaptureAuthSeed();
@@ -56,6 +63,7 @@ const argv = process.argv.slice(2);
 const isWatch = argv.includes('--watch');
 const isBoth = argv.includes('--both');
 const isMobileOnly = argv.includes('--mobile') && !isBoth;
+const isSignupOnly = argv.includes('--signup-only');
 
 const DESKTOP_VIEWPORT = { width: 1440, height: 900, deviceScaleFactor: 2 };
 const MOBILE_VIEWPORT = {
@@ -102,6 +110,7 @@ function collectHtmlFiles() {
     if (!fs.existsSync(dir)) continue;
     for (const name of fs.readdirSync(dir)) {
       if (!name.endsWith('.html')) continue;
+      if (isSignupOnly && name.toLowerCase() !== 'signup.html') continue;
       const full = path.join(dir, name);
       const { allowed } = classifyHtmlFile(full, HTML_ROOT);
       if (allowed) files.push(full);
@@ -115,7 +124,7 @@ function outPath(htmlFile, outRoot) {
   return path.join(outRoot, rel.replace(/\.html$/i, '.jpg'));
 }
 
-function buildCaptureJobs(files, outRoot) {
+function buildCaptureJobs(files, outRoot, { mobile = false } = {}) {
   const jobs = [];
   for (const htmlFile of files) {
     const base = path.basename(htmlFile);
@@ -129,6 +138,17 @@ function buildCaptureJobs(files, outRoot) {
           step,
           view: null,
           dest: registerStepOutPath(htmlFile, HTML_ROOT, outRoot, step),
+        });
+      }
+    } else if (isSignupPage(base)) {
+      for (let step = 1; step <= SIGNUP_STEPS; step++) {
+        jobs.push({
+          htmlFile,
+          base,
+          kind,
+          step,
+          view: null,
+          dest: signupStepOutPath(htmlFile, HTML_ROOT, outRoot, step, { mobile }),
         });
       }
     } else if (isBoardPage(base)) {
@@ -272,7 +292,13 @@ async function waitForPageReady(page, job) {
 
   if (step != null) {
     await page.waitForSelector(
-      `#regStep${step}, #panel-${step}.is-active, #panel-${step}, .step-pane[data-s="${step}"].active`,
+      [
+        `#regStep${step}`,
+        `#page${step}`,
+        `#panel-${step}.is-active`,
+        `#panel-${step}`,
+        `.step-pane[data-s="${step}"].active`,
+      ].join(', '),
       { timeout: 15000 }
     ).catch(() =>
       page.waitForSelector('.step-pane.active, .step-panel.is-active', { timeout: 5000 })
@@ -341,7 +367,11 @@ async function screenshot(page, job) {
   await waitForPageReady(page, job);
 
   if (job.step != null) {
-    await prepareRegisterStep(page, job.step, job.kind);
+    if (isRegisterPage(job.base)) {
+      await prepareRegisterStep(page, job.step, job.kind);
+    } else if (isSignupPage(job.base)) {
+      await prepareSignupStep(page, job.step, job.kind);
+    }
     if (needsProfilePhotoPrep(job.base, job.step)) {
       await prepareProfilePhoto(page, job.base, job.step, job.kind);
     }
@@ -373,7 +403,7 @@ async function screenshot(page, job) {
   });
 }
 
-function allowedJpgRelPaths(files) {
+function allowedJpgRelPaths(files, { mobile = false } = {}) {
   const rels = [];
   for (const f of files) {
     const rel = path.relative(HTML_ROOT, f);
@@ -381,6 +411,10 @@ function allowedJpgRelPaths(files) {
     if (isRegisterPage(base)) {
       for (let s = 1; s <= 4; s++) {
         rels.push(rel.replace(/register\.html$/i, `register-step${s}.jpg`));
+      }
+    } else if (isSignupPage(base)) {
+      for (let s = 1; s <= SIGNUP_STEPS; s++) {
+        rels.push(signupStepRelPath(f, HTML_ROOT, s, { mobile }));
       }
     } else if (isBoardPage(base)) {
       for (const view of getBoardViews(base)) {
@@ -393,6 +427,32 @@ function allowedJpgRelPaths(files) {
     }
   }
   return rels;
+}
+
+/** --signup-only: remove legacy signup.jpg and stray signup-stepN only */
+function pruneSignupOrphanJpgs(outRoot, allowedRels, { mobile = false } = {}) {
+  if (!fs.existsSync(outRoot)) return;
+  const allowed = new Set(allowedRels);
+  const signupLegacy = mobile
+    ? new Set(['A안/회원가입.jpg', 'B안/회원가입.jpg', 'C안/회원가입.jpg'])
+    : new Set(['A안/signup.jpg', 'B안/signup.jpg', 'C안/FO/signup.jpg']);
+  const walk = (dir, prefix = '') => {
+    for (const name of fs.readdirSync(dir)) {
+      const full = path.join(dir, name);
+      if (fs.statSync(full).isDirectory()) walk(full, prefix ? `${prefix}/${name}` : name);
+      else if (name.endsWith('.jpg')) {
+        const rel = prefix ? `${prefix}/${name}` : name;
+        const isEnglishStep = /\/signup-step\d+\.jpg$/i.test(rel) && !allowed.has(rel);
+        const isKoreanLegacy =
+          mobile && /^[^/]+\/회원가입\.jpg$/i.test(rel) && !/^[^/]+\/회원가입_step\d+\.jpg$/i.test(rel);
+        if (signupLegacy.has(rel) || isEnglishStep || isKoreanLegacy) {
+          fs.unlinkSync(full);
+          console.log(`DEL orphan ${rel}`);
+        }
+      }
+    }
+  };
+  walk(outRoot);
 }
 
 function pruneOrphanJpgs(outRoot, allowedRels) {
@@ -542,7 +602,7 @@ async function runBatch({ prune = true } = {}) {
 
   for (const { mobile } of captureModes()) {
     const outRoot = outRootFor(mobile);
-    const jobs = buildCaptureJobs(files, outRoot);
+    const jobs = buildCaptureJobs(files, outRoot, { mobile });
     const mode = mobile ? 'mobile (390px)' : 'desktop (1440px)';
     console.log(`Mode: ${mode} · IA allowlist · ${jobs.length} captures`);
     console.log(`Output → ${outRoot}`);
@@ -554,7 +614,10 @@ async function runBatch({ prune = true } = {}) {
     totalFail += fail;
     allErrors.push(...errors.map((e) => ({ ...e, mobile })));
 
-    if (prune) pruneOrphanJpgs(outRoot, allowedJpgRelPaths(files));
+    if (prune && !isSignupOnly) pruneOrphanJpgs(outRoot, allowedJpgRelPaths(files, { mobile }));
+    if (prune && isSignupOnly) {
+      pruneSignupOrphanJpgs(outRoot, allowedJpgRelPaths(files, { mobile }), { mobile });
+    }
   }
 
   await browser.close();
@@ -615,7 +678,7 @@ async function runWatch() {
 
         for (const { mobile } of modes) {
           const outRoot = outRootFor(mobile);
-          const jobs = buildCaptureJobs(htmlFiles, outRoot);
+          const jobs = buildCaptureJobs(htmlFiles, outRoot, { mobile });
           const session = sessions.get(mobile);
           await session.runJobs(jobs, { quiet: true });
         }
