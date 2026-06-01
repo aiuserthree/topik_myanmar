@@ -38,6 +38,7 @@ const B_FO = new Set([
   'faq.html',
   'login.html',
   'signup.html',
+  'password-reset.html',
 ]);
 
 /** A안 — 4분할 guide/rules·게시판 파일명이 IA와 다름 */

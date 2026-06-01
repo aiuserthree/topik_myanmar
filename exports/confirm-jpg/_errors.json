@@ -1,0 +1,14 @@
+[
+  {
+    "file": "/Users/jhcho/Documents/Myanmar/html/B안/password-reset.html",
+    "step": null,
+    "error": "Waiting for selector `#panelForm.active` failed",
+    "mobile": false
+  },
+  {
+    "file": "/Users/jhcho/Documents/Myanmar/html/C안/FO/password-reset.html",
+    "step": null,
+    "error": "Waiting for selector `#panelForm.active` failed",
+    "mobile": false
+  }
+]

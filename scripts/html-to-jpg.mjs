@@ -15,6 +15,7 @@
  *   node scripts/html-to-jpg.mjs --watch --both
  *   node scripts/html-to-jpg.mjs --signup-only   # 회원가입 1~3단계만
  *   node scripts/html-to-jpg.mjs --signup-only --mobile   # 모바일 회원가입 1~3단계
+ *   node scripts/html-to-jpg.mjs --only password-reset,signup-complete,register-complete
  *   npm run jpg:watch          # (scripts/ 디렉터리에서)
  */
 import fs from 'fs';
@@ -47,6 +48,13 @@ import {
   prepareProfilePhoto,
   prepareRegisterStep,
   prepareSignupStep,
+  needsModalCompleteCapture,
+  modalCompleteOutPath,
+  modalCompleteRelPath,
+  pageOutPath,
+  pageOutRelPath,
+  prepareSignupCompleteModal,
+  prepareRegisterCompleteModal,
 } from './screenshot-seeds.mjs';
 
 const CAPTURE_AUTH_SEED = buildCaptureAuthSeed();
@@ -64,6 +72,14 @@ const isWatch = argv.includes('--watch');
 const isBoth = argv.includes('--both');
 const isMobileOnly = argv.includes('--mobile') && !isBoth;
 const isSignupOnly = argv.includes('--signup-only');
+const onlyIdx = argv.indexOf('--only');
+const onlyPatterns =
+  onlyIdx >= 0 && argv[onlyIdx + 1]
+    ? argv[onlyIdx + 1]
+        .split(',')
+        .map((s) => s.trim().toLowerCase())
+        .filter(Boolean)
+    : null;
 
 const DESKTOP_VIEWPORT = { width: 1440, height: 900, deviceScaleFactor: 2 };
 const MOBILE_VIEWPORT = {
@@ -104,6 +120,19 @@ function captureModes() {
   return [{ mobile: false }];
 }
 
+function jobMatchesOnly(job) {
+  if (!onlyPatterns?.length) return true;
+  const rel = path.relative(HTML_ROOT, job.htmlFile).toLowerCase();
+  const stem = job.base.toLowerCase().replace(/\.html$/i, '');
+  return onlyPatterns.some((p) => {
+    if (p === stem) return true;
+    if (p === 'signup-complete' && job.modalComplete === 'signup-complete') return true;
+    if (p === 'register-complete' && job.modalComplete === 'register-complete') return true;
+    if (rel.includes(p)) return true;
+    return false;
+  });
+}
+
 function collectHtmlFiles() {
   const files = [];
   for (const dir of SCAN_ROOTS) {
@@ -119,11 +148,6 @@ function collectHtmlFiles() {
   return files.sort();
 }
 
-function outPath(htmlFile, outRoot) {
-  const rel = path.relative(HTML_ROOT, htmlFile);
-  return path.join(outRoot, rel.replace(/\.html$/i, '.jpg'));
-}
-
 function buildCaptureJobs(files, outRoot, { mobile = false } = {}) {
   const jobs = [];
   for (const htmlFile of files) {
@@ -137,7 +161,19 @@ function buildCaptureJobs(files, outRoot, { mobile = false } = {}) {
           kind,
           step,
           view: null,
+          modalComplete: null,
           dest: registerStepOutPath(htmlFile, HTML_ROOT, outRoot, step),
+        });
+      }
+      if (needsModalCompleteCapture(kind, base)) {
+        jobs.push({
+          htmlFile,
+          base,
+          kind,
+          step: null,
+          view: null,
+          modalComplete: 'register-complete',
+          dest: modalCompleteOutPath(htmlFile, HTML_ROOT, outRoot, 'register-complete', { mobile }),
         });
       }
     } else if (isSignupPage(base)) {
@@ -148,7 +184,19 @@ function buildCaptureJobs(files, outRoot, { mobile = false } = {}) {
           kind,
           step,
           view: null,
+          modalComplete: null,
           dest: signupStepOutPath(htmlFile, HTML_ROOT, outRoot, step, { mobile }),
+        });
+      }
+      if (needsModalCompleteCapture(kind, base)) {
+        jobs.push({
+          htmlFile,
+          base,
+          kind,
+          step: null,
+          view: null,
+          modalComplete: 'signup-complete',
+          dest: modalCompleteOutPath(htmlFile, HTML_ROOT, outRoot, 'signup-complete', { mobile }),
         });
       }
     } else if (isBoardPage(base)) {
@@ -159,6 +207,7 @@ function buildCaptureJobs(files, outRoot, { mobile = false } = {}) {
           kind,
           step: null,
           view,
+          modalComplete: null,
           dest: boardViewOutPath(htmlFile, HTML_ROOT, outRoot, view),
         });
       }
@@ -169,11 +218,12 @@ function buildCaptureJobs(files, outRoot, { mobile = false } = {}) {
         kind,
         step: null,
         view: null,
-        dest: outPath(htmlFile, outRoot),
+        modalComplete: null,
+        dest: pageOutPath(htmlFile, HTML_ROOT, outRoot, { mobile }),
       });
     }
   }
-  return jobs;
+  return onlyPatterns?.length ? jobs.filter(jobMatchesOnly) : jobs;
 }
 
 function findScanRoot(filePath) {
@@ -307,7 +357,18 @@ async function waitForPageReady(page, job) {
   }
 
   if (base === 'password-reset.html') {
-    await page.waitForSelector('#panelForm.active', { timeout: 15000 });
+    await page.waitForFunction(
+      () => {
+        const el = document.getElementById('panelForm');
+        return !!(
+          el &&
+          (el.classList.contains('active') ||
+            el.classList.contains('is-show') ||
+            el.classList.contains('show'))
+        );
+      },
+      { timeout: 15000 }
+    );
     return;
   }
 
@@ -375,6 +436,10 @@ async function screenshot(page, job) {
     if (needsProfilePhotoPrep(job.base, job.step)) {
       await prepareProfilePhoto(page, job.base, job.step, job.kind);
     }
+  } else if (job.modalComplete === 'signup-complete') {
+    await prepareSignupCompleteModal(page, job.kind);
+  } else if (job.modalComplete === 'register-complete') {
+    await prepareRegisterCompleteModal(page, job.kind);
   } else if (isBoardPage(job.base) && job.view) {
     await prepareBoardView(page, job.base, job.view, job.kind);
   } else if (needsProfilePhotoPrep(job.base, null)) {
@@ -408,13 +473,20 @@ function allowedJpgRelPaths(files, { mobile = false } = {}) {
   for (const f of files) {
     const rel = path.relative(HTML_ROOT, f);
     const base = path.basename(f);
+    const { kind } = classifyHtmlFile(f, HTML_ROOT);
     if (isRegisterPage(base)) {
       for (let s = 1; s <= 4; s++) {
         rels.push(rel.replace(/register\.html$/i, `register-step${s}.jpg`));
       }
+      if (needsModalCompleteCapture(kind, base)) {
+        rels.push(modalCompleteRelPath(f, HTML_ROOT, 'register-complete', { mobile }));
+      }
     } else if (isSignupPage(base)) {
       for (let s = 1; s <= SIGNUP_STEPS; s++) {
         rels.push(signupStepRelPath(f, HTML_ROOT, s, { mobile }));
+      }
+      if (needsModalCompleteCapture(kind, base)) {
+        rels.push(modalCompleteRelPath(f, HTML_ROOT, 'signup-complete', { mobile }));
       }
     } else if (isBoardPage(base)) {
       for (const view of getBoardViews(base)) {
@@ -423,7 +495,7 @@ function allowedJpgRelPaths(files, { mobile = false } = {}) {
         rels.push(rel.replace(/\.html$/i, `${suffix}.jpg`));
       }
     } else {
-      rels.push(rel.replace(/\.html$/i, '.jpg'));
+      rels.push(pageOutRelPath(f, HTML_ROOT, { mobile }));
     }
   }
   return rels;
@@ -475,6 +547,9 @@ function pruneOrphanJpgs(outRoot, allowedRels) {
 }
 
 function watchLogDest(job) {
+  if (job.modalComplete) {
+    return path.relative(HTML_ROOT, job.dest);
+  }
   return path.relative(HTML_ROOT, job.htmlFile).replace(/\.html$/i, '') +
     (job.step ? `-step${job.step}` : '') +
     (job.view === 'detail' ? '-detail' : job.view === 'write' ? '-write' : job.view === 'open' ? '-open' : '') +
@@ -552,6 +627,7 @@ async function createCaptureSession(browser, mobile) {
           if (seed) tags.push('logged-in');
           if (isLoggedOutCapturePage(job.kind, job.base)) tags.push('logged-out');
           if (job.step) tags.push(`step${job.step}`);
+          if (job.modalComplete) tags.push(job.modalComplete);
           if (needsFoStorageSeed(job.kind, job.base)) tags.push('seeded');
           console.log(`OK  ${label}${tags.length ? ' (' + tags.join(', ') + ')' : ''}`);
         }
@@ -614,7 +690,7 @@ async function runBatch({ prune = true } = {}) {
     totalFail += fail;
     allErrors.push(...errors.map((e) => ({ ...e, mobile })));
 
-    if (prune && !isSignupOnly) pruneOrphanJpgs(outRoot, allowedJpgRelPaths(files, { mobile }));
+    if (prune && !isSignupOnly && !onlyPatterns?.length) pruneOrphanJpgs(outRoot, allowedJpgRelPaths(files, { mobile }));
     if (prune && isSignupOnly) {
       pruneSignupOrphanJpgs(outRoot, allowedJpgRelPaths(files, { mobile }), { mobile });
     }

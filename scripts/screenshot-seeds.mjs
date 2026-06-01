@@ -52,6 +52,40 @@ export function mobileVariantDir(htmlFile, htmlRoot) {
   return path.relative(htmlRoot, htmlFile).split(path.sep)[0];
 }
 
+/** Standalone FO pages → flat Korean JPG name (mobile) */
+const MOBILE_STANDALONE_NAMES = {
+  'password-reset.html': '비밀번호 재설정.jpg',
+  'signup-complete.html': '회원가입완료.jpg',
+  'register-complete.html': 'TOPIK접수_접수완료.jpg',
+};
+
+/** B/C modal complete captures → same Korean names as A안 standalone pages */
+const MOBILE_MODAL_COMPLETE_NAMES = {
+  'signup-complete': '회원가입완료.jpg',
+  'register-complete': 'TOPIK접수_접수완료.jpg',
+};
+
+export function pageOutPath(htmlFile, htmlRoot, outRoot, { mobile = false } = {}) {
+  if (mobile) {
+    const korean = MOBILE_STANDALONE_NAMES[path.basename(htmlFile).toLowerCase()];
+    if (korean) {
+      return path.join(outRoot, mobileVariantDir(htmlFile, htmlRoot), korean);
+    }
+  }
+  const rel = path.relative(htmlRoot, htmlFile);
+  return path.join(outRoot, rel.replace(/\.html$/i, '.jpg'));
+}
+
+export function pageOutRelPath(htmlFile, htmlRoot, { mobile = false } = {}) {
+  if (mobile) {
+    const korean = MOBILE_STANDALONE_NAMES[path.basename(htmlFile).toLowerCase()];
+    if (korean) {
+      return `${mobileVariantDir(htmlFile, htmlRoot)}/${korean}`;
+    }
+  }
+  return path.relative(htmlRoot, htmlFile).replace(/\.html$/i, '.jpg');
+}
+
 export function signupStepOutPath(htmlFile, htmlRoot, outRoot, step, { mobile = false } = {}) {
   if (mobile) {
     return path.join(outRoot, mobileVariantDir(htmlFile, htmlRoot), `회원가입_step${step}.jpg`);
@@ -76,6 +110,34 @@ export function needsFoStorageSeed(kind, basename) {
 export function registerStepOutPath(htmlFile, htmlRoot, outRoot, step) {
   const rel = path.relative(htmlRoot, htmlFile).replace(/register\.html$/i, `register-step${step}.jpg`);
   return path.join(outRoot, rel);
+}
+
+/** B/C — signup.html · register.html 내 완료 모달 → 별도 JPG (A안 standalone 페이지명과 동일) */
+export function needsModalCompleteCapture(kind, basename) {
+  if (kind !== 'B_FO' && kind !== 'C_FO') return false;
+  const b = basename.toLowerCase();
+  return b === SIGNUP_PAGE || b === REGISTER_PAGE;
+}
+
+export function modalCompleteOutPath(htmlFile, htmlRoot, outRoot, completeName, { mobile = false } = {}) {
+  if (mobile) {
+    const korean = MOBILE_MODAL_COMPLETE_NAMES[completeName];
+    if (korean) {
+      return path.join(outRoot, mobileVariantDir(htmlFile, htmlRoot), korean);
+    }
+  }
+  const rel = path.relative(htmlRoot, htmlFile).replace(/[^/\\]+\.html$/i, `${completeName}.jpg`);
+  return path.join(outRoot, rel);
+}
+
+export function modalCompleteRelPath(htmlFile, htmlRoot, completeName, { mobile = false } = {}) {
+  if (mobile) {
+    const korean = MOBILE_MODAL_COMPLETE_NAMES[completeName];
+    if (korean) {
+      return `${mobileVariantDir(htmlFile, htmlRoot)}/${korean}`;
+    }
+  }
+  return path.relative(htmlRoot, htmlFile).replace(/[^/\\]+\.html$/i, `${completeName}.jpg`);
 }
 
 /** @returns {('list'|'detail'|'write'|'open')[]} */
@@ -707,4 +769,64 @@ export async function prepareRegisterStep(page, step, kind) {
     kind,
     getDummyPortraitDataUrl()
   );
+}
+
+/** @param {import('puppeteer').Page} page @param {string} kind */
+export async function prepareSignupCompleteModal(page, kind) {
+  await prepareSignupStep(page, SIGNUP_STEPS, kind);
+  await page.evaluate((variant) => {
+    if (variant === 'B_FO') {
+      if (window.TPKM) window.TPKM.openModal('complete-modal');
+      else document.getElementById('complete-modal')?.classList.add('is-show');
+      return;
+    }
+    if (variant === 'C_FO') {
+      if (window.TPKM) window.TPKM.openModal('modalDone');
+      else document.getElementById('modalDone')?.classList.add('open');
+    }
+  }, kind);
+  await page
+    .waitForFunction(
+      (variant) => {
+        if (variant === 'B_FO') {
+          const m = document.getElementById('complete-modal');
+          return !!(m && (m.classList.contains('is-show') || m.classList.contains('open')));
+        }
+        const m = document.getElementById('modalDone');
+        return !!(m && m.classList.contains('open'));
+      },
+      { timeout: 10000 },
+      kind
+    )
+    .catch(() => {});
+}
+
+/** @param {import('puppeteer').Page} page @param {string} kind */
+export async function prepareRegisterCompleteModal(page, kind) {
+  await prepareRegisterStep(page, 4, kind);
+  await page.evaluate((variant) => {
+    if (variant === 'B_FO') {
+      if (window.TPKM) window.TPKM.openModal('complete-modal');
+      else document.getElementById('complete-modal')?.classList.add('is-show');
+      return;
+    }
+    if (variant === 'C_FO') {
+      if (window.TPKM) window.TPKM.openModal('modalDone');
+      else document.getElementById('modalDone')?.classList.add('open');
+    }
+  }, kind);
+  await page
+    .waitForFunction(
+      (variant) => {
+        if (variant === 'B_FO') {
+          const m = document.getElementById('complete-modal');
+          return !!(m && (m.classList.contains('is-show') || m.classList.contains('open')));
+        }
+        const m = document.getElementById('modalDone');
+        return !!(m && m.classList.contains('open'));
+      },
+      { timeout: 10000 },
+      kind
+    )
+    .catch(() => {});
 }
