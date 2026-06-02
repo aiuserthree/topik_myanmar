@@ -1,195 +1,278 @@
 #!/usr/bin/env python3
-"""Apply audit statuses to 개발자_체크리스트.md completion column."""
+"""Audit and refresh docs/기능정의서/개발자_체크리스트.md completion column.
+
+Modes
+-----
+  --validate   Compare top summary vs parsed row counts (default if no flag).
+  --dry-run    Print artifact hints and summary diff; do not write.
+  --apply      Apply high-confidence artifact hints + refresh summary block.
+
+Status symbols: [x] done  [p] partial  [ ] not started  [-] N/A / blocked
+
+Rules: scripts/checklist_rules.json maps repo artifacts → checklist NO ranges.
+"""
+from __future__ import annotations
+
+import argparse
+import json
 import re
+from dataclasses import dataclass, field
+from datetime import date
 from pathlib import Path
+from typing import Any
 
-ROOT = Path(__file__).resolve().parents[2]
-CHECKLIST = ROOT / "기능정의서" / "개발자_체크리스트.md"
+SCRIPT_DIR = Path(__file__).resolve().parent
+SPEC_DIR = SCRIPT_DIR.parent
+REPO_ROOT = SPEC_DIR.parents[1]
+CHECKLIST = SPEC_DIR / "개발자_체크리스트.md"
+RULES_FILE = SCRIPT_DIR / "checklist_rules.json"
 
-# [x]=prototype/verified done  [p]=partial  [ ]=not started  [-]=N/A or policy-blocked
-STATUSES: dict[int, str] = {}
+TOTAL_ITEMS = 484
+STATUS_ORDER = ("[x]", "[p]", "[ ]", "[-]")
 
-def set_range(start: int, end: int, mark: str):
-    for i in range(start, end + 1):
-        STATUSES[i] = mark
-
-# --- FO 1-83 (html/A안 primary deploy line) ---
-for i in range(1, 4):
-    STATUSES[i] = "[x]"  # GNB 4 menus, aria-current, auth branch
-STATUSES[4] = "[x]"  # logout confirm
-STATUSES[5] = "[x]"  # i18n 3 lang
-STATUSES[6] = "[x]"  # localStorage lang
-STATUSES[7] = "[p]"  # Padauk → Noto Sans Myanmar fallback
-STATUSES[8] = "[p]"  # i18n keys: main nav yes; all new page body partial
-for i in range(9, 11):
-    STATUSES[i] = "[x]"  # mobile drawer ESC/outside
-STATUSES[11] = "[p]"  # aria-expanded yes; focus trap no
-STATUSES[12] = "[x]"  # login guard 4 menus, admit excluded
-STATUSES[13] = "[x]"  # ?next=
-STATUSES[14] = "[x]"  # footer i18n
-STATUSES[15] = "[x]"  # footer _blank
-STATUSES[16] = "[x]"  # D-Day
-STATUSES[17] = "[p]"  # hero CTA: guard on load not href rewrite
-STATUSES[18] = "[x]"  # notice preview localStorage
-STATUSES[19] = "[x]"  # notice click → detail
-STATUSES[20] = "[p]"  # schedule static on home
-STATUSES[21] = "[x]"  # quicklinks
-STATUSES[22] = "[x]"  # FAQ accordion home
-STATUSES[23] = "[p]"  # guide: A안 guide.html# not separate files
-STATUSES[24] = "[p]"  # guide external links partial
-for i in range(25, 28):
-    STATUSES[i] = "[p]"  # guide sections in single page
-STATUSES[28] = "[p]"  # guide i18n partial
-for i in range(29, 35):
-    STATUSES[i] = "[p]"  # rules.html sections; fee 0526 in A안
-STATUSES[35] = "[p]"
-STATUSES[36] = "[x]"  # apply-howto
-for i in range(37, 50):
-    STATUSES[i] = "[x]"  # register wizard + BO sync localStorage
-STATUSES[50] = "[p]"  # complete modal: confirm not dedicated modal component
-for i in range(51, 56):
-    STATUSES[i] = "[x]"  # mypage cards, badges, cancel
-STATUSES[56] = "[p]"  # print CSS exists elsewhere; mypage print partial
-for i in range(57, 61):
-    STATUSES[i] = "[x]"  # admit 0527 topik.go.kr only
-for i in range(61, 63):
-    STATUSES[i] = "[x]"  # notice SPA filter search
-STATUSES[63] = "[p]"  # view count session dedup partial
-for i in range(64, 71):
-    STATUSES[i] = "[x]"  # boards + inquiry comments (board-page.js)
-STATUSES[67] = "[p]"  # refund email: mock queue only
-STATUSES[68] = "[x]"  # status chips
-STATUSES[71] = "[x]"  # FAQ page
-for i in range(72, 81):
-    STATUSES[i] = "[x]"  # signup/login/profile 0527 incl. photo resync
-STATUSES[81] = "[p]"  # 6mo password: UI partial, email template gap
-STATUSES[82] = "[x]"  # withdraw
-STATUSES[83] = "[x]"  # no membership tiers (excluded by design)
-
-# --- BO 84-142 ---
-for i in range(84, 142):
-    STATUSES[i] = "[x]"  # A안 admin.html + shared BO libs prototype
-STATUSES[120] = "[p]"  # notice attachments partial
-STATUSES[141] = "[-]"  # audit retention policy blocked
-STATUSES[142] = "[p]"  # site preview link partial
-
-# --- DB·이메일 143-195 ---
-set_range(143, 195, "[ ]")
-STATUSES[187] = "[x]"  # verified: FO 접수완료 no email (code/spec)
-STATUSES[188] = "[x]"  # verified: 수험번호 부여 no email
-STATUSES[185] = "[p]"  # gap templates in 시안/email; SMTP not wired
-STATUSES[186] = "[p]"
-STATUSES[189] = "[p]"  # C안 editorial 14 templates (시안/email)
-STATUSES[190] = "[p]"  # HTML email preview only
-
-# --- 인프라 196-221 ---
-set_range(196, 221, "[ ]")
-STATUSES[205] = "[p]"  # .gitignore/env pattern in docs; no .env committed
-STATUSES[206] = "[p]"  # vercel build only, no full CI/CD
-
-# --- dev-prod 222-268 ---
-set_range(222, 268, "[ ]")
-STATUSES[226] = "[p]"  # documented expectation; not deployed
-
-# --- 보안 269-293 ---
-set_range(269, 293, "[ ]")
-STATUSES[291] = "[-]"
-STATUSES[293] = "[-]"
-
-# --- 성능·테스트 294-335 ---
-STATUSES[294] = "[p]"  # localStorage; production plan not done
-STATUSES[295] = "[p]"
-STATUSES[296] = "[x]"  # admit 본인확인 removed per 0527
-STATUSES[297] = "[-]"
-for i in range(298, 300):
-    STATUSES[i] = "[p]"  # email templates mock
-STATUSES[300] = "[p]"  # i18n pages partial
-STATUSES[301] = "[-]"
-STATUSES[302] = "[p]"  # print CSS in admit legacy / mypage partial
-STATUSES[303] = "[p]"  # aria partial
-STATUSES[304] = "[p]"  # responsive: 1200px drawer not 768
-for i in range(305, 309):
-    STATUSES[i] = "[p]"  # BO client-side lock/export
-STATUSES[309] = "[p]"  # FO-BO sync via localStorage not realtime API
-STATUSES[310] = "[-]"
-set_range(311, 327, "[ ]")
-STATUSES[323] = "[p]"  # i18n testable manually
-STATUSES[325] = "[p]"
-STATUSES[328] = "[-]"
-for i in range(329, 331):
-    STATUSES[i] = "[p]"
-STATUSES[332] = "[x]"  # Myanmar LTR confirmed
-for i in range(333, 335):
-    STATUSES[i] = "[p]"
-
-# --- 미얀마 336-360 ---
-set_range(336, 360, "[ ]")
-STATUSES[341] = "[p]"  # mobile-first CSS exists
-STATUSES[345] = "[p]"  # Unicode; Zawgyi not enforced
-STATUSES[346] = "[p]"  # Noto not Padauk
-STATUSES[349] = "[p]"  # MMT in countdown +06:30
-STATUSES[351] = "[x]"  # offline payment only in copy
-STATUSES[352] = "[p]"  # MMK/USD in rules-fee content
-STATUSES[353] = "[p]"  # embassy links in guide/footer
-
-# --- 오픈준비 361-444 ---
-set_range(361, 444, "[ ]")
-STATUSES[387] = "[p]"  # rules-fee page exists; amounts need ops signoff
-STATUSES[424] = "[x]"  # same as FO 57-60
-STATUSES[425] = "[p]"  # mypage CTA to admit partial
-
-# --- 장애·법적 445-462 ---
-set_range(445, 462, "[ ]")
-for i in (456, 457, 458, 461, 462):
-    STATUSES[i] = "[-]"
-
-# --- 정책 합의 463-484 ---
-set_range(463, 484, "[-]")
-STATUSES[465] = "[x]"  # implemented in register: I+II same round
-STATUSES[483] = "[p]"  # i18n exists; ops policy open
-
-# Fill any missing as not started
-for i in range(1, 485):
-    STATUSES.setdefault(i, "[ ]")
-
-ROW_RE = re.compile(
-    r"^(\| (\d+) \|.*)\| (?:□|\[x\]|\[p\]|\[ \]|\[-\]) \|  \|  \|$",
+ROW_LINE_RE = re.compile(
+    r"^\| (\d+) \|(.*)\| (\[x\]|\[p\]|\[ \]|\[-\]) \|.*\|  \|$"
+)
+SUMMARY_ROW_RE = re.compile(
+    r"^\| 전체 \| (\d+) \| (\d+) \| (\d+) \| (\d+) \| 484 \|",
     re.MULTILINE,
+)
+INDEX_TOTAL_RE = re.compile(
+    r"(\| 합 계 \| \d+ \| \d+ \| \d+ \| 484 \| )x=\d+ p=\d+ □=\d+ -=\d+( \|)"
 )
 
 
-def section_stats(start: int, end: int):
-    c = {"[x]": 0, "[p]": 0, "[ ]": 0, "[-]": 0}
+@dataclass
+class ChecklistRow:
+    no: int
+    line_index: int
+    raw_line: str
+    body: str
+    memo: str
+    status: str
+
+    def formatted_line(self) -> str:
+        body = self.body.rstrip()
+        if self.memo:
+            idx = body.rfind("|")
+            if idx >= 0:
+                body = body[:idx] + f"| {self.memo} "
+        return f"| {self.no} |{body}| {self.status} |  |  |"
+
+
+@dataclass
+class Hint:
+    no: int
+    rule_id: str
+    current: str
+    suggested: str
+    memo_tag: str | None
+    confidence: str
+    reason: str
+
+
+@dataclass
+class AuditResult:
+    rows: dict[int, ChecklistRow] = field(default_factory=dict)
+    counts: dict[str, int] = field(default_factory=lambda: {s: 0 for s in STATUS_ORDER})
+    hints: list[Hint] = field(default_factory=list)
+    applied: list[Hint] = field(default_factory=list)
+
+
+def load_rules() -> dict[str, Any]:
+    with RULES_FILE.open(encoding="utf-8") as f:
+        return json.load(f)
+
+
+def parse_rows(text: str) -> dict[int, ChecklistRow]:
+    rows: dict[int, ChecklistRow] = {}
+    for idx, line in enumerate(text.splitlines()):
+        m = ROW_LINE_RE.match(line)
+        if not m:
+            continue
+        no = int(m.group(1))
+        if no < 1 or no > TOTAL_ITEMS:
+            continue
+        body = m.group(2)
+        status = m.group(3)
+        memo = _extract_memo(body)
+        rows[no] = ChecklistRow(
+            no=no,
+            line_index=idx,
+            raw_line=line,
+            body=body,
+            memo=memo,
+            status=status,
+        )
+    return rows
+
+
+def _extract_memo(body: str) -> str:
+    """Best-effort memo field (last segment before status); may be empty."""
+    parts = body.split("|")
+    if len(parts) >= 5:
+        return parts[-1].strip()
+    return ""
+
+
+def count_statuses(rows: dict[int, ChecklistRow]) -> dict[str, int]:
+    counts = {s: 0 for s in STATUS_ORDER}
+    for row in rows.values():
+        counts[row.status] += 1
+    return counts
+
+
+def section_counts(
+    rows: dict[int, ChecklistRow], start: int, end: int
+) -> dict[str, int]:
+    counts = {s: 0 for s in STATUS_ORDER}
     for i in range(start, end + 1):
-        c[STATUSES.get(i, "[ ]")] += 1
-    total = end - start + 1
-    done = c["[x]"] + c["[p]"]
-    return c, total, round(100 * done / total, 1) if total else 0
+        row = rows.get(i)
+        if row:
+            counts[row.status] += 1
+    return counts
 
 
-def main():
-    text = CHECKLIST.read_text(encoding="utf-8")
-    counts = {"[x]": 0, "[p]": 0, "[ ]": 0, "[-]": 0}
+def pct_done(counts: dict[str, int], total: int) -> float:
+    if not total:
+        return 0.0
+    return round(100 * (counts["[x]"] + counts["[p]"]) / total, 1)
 
-    def repl(m):
-        no = int(m.group(2))
-        mark = STATUSES.get(no, "[ ]")
-        counts[mark] = counts.get(mark, 0) + 1
-        return m.group(1) + f"| {mark} |  |  |"
 
-    new_text, n = ROW_RE.subn(repl, text)
-    if n < 400:
-        raise SystemExit(f"Expected ~484 row updates, got {n}")
+def artifact_exists(repo: Path, rule: dict[str, Any]) -> bool:
+    for rel in rule.get("paths", []):
+        if (repo / rel).exists():
+            return True
+    for pattern in rule.get("globs", []):
+        if list(repo.glob(pattern)):
+            return True
+    return False
 
-    # Legend + progress summary after title block
-    fo_c, _, fo_pct = section_stats(1, 83)
-    bo_c, _, bo_pct = section_stats(84, 142)
 
-    legend = """## 감사 범례 (2026-06-02)
+def memo_has_tag(memo: str, tag: str | None, memo_tags: dict[str, str]) -> bool:
+    if not tag:
+        return True
+    label = memo_tags.get(tag, tag)
+    return label in memo or f"**{label}**" in memo
+
+
+def append_memo_tag(memo: str, tag: str | None, memo_tags: dict[str, str]) -> str:
+    if not tag or memo_has_tag(memo, tag, memo_tags):
+        return memo
+    label = memo_tags[tag]
+    suffix = f" · **{label}**"
+    return memo + suffix if memo else label
+
+
+def collect_hints(
+    rows: dict[int, ChecklistRow], rules: dict[str, Any], repo: Path
+) -> list[Hint]:
+    hints: list[Hint] = []
+    memo_tags = rules.get("memo_tags", {})
+
+    for rule in rules.get("artifact_rules", []):
+        if not artifact_exists(repo, rule):
+            continue
+        for no in rule.get("nos", []):
+            row = rows.get(no)
+            if not row:
+                continue
+            suggested = rule.get("hint_status", "[p]")
+            tag = rule.get("memo_tag")
+            confidence = rule.get("confidence", "medium")
+            only_blank = rule.get("only_if_blank", True)
+
+            status_change = row.status != suggested
+            if only_blank and row.status != "[ ]":
+                status_change = False
+            elif suggested == "[p]" and row.status == "[x]":
+                status_change = False
+            elif suggested == "[ ]":
+                status_change = False
+
+            memo_change = tag and not memo_has_tag(row.memo, tag, memo_tags)
+            if not status_change and not memo_change:
+                continue
+
+            hints.append(
+                Hint(
+                    no=no,
+                    rule_id=rule["id"],
+                    current=row.status,
+                    suggested=suggested if status_change else row.status,
+                    memo_tag=tag,
+                    confidence=confidence,
+                    reason=rule.get("description", rule["id"]),
+                )
+            )
+    return sorted(hints, key=lambda h: (h.no, h.rule_id))
+
+
+def apply_hints(
+    rows: dict[int, ChecklistRow],
+    hints: list[Hint],
+    memo_tags: dict[str, str],
+    *,
+    high_confidence_only: bool,
+) -> list[Hint]:
+    applied: list[Hint] = []
+    for hint in hints:
+        if high_confidence_only and hint.confidence != "high":
+            continue
+        row = rows[hint.no]
+        changed = False
+
+        if hint.suggested != row.status:
+            if hint.confidence == "high" or not high_confidence_only:
+                row.status = hint.suggested
+                changed = True
+
+        if hint.memo_tag:
+            new_memo = append_memo_tag(row.memo, hint.memo_tag, memo_tags)
+            if new_memo != row.memo:
+                row.memo = new_memo
+                changed = True
+
+        if changed:
+            row.raw_line = row.formatted_line()
+            applied.append(hint)
+    return applied
+
+
+def rebuild_body(text: str, rows: dict[int, ChecklistRow]) -> str:
+    lines = text.splitlines()
+    for row in rows.values():
+        lines[row.line_index] = row.raw_line
+    return "\n".join(lines) + ("\n" if text.endswith("\n") else "")
+
+
+def parse_summary_counts(text: str) -> dict[str, int] | None:
+    m = SUMMARY_ROW_RE.search(text)
+    if not m:
+        return None
+    return {
+        "[x]": int(m.group(1)),
+        "[p]": int(m.group(2)),
+        "[ ]": int(m.group(3)),
+        "[-]": int(m.group(4)),
+    }
+
+
+def build_legend_block(rows: dict[int, ChecklistRow], rules: dict[str, Any]) -> str:
+    counts = count_statuses(rows)
+    fo = section_counts(rows, 1, 83)
+    bo = section_counts(rows, 84, 142)
+    fo_pct = pct_done(fo, 83)
+    bo_pct = pct_done(bo, 59)
+    proto_pct = pct_done(counts, TOTAL_ITEMS)
+    prod_pct = round(100 * counts["[x]"] / TOTAL_ITEMS, 1)
+    audit_date = date.today().isoformat()
+
+    return f"""## 감사 범례 ({audit_date})
 
 | 기호 | 의미 |
 | --- | --- |
-| `[x]` | **프로토타입 완료** — `html/A안`(배포 `public/`) 또는 B/C안 UI·localStorage 목업으로 요구사항 반영 |
+| `[x]` | **프로토타입 완료** — `html/C안/FO`(배포 `public/`) 또는 A/B안 UI·localStorage 목업으로 요구사항 반영 |
 | `[p]` | **부분** — UI/목업만 있거나 스펙 대비 미흡(백엔드·운영·정책 미확정 포함) |
 | `[ ]` | **미착수** — 코드·인프라 근거 없음 |
 | `[-]` | **N/A·보류** — 운영/법무/정책 합의 전제. 개발만으로 완료 불가 |
@@ -198,75 +281,137 @@ def main():
 
 | 구분 | `[x]` | `[p]` | `[ ]` | `[-]` | 합계 |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| 전체 | {x} | {p} | {sp} | {d} | 484 |
-| FO 화면 (1–83) | {fox} | {fop} | {fosp} | {fod} | 83 | **{fo_pct}%** (`[x]`+`[p]`) |
-| BO 화면 (84–142) | {box} | {bop} | {bosp} | {bod} | 59 | **{bo_pct}%** |
+| 전체 | {counts['[x]']} | {counts['[p]']} | {counts['[ ]']} | {counts['[-]']} | 484 |
+| FO 화면 (1–83) | {fo['[x]']} | {fo['[p]']} | {fo['[ ]']} | {fo['[-]']} | 83 | **{fo_pct}%** (`[x]`+`[p]`) |
+| BO 화면 (84–142) | {bo['[x]']} | {bo['[p]']} | {bo['[ ]']} | {bo['[-]']} | 59 | **{bo_pct}%** |
 | 프로토타입 전체 | — | — | — | — | 484 | **{proto_pct}%** (`[x]`+`[p]`) |
 | 프로덕션 (`[x]`만) | — | — | — | — | 484 | **{prod_pct}%** (DB·인프라·SMTP 미구현) |
 
-> 감사 기준: 배포 라인 `build.py` → `html/A안` → `public/`. DB·SMTP·서버·법무·정책 합의(463–484)는 프로덕션 미착수 또는 `[-]`.
+> 감사 기준: 배포 라인 `build.py` → `html/C안/FO` → `public/` (`배포_아키텍처.md`). DB·SMTP·서버·법무는 프로덕션 미착수. **정책 합의(463–484)** → `정책_합의_워크시트.md` 작성·고객사 확정 대기 (`[p]` `(워크시트)`). 규칙: `scripts/checklist_rules.json` · 감사: `scripts/audit_checklist_status.py`."""
 
-""".format(
-        x=counts["[x]"],
-        p=counts["[p]"],
-        sp=counts.get("[ ]", 0),
-        d=counts["[-]"],
-        fox=fo_c["[x]"], fop=fo_c["[p]"], fosp=fo_c["[ ]"], fod=fo_c["[-]"],
-        box=bo_c["[x]"], bop=bo_c["[p]"], bosp=bo_c["[ ]"], bod=bo_c["[-]"],
-        fo_pct=fo_pct, bo_pct=bo_pct,
-        proto_pct=round(100 * (counts["[x]"] + counts["[p]"]) / 484, 1),
-        prod_pct=round(100 * counts["[x]"] / 484, 1),
-    )
 
-    # Update INDEX completion row symbols
-    index_updates = [
-        ("| FO 화면 | 68 | 12 | 3 | 83 | □ 진행중 |", "| FO 화면 | 68 | 12 | 3 | 83 | 감사 반영 |"),
-        ("| BO 화면 | 54 | 4 | 1 | 59 | □ 진행중 |", "| BO 화면 | 54 | 4 | 1 | 59 | 감사 반영 |"),
-        ("| DB·이메일 | 45 | 8 | 0 | 53 | □ 진행중 |", "| DB·이메일 | 45 | 8 | 0 | 53 | 대부분 `[ ]` |"),
-        ("| 인프라·배포 | 21 | 5 | 0 | 26 | □ 진행중 |", "| 인프라·배포 | 21 | 5 | 0 | 26 | `[ ]` |"),
-        ("| dev-prod 서버 | 42 | 5 | 0 | 47 | □ 진행중 |", "| dev-prod 서버 | 42 | 5 | 0 | 47 | `[ ]` |"),
-        ("| 보안 검토 | 24 | 1 | 0 | 25 | □ 진행중 |", "| 보안 검토 | 24 | 1 | 0 | 25 | `[ ]` |"),
-        ("| 성능·테스트 | 24 | 17 | 1 | 42 | □ 진행중 |", "| 성능·테스트 | 24 | 17 | 1 | 42 | 혼합 |"),
-        ("| 미얀마 현지환경 | 19 | 6 | 0 | 25 | □ 진행중 |", "| 미얀마 현지환경 | 19 | 6 | 0 | 25 | `[ ]` |"),
-        ("| 오픈 준비·운영 | 71 | 12 | 1 | 84 | □ 진행중 |", "| 오픈 준비·운영 | 71 | 12 | 1 | 84 | `[ ]` |"),
-        ("| 장애·법적 | 10 | 8 | 0 | 18 | □ 진행중 |", "| 장애·법적 | 10 | 8 | 0 | 18 | `[-]`/`[ ]` |"),
-        ("| 정책 합의 | 13 | 9 | 0 | 22 | □ 진행중 |", "| 정책 합의 | 13 | 9 | 0 | 22 | `[-]` |"),
-        ("| 합 계 | 391 | 87 | 6 | 484 |  |", f"| 합 계 | 391 | 87 | 6 | 484 | x={counts['[x]']} p={counts['[p]']} □={counts.get('[ ]',0)} -={counts['[-]']} |"),
-    ]
-    for old, new in index_updates:
-        new_text = new_text.replace(old, new)
-
-    # Replace old usage legend line
-    new_text = new_text.replace(
-        "| 완료 여부 기호 | □ 미완료  /  ✅ 완료  /  ⏳ 진행중  /  🚫 보류·스킵 |  |  |  |  |",
-        "| 완료 여부 기호 | `[x]` `[p]` `[ ]` `[-]` — 상단 **감사 범례** 참고 |  |  |  |  |",
-    )
-
-    # Refresh legend block
-    if "## 감사 범례" in new_text:
-        new_text = re.sub(
-            r"## 감사 범례 \(2026-06-02\).*?(?=\n\n\| TOPIK Myanmar)",
+def refresh_legend(text: str, legend: str) -> str:
+    if "## 감사 범례" in text:
+        return re.sub(
+            r"## 감사 범례 \(.*?\).*?(?=\n\n\| TOPIK Myanmar)",
             legend.rstrip(),
-            new_text,
+            text,
             count=1,
             flags=re.DOTALL,
         )
-    else:
-        new_text = new_text.replace("## INDEX\n\n", "## INDEX\n\n" + legend + "\n", 1)
+    return text.replace("## INDEX\n\n", "## INDEX\n\n" + legend + "\n\n", 1)
 
-    # Update bottom legend section
-    new_text = re.sub(
-        r"\| □ \| 미완료 \|\n\| ✅ \| 완료 \|\n\| ⏳ \| 진행 중 \|\n\| 🚫 \| 보류 / 스킵 \|",
-        "| `[x]` | 프로토타입·검증 완료 |\n| `[p]` | 부분 완료 |\n| `[ ]` | 미착수 |\n| `[-]` | N/A·정책 보류 |",
-        new_text,
+
+def refresh_index_total(text: str, counts: dict[str, int]) -> str:
+    replacement = (
+        rf"\1x={counts['[x]']} p={counts['[p]']} □={counts['[ ]']} -={counts['[-]']}\2"
     )
+    return INDEX_TOTAL_RE.sub(replacement, text, count=1)
 
-    CHECKLIST.write_text(new_text, encoding="utf-8")
-    fo_c, fo_n, fo_pct = section_stats(1, 83)
-    bo_c, bo_n, bo_pct = section_stats(84, 142)
-    print(f"Updated {n} rows: {counts}")
-    print(f"FO 1-83: x={fo_c['[x]']} p={fo_c['[p]']} blank={fo_c.get('[ ]',0)} → prototype {fo_pct}%")
-    print(f"BO 84-142: x={bo_c['[x]']} p={bo_c['[p]']} blank={bo_c.get('[ ]',0)} → prototype {bo_pct}%")
+
+def run_audit(
+    *,
+    dry_run: bool = False,
+    apply: bool = False,
+    validate_only: bool = False,
+) -> AuditResult:
+    rules = load_rules()
+    text = CHECKLIST.read_text(encoding="utf-8")
+    rows = parse_rows(text)
+    if len(rows) != TOTAL_ITEMS:
+        raise SystemExit(f"Expected {TOTAL_ITEMS} checklist rows, parsed {len(rows)}")
+
+    result = AuditResult(rows=rows, counts=count_statuses(rows))
+    result.hints = collect_hints(rows, rules, REPO_ROOT)
+
+    summary_before = parse_summary_counts(text)
+    print(f"Parsed {len(rows)} rows: {result.counts}")
+    if summary_before:
+        print(f"Summary block:  {summary_before}")
+        if summary_before != result.counts:
+            print("  ⚠ summary mismatch — refresh recommended")
+
+    if result.hints:
+        print(f"\nArtifact hints ({len(result.hints)}):")
+        for h in result.hints[:30]:
+            tag = f" memo+{h.memo_tag}" if h.memo_tag else ""
+            print(
+                f"  NO.{h.no:3d} {h.current}→{h.suggested}{tag}"
+                f" [{h.confidence}] {h.rule_id}: {h.reason}"
+            )
+        if len(result.hints) > 30:
+            print(f"  ... and {len(result.hints) - 30} more")
+    else:
+        print("\nNo artifact hints (checklist matches repo artifacts).")
+
+    if validate_only:
+        return result
+
+    if dry_run and not apply:
+        print("\n(dry-run — no files written)")
+        return result
+
+    if apply:
+        result.applied = apply_hints(
+            rows,
+            result.hints,
+            rules.get("memo_tags", {}),
+            high_confidence_only=True,
+        )
+        if result.applied:
+            print(f"\nApplied {len(result.applied)} high-confidence update(s):")
+            for h in result.applied:
+                print(f"  NO.{h.no} {h.rule_id}")
+        result.counts = count_statuses(rows)
+        text = rebuild_body(text, rows)
+
+        legend = build_legend_block(rows, rules)
+        text = refresh_legend(text, legend)
+        text = refresh_index_total(text, result.counts)
+        CHECKLIST.write_text(text, encoding="utf-8")
+        print(f"\nApplied → {CHECKLIST.relative_to(REPO_ROOT)}")
+        print(f"Final counts: {result.counts}")
+        fo_pct = pct_done(section_counts(rows, 1, 83), 83)
+        bo_pct = pct_done(section_counts(rows, 84, 142), 59)
+        proto_pct = pct_done(result.counts, TOTAL_ITEMS)
+        print(
+            f"FO prototype {fo_pct}% | BO prototype {bo_pct}% | "
+            f"overall prototype {proto_pct}%"
+        )
+    elif dry_run:
+        would = [h for h in result.hints if h.confidence == "high"]
+        print(f"\n(dry-run — {len(would)} high-confidence hint(s) would apply; no files written)")
+        print(f"Would-be summary: {result.counts}")
+
+    return result
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
+        "--validate",
+        action="store_true",
+        help="Compare summary vs row counts only (default)",
+    )
+    group.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show hints; refresh summary without status/memo changes",
+    )
+    group.add_argument(
+        "--apply",
+        action="store_true",
+        help="Apply high-confidence hints and refresh summary",
+    )
+    args = parser.parse_args()
+
+    if args.apply:
+        run_audit(apply=True)
+    elif args.dry_run:
+        run_audit(dry_run=True)
+    else:
+        run_audit(validate_only=True)
 
 
 if __name__ == "__main__":
