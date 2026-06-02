@@ -1,0 +1,13 @@
+.git
+.cursor
+node_modules
+**/node_modules
+api/node_modules
+public
+exports
+html
+docs
+*.md
+.env
+api/.env
+**/.env

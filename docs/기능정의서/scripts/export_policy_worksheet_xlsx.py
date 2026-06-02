@@ -135,6 +135,125 @@ AGREEMENT_ROWS = [
     ("§2.14 배포·운영", "392", "UAT Sign-off", "미완", "UAT 완료일·승인자", "", "", "", "체크 392"),
 ]
 
+# 임시(TBD) 확정값 — md §2 와 동기화 (2026-06-03)
+PROVISIONAL_OWNER = "개발팀"
+PROVISIONAL_DATE = "2026-06-03"
+PROVISIONAL: dict[str, str] = {
+    "TOPIK Ⅰ 응시료": "임시(TBD) 50,000 MMK (USD ≈24 참고)",
+    "TOPIK Ⅱ 응시료": "임시(TBD) 75,000 MMK (USD ≈36 참고), Ⅰ+Ⅱ 각각 개별 납부",
+    "Ⅰ+Ⅱ 동시 접수 납부": "임시(TBD) 합산 일괄 불가, 급수별 개별 수납·영수증",
+    "환불 — 접수 기간 중": "임시(TBD) 100% (접수 기간 내, MMT 23:59:59 기준)",
+    "환불 — 마감 후~시험 7일 전": "임시(TBD) 60% (캘린더 day, 시험일 7일 전 00:00 MMT)",
+    "환불 — 시험 7일 전~1일 전": "임시(TBD) 30% (캘린더 day)",
+    "환불 — 시험 당일 이후": "임시(TBD) 0% (예외 없음)",
+    "환불 처리 기한": "임시(TBD) 신청 접수 후 14영업일 이내",
+    "수납처 안내": "임시(TBD) 대사관 지정 수납처 (계좌·시간 TBD)",
+    "온라인 결제": "임시(TBD) 미사용",
+    "번호 체계": "임시(TBD) 13자리 체계 유지",
+    "① 국가 코드": "임시(TBD) 025 (미얀마)",
+    "② 지역 코드": "임시(TBD) 001 (양곤), 추가 지역 TBD",
+    "③ 수준 코드": "임시(TBD) Ⅰ=7, Ⅱ=8",
+    "④ 시험장 코드": "임시(TBD) 2자리 (01~, dev_seed 마스터)",
+    "⑤ 일련번호": "임시(TBD) name_en 오름차순, 0001~",
+    "부여 시점": "임시(TBD) 수납 마감일 익일 일괄 부여",
+    "Ⅰ+Ⅱ 동시 접수": "임시(TBD) 동일 시험장 강제, 예외 없음",
+    "수험번호 변경": "임시(TBD) 변경 불가",
+    "회수·재배치": "임시(TBD) 공백 유지 (재사용 안 함)",
+    "환불자 수험번호": "임시(TBD) 번호 유지, 연명부·ZIP 제외",
+    "부여 직후 FO": "확정 미노출 (0527)",
+    "노출 시점": "임시(TBD) 2026-08-01 09:00 MMT (dev_seed 제106회)",
+    "노출 범위": "임시(TBD) 접수확인(mypage)만",
+    "노출일 변경": "임시(TBD) 최고관리자만, 처리 이력 기록",
+    "수험표 출력 CTA": "임시(TBD) 노출일 이후 CTA 표시",
+    "FO 접수 완료": "확정 이메일 미발송 (0527)",
+    "수험번호 일괄 부여": "확정 이메일 미발송 (0527)",
+    "발송 대상 (확정)": "임시(TBD) 접수완료·수험번호 부여 제외, 나머지 발송",
+    "마케팅 공지 템플릿": "임시(TBD) C안 14종 초안 사용, 문구 TBD",
+    "문자(SMS)": "임시(TBD) 미사용 (이메일만)",
+    "OAuth 앱 등록": "임시(TBD) 프로젝트·소유 TBD",
+    "dev Client ID": "임시(TBD) TBD-DEV-GOOGLE-CLIENT-ID",
+    "prod Client ID": "임시(TBD) TBD-PROD-GOOGLE-CLIENT-ID",
+    "Redirect URI (dev)": "임시(TBD) https://topik-myanmar.vercel.app/oauth/callback",
+    "Redirect URI (prod)": "임시(TBD) https://topik-myanmar.vercel.app/oauth/callback",
+    "동의 화면": "임시(TBD) 앱명·로고·방침 URL TBD",
+    "중복 가입": "임시(TBD) 통합 차단, 안내 문구 TBD",
+    "SMTP 제공자": "임시(TBD) 제공자 TBD (SES/SendGrid 후보)",
+    "발신 주소": "임시(TBD) noreply@topik-mm.local",
+    "발신명": "임시(TBD) TOPIK Myanmar",
+    "Reply-To": "임시(TBD) helpdesk@ TBD",
+    "SPF": "임시(TBD) 미설정 (prod 오픈 전 설정)",
+    "DKIM": "임시(TBD) 미설정",
+    "DMARC": "임시(TBD) 미설정 (초기 none 검토)",
+    "dev 발송": "임시(TBD) Mailtrap 등 테스트 전용",
+    "FO 공개 도메인": "임시(TBD) https://topik-myanmar.vercel.app",
+    "BO(관리자) 도메인": "임시(TBD) 별도 admin.* (도메인 TBD)",
+    "API 베이스 URL": "임시(TBD) https://api.topik-mm.local — Railway 배포 후 실 URL 기록",
+    "dev 환경": "임시(TBD) FO: Vercel preview / API: localhost:3000",
+    "prod 단독": "임시(TBD) 아니오 (staging 없음)",
+    "dev robots/IP": "임시(TBD) dev IP/Basic Auth 검토",
+    "HTTPS·인증서": "임시(TBD) FO: Vercel / API: Railway 자동 SSL",
+    "시드 관리자 계정": "임시(TBD) dev 시드만, prod 오픈 전 전원 교체",
+    "권한 등급": "임시(TBD) 최고/일반/조회 3등급 (매트릭스 초안)",
+    "2FA": "임시(TBD) 아니오 (dev), prod 오픈 전 재검토",
+    "IP 화이트리스트": "임시(TBD) 아니오 (dev, IP 개방), prod 재검토",
+    "세션 만료": "임시(TBD) 30분",
+    "FO 자동 로그인": "임시(TBD) 미적용, 세션 7일",
+    "계정 잠금": "임시(TBD) 5회 실패 잠금, BO 수동 해제",
+    "적용 법령": "임시(TBD) Myanmar PDPL 2021 준거",
+    "개인정보처리방침": "임시(TBD) FO 목업 초안, 법무 검토 TBD",
+    "보관 기간 — 회원": "임시(TBD) 탈퇴 후 3년",
+    "보관 기간 — 접수·수험": "임시(TBD) 시험 종료 후 3년",
+    "탈퇴 시 처리": "임시(TBD) 접수 자동 취소, 사진 1년 후 파기",
+    "만 14세 미만": "임시(TBD) 필요 — 14세 미만 가입 차단",
+    "열람·삭제 요청": "임시(TBD) 30일 이내 처리",
+    "민감정보 암호화": "임시(TBD) 여권번호 필드 암호화",
+    "TOPIK 로고": "임시(TBD) 허가 절차 진행 TBD",
+    "시험명·문구": "임시(TBD) topik.go.kr 링크 유지",
+    "FO 푸터": "임시(TBD) 현행 푸터 유지, 법무 확인 TBD",
+    "형식": "임시(TBD) JPEG only (prod)",
+    "용량": "임시(TBD) max 200KB",
+    "비율": "임시(TBD) 3:4 안내 (픽셀 강제 없음)",
+    "촬영 시점": "임시(TBD) 6개월 안내, BO 심사",
+    "재사용": "임시(TBD) 1회 등록 재사용, 6개월 경과 갱신 유도",
+    "변경 시": "임시(TBD) BO 재심사 + 접수 반영",
+    "반려 코드": "임시(TBD) DB 6종 코드 사용",
+    "반려 후 재접수": "임시(TBD) 사진만 재제출",
+    "파일 보관": "임시(TBD) 1년 보관",
+    "ZIP 파일명": "임시(TBD) {수험번호}.jpg",
+    "admin_audit_logs": "임시(TBD) 1년",
+    "FO 처리 이력": "임시(TBD) 사용자 미노출",
+    "prod 애플리케이션 로그": "임시(TBD) 90일",
+    "email_outbox": "임시(TBD) 1년",
+    "1인 1회차 접수": "확정 Ⅰ+Ⅱ 동시 허용",
+    "접수 드래프트": "임시(TBD) 30일 후 자동 삭제",
+    "비밀글 비밀번호": "임시(TBD) 4자리 이상 별도 비번",
+    "게시판 SLA": "임시(TBD) 5영업일 이내",
+    "다국어 입력": "임시(TBD) KO 필수, MY/EN 권장",
+    "약관 개정": "임시(TBD) 재동의 팝업",
+    "이메일·SMS 인증": "임시(TBD) 이메일만",
+    "Feature Freeze": "임시(TBD) 접수 시작 D-3 ~ 접수 종료, 예외 2인 승인",
+    "Freeze 허용": "임시(TBD) 긴급 버그·보안·핫픽스 (승인制)",
+    "Freeze 금지": "임시(TBD) 신규 화면·스키마·대규모 리팩터 금지",
+    "1차 오픈 회차": "임시(TBD) 제106회 (dev_seed 일정)",
+    "UAT Sign-off": "임시(TBD) UAT 일정·승인자 TBD",
+}
+
+
+def apply_provisional(rows: list[tuple]) -> list[tuple]:
+    out: list[tuple] = []
+    for row in rows:
+        r = list(row)
+        item = r[2]
+        if item in PROVISIONAL:
+            r[5] = PROVISIONAL[item]
+            r[6] = PROVISIONAL_OWNER
+            r[7] = PROVISIONAL_DATE
+        out.append(tuple(r))
+    return out
+
+
+AGREEMENT_ROWS = apply_provisional(AGREEMENT_ROWS)
+
 CROSS_REF_463 = [
     ("463", "응시료 금액 (MMK·USD)", "§2.1"),
     ("464", "환불률 표", "§2.1"),
@@ -207,8 +326,9 @@ def main():
 
     guide_lines = [
         ["정책 합의 워크시트 (TOPIK Myanmar)"],
-        ["작성일: 2026-06-02"],
-        ["상태: 고객사(주미얀마 대사관)·운영팀 작성 대기"],
+        ["「임시 합의 — 고객사 확정 전」 — 확정값은 임시(TBD)"],
+        ["작성일: 2026-06-02 · 임시 갱신: 2026-06-03"],
+        ["상태: 임시 합의 완료 — 고객사 최종 확정 대기"],
         ["근거: C안 FO/BO 시안 확정 (시안확정_C안.md), 개발자_체크리스트.md NO.463–484 및 관련 P0 정책·법무 항목"],
         [],
         ["1.1 목적"],

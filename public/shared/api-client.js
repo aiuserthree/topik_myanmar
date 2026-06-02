@@ -1,7 +1,7 @@
 /**
  * FO API client — Phase 0 (auth/login).
- * Override: window.API_BASE_URL, window.USE_API = false (static demo only).
- * Production: <meta name="topik-api-base" content="https://api.example.com">
+ * Override (priority): window.TOPIK_API_BASE, window.API_BASE_URL, window.USE_API = false.
+ * Production: <meta name="topik-api-base" content="https://xxx.railway.app">
  */
 (function (global) {
   "use strict";
@@ -13,12 +13,17 @@
   };
 
   function resolveBaseUrl() {
-    if (typeof global.API_BASE_URL === "string") {
-      return global.API_BASE_URL;
+    if (typeof global.TOPIK_API_BASE === "string" && global.TOPIK_API_BASE.trim()) {
+      return global.TOPIK_API_BASE.trim();
+    }
+    if (typeof global.API_BASE_URL === "string" && global.API_BASE_URL.trim()) {
+      return global.API_BASE_URL.trim();
     }
     if (typeof document !== "undefined") {
       var meta = document.querySelector('meta[name="topik-api-base"]');
-      if (meta && meta.content) return meta.content.trim();
+      if (meta && meta.content && meta.content.trim()) {
+        return meta.content.trim();
+      }
     }
     var loc = global.location;
     if (!loc || !loc.hostname) return "http://localhost:3000";
