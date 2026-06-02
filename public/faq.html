@@ -1,231 +1,239 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>FAQ — TOPIK Myanmar</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+Myanmar:wght@400;700&display=swap" rel="stylesheet"/>
-  <style>
-    :root{--red:#CD2E3A;--navy:#003478;--gold:#C8963E;--gray-bg:#f4f6f9;--gray-light:#e8ecf0;--gray-text:#6b7280;--shadow:0 2px 12px rgba(0,0,0,0.08);}
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Noto Sans KR',sans-serif;background:var(--gray-bg);color:#1a1a2e;}
-    svg.icon{display:inline-block;vertical-align:middle;flex-shrink:0;}
-    header{background:var(--navy);position:sticky;top:0;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
-    .header-main{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;max-width:1200px;margin:0 auto;}
-    .logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
-    .logo-text .main{font-size:18px;font-weight:700;color:white;}
-    .logo-text .sub{font-size:11px;color:#aab8cc;}
-    nav{display:flex;gap:2px;flex-wrap:nowrap;align-items:center;}
-    nav a{color:#dce8f5;text-decoration:none;padding:8px 11px;border-radius:6px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:5px;}
-    nav a:hover,nav a.active{background:rgba(255,255,255,0.12);color:white;}
-    .header-actions{display:flex;gap:8px;}
-    .btn{padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
-    .btn-outline{border:1.5px solid #aab8cc;color:#dce8f5;background:transparent;}
-    .btn-primary{background:var(--red);color:white;}
-    .page-hero{background:linear-gradient(135deg,var(--navy),#002060);color:white;padding:36px 24px;}
-    .page-hero-inner{max-width:800px;margin:0 auto;}
-    .breadcrumb{font-size:12px;color:#aab8cc;margin-bottom:10px;}
-    .breadcrumb a{color:#aab8cc;text-decoration:none;}
-    .page-hero h1{font-size:clamp(22px,4vw,30px);font-weight:700;display:flex;align-items:center;gap:10px;}
-    .content{max-width:800px;margin:0 auto;padding:32px 24px 48px;}
-    .faq-list{display:flex;flex-direction:column;gap:10px;}
-    .faq-item{background:white;border-radius:12px;box-shadow:var(--shadow);overflow:hidden;border:1px solid var(--gray-light);}
-    .faq-q{width:100%;text-align:left;padding:16px 18px;font-size:15px;font-weight:700;color:var(--navy);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;font-family:inherit;background:white;border:none;}
-    .faq-q:hover{background:#fafbfc;}
-    .faq-q svg{transition:transform .2s;}
-    .faq-item.open .faq-q svg{transform:rotate(180deg);}
-    .faq-a{display:none;padding:0 18px 18px;font-size:14px;line-height:1.75;color:#374151;}
-    .faq-item.open .faq-a{display:block;}
-    .faq-official{margin-top:28px;padding:18px;background:#f0f4ff;border-radius:12px;font-size:13px;color:var(--navy);line-height:1.65;}
-    .faq-official a{color:var(--red);font-weight:600;}
-    .faq-cat-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
-    .faq-cat-chip{padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;border:1.5px solid var(--gray-light);background:white;cursor:pointer;font-family:inherit;color:var(--navy);transition:background .15s,border-color .15s,color .15s;}
-    .faq-cat-chip:hover{background:#fafbfc;border-color:#cbd5e1;}
-    .faq-cat-chip.active{background:var(--navy);color:#fff;border-color:var(--navy);}
-    .faq-search{display:flex;align-items:center;gap:8px;background:white;border:1.5px solid var(--gray-light);border-radius:10px;padding:11px 14px;margin-bottom:14px;box-shadow:var(--shadow);}
-    .faq-search svg{color:var(--gray-text);flex-shrink:0;}
-    .faq-search input{flex:1;border:none;outline:none;font-size:14px;font-family:inherit;background:transparent;color:#1a1a2e;}
-    .faq-search input::placeholder{color:#9ca3af;}
-    .faq-empty{font-size:14px;color:var(--gray-text);padding:24px;text-align:center;background:white;border-radius:12px;border:1px dashed var(--gray-light);}
-    footer{background:#1a2a4a;color:#aab8cc;padding:28px 24px;}
-    .footer-bottom{max-width:1200px;margin:0 auto;font-size:12px;}
-  </style>
-  <link rel="stylesheet" href="css/mobile.css?v=20260511"/>
-  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
-    <symbol id="ic-guide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></symbol>
-    <symbol id="ic-rules" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></symbol>
-    <symbol id="ic-register" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
-    <symbol id="ic-mypage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
-    <symbol id="ic-notice" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></symbol>
-    <symbol id="ic-login" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/></symbol>
-    <symbol id="ic-signup" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></symbol>
-    <symbol id="ic-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></symbol>
-    <symbol id="ic-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
-    <symbol id="ic-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
-    <symbol id="ic-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></symbol>
-    <symbol id="ic-chev-d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></symbol>
-    <symbol id="ic-topik-logo" viewBox="0 0 44 44"><rect width="44" height="44" rx="8" fill="#CD2E3A"/><text x="22" y="20" text-anchor="middle" fill="white" font-size="8" font-weight="700">TOPIK</text><text x="22" y="32" text-anchor="middle" fill="white" font-size="7">MM</text></symbol>
-  </svg>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FAQ — 게시판 | TOPIK Myanmar</title>
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .faq-wrap { max-width: 880px; margin: 0 auto; padding: 24px 16px 48px; }
+
+  .faq-tools { display: flex; gap: 12px; flex-direction: column; margin-bottom: 20px; }
+  .faq-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .faq-search {
+    position: relative;
+  }
+  .faq-search input {
+    width: 100%; height: 44px;
+    padding: 0 16px 0 44px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm); background: #fff;
+    font-size: 14.5px;
+  }
+  .faq-search input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-50); }
+  .faq-search::before {
+    content: ""; position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+    width: 16px; height: 16px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7588' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='7'/><path d='M21 21l-4.3-4.3'/></svg>");
+    background-repeat: no-repeat;
+  }
+
+  .faq-group {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .faq-group .group-head {
+    padding: 14px 18px;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--border);
+    font-size: 13px; font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .faq-group .group-head .ct {
+    margin-left: 6px;
+    font-size: 11px; font-weight: 600;
+    color: var(--text-3);
+    background: #fff; padding: 2px 8px; border-radius: 99px;
+    text-transform: none; letter-spacing: 0;
+  }
+
+  .accordion details summary { padding: 18px 20px; }
+  .accordion .a { padding: 0 20px 20px 44px; }
+</style>
 </head>
 <body>
 
-<header>
-  <div class="header-main">
-    <div class="header-main-bg" aria-hidden="true"></div>
-    <a href="index.html" class="logo">
-      <svg width="44" height="44"><use href="#ic-topik-logo"/></svg>
-      <div class="logo-text"><div class="main">TOPIK Myanmar</div><div class="sub">တိုပစ် မြန်မာ</div></div>
-    </a>
-    <nav id="mainNav">
-      <a href="guide.html"><svg class="icon" width="15" height="15"><use href="#ic-guide"/></svg><span data-i18n="nav_guide">TOPIK 안내</span></a>
-      <a href="rules.html"><svg class="icon" width="15" height="15"><use href="#ic-rules"/></svg><span data-i18n="nav_rules">시험 규정</span></a>
-      <a href="register.html"><svg class="icon" width="15" height="15"><use href="#ic-register"/></svg><span data-i18n="nav_register">시험 접수</span></a>
-      <a href="mypage.html"><svg class="icon" width="15" height="15"><use href="#ic-mypage"/></svg><span data-i18n="nav_mypage">접수 확인</span></a>
-      <a href="notice.html"><svg class="icon" width="15" height="15"><use href="#ic-notice"/></svg><span data-i18n="nav_notice">공지사항</span></a>
-      <a href="faq.html" class="active"><svg class="icon" width="15" height="15"><use href="#ic-info"/></svg><span data-i18n="nav_faq">FAQ</span></a>    </nav>
-    <div class="header-actions">
-      <div class="hdr-lang-pc lang-switch">
-        <svg class="icon" width="13" height="13"><use href="#ic-globe"/></svg>
-        <select class="tm-lang-select" aria-label="언어 선택">
-          <option value="ko">한국어</option>
-          <option value="my">မြန်မာ</option>
-          <option value="en">English</option>
-        </select>
-      </div>
-      <a href="login.html" class="btn btn-outline"><svg class="icon" width="14" height="14"><use href="#ic-login"/></svg><span data-i18n="nav_login">로그인</span></a>
-      <a href="signup.html" class="btn btn-primary"><svg class="icon" width="14" height="14"><use href="#ic-signup"/></svg><span data-i18n="nav_signup">회원가입</span></a>
+<div id="site-header"></div>
+
+<main class="page" role="main">
+
+  <header class="page-head">
+    <div class="container">
+      <div class="crumb"><span>게시판</span><span>FAQ</span></div>
+      <h1>자주 묻는 질문</h1>
+      <p class="lead">접수·시험·결과 관련 자주 묻는 질문을 분류별로 모아두었습니다.</p>
     </div>
-    <button type="button" class="hamburger" aria-label="Menu" aria-expanded="false">
-      <svg width="22" height="22"><use href="#ic-menu"/></svg>
-    </button>
-  </div>
-</header>
+  </header>
 
-<div class="page-hero">
-  <div class="page-hero-inner">
-    <div class="breadcrumb"><a href="index.html">Home</a> › <span data-i18n="nav_faq">FAQ</span></div>
-    <h1><svg class="icon" width="28" height="28" color="#fff"><use href="#ic-info"/></svg> <span data-i18n="sec_faq">자주 묻는 질문 (FAQ)</span></h1>
-  </div>
-</div>
+  <div class="faq-wrap">
 
-<div class="content">
-  <div class="faq-search">
-    <svg class="icon" width="16" height="16"><use href="#ic-search"/></svg>
-    <input type="search" id="faqSearchInput" placeholder="질문·답변에서 검색" aria-label="FAQ 검색"/>
-  </div>
-  <div id="faqCatBar" class="faq-cat-bar" role="toolbar" aria-label="FAQ 분류"></div>
-  <div id="faqDynamicList" class="faq-list"></div>
-  <div id="faqNoResult" class="faq-empty" style="display:none;">검색 결과가 없습니다.</div>
-  <div class="faq-official">
-    <strong>TOPIK</strong> — <span data-i18n="faq_official"></span>
-    <a href="https://www.topik.go.kr/" target="_blank" rel="noopener noreferrer">https://www.topik.go.kr/</a>
-  </div>
-</div>
+    <div class="faq-tools">
+      <div class="faq-search"><input type="search" placeholder="질문 검색 (예: 응시료, 수험번호, 환불…)"></div>
+      <div class="faq-tabs">
+        <button class="chip active">전체</button>
+        <button class="chip">접수</button>
+        <button class="chip">시험</button>
+        <button class="chip">결과</button>
+        <button class="chip">기타</button>
+      </div>
+    </div>
 
-<footer><div class="footer-bottom">© 2026 TOPIK Myanmar</div></footer>
+    <!-- 접수 -->
+    <div class="faq-group">
+      <div class="group-head">접수 <span class="ct">4</span></div>
+      <div class="accordion">
+        <details>
+          <summary>
+            <span class="q">TOPIK Ⅰ과 Ⅱ를 동시에 접수할 수 있나요?</span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </summary>
+          <div class="a">동일 회차 내에서 TOPIK Ⅰ과 TOPIK Ⅱ를 동시에 접수하실 수 있습니다. 두 시험은 동일한 시험장 코드로 부여되며, 응시료는 수준별로 각각 오프라인 수납됩니다.</div>
+        </details>
+        <details>
+          <summary>
+            <span class="q">접수 후 회원정보를 수정하고 싶습니다.</span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </summary>
+          <div class="a">마이페이지 · 내정보 수정에서 성명·생년월일·국적·연락처·이메일·비밀번호·사진을 모두 직접 수정하실 수 있습니다. 수정 후 진행 중인 접수에도 자동 반영됩니다.</div>
+        </details>
+        <details>
+          <summary>
+            <span class="q">접수 마감 후에도 신청할 수 있나요?</span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </summary>
+          <div class="a">접수 기간 종료 후에는 어떠한 경우에도 추가 접수가 불가합니다. 다음 회차 접수를 이용해 주세요.</div>
+        </details>
+        <details>
+          <summary>
+            <span class="q">사진은 어디서 등록하나요?</span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </summary>
+          <div class="a">회원가입 시 등록한 증명사진이 시험 접수에 자동으로 사용됩니다. 접수 단계에서는 사진 업로드가 불가하며, 변경이 필요하면 마이페이지 · 내정보 수정에서 사진을 교체해 주세요.</div>
+        </details>
+      </div>
+    </div>
 
-<script src="js/content-store.js?v=20260507b"></script>
-<script src="js/i18n.js?v=20260506"></script>
-<script src="js/profile-store.js"></script>
-<script src="js/fo-nav.js"></script>
-<script src="js/fo-footer.js"></script>
-<script src="js/mobile-nav.js?v=20260506" defer></script>
+    <!-- 시험 -->
+    <div class="faq-group">
+      <div class="group-head">시험 <span class="ct">3</span></div>
+      <div class="accordion">
+        <details>
+          <summary>
+            <span class="q">시험 당일 어떤 신분증을 가져가야 하나요?</span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </summary>
+          <div class="a">여권, 미얀마 NRC(국민등록증), 거주증, 국가 발급 사진 부착 신분증 중 1개를 지참해 주세요. 사진 부착·유효 기간 내·본인 일치가 모두 충족되어야 합니다. 자세한 내용은 <a href="rules-id.html" class="text-primary">신분증 규정</a> 참고.</div>
+        </details>
+        <details>
+          <summary>
+            <span class="q">수험표는 어떻게 출력하나요?</span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </summary>
+          <div class="a">수험표는 본 사이트가 아닌 <strong>TOPIK 본부 홈페이지(topik.go.kr)</strong>에서 시험일 2주 전부터 출력하실 수 있습니다. 출력 방법은 <a href="ticket.html" class="text-primary">수험표 출력</a> 페이지를 참고해 주세요.</div>
+        </details>
+        <details>
+          <summary>
+            <span class="q">시험 시간에 늦으면 어떻게 되나요?</span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </summary>
+          <div class="a">시험 시작 후에는 어떠한 경우에도 입실이 불가합니다. 반드시 시작 시간 30분 전까지 시험장에 도착해 주세요.</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- 결과 -->
+    <div class="faq-group">
+      <div class="group-head">결과 <span class="ct">2</span></div>
+      <div class="accordion">
+        <details>
+          <summary>
+            <span class="q">합격 발표는 언제, 어디서 확인하나요?</span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </summary>
+          <div class="a">시험 후 약 6주 뒤에 합격 발표가 진행됩니다. TOPIK 본부 홈페이지(topik.go.kr)에서 수험번호와 생년월일로 확인할 수 있으며, 본 사이트 공지사항에서도 발표일이 안내됩니다.</div>
+        </details>
+        <details>
+          <summary>
+            <span class="q">성적표는 얼마나 유효한가요?</span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </summary>
+          <div class="a">TOPIK 성적은 발표일로부터 <strong>2년간</strong> 유효합니다. 유학·취업 등 활용 시 만료일을 확인해 주세요.</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- 기타 -->
+    <div class="faq-group">
+      <div class="group-head">기타 <span class="ct">2</span></div>
+      <div class="accordion">
+        <details>
+          <summary>
+            <span class="q">응시료를 환불받고 싶습니다.</span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </summary>
+          <div class="a">오프라인 수납 전이라면 마이페이지에서 직접 접수를 취소하실 수 있습니다. 수납 완료 후에는 <a href="refund-correction.html" class="text-primary">환불·정보정정신청 게시판</a>에서 환불 신청해 주세요. 환불률은 <a href="rules-fee.html" class="text-primary">응시료 규정</a> 참고.</div>
+        </details>
+        <details>
+          <summary>
+            <span class="q">사이트 이용 중 문제가 발생하면 어디로 문의하나요?</span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </summary>
+          <div class="a"><a href="qna.html" class="text-primary">문의게시판</a>을 이용해 주시거나, 운영 시간(평일 09:00–17:00) 내 topik.myanmar@mofa.go.kr 로 이메일 문의해 주세요.</div>
+        </details>
+      </div>
+    </div>
+
+    <p id="faqEmpty" style="display:none; text-align:center; padding:40px 16px; color:var(--text-3); font-size:14px;">검색 조건에 맞는 질문이 없습니다.</p>
+
+  </div>
+</main>
+
+<div id="site-footer"></div>
+<div id="site-tabbar"></div>
+
+<script src="assets/common.js"></script>
 <script>
-(function(){
-  function esc(s){
-    if(s==null)return'';
-    var d=document.createElement('div');
-    d.textContent=String(s);
-    return d.innerHTML;
-  }
-  var currentFaqCat='all';
-  function renderFaqChips(){
-    if(!window.ContentStore)return;
-    var bar=document.getElementById('faqCatBar');
-    if(!bar)return;
-    var cats=ContentStore.getFaqCategories();
-    bar.innerHTML='';
-    function addChip(label,val,isActive){
-      var b=document.createElement('button');
-      b.type='button';
-      b.className='faq-cat-chip'+(isActive?' active':'');
-      b.textContent=label;
-      b.addEventListener('click',function(){
-        bar.querySelectorAll('.faq-cat-chip').forEach(function(x){ x.classList.remove('active'); });
-        b.classList.add('active');
-        currentFaqCat=val;
-        applyFaqFilter();
+  // ===== 카테고리 탭 + 질문/답변 실시간 검색 =====
+  const faqSearch = document.querySelector('.faq-search input');
+  let faqCat = '전체';
+
+  function filterFaq() {
+    const q = (faqSearch.value || '').trim().toLowerCase();
+    document.querySelectorAll('.faq-group').forEach(group => {
+      const head = group.querySelector('.group-head');
+      const catName = head && head.firstChild ? head.firstChild.textContent.trim() : '';
+      const catOk = faqCat === '전체' || catName === faqCat;
+      let visible = 0;
+      group.querySelectorAll('.accordion details').forEach(d => {
+        const text = (d.textContent || '').toLowerCase();
+        const show = catOk && (!q || text.includes(q));
+        d.style.display = show ? '' : 'none';
+        if (show) visible++;
+        d.open = !!q && show; // 검색 시 매칭 항목 펼치기, 검색어 없으면 접기
       });
-      bar.appendChild(b);
-    }
-    addChip('전체','all',true);
-    cats.forEach(function(c){ addChip(c.label,c.id,false); });
-  }
-  function applyFaqFilter(){
-    var qEl=document.getElementById('faqSearchInput');
-    var q=(qEl?(qEl.value||''):'').toLowerCase().trim();
-    var shown=0;
-    document.querySelectorAll('.faq-item').forEach(function(el){
-      var c=el.getAttribute('data-faq-cat')||'';
-      var catOk=(currentFaqCat==='all'||c===currentFaqCat);
-      var hay=(el.getAttribute('data-faq-text')||'');
-      var textOk=!q||hay.indexOf(q)>=0;
-      var show=catOk&&textOk;
-      el.style.display=show?'':'none';
-      if(show)shown++;
+      group.style.display = (catOk && visible > 0) ? '' : 'none';
     });
-    var noRes=document.getElementById('faqNoResult');
-    if(noRes){
-      var hasItems=document.querySelectorAll('.faq-item').length>0;
-      noRes.style.display=(hasItems&&shown===0)?'block':'none';
-      noRes.textContent=q?'\u0027'+q+'\u0027 에 대한 검색 결과가 없습니다.':'해당 분류의 FAQ가 없습니다.';
+    const empty = document.getElementById('faqEmpty');
+    if (empty) {
+      const anyVisible = [...document.querySelectorAll('.faq-group')].some(g => g.style.display !== 'none');
+      empty.style.display = anyVisible ? 'none' : '';
     }
   }
-  function renderManagedFaqs(){
-    if(!window.ContentStore)return;
-    var wrap=document.getElementById('faqDynamicList');
-    if(!wrap)return;
-    wrap.innerHTML='';
-    var items=ContentStore.getFaqItems();
-    if(!items.length){
-      wrap.style.display='flex';
-      wrap.innerHTML='<p class="faq-empty">등록된 FAQ가 없습니다.</p>';
-      return;
-    }
-    wrap.style.display='flex';
-    items.forEach(function(it){
-      var div=document.createElement('div');
-      div.className='faq-item faq-item-managed';
-      div.setAttribute('data-faq-cat',it.catId);
-      div.setAttribute('data-faq-text',((it.question||'')+' '+(it.answer||'')).toLowerCase());
-      div.innerHTML='<button type="button" class="faq-q" onclick="this.parentElement.classList.toggle(\'open\')">'+
-        '<span>'+esc(it.question)+'</span>'+
-        '<svg class="icon" width="18" height="18"><use href="#ic-chev-d"/></svg></button>'+
-        '<div class="faq-a">'+esc(it.answer).replace(/\n/g,'<br/>')+'</div>';
-      wrap.appendChild(div);
+
+  document.querySelectorAll('.faq-tabs .chip').forEach(c => {
+    c.addEventListener('click', () => {
+      document.querySelectorAll('.faq-tabs .chip').forEach(x => x.classList.remove('active'));
+      c.classList.add('active');
+      faqCat = c.textContent.trim();
+      filterFaq();
     });
-  }
-  function refreshFaqPage(){
-    renderFaqChips();
-    renderManagedFaqs();
-    currentFaqCat='all';
-    var bar=document.getElementById('faqCatBar');
-    if(bar&&bar.querySelector('.faq-cat-chip')){
-      bar.querySelectorAll('.faq-cat-chip').forEach(function(x,i){ x.classList.toggle('active',i===0); });
-    }
-    applyFaqFilter();
-  }
-  document.addEventListener('DOMContentLoaded',function(){
-    if(window.TMI18N) TMI18N.boot();
-    var sEl=document.getElementById('faqSearchInput');
-    if(sEl) sEl.addEventListener('input',applyFaqFilter);
-    refreshFaqPage();
   });
-  window.addEventListener('topik-content-change',refreshFaqPage);
-  window.addEventListener('storage',function(e){
-    if(window.ContentStore&&e.key===ContentStore.STORAGE_KEY) refreshFaqPage();
-  });
-})();
+  faqSearch.addEventListener('input', filterFaq);
 </script>
 </body>
 </html>

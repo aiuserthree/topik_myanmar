@@ -172,7 +172,7 @@
     renderAuthArea();
     wireProtectedLinks();
     var sc = document.createElement('script');
-    sc.src = 'shared/topik-i18n-content.js';
+    sc.src = '../shared/topik-i18n-content.js';
     sc.onload = wireLangToggle;
     document.head.appendChild(sc);
   });

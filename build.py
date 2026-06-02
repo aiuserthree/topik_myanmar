@@ -1,27 +1,38 @@
 #!/usr/bin/env python3
-import shutil, os, pathlib
+"""Copy C안 FO + html/shared into public/ for Vercel static deploy."""
+import shutil
+import pathlib
 
-# Find the A안 directory dynamically (handles encoding issues)
-html_dir = pathlib.Path("html")
-src = None
-for d in html_dir.iterdir():
-    if d.is_dir() and d.name.startswith("A"):
-        src = d
-        break
+FO_SRC = pathlib.Path("html") / "C안" / "FO"
+SHARED_SRC = pathlib.Path("html/shared")
+DST = pathlib.Path("public")
 
-if src is None:
-    raise RuntimeError(f"Could not find A안 directory in html/. Found: {list(html_dir.iterdir())}")
+# Paths not served to end users (Vercel project metadata, IA notes)
+SKIP_NAMES = {".vercel", "vercel.json"}
 
-dst = pathlib.Path("public")
-if dst.exists():
-    shutil.rmtree(dst)
+if not FO_SRC.is_dir():
+    raise RuntimeError(f"FO source not found: {FO_SRC.resolve()}")
 
-shutil.copytree(src, dst)
-shared = pathlib.Path("html/shared")
-if shared.is_dir():
-    dst_shared = dst / "shared"
+if DST.exists():
+    shutil.rmtree(DST)
+
+def ignore(_dir: str, names: list[str]) -> set[str]:
+    return {n for n in names if n in SKIP_NAMES}
+
+shutil.copytree(FO_SRC, DST, ignore=ignore)
+
+if SHARED_SRC.is_dir():
+    dst_shared = DST / "shared"
     if dst_shared.exists():
         shutil.rmtree(dst_shared)
-    shutil.copytree(shared, dst_shared)
-    print(f"Copied {shared} → {dst_shared}")
-print(f"Copied {src} → {dst}")
+    shutil.copytree(SHARED_SRC, dst_shared)
+    print(f"Copied {SHARED_SRC} → {dst_shared}")
+
+# FO source uses ../../shared/ for repo-tree preview; public/ is flat.
+for html in DST.glob("*.html"):
+    text = html.read_text(encoding="utf-8")
+    patched = text.replace("../../shared/", "shared/")
+    if patched != text:
+        html.write_text(patched, encoding="utf-8")
+
+print(f"Copied {FO_SRC} → {DST}")

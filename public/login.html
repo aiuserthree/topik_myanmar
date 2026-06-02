@@ -1,667 +1,358 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>로그인 — TOPIK Myanmar</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+Myanmar:wght@400;700&display=swap" rel="stylesheet"/>
-  <style>
-    :root{--red:#CD2E3A;--navy:#003478;--gold:#C8963E;--gray-bg:#f4f6f9;--gray-light:#e8ecf0;--gray-text:#6b7280;--shadow:0 2px 12px rgba(0,0,0,0.08);}
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Noto Sans KR',sans-serif;background:var(--gray-bg);color:#1a1a2e;}
-    svg.icon{display:inline-block;vertical-align:middle;flex-shrink:0;}
-    header{background:var(--navy);box-shadow:0 2px 8px rgba(0,0,0,0.2);}
-    .header-main{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;max-width:1200px;margin:0 auto;}
-    .logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
-    .logo-text .main{font-size:18px;font-weight:700;color:white;}
-    .logo-text .sub{font-size:11px;color:#aab8cc;}
-    .page-wrap{min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;padding:40px 24px;}
-    .login-card{background:white;border-radius:16px;box-shadow:0 6px 32px rgba(0,0,0,0.11);width:100%;max-width:440px;overflow:hidden;}
-    .login-card-top{background:linear-gradient(135deg,var(--navy),#002060);padding:36px;text-align:center;color:white;}
-    .login-top-icon{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;border:2px solid rgba(255,255,255,0.2);}
-    .login-card-top h1{font-size:22px;font-weight:700;margin-bottom:4px;}
-    .login-card-top p{font-size:12px;color:#aab8cc;}
-    .login-card-body{padding:32px;}
-    .form-group{margin-bottom:16px;}
-    .form-group label{display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
-    .input-wrap{position:relative;}
-    .input-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gray-text);pointer-events:none;}
-    .input-wrap input{width:100%;padding:10px 40px 10px 40px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:14px;font-family:inherit;transition:border .2s;}
-    .input-wrap input:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(0,52,120,0.08);}
-    .pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--gray-text);background:none;border:none;padding:0;display:flex;align-items:center;}
-    .pw-toggle:hover{color:var(--navy);}
-    .login-options{display:flex;justify-content:flex-start;align-items:center;margin-bottom:10px;font-size:13px;}
-    .login-options label{display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--gray-text);}
-    .login-options label input{accent-color:var(--navy);width:auto;}
-    .login-find-links{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px 12px;margin-bottom:20px;font-size:13px;}
-    .login-find-links .sep{color:#cbd5e1;font-weight:300;}
-    .login-find-links a{color:var(--navy);text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:4px;}
-    .login-find-links a:hover{color:var(--red);}
-    .btn-login{width:100%;padding:13px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;}
-    .btn-login:hover{background:#002060;}
-    .divider{text-align:center;margin:20px 0;position:relative;}
-    .divider::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:var(--gray-light);}
-    .divider span{position:relative;background:white;padding:0 12px;font-size:12px;color:var(--gray-text);}
-    .signup-prompt{text-align:center;font-size:13px;color:var(--gray-text);}
-    .signup-prompt a{color:var(--red);font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
-    .error-alert{background:#fff0f1;border:1px solid #fca5a5;border-radius:8px;padding:12px 16px;font-size:13px;color:var(--red);margin-bottom:16px;display:none;align-items:center;gap:8px;}
-    .error-alert.show{display:flex;}
-    /* 비밀번호 찾기 모달 */
-    .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,0.5);z-index:2000;display:none;align-items:center;justify-content:center;padding:24px;}
-    .modal-overlay.show{display:flex;}
-    .modal-dialog{background:white;border-radius:16px;max-width:440px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 24px 48px rgba(0,0,0,0.18);}
-    .modal-head{padding:18px 22px;border-bottom:1px solid var(--gray-light);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
-    .modal-head h2{font-size:17px;font-weight:700;color:var(--navy);line-height:1.35;}
-    .modal-head .sub{font-size:12px;color:var(--gray-text);font-weight:400;margin-top:4px;}
-    .modal-close{background:none;border:none;cursor:pointer;padding:6px;color:var(--gray-text);border-radius:8px;line-height:0;}
-    .modal-close:hover{color:var(--navy);background:#f0f4ff;}
-    .modal-body{padding:22px;}
-    .modal-note{font-size:11px;color:var(--gray-text);line-height:1.55;margin-bottom:16px;padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid var(--gray-light);}
-    .modal-actions{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;}
-    .btn-modal-ghost{flex:1;min-width:108px;padding:11px 14px;border:1.5px solid var(--gray-light);background:white;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--navy);}
-    .btn-modal-ghost:hover{background:#f8fafc;}
-    .btn-modal-primary{flex:2;min-width:140px;padding:11px 14px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
-    .btn-modal-primary:hover{background:#002060;}
-    .pw-reset-panel{display:none;}
-    .pw-reset-panel.active{display:block;}
-    .demo-code-box{margin-bottom:14px;padding:12px 14px;background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;font-size:12px;color:#78350f;line-height:1.5;}
-    .demo-code{font-size:22px;font-weight:800;letter-spacing:6px;color:var(--navy);margin-top:10px;font-variant-numeric:tabular-nums;text-align:center;}
-    .id-find-result{margin-top:16px;padding:14px;background:#f0f4ff;border:1px solid #bfdbfe;border-radius:8px;display:none;}
-    .id-find-result.show{display:block;}
-    .id-find-result .email{font-size:15px;font-weight:700;color:var(--navy);word-break:break-all;margin-top:6px;}
-    /* 구글 간편 로그인 */
-    .btn-google{width:100%;padding:11px 14px;background:white;color:#3c4043;border:1.5px solid #dadce0;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:16px;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,0.08);}
-    .btn-google:hover{background:#f8f9fa;box-shadow:0 2px 6px rgba(0,0,0,0.13);}
-    .btn-google .google-icon{width:18px;height:18px;flex-shrink:0;}
-    /* 아이디 찾기 구글 케이스 */
-    .id-find-google{display:none;margin-top:14px;padding:14px;background:#f0f4ff;border:1px solid #bfdbfe;border-radius:8px;}
-    .id-find-google.show{display:block;}
-    .id-find-google .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:white;border:1px solid #dadce0;border-radius:20px;font-size:12px;font-weight:600;color:#3c4043;margin-bottom:10px;}
-    /* 아이디 찾기 — 일반·구글 다중 계정 케이스 */
-    .id-find-multi{display:none;margin-top:16px;}
-    .id-find-multi.show{display:block;}
-    .id-find-multi .multi-head{font-size:12px;color:var(--gray-text);margin-bottom:8px;}
-    .id-find-acct{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 14px;background:#f0f4ff;border:1px solid #bfdbfe;border-radius:8px;margin-top:10px;}
-    .id-find-acct .acct-row{display:flex;align-items:center;gap:8px;min-width:0;}
-    .id-find-acct .acct-email{font-size:14px;font-weight:700;color:var(--navy);word-break:break-all;}
-    .acct-type-badge{flex-shrink:0;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;}
-    .acct-type-badge.badge-general{background:var(--navy);color:#fff;}
-    .acct-type-badge.badge-google{background:#fff;color:#3c4043;border:1px solid #dadce0;}
-    .id-find-acct .acct-go{font-size:13px;font-weight:600;color:var(--navy);text-decoration:none;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;cursor:pointer;}
-    .id-find-acct .acct-go:hover{color:var(--red);}
-    .id-find-acct .btn-google{width:auto;margin:0;padding:9px 14px;font-size:13px;}
-    /* 비밀번호 찾기 구글 케이스 */
-    .pw-google-guide{display:none;padding:14px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;margin-top:12px;}
-    .pw-google-guide.show{display:block;}
-    /* 구글 로그인 토스트 */
-    .google-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a2e;color:white;border-radius:12px;padding:14px 22px;display:flex;align-items:center;gap:12px;font-size:14px;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,0.25);opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:9999;white-space:nowrap;}
-    .google-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-    .google-toast-spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
-    @keyframes spin{to{transform:rotate(360deg);}}
-  </style>
-  <link rel="stylesheet" href="css/mobile.css"/>
-  <!-- ════ SVG ICON SPRITE (공통 적용) ════ -->
-  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
-    <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></symbol>
-    <symbol id="ic-guide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></symbol>
-    <symbol id="ic-rules" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></symbol>
-    <symbol id="ic-register" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
-    <symbol id="ic-mypage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
-    <symbol id="ic-notice" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></symbol>
-    <symbol id="ic-login" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></symbol>
-    <symbol id="ic-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
-    <symbol id="ic-signup" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></symbol>
-    <symbol id="ic-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
-    <symbol id="ic-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
-    <symbol id="ic-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 11 12 15 16 11"/><path d="M5 3h14v6a7 7 0 01-14 0V3z"/><path d="M8 19v2m8-2v2m-7 0h6"/><path d="M5 3H2v3a3 3 0 003 3m14-6h3v3a3 3 0 01-3 3"/></symbol>
-    <symbol id="ic-cert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></symbol>
-    <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></symbol>
-    <symbol id="ic-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
-    <symbol id="ic-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></symbol>
-    <symbol id="ic-email" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></symbol>
-    <symbol id="ic-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></symbol>
-    <symbol id="ic-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
-    <symbol id="ic-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></symbol>
-    <symbol id="ic-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></symbol>
-    <symbol id="ic-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
-    <symbol id="ic-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></symbol>
-    <symbol id="ic-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></symbol>
-    <symbol id="ic-print" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
-    <symbol id="ic-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
-    <symbol id="ic-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></symbol>
-    <symbol id="ic-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
-    <symbol id="ic-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></symbol>
-    <symbol id="ic-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></symbol>
-    <symbol id="ic-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></symbol>
-    <symbol id="ic-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></symbol>
-    <symbol id="ic-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></symbol>
-    <symbol id="ic-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
-    <symbol id="ic-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></symbol>
-    <symbol id="ic-ticket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 010 6v2a2 2 0 002 2h16a2 2 0 002-2v-2a3 3 0 010-6V7a2 2 0 00-2-2H4a2 2 0 00-2 2v2z"/><line x1="9" y1="3" x2="9" y2="21"/></symbol>
-    <symbol id="ic-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></symbol>
-    <symbol id="ic-arrow-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
-    <symbol id="ic-arrow-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></symbol>
-    <symbol id="ic-chev-d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></symbol>
-    <symbol id="ic-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
-    <symbol id="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
-    <symbol id="ic-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
-    <symbol id="ic-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></symbol>
-    <symbol id="ic-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
-    <symbol id="ic-topik-logo" viewBox="0 0 44 44"><rect width="44" height="44" rx="8" fill="#CD2E3A"/><text x="22" y="17" text-anchor="middle" fill="white" font-size="9" font-weight="700" font-family="sans-serif">TOPIK</text><line x1="8" y1="21" x2="36" y2="21" stroke="white" stroke-width="1.2" opacity="0.5"/><text x="22" y="33" text-anchor="middle" fill="white" font-size="8" font-weight="600" font-family="sans-serif">MYANMAR</text><circle cx="22" cy="27" r="0" fill="none"/></symbol>
-  </svg>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>로그인 — TOPIK Myanmar</title>
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .auth-wrap {
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 24px 16px 48px;
+  }
+  .auth-head { text-align: center; margin-bottom: 24px; }
+  .auth-head h1 { font-size: 24px; }
+  .auth-head p { font-size: 14px; color: var(--text-3); margin-top: 6px; }
+
+  .auth-divider {
+    display: flex; align-items: center; gap: 12px;
+    color: var(--text-3); font-size: 12px;
+    margin: 20px 0;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content: ""; flex: 1; height: 1px; background: var(--border);
+  }
+
+  .google-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; height: 48px;
+    background: #fff;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-size: 14.5px; font-weight: 500;
+    color: var(--text);
+    transition: background .12s var(--ease);
+  }
+  .google-btn:hover { background: var(--bg-2); }
+  .google-btn svg { width: 18px; height: 18px; }
+
+  .auth-options {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 16px;
+    font-size: 13px;
+  }
+  .auth-options a { color: var(--text-3); }
+  .auth-options a:hover { color: var(--primary); }
+  .auth-options .sep { color: var(--border); margin: 0 8px; }
+
+  .auth-foot {
+    margin-top: 28px; padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 13.5px; color: var(--text-3);
+  }
+  .auth-foot a { color: var(--primary); font-weight: 600; margin-left: 4px; }
+
+  .pw-wrap { position: relative; }
+  .pw-toggle {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    height: 28px; padding: 0 8px;
+    color: var(--text-3); font-size: 12px;
+  }
+  .pw-toggle:hover { color: var(--primary); }
+
+  /* Find ID modal result */
+  .find-result {
+    background: var(--bg-2); border-radius: var(--radius-sm);
+    padding: 14px; margin: 12px 0;
+    font-size: 14px;
+  }
+  .find-result .acct {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0; border-bottom: 1px dashed var(--border);
+  }
+  .find-result .acct:last-child { border-bottom: 0; }
+  .find-result .acct .mail {
+    font-family: 'Inter', sans-serif; font-weight: 600; color: var(--text);
+  }
+  .find-result .acct .type {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: var(--primary-50); color: var(--primary);
+    font-weight: 600;
+  }
+  .find-result .acct .type.google { background: #fff4e3; color: #b86e00; }
+
+  /* Inline error alert */
+  .err-banner {
+    display: none;
+    align-items: flex-start; gap: 10px;
+    padding: 12px 14px;
+    background: var(--danger-50);
+    border: 1px solid #f5c8ce;
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  .err-banner.show { display: flex; }
+</style>
 </head>
-<body>
+<body data-footer-compact>
 
-<header>
-  <div class="header-main">
-    <div class="header-main-bg" aria-hidden="true"></div>
-    <a href="index.html" class="logo">
-      <svg width="44" height="44"><use href="#ic-topik-logo"/></svg>
-      <div class="logo-text"><div class="main">TOPIK Myanmar</div><div class="sub">တိုပစ် မြန်မာ</div></div>
-    </a>
-  </div>
-</header>
+<div id="site-header"></div>
 
-<div class="page-wrap">
-  <div class="login-card">
-    <div class="login-card-top">
-      <div class="login-top-icon">
-        <svg class="icon" width="36" height="36" color="white"><use href="#ic-login"/></svg>
-      </div>
+<main class="page" role="main">
+  <div class="auth-wrap">
+    <div class="auth-head">
       <h1>로그인</h1>
-      <p>TOPIK Myanmar 계정으로 로그인하세요</p>
+      <p>TOPIK 미얀마 시행 공식 접수 서비스</p>
     </div>
-    <div class="login-card-body">
-      <p style="font-size:12px;color:var(--gray-text);line-height:1.55;margin-bottom:14px;padding:10px 12px;background:#f0f4ff;border-radius:8px;border:1px solid #dbeafe;">
-        회원가입 시 입력한 개인정보는 브라우저에 안전하게 저장되어, 이후 <strong>시험 재접수</strong> 시 응시자 정보 입력 단계가 간소화됩니다. (실서비스에서는 서버 인증과 연동됩니다.)
-      </p>
-      <p id="pwResetBanner" style="display:none;font-size:13px;color:var(--navy);margin-bottom:14px;padding:10px 12px;background:#ecfdf5;border-radius:8px;border:1px solid #a7f3d0;font-weight:600;">
-        비밀번호가 변경되었습니다. 아이디(이메일)와 새 비밀번호로 로그인해 주세요.
-      </p>
-      <div class="error-alert" id="loginError">
-        <svg class="icon" width="16" height="16"><use href="#ic-alert"/></svg>
-        <span id="loginErrorText">아이디(이메일) 또는 비밀번호가 올바르지 않습니다.</span>
+
+    <div class="err-banner" id="resetOkBanner" style="display:none;background:var(--success-50, #e8f5e9);border-color:#a7d7b5;color:var(--success,#0d7a3e)">
+      <span>비밀번호가 변경되었습니다. 새 비밀번호로 로그인해 주세요.</span>
+    </div>
+    <div class="err-banner" id="errBanner">
+      <span>이메일 또는 비밀번호가 일치하지 않습니다. 다시 확인해 주세요.</span>
+    </div>
+
+    <form id="loginForm" novalidate>
+      <div class="form-row">
+        <label class="label" for="email">이메일 (아이디)</label>
+        <input id="email" name="email" type="email" class="input" placeholder="example@email.com" autocomplete="username">
       </div>
-      <form onsubmit="doLogin(event)">
-        <div class="form-group">
-          <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-email"/></svg>아이디(이메일 주소)</label>
-          <div class="input-wrap">
-            <span class="input-icon"><svg class="icon" width="16" height="16"><use href="#ic-email"/></svg></span>
-            <input type="email" id="loginEmail" placeholder="example@email.com" required autocomplete="username"/>
+
+      <div class="form-row">
+        <label class="label" for="password">비밀번호</label>
+        <div class="pw-wrap">
+          <input id="password" name="password" type="password" class="input" placeholder="비밀번호 입력" autocomplete="current-password">
+          <button type="button" class="pw-toggle" id="pwToggle">표시</button>
+        </div>
+      </div>
+
+      <label class="check" style="margin-bottom: 18px;">
+        <input type="checkbox" id="remember">
+        <span class="box"></span>
+        <span>로그인 상태 유지</span>
+      </label>
+
+      <button type="submit" class="btn btn-primary btn-block btn-lg">로그인</button>
+
+      <div class="auth-options">
+        <a href="javascript:void(0)" onclick="TPKM.openModal('modalFindId')">아이디(이메일) 찾기</a>
+        <span>
+          <a href="javascript:void(0)" onclick="TPKM.openModal('modalFindPw')">비밀번호 찾기</a>
+        </span>
+      </div>
+    </form>
+
+    <div class="auth-divider">또는</div>
+
+    <button class="google-btn" onclick="loginGoogle()">
+      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.99 10.99 0 0 0 1 12c0 1.77.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Google 계정으로 로그인
+    </button>
+
+    <div class="auth-foot">
+      아직 회원이 아니신가요?
+      <a href="signup.html">회원가입</a>
+    </div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+<div id="site-tabbar"></div>
+
+<!-- ============ 아이디(이메일) 찾기 모달 ============ -->
+<div class="modal-backdrop" id="modalFindId">
+  <div class="modal">
+    <div class="modal-head"><h3>아이디(이메일) 찾기</h3></div>
+    <div class="modal-body">
+      <p style="font-size:13.5px; color:var(--text-3); margin-bottom: 14px;">가입 시 입력한 정보와 일치하는 이메일(=로그인 아이디)을 안내해 드립니다.</p>
+
+      <div id="findIdForm">
+        <div class="form-row">
+          <label class="label">한글 성명 <span class="req">*</span></label>
+          <input class="input" placeholder="홍길동" id="fi-name">
+        </div>
+        <div class="form-row">
+          <label class="label">생년월일 (8자리) <span class="req">*</span></label>
+          <input class="input" placeholder="19960101" maxlength="8" id="fi-bd">
+        </div>
+        <div class="form-row">
+          <label class="label">연락처 <span class="req">*</span></label>
+          <input class="input" placeholder="+95 ..." id="fi-tel">
+        </div>
+      </div>
+
+      <div id="findIdResult" class="hidden">
+        <div class="find-result">
+          <p style="margin-bottom:8px; font-size:13px;">입력하신 정보와 일치하는 계정입니다.</p>
+          <div class="acct">
+            <span class="mail">hong****@naver.com</span>
+            <span class="type">일반 가입</span>
+          </div>
+          <div class="acct">
+            <span class="mail">hong****@gmail.com</span>
+            <span class="type google">Google 계정</span>
           </div>
         </div>
-        <div class="form-group">
-          <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-lock"/></svg>비밀번호</label>
-          <div class="input-wrap">
-            <span class="input-icon"><svg class="icon" width="16" height="16"><use href="#ic-lock"/></svg></span>
-            <input type="password" id="loginPw" placeholder="비밀번호 입력" required/>
-            <button type="button" class="pw-toggle" onclick="togglePw()" id="pwToggle">
-              <svg class="icon" width="16" height="16" id="eyeIcon"><use href="#ic-eye"/></svg>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="TPKM.closeModal('modalFindId'); resetFindId();">닫기</button>
+      <button class="btn btn-primary" id="btnFindId">아이디 확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 비밀번호 찾기 모달 ============ -->
+<div class="modal-backdrop" id="modalFindPw">
+  <div class="modal">
+    <div class="modal-head"><h3>비밀번호 찾기</h3></div>
+    <div class="modal-body">
+      <p style="font-size:13.5px; color:var(--text-3); margin-bottom: 14px;">가입하신 이메일을 입력하시면 비밀번호 재설정 링크를 발송해 드립니다. (유효시간 30분)</p>
+
+      <div id="findPwForm">
+        <div class="form-row">
+          <label class="label">이메일 <span class="req">*</span></label>
+          <input class="input" type="email" placeholder="example@email.com" id="fp-email">
+        </div>
+        <label class="check demo-only" style="margin-top:10px;font-size:12.5px;color:var(--text-3)">
+          <input type="checkbox" id="fp-google-demo">
+          <span class="box"></span>
+          <span>데모: 구글 간편가입 계정 (@gmail.com)</span>
+        </label>
+      </div>
+
+      <div id="findPwResult" class="hidden">
+        <div class="callout">
+          <div class="ico"></div>
+          <div>
+            <strong>재설정 링크를 발송했습니다.</strong><br>
+            <span id="find-pw-sent-email" style="font-family:'Inter',sans-serif;">example@email.com</span> 으로 발송된 메일의 링크를 통해 새 비밀번호를 설정해 주세요. (유효시간 30분)
+            <p class="demo-only" style="margin-top:10px;font-size:12px;color:var(--text-3)"><strong>데모</strong> — <a href="./password-reset.html?token=demo" style="color:var(--primary);font-weight:600">password-reset.html?token=demo</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div id="findPwResultGoogle" class="hidden">
+        <div class="callout" style="background:#fff4e3;border-color:#f0d9a8">
+          <div class="ico"></div>
+          <div>
+            <strong>Google 계정으로 가입된 계정입니다</strong><br>
+            이 계정은 비밀번호가 없는 구글 간편가입 계정입니다. 비밀번호 재설정 링크 대신 Google 로그인을 이용해 주세요.
+            <button type="button" class="google-btn" style="margin-top:14px;height:44px" onclick="loginGoogle(); TPKM.closeModal('modalFindPw');">
+              <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.99 10.99 0 0 0 1 12c0 1.77.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+              Google 계정으로 로그인
             </button>
           </div>
         </div>
-        <div class="login-options">
-          <label><input type="checkbox" id="rememberMe"/> 로그인 상태 유지</label>
-        </div>
-        <div class="login-find-links">
-          <a href="#" id="idFindOpen"><svg class="icon" width="13" height="13"><use href="#ic-user"/></svg>아이디 찾기</a>
-          <span class="sep">|</span>
-          <a href="#" id="pwResetOpen"><svg class="icon" width="13" height="13"><use href="#ic-lock"/></svg>비밀번호 찾기</a>
-        </div>
-        <button type="submit" class="btn-login">
-          <svg class="icon" width="16" height="16"><use href="#ic-login"/></svg>
-          로그인
-        </button>
-      </form>
-      <div class="divider"><span>간편 로그인</span></div>
-      <button type="button" class="btn-google" onclick="doGoogleLogin()">
-        <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.14 0 5.95 1.08 8.17 2.85l6.07-6.07C34.42 3.07 29.47 1 24 1 14.73 1 6.78 6.49 3.11 14.38l7.04 5.47C11.82 13.82 17.42 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.65-.15-3.25-.42-4.8H24v9.09h12.69c-.55 2.98-2.18 5.5-4.64 7.19l7.18 5.57C43.6 37.55 46.5 31.49 46.5 24.5z"/><path fill="#FBBC05" d="M10.15 28.15C9.68 26.73 9.4 25.2 9.4 23.6c0-1.58.28-3.1.75-4.53L3.11 13.6C1.14 17.26 0 21.3 0 25.6c0 4.27 1.14 8.28 3.09 11.78l7.06-9.23z"/><path fill="#34A853" d="M24 47c5.46 0 10.04-1.81 13.38-4.91l-7.18-5.57c-1.79 1.2-4.08 1.9-6.2 1.9-6.55 0-12.14-4.29-14.12-10.17l-7.06 9.23C6.78 43.49 14.73 47 24 47z"/></svg>
-        Google로 로그인
-      </button>
-      <div class="divider"><span>또는</span></div>
-      <div class="signup-prompt">
-        계정이 없으신가요? <a href="signup.html"><svg class="icon" width="13" height="13"><use href="#ic-signup"/></svg>지금 회원가입</a>
       </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="TPKM.closeModal('modalFindPw'); resetFindPw();">닫기</button>
+      <button class="btn btn-primary" id="btnFindPw">재설정 링크 발송</button>
     </div>
   </div>
 </div>
 
-<div class="google-toast" id="googleLoginToast" role="status" aria-live="polite">
-  <div class="google-toast-spinner"></div>
-  <svg viewBox="0 0 48 48" width="20" height="20" style="flex-shrink:0"><path fill="#EA4335" d="M24 9.5c3.14 0 5.95 1.08 8.17 2.85l6.07-6.07C34.42 3.07 29.47 1 24 1 14.73 1 6.78 6.49 3.11 14.38l7.04 5.47C11.82 13.82 17.42 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.65-.15-3.25-.42-4.8H24v9.09h12.69c-.55 2.98-2.18 5.5-4.64 7.19l7.18 5.57C43.6 37.55 46.5 31.49 46.5 24.5z"/><path fill="#FBBC05" d="M10.15 28.15C9.68 26.73 9.4 25.2 9.4 23.6c0-1.58.28-3.1.75-4.53L3.11 13.6C1.14 17.26 0 21.3 0 25.6c0 4.27 1.14 8.28 3.09 11.78l7.06-9.23z"/><path fill="#34A853" d="M24 47c5.46 0 10.04-1.81 13.38-4.91l-7.18-5.57c-1.79 1.2-4.08 1.9-6.2 1.9-6.55 0-12.14-4.29-14.12-10.17l-7.06 9.23C6.78 43.49 14.73 47 24 47z"/></svg>
-  Google 계정으로 로그인 중...
-</div>
-
-<div class="modal-overlay" id="idFindModal" role="dialog" aria-modal="true" aria-labelledby="idFindTitle" hidden>
-  <div class="modal-dialog">
-    <div class="modal-head">
-      <div>
-        <h2 id="idFindTitle">아이디 찾기</h2>
-        <p class="sub">가입 시 입력한 정보와 일치하면 아이디(이메일 주소)를 안내합니다.</p>
-      </div>
-      <button type="button" class="modal-close" id="idFindClose" aria-label="닫기">
-        <svg class="icon" width="22" height="22"><use href="#ic-x"/></svg>
-      </button>
-    </div>
-    <div class="modal-body">
-      <p class="modal-note">
-        프로토타입에서는 브라우저에 저장된 회원 정보(<code style="font-size:10px;">localStorage</code>)와 비교합니다.<br/>
-        <span class="demo-only" style="color:var(--gray-text);">데모: 이름(한글)에 <strong>김다중</strong> 입력 시 일반·구글 다중 계정 결과 예시가 표시됩니다.</span>
-      </p>
-      <div class="form-group">
-        <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-user"/></svg>이름 (한글)</label>
-        <div class="input-wrap">
-          <span class="input-icon"><svg class="icon" width="16" height="16"><use href="#ic-user"/></svg></span>
-          <input type="text" id="idFindNameKr" placeholder="한글 성명" autocomplete="name"/>
-        </div>
-      </div>
-      <div class="form-group">
-        <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-calendar"/></svg>생년월일</label>
-        <div class="input-wrap">
-          <span class="input-icon"><svg class="icon" width="16" height="16"><use href="#ic-calendar"/></svg></span>
-          <input type="date" id="idFindBirth"/>
-        </div>
-      </div>
-      <div class="form-group">
-        <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-phone"/></svg>연락처</label>
-        <div class="input-wrap">
-          <span class="input-icon"><svg class="icon" width="16" height="16"><use href="#ic-phone"/></svg></span>
-          <input type="tel" id="idFindPhone" placeholder="가입 시 연락처와 동일" autocomplete="tel"/>
-        </div>
-      </div>
-      <div class="modal-actions">
-        <button type="button" class="btn-modal-primary" style="flex:1" id="idFindSubmit">
-          아이디 확인 <svg class="icon" width="14" height="14"><use href="#ic-search"/></svg>
-        </button>
-      </div>
-      <div class="id-find-result" id="idFindResult">
-        <div style="font-size:12px;color:var(--gray-text);">회원 아이디(이메일 주소)</div>
-        <div class="email" id="idFindResultEmail"></div>
-        <div style="display:flex;gap:14px;align-items:center;margin-top:10px;">
-          <a href="#" style="font-size:13px;font-weight:600;color:var(--navy);text-decoration:none;" id="idFindToLogin" onclick="closeIdFindModal()">→ 로그인하러 가기</a>
-          <a href="#" style="font-size:13px;font-weight:600;color:var(--gray-text);text-decoration:none;" id="idFindToPwReset" onclick="closeIdFindModal();openPwResetModal();return false;">비밀번호 찾기</a>
-        </div>
-      </div>
-      <!-- 구글 가입 계정 결과 -->
-      <div class="id-find-google" id="idFindGoogleResult">
-        <div class="badge">
-          <svg viewBox="0 0 48 48" width="16" height="16"><path fill="#EA4335" d="M24 9.5c3.14 0 5.95 1.08 8.17 2.85l6.07-6.07C34.42 3.07 29.47 1 24 1 14.73 1 6.78 6.49 3.11 14.38l7.04 5.47C11.82 13.82 17.42 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.65-.15-3.25-.42-4.8H24v9.09h12.69c-.55 2.98-2.18 5.5-4.64 7.19l7.18 5.57C43.6 37.55 46.5 31.49 46.5 24.5z"/><path fill="#FBBC05" d="M10.15 28.15C9.68 26.73 9.4 25.2 9.4 23.6c0-1.58.28-3.1.75-4.53L3.11 13.6C1.14 17.26 0 21.3 0 25.6c0 4.27 1.14 8.28 3.09 11.78l7.06-9.23z"/><path fill="#34A853" d="M24 47c5.46 0 10.04-1.81 13.38-4.91l-7.18-5.57c-1.79 1.2-4.08 1.9-6.2 1.9-6.55 0-12.14-4.29-14.12-10.17l-7.06 9.23C6.78 43.49 14.73 47 24 47z"/></svg>
-          구글 계정으로 가입된 회원입니다
-        </div>
-        <p style="font-size:13px;color:#444;margin-bottom:10px;">구글 계정으로 가입된 아이디는 별도의 비밀번호가 없습니다. 아래 버튼으로 로그인해 주세요.</p>
-        <button type="button" class="btn-google" onclick="doGoogleLogin();closeIdFindModal();" style="margin-bottom:0;">
-          <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.14 0 5.95 1.08 8.17 2.85l6.07-6.07C34.42 3.07 29.47 1 24 1 14.73 1 6.78 6.49 3.11 14.38l7.04 5.47C11.82 13.82 17.42 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.65-.15-3.25-.42-4.8H24v9.09h12.69c-.55 2.98-2.18 5.5-4.64 7.19l7.18 5.57C43.6 37.55 46.5 31.49 46.5 24.5z"/><path fill="#FBBC05" d="M10.15 28.15C9.68 26.73 9.4 25.2 9.4 23.6c0-1.58.28-3.1.75-4.53L3.11 13.6C1.14 17.26 0 21.3 0 25.6c0 4.27 1.14 8.28 3.09 11.78l7.06-9.23z"/><path fill="#34A853" d="M24 47c5.46 0 10.04-1.81 13.38-4.91l-7.18-5.57c-1.79 1.2-4.08 1.9-6.2 1.9-6.55 0-12.14-4.29-14.12-10.17l-7.06 9.23C6.78 43.49 14.73 47 24 47z"/></svg>
-          Google로 로그인하기
-        </button>
-      </div>
-      <!-- 동일 정보로 일반·구글 계정이 모두 존재하는 경우 (다중 계정) -->
-      <div class="id-find-multi" id="idFindMultiResult">
-        <div class="multi-head">동일한 정보로 가입된 계정이 <strong>2건</strong> 확인되었습니다. 로그인할 계정을 선택해 주세요.</div>
-        <div class="id-find-acct">
-          <div class="acct-row">
-            <span class="acct-type-badge badge-general">일반</span>
-            <span class="acct-email" id="idFindMultiGeneralEmail">—</span>
-          </div>
-          <a href="#" class="acct-go" id="idFindMultiGeneralGo">로그인하러 가기 <svg class="icon" width="14" height="14"><use href="#ic-arrow-r"/></svg></a>
-        </div>
-        <div class="id-find-acct">
-          <div class="acct-row">
-            <span class="acct-type-badge badge-google">구글</span>
-            <span class="acct-email" id="idFindMultiGoogleEmail">—</span>
-          </div>
-          <button type="button" class="btn-google" onclick="doGoogleLogin();closeIdFindModal();">
-            <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.14 0 5.95 1.08 8.17 2.85l6.07-6.07C34.42 3.07 29.47 1 24 1 14.73 1 6.78 6.49 3.11 14.38l7.04 5.47C11.82 13.82 17.42 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.65-.15-3.25-.42-4.8H24v9.09h12.69c-.55 2.98-2.18 5.5-4.64 7.19l7.18 5.57C43.6 37.55 46.5 31.49 46.5 24.5z"/><path fill="#FBBC05" d="M10.15 28.15C9.68 26.73 9.4 25.2 9.4 23.6c0-1.58.28-3.1.75-4.53L3.11 13.6C1.14 17.26 0 21.3 0 25.6c0 4.27 1.14 8.28 3.09 11.78l7.06-9.23z"/><path fill="#34A853" d="M24 47c5.46 0 10.04-1.81 13.38-4.91l-7.18-5.57c-1.79 1.2-4.08 1.9-6.2 1.9-6.55 0-12.14-4.29-14.12-10.17l-7.06 9.23C6.78 43.49 14.73 47 24 47z"/></svg>
-            Google로 로그인하기
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="pwResetModal" role="dialog" aria-modal="true" aria-labelledby="pwResetTitle" hidden>
-  <div class="modal-dialog">
-    <div class="modal-head">
-      <div>
-        <h2 id="pwResetTitle">비밀번호 찾기</h2>
-        <p class="sub">가입 이메일로 비밀번호 재설정 링크를 발송합니다. (유효시간 30분)</p>
-      </div>
-      <button type="button" class="modal-close" id="pwResetClose" aria-label="닫기">
-        <svg class="icon" width="22" height="22"><use href="#ic-x"/></svg>
-      </button>
-    </div>
-    <div class="modal-body">
-      <p class="modal-note">
-        일반 가입 계정에 한해 재설정 링크가 발송됩니다. 링크를 클릭하면 새 비밀번호 설정 화면으로 이동합니다.
-        <span class="demo-only" style="display:block;margin-top:6px;color:var(--gray-text);">데모: 발송 후 아래 링크로 바로 이동할 수 있습니다.</span>
-      </p>
-      <div class="pw-reset-panel active" id="pwResetStepEmail">
-        <div class="form-group">
-          <label><svg class="icon" width="13" height="13" color="var(--gray-text)"><use href="#ic-email"/></svg>이메일 주소</label>
-          <div class="input-wrap">
-            <span class="input-icon"><svg class="icon" width="16" height="16"><use href="#ic-email"/></svg></span>
-            <input type="email" id="pwResetEmail" placeholder="가입 시 이메일" autocomplete="username"/>
-          </div>
-        </div>
-        <!-- 구글 가입 케이스 안내 -->
-        <div class="pw-google-guide" id="pwResetGoogleGuide">
-          <p style="font-size:13px;font-weight:600;color:#92400e;margin-bottom:8px;">🔒 구글 계정으로 가입된 이메일입니다</p>
-          <p style="font-size:12px;color:#78350f;margin-bottom:12px;">구글 계정의 비밀번호는 Google에서 관리합니다. 아래 버튼으로 로그인해 주세요.</p>
-          <button type="button" class="btn-google" onclick="doGoogleLogin();closePwResetModal();" style="margin-bottom:0;">
-            <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.14 0 5.95 1.08 8.17 2.85l6.07-6.07C34.42 3.07 29.47 1 24 1 14.73 1 6.78 6.49 3.11 14.38l7.04 5.47C11.82 13.82 17.42 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.65-.15-3.25-.42-4.8H24v9.09h12.69c-.55 2.98-2.18 5.5-4.64 7.19l7.18 5.57C43.6 37.55 46.5 31.49 46.5 24.5z"/><path fill="#FBBC05" d="M10.15 28.15C9.68 26.73 9.4 25.2 9.4 23.6c0-1.58.28-3.1.75-4.53L3.11 13.6C1.14 17.26 0 21.3 0 25.6c0 4.27 1.14 8.28 3.09 11.78l7.06-9.23z"/><path fill="#34A853" d="M24 47c5.46 0 10.04-1.81 13.38-4.91l-7.18-5.57c-1.79 1.2-4.08 1.9-6.2 1.9-6.55 0-12.14-4.29-14.12-10.17l-7.06 9.23C6.78 43.49 14.73 47 24 47z"/></svg>
-            Google로 로그인하기
-          </button>
-        </div>
-        <div class="modal-actions">
-          <button type="button" class="btn-modal-primary" style="flex:1" id="pwResetSendLink">
-            재설정 링크 발송 <svg class="icon" width="14" height="14"><use href="#ic-email"/></svg>
-          </button>
-        </div>
-      </div>
-      <div class="pw-reset-panel" id="pwResetStepSent">
-        <p style="font-size:13px;color:#444;line-height:1.65;margin-bottom:12px;">
-          <strong style="color:var(--navy)">재설정 링크를 발송했습니다.</strong><br>
-          <span id="pwResetSentTo"></span> 으로 발송된 메일의 링크를 통해 새 비밀번호를 설정해 주세요. (유효시간 30분)
-        </p>
-        <p class="demo-code-box demo-only" style="margin-bottom:14px;">
-          <strong>데모</strong> — 메일 대신 아래 링크로 재설정 화면을 열 수 있습니다.<br>
-          <a href="./password-reset.html?token=demo" id="pwResetDemoLink" style="font-weight:700;color:var(--navy);word-break:break-all;">password-reset.html?token=demo</a>
-        </p>
-        <div class="modal-actions">
-          <button type="button" class="btn-modal-ghost" id="pwResetBackEmail"><svg class="icon" width="14" height="14"><use href="#ic-arrow-l"/></svg>이메일 수정</button>
-          <a href="./password-reset.html?token=demo" class="btn-modal-primary" style="flex:1;text-decoration:none;text-align:center;" id="pwResetGoPage">
-            재설정 화면 열기 <svg class="icon" width="14" height="14"><use href="#ic-link"/></svg>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script src="js/profile-store.js"></script>
-<script src="js/account-password.js"></script>
-<script src="js/fo-nav.js"></script>
+<script src="assets/common.js"></script>
 <script>
-  /* 구글 간편 로그인 (데모 시뮬레이션 — 바로 로그인 처리) */
-  function doGoogleLogin(){
-    var profile=window.TMProfile&&TMProfile.load();
-    if(profile){
-      // 기존 프로필이 있으면 구글 계정 연동 플래그만 추가
-      profile.googleSignup=true;
-      TMProfile.save(profile);
-    }else{
-      // 프로필 없는 신규 사용자 → 데모 구글 계정으로 자동 생성
-      TMProfile.save({
-        email:'demo.google@gmail.com',
-        nameKr:'구글 데모 사용자',
-        nameEn:'Demo Google User',
-        birthdate:'1990-01-01',
-        phone:'09000000000',
-        nationality:'미얀마',
-        googleSignup:true,
-        password:'',
-        savedAt:new Date().toISOString()
-      });
-    }
-    showGoogleLoginToast();
-    try{localStorage.setItem('tm_session','1');}catch(x){}
-    setTimeout(redirectAfterLogin, 1200);
-  }
+  // PW visibility toggle
+  document.getElementById('pwToggle').addEventListener('click', function () {
+    const pw = document.getElementById('password');
+    const isPw = pw.type === 'password';
+    pw.type = isPw ? 'text' : 'password';
+    this.textContent = isPw ? '숨김' : '표시';
+  });
 
-  function showGoogleLoginToast(){
-    var t=document.getElementById('googleLoginToast');
-    if(!t)return;
-    t.classList.add('show');
-  }
-
-  /* 이메일이 구글 가입 계정인지 확인 */
-  function isGoogleAccount(email){
-    var profile=window.TMProfile&&TMProfile.load();
-    if(!profile)return false;
-    if(normEmail(profile.email)!==normEmail(email))return false;
-    return !!profile.googleSignup;
-  }
-
-  function normEmail(s){return String(s||'').trim().toLowerCase();}
-  function normName(s){return String(s||'').trim().replace(/\s+/g,' ');}
-  function normPhone(s){return String(s||'').replace(/\D/g,'');}
-  /** 이메일 마스킹 — hong****@naver.com */
-  function maskEmail(email){
-    var s=String(email||'');
-    var at=s.indexOf('@');
-    if(at<1)return s;
-    var local=s.slice(0,at), domain=s.slice(at);
-    var keep=Math.min(4,Math.max(1,Math.ceil(local.length/2)));
-    return local.slice(0,keep)+'****'+domain;
-  }
-  function rememberLoginPref(){
-    try{
-      var cb=document.getElementById('rememberMe');
-      localStorage.setItem('tm_remember_v1',cb&&cb.checked?'1':'0');
-    }catch(e){}
-  }
-
-  function showPwResetBanner(){
-    var b=document.getElementById('pwResetBanner');
-    if(b)b.style.display='block';
-  }
-  if(typeof URLSearchParams!=='undefined'){
-    var qsBoot=new URLSearchParams(location.search);
-    if(qsBoot.get('reset')==='ok')showPwResetBanner();
-    var emBoot=qsBoot.get('email');
-    if(emBoot){
-      try{
-        var loginEmailEl=document.getElementById('loginEmail');
-        if(loginEmailEl&&!loginEmailEl.value)loginEmailEl.value=decodeURIComponent(emBoot);
-      }catch(e){}
-    }
-    if(qsBoot.get('reset')||qsBoot.get('email')){
-      try{history.replaceState({},'',location.pathname+location.hash);}catch(e){}
-    }
-  }
-
-  var pwVisible=false;
-  function togglePw(){
-    var pw=document.getElementById('loginPw');
-    var icon=document.getElementById('eyeIcon');
-    pwVisible=!pwVisible;
-    pw.type=pwVisible?'text':'password';
-    icon.querySelector('use').setAttribute('href',pwVisible?'#ic-eye-off':'#ic-eye');
-  }
-  function showLoginErr(msg){
-    document.getElementById('loginErrorText').textContent=msg;
-    document.getElementById('loginError').classList.add('show');
-  }
-  function hideLoginErr(){
-    document.getElementById('loginError').classList.remove('show');
-  }
-  function doLogin(e){
+  // Login submit (demo: any non-empty works; specific values trigger error)
+  document.getElementById('loginForm').addEventListener('submit', function (e) {
     e.preventDefault();
-    hideLoginErr();
-    var email=document.getElementById('loginEmail').value;
-    var pw=document.getElementById('loginPw').value;
-    if(!email||!pw){showLoginErr('아이디(이메일)와 비밀번호를 입력하세요.');return;}
+    const email = document.getElementById('email').value.trim();
+    const pw = document.getElementById('password').value.trim();
+    const err = document.getElementById('errBanner');
+    if (!email || !pw) {
+      err.classList.add('show');
+      err.querySelector('span').textContent = '이메일과 비밀번호를 모두 입력해 주세요.';
+      return;
+    }
+    err.classList.remove('show');
+    TPKMAuth.login({ name: email.split('@')[0], email: email });
+    const params = new URLSearchParams(location.search);
+    location.href = params.get('next') || 'index.html';
+  });
 
-    var profile=window.TMProfile&&TMProfile.load();
-    var want=normEmail(email);
+  function loginGoogle() {
+    TPKMAuth.login({ name: 'Google 사용자', email: 'demo@gmail.com', provider: 'google' });
+    location.href = 'index.html';
+  }
 
-    if(profile&&profile.email){
-      if(normEmail(profile.email)!==want){
-        showLoginErr('저장된 회원 정보의 아이디(이메일)와 일치하지 않습니다.');
+  // Find ID flow
+  document.getElementById('btnFindId').addEventListener('click', function () {
+    const n = document.getElementById('fi-name').value.trim();
+    const b = document.getElementById('fi-bd').value.trim();
+    const t = document.getElementById('fi-tel').value.trim();
+    if (!n || !b || !t) { alert('이름, 생년월일, 연락처를 모두 입력해 주세요.'); return; }
+    document.getElementById('findIdForm').classList.add('hidden');
+    document.getElementById('findIdResult').classList.remove('hidden');
+    this.textContent = '로그인하러 가기';
+    this.onclick = () => { TPKM.closeModal('modalFindId'); resetFindId(); };
+  });
+  function resetFindId() {
+    document.getElementById('findIdForm').classList.remove('hidden');
+    document.getElementById('findIdResult').classList.add('hidden');
+    const btn = document.getElementById('btnFindId');
+    btn.textContent = '아이디 확인';
+    btn.onclick = null;
+    btn.addEventListener('click', arguments.callee, { once: false });
+  }
+
+  // Find PW flow (link-based, TPKM_FO_6_1_3)
+  document.getElementById('btnFindPw').addEventListener('click', function () {
+    const form = document.getElementById('findPwForm');
+    if (form.classList.contains('hidden')) {
+      if (!document.getElementById('findPwResultGoogle').classList.contains('hidden')) {
+        TPKM.closeModal('modalFindPw');
+        resetFindPw();
         return;
       }
-      var stored=profile.password!=null?String(profile.password):'';
-      if(!stored){
-        showLoginErr('저장된 비밀번호가 없습니다. 비밀번호 찾기로 새 비밀번호를 설정해 주세요.');
-        return;
-      }
-      if(pw!==stored){
-        showLoginErr('아이디(이메일) 또는 비밀번호가 올바르지 않습니다.');
-        return;
-      }
-      try{localStorage.setItem('tm_session','1');}catch(x){}
-      redirectAfterLogin();
+      location.href = './password-reset.html?token=demo';
       return;
     }
-
-    try{localStorage.setItem('tm_session','1');}catch(x){}
-    redirectAfterLogin();
-  }
-
-  function redirectAfterLogin(){
-    rememberLoginPref();
-    var next=new URLSearchParams(location.search).get('next');
-    if(next&&/^[\w\-\.]+\.html/.test(next.split('?')[0])){
-      window.location.href=next;
-      return;
+    const e = document.getElementById('fp-email').value.trim();
+    if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) { alert('유효한 이메일을 입력해 주세요.'); return; }
+    const isGoogle = document.getElementById('fp-google-demo').checked || /@gmail\.com$/i.test(e);
+    form.classList.add('hidden');
+    if (isGoogle) {
+      document.getElementById('findPwResult').classList.add('hidden');
+      document.getElementById('findPwResultGoogle').classList.remove('hidden');
+      this.style.display = 'none';
+    } else {
+      document.getElementById('find-pw-sent-email').textContent = e;
+      document.getElementById('findPwResult').classList.remove('hidden');
+      this.textContent = '재설정 화면 열기';
     }
-    window.location.href='index.html';
-  }
-
-  function showModal(el){el.hidden=false;el.classList.add('show');}
-  function hideModal(el){el.classList.remove('show');el.hidden=true;}
-
-  function openIdFindModal(){
-    hideModal(document.getElementById('pwResetModal'));
-    document.getElementById('idFindNameKr').value='';
-    document.getElementById('idFindBirth').value='';
-    document.getElementById('idFindPhone').value='';
-    document.getElementById('idFindResult').classList.remove('show');
-    document.getElementById('idFindGoogleResult').classList.remove('show');
-    document.getElementById('idFindMultiResult').classList.remove('show');
-    showModal(document.getElementById('idFindModal'));
-    document.getElementById('idFindNameKr').focus();
-  }
-  function closeIdFindModal(){
-    hideModal(document.getElementById('idFindModal'));
-  }
-  function showIdFindMulti(generalEmail, googleEmail){
-    document.getElementById('idFindResult').classList.remove('show');
-    document.getElementById('idFindGoogleResult').classList.remove('show');
-    document.getElementById('idFindMultiGeneralEmail').textContent=generalEmail;
-    document.getElementById('idFindMultiGoogleEmail').textContent=googleEmail;
-    var goLink=document.getElementById('idFindMultiGeneralGo');
-    goLink.onclick=function(e){
-      e.preventDefault();
-      var le=document.getElementById('loginEmail');
-      if(le) le.value=generalEmail;
-      closeIdFindModal();
-    };
-    document.getElementById('idFindMultiResult').classList.add('show');
-  }
-  function submitIdFind(){
-    var nameKr=normName(document.getElementById('idFindNameKr').value);
-    var birth=document.getElementById('idFindBirth').value;
-    var phone=normPhone(document.getElementById('idFindPhone').value);
-
-    if(!nameKr||!birth||!phone){
-      alert('이름, 생년월일, 연락처를 모두 입력해 주세요.');
-      return;
-    }
-
-    /* 데모 트리거: 동일 이름·생년월일·연락처로 일반(일반)·구글(구글) 계정이
-       모두 존재하는 다중 계정 케이스를 시연 */
-    if(nameKr==='김다중'||nameKr==='다중'){
-      showIdFindMulti('kim.dajung@example.com','kim.dajung.g@gmail.com');
-      return;
-    }
-
-    var profile=window.TMProfile&&TMProfile.load();
-    if(!profile||!profile.email){
-      alert('저장된 회원 정보가 없습니다.\n먼저 회원가입을 완료해 주세요.');
-      return;
-    }
-    if(normName(profile.nameKr)!==nameKr||String(profile.birthdate||'')!==birth||normPhone(profile.phone)!==phone){
-      alert('입력하신 정보가 저장된 회원 정보와 일치하지 않습니다.');
-      return;
-    }
-    document.getElementById('idFindMultiResult').classList.remove('show');
-    if(profile.googleSignup){
-      // 구글 가입 계정 → 구글 로그인 안내
-      document.getElementById('idFindGoogleResult').classList.add('show');
-      document.getElementById('idFindResult').classList.remove('show');
-      return;
-    }
-    document.getElementById('idFindGoogleResult').classList.remove('show');
-    document.getElementById('idFindResultEmail').textContent=maskEmail(profile.email);
-    document.getElementById('idFindResult').classList.add('show');
-    document.getElementById('loginEmail').value=profile.email.trim();
-  }
-
-  function openPwResetModal(){
-    hideModal(document.getElementById('idFindModal'));
-    document.getElementById('pwResetStepEmail').classList.add('active');
-    document.getElementById('pwResetStepSent').classList.remove('active');
-    document.getElementById('pwResetEmail').value=document.getElementById('loginEmail').value.trim();
-    document.getElementById('pwResetGoogleGuide').classList.remove('show');
-    showModal(document.getElementById('pwResetModal'));
-    document.getElementById('pwResetEmail').focus();
-  }
-  function closePwResetModal(){
-    hideModal(document.getElementById('pwResetModal'));
-  }
-  function goPwResetEmailStep(){
-    document.getElementById('pwResetStepEmail').classList.add('active');
-    document.getElementById('pwResetStepSent').classList.remove('active');
-    document.getElementById('pwResetGoogleGuide').classList.remove('show');
-  }
-  function goPwResetSentStep(emailNorm){
-    document.getElementById('pwResetStepEmail').classList.remove('active');
-    document.getElementById('pwResetStepSent').classList.add('active');
-    document.getElementById('pwResetSentTo').textContent=emailNorm;
-    var demoUrl='./password-reset.html?token=demo';
-    var link=document.getElementById('pwResetDemoLink');
-    var go=document.getElementById('pwResetGoPage');
-    if(link){link.href=demoUrl;link.textContent=demoUrl.replace('./','');}
-    if(go)go.href=demoUrl;
-  }
-  function sendPwResetLink(){
-    var em=normEmail(document.getElementById('pwResetEmail').value);
-    if(!em){alert('이메일 주소를 입력해 주세요.');return;}
-    var profile=window.TMProfile&&TMProfile.load();
-    if(!profile||!profile.email){
-      alert('저장된 회원 정보가 없습니다.\n먼저 회원가입을 완료해 주세요.');
-      return;
-    }
-    if(normEmail(profile.email)!==em){
-      alert('입력하신 이메일로 가입된 계정이 없습니다.');
-      return;
-    }
-    if(profile.googleSignup){
-      document.getElementById('pwResetGoogleGuide').classList.add('show');
-      return;
-    }
-    document.getElementById('pwResetGoogleGuide').classList.remove('show');
-    goPwResetSentStep(em);
-  }
-
-  document.getElementById('idFindOpen').addEventListener('click',function(e){
-    e.preventDefault();
-    openIdFindModal();
   });
-  document.getElementById('idFindClose').addEventListener('click',closeIdFindModal);
-  document.getElementById('idFindModal').addEventListener('click',function(e){
-    if(e.target===this)closeIdFindModal();
-  });
-  document.getElementById('idFindSubmit').addEventListener('click',submitIdFind);
+  function resetFindPw() {
+    document.getElementById('findPwForm').classList.remove('hidden');
+    document.getElementById('findPwResult').classList.add('hidden');
+    document.getElementById('findPwResultGoogle').classList.add('hidden');
+    const btn = document.getElementById('btnFindPw');
+    btn.textContent = '재설정 링크 발송';
+    btn.style.display = '';
+    const demo = document.getElementById('fp-google-demo');
+    if (demo) demo.checked = false;
+  }
 
-  document.getElementById('pwResetOpen').addEventListener('click',function(e){
-    e.preventDefault();
-    openPwResetModal();
-  });
-  document.getElementById('pwResetClose').addEventListener('click',closePwResetModal);
-  document.getElementById('pwResetModal').addEventListener('click',function(e){
-    if(e.target===this)closePwResetModal();
-  });
-  document.getElementById('pwResetSendLink').addEventListener('click',sendPwResetLink);
-  document.getElementById('pwResetBackEmail').addEventListener('click',goPwResetEmailStep);
-  document.addEventListener('keydown',function(e){
-    if(e.key!=='Escape')return;
-    var pw=document.getElementById('pwResetModal');
-    var idm=document.getElementById('idFindModal');
-    if(!pw.hidden)closePwResetModal();
-    else if(!idm.hidden)closeIdFindModal();
-  });
+  if (new URLSearchParams(location.search).get('reset') === 'ok') {
+    const b = document.getElementById('resetOkBanner');
+    if (b) b.style.display = 'flex';
+    try { history.replaceState({}, '', location.pathname + location.hash); } catch (e) {}
+  }
 </script>
 </body>
 </html>
