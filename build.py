@@ -3,15 +3,32 @@
 import shutil
 import pathlib
 
-FO_SRC = pathlib.Path("html") / "C안" / "FO"
 SHARED_SRC = pathlib.Path("html/shared")
 DST = pathlib.Path("public")
 
 # Paths not served to end users (Vercel project metadata, IA notes)
 SKIP_NAMES = {".vercel", "vercel.json"}
 
-if not FO_SRC.is_dir():
-    raise RuntimeError(f"FO source not found: {FO_SRC.resolve()}")
+
+def _resolve_fo_src() -> pathlib.Path:
+    """C안/FO — use dynamic lookup for Linux deploy (Unicode path encoding)."""
+    direct = pathlib.Path("html") / "C안" / "FO"
+    if direct.is_dir():
+        return direct
+    html_dir = pathlib.Path("html")
+    if not html_dir.is_dir():
+        raise RuntimeError(f"html/ not found: {html_dir.resolve()}")
+    for d in sorted(html_dir.iterdir()):
+        if d.is_dir() and d.name.startswith("C"):
+            fo = d / "FO"
+            if fo.is_dir():
+                return fo
+    raise RuntimeError(
+        f"FO source not found under html/. Found: {[p.name for p in html_dir.iterdir()]}"
+    )
+
+
+FO_SRC = _resolve_fo_src()
 
 if DST.exists():
     shutil.rmtree(DST)
