@@ -194,29 +194,15 @@
       <p class="body-sm" style="margin-bottom: 16px;" data-i18n-content="reg.s1_desc">접수 가능한 회차 중 하나를 선택해 주세요.</p>
 
       <div class="round-list" id="roundList">
-        <label class="round-card selected">
-          <input type="radio" name="round" hidden checked>
-          <div class="h">
-            <div class="round-n">제98회</div>
-            <div class="round-status">접수 중</div>
-          </div>
-          <div class="meta-row">
-            <div><strong>시험일</strong>2026.04.12 (일)</div>
-            <div><strong>접수 기간</strong>02.01 — 02.15</div>
-          </div>
-        </label>
-        <label class="round-card upcoming disabled">
-          <input type="radio" name="round" hidden disabled>
-          <div class="h">
-            <div class="round-n">제99회</div>
-            <div class="round-status">접수 예정</div>
-          </div>
-          <div class="meta-row">
-            <div><strong>시험일</strong>2026.07.05 (일)</div>
-            <div><strong>접수 기간</strong>05.01 — 05.15</div>
-          </div>
-        </label>
+        <p class="body-sm" id="roundListLoading" style="display:none;">회차 정보를 불러오는 중…</p>
+        <p class="body-sm" id="roundListError" style="display:none; color:var(--danger);"></p>
       </div>
+
+      <h2 class="h3" style="margin: 28px 0 6px;">시험장 선택</h2>
+      <p class="body-sm" style="margin-bottom: 10px;">접수 회차에 배정 가능한 시험장입니다.</p>
+      <select class="input" id="venueSelect" style="width:100%; max-width:480px;">
+        <option value="">시험장을 선택해 주세요</option>
+      </select>
 
       <h2 class="h3" style="margin: 28px 0 6px;">응시 급수 선택 <span style="font-size: 12px; color:var(--text-3); font-weight:400;">(복수 선택 가능)</span></h2>
       <p class="body-sm" style="margin-bottom: 16px;">TOPIK Ⅰ과 Ⅱ를 동시에 응시하실 수 있습니다.</p>
@@ -268,22 +254,22 @@
       </div>
 
       <h3 class="h4" style="margin: 20px 0 10px;">기본정보</h3>
-      <div class="ro-grid">
-        <div class="ro-item"><div class="l">한글 성명</div><div class="v">홍길동</div></div>
-        <div class="ro-item"><div class="l">영문 성명</div><div class="v">HONG GILDONG</div></div>
-        <div class="ro-item"><div class="l">생년월일</div><div class="v">1996-01-15</div></div>
-        <div class="ro-item"><div class="l">성별</div><div class="v">남</div></div>
-        <div class="ro-item"><div class="l">국적</div><div class="v">미얀마 (Myanmar)</div></div>
-        <div class="ro-item"><div class="l">제1언어</div><div class="v">버마어</div></div>
-        <div class="ro-item"><div class="l">연락처</div><div class="v">+95 9 1234 5678</div></div>
-        <div class="ro-item"><div class="l">이메일 (아이디)</div><div class="v">user@example.com</div></div>
-        <div class="ro-item"><div class="l">직업</div><div class="v">학생</div></div>
+      <div class="ro-grid" id="profileGrid">
+        <div class="ro-item"><div class="l">한글 성명</div><div class="v" id="profNameKo">—</div></div>
+        <div class="ro-item"><div class="l">영문 성명</div><div class="v" id="profNameEn">—</div></div>
+        <div class="ro-item"><div class="l">생년월일</div><div class="v" id="profBirth">—</div></div>
+        <div class="ro-item"><div class="l">성별</div><div class="v" id="profGender">—</div></div>
+        <div class="ro-item"><div class="l">국적</div><div class="v" id="profNationality">—</div></div>
+        <div class="ro-item"><div class="l">제1언어</div><div class="v" id="profLang">—</div></div>
+        <div class="ro-item"><div class="l">연락처</div><div class="v" id="profPhone">—</div></div>
+        <div class="ro-item"><div class="l">이메일 (아이디)</div><div class="v" id="profEmail">—</div></div>
+        <div class="ro-item"><div class="l">직업 코드</div><div class="v" id="profJob">—</div></div>
       </div>
 
       <h3 class="h4" style="margin: 24px 0 10px;">응시 정보</h3>
       <div class="ro-grid">
-        <div class="ro-item"><div class="l">응시동기</div><div class="v">유학 및 진학</div></div>
-        <div class="ro-item"><div class="l">응시목적</div><div class="v">대학 입학</div></div>
+        <div class="ro-item"><div class="l">응시동기 코드</div><div class="v" id="profMotive">—</div></div>
+        <div class="ro-item"><div class="l">응시목적 코드</div><div class="v" id="profPurpose">—</div></div>
       </div>
 
       <div class="form-actions">
@@ -328,14 +314,14 @@
 
       <h3 class="h4" style="margin-bottom: 10px;">응시 정보</h3>
       <div class="sum-card">
-        <div class="sum-row"><div class="l">회차</div><div class="v"><strong>제98회</strong> · 2026.04.12 (일)</div></div>
-        <div class="sum-row"><div class="l">응시 급수</div><div class="v" id="sumLevels"><strong>TOPIK Ⅰ</strong></div></div>
-        <div class="sum-row"><div class="l">시험장</div><div class="v">양곤 시험장 (배정 예정)</div></div>
-        <div class="sum-row"><div class="l">한글 성명</div><div class="v">홍길동</div></div>
-        <div class="sum-row"><div class="l">영문 성명</div><div class="v">HONG GILDONG</div></div>
-        <div class="sum-row"><div class="l">생년월일</div><div class="v">1996-01-15</div></div>
-        <div class="sum-row"><div class="l">연락처</div><div class="v">+95 9 1234 5678</div></div>
-        <div class="sum-row"><div class="l">이메일</div><div class="v">user@example.com</div></div>
+        <div class="sum-row"><div class="l">회차</div><div class="v" id="sumRound">—</div></div>
+        <div class="sum-row"><div class="l">응시 급수</div><div class="v" id="sumLevels"><strong>—</strong></div></div>
+        <div class="sum-row"><div class="l">시험장</div><div class="v" id="sumVenue">—</div></div>
+        <div class="sum-row"><div class="l">한글 성명</div><div class="v" id="sumNameKo">—</div></div>
+        <div class="sum-row"><div class="l">영문 성명</div><div class="v" id="sumNameEn">—</div></div>
+        <div class="sum-row"><div class="l">생년월일</div><div class="v" id="sumBirth">—</div></div>
+        <div class="sum-row"><div class="l">연락처</div><div class="v" id="sumPhone">—</div></div>
+        <div class="sum-row"><div class="l">이메일</div><div class="v" id="sumEmail">—</div></div>
       </div>
 
       <h3 class="h4" style="margin: 24px 0 10px;">응시료 안내</h3>
@@ -359,6 +345,7 @@
         <label class="check"><input type="checkbox" id="agreeTerms"><span class="box"></span><span><span class="req" style="color:var(--danger);">[필수]</span> 서비스 이용약관 및 개인정보 처리 방침에 동의합니다.</span></label>
       </div>
 
+      <p id="submitError" class="body-sm" style="display:none; color:var(--danger); margin-bottom:12px;"></p>
       <div class="form-actions">
         <button class="btn btn-secondary" data-back>이전</button>
         <button class="btn btn-primary" id="btnSubmit">접수하기</button>
@@ -392,8 +379,144 @@
   </div>
 </div>
 
+<script src="shared/api-client.js"></script>
 <script src="assets/common.js"></script>
 <script>
+  // ---- API-backed master data & profile (Phase 1) ----
+  var REG_STATE = {
+    rounds: [],
+    venues: [],
+    profile: null,
+    selectedRoundId: null,
+  };
+
+  function fmtDateYmd(iso) {
+    if (!iso) return '—';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso).slice(0, 10);
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    var w = ['일','월','화','수','목','금','토'][d.getDay()];
+    return y + '.' + m + '.' + day + ' (' + w + ')';
+  }
+
+  function fmtRegPeriod(start, end) {
+    if (!start || !end) return '—';
+    function short(s) {
+      var d = new Date(s);
+      return String(d.getMonth() + 1).padStart(2, '0') + '.' + String(d.getDate()).padStart(2, '0');
+    }
+    return short(start) + ' — ' + short(end);
+  }
+
+  function roundStatusLabel(status) {
+    if (status === 'open') return { text: '접수 중', cls: '' };
+    if (status === 'closed') return { text: '접수 마감', cls: 'closed' };
+    return { text: '접수 예정', cls: 'upcoming' };
+  }
+
+  function renderRoundList(rounds) {
+    var list = document.getElementById('roundList');
+    var loading = document.getElementById('roundListLoading');
+    var errEl = document.getElementById('roundListError');
+    if (loading) loading.style.display = 'none';
+    REG_STATE.rounds = rounds || [];
+    list.querySelectorAll('.round-card').forEach(function (n) { n.remove(); });
+    if (!rounds.length) {
+      if (errEl) { errEl.textContent = '접수 가능한 회차가 없습니다.'; errEl.style.display = 'block'; }
+      return;
+    }
+    rounds.forEach(function (r, idx) {
+      var st = roundStatusLabel(r.registration_status);
+      var disabled = r.registration_status !== 'open';
+      var card = document.createElement('label');
+      card.className = 'round-card' + (disabled ? ' disabled ' + st.cls : (idx === 0 && !disabled ? ' selected' : ' ' + st.cls));
+      card.dataset.roundId = String(r.id);
+      card.innerHTML =
+        '<input type="radio" name="round" hidden' + (disabled ? ' disabled' : (idx === 0 ? ' checked' : '')) + '>' +
+        '<div class="h"><div class="round-n">' + (r.title || ('제' + r.round_no + '회')) + '</div>' +
+        '<div class="round-status">' + st.text + '</div></div>' +
+        '<div class="meta-row">' +
+        '<div><strong>시험일</strong>' + fmtDateYmd(r.exam_date) + '</div>' +
+        '<div><strong>접수 기간</strong>' + fmtRegPeriod(r.registration_start_at, r.registration_end_at) + '</div></div>';
+      if (!disabled && idx === 0) REG_STATE.selectedRoundId = r.id;
+      list.appendChild(card);
+    });
+    bindRoundCards();
+  }
+
+  function renderVenueSelect(venues) {
+    var sel = document.getElementById('venueSelect');
+    REG_STATE.venues = venues || [];
+    sel.innerHTML = '<option value="">시험장을 선택해 주세요</option>';
+    venues.forEach(function (v) {
+      var opt = document.createElement('option');
+      opt.value = String(v.id);
+      opt.textContent = v.name_ko + (v.name_en ? ' (' + v.name_en + ')' : '');
+      sel.appendChild(opt);
+    });
+    if (venues.length === 1) sel.value = String(venues[0].id);
+  }
+
+  function applyProfileToDom(u) {
+    REG_STATE.profile = u;
+    if (!u) return;
+    function set(id, val) { var el = document.getElementById(id); if (el) el.textContent = val || '—'; }
+    var birth = u.birth_date;
+    if (birth && birth.length === 8) birth = birth.slice(0,4) + '-' + birth.slice(4,6) + '-' + birth.slice(6,8);
+    set('profNameKo', u.name_ko);
+    set('profNameEn', u.name_en);
+    set('profBirth', birth);
+    set('profGender', u.gender === '1' ? '남' : (u.gender === '2' ? '여' : u.gender));
+    set('profNationality', u.nationality);
+    set('profLang', u.first_language);
+    set('profPhone', u.phone);
+    set('profEmail', u.email);
+    set('profJob', u.job_code != null ? String(u.job_code) : '—');
+    set('profMotive', u.motive_code != null ? String(u.motive_code) : '—');
+    set('profPurpose', u.purpose_code != null ? String(u.purpose_code) : '—');
+  }
+
+  function loadRegisterMasters() {
+    if (!window.TopikApi || !TopikApi.useApi) return;
+    var loading = document.getElementById('roundListLoading');
+    if (loading) loading.style.display = 'block';
+    TopikApi.getExamRounds({ registration_status: 'open' }).then(function (res) {
+      if (res.ok && res.body.items) renderRoundList(res.body.items);
+      else TopikApi.getExamRounds().then(function (r2) {
+        if (r2.ok && r2.body.items) renderRoundList(r2.body.items);
+      });
+    });
+    TopikApi.getExamVenues().then(function (res) {
+      if (res.ok && res.body.items) renderVenueSelect(res.body.items);
+    });
+    if (TopikApi.isLoggedIn()) {
+      TopikApi.getMe().then(function (res) {
+        if (res.ok && res.body.user) applyProfileToDom(res.body.user);
+      });
+    }
+  }
+  loadRegisterMasters();
+
+  function getSelectedRound() {
+    var card = document.querySelector('.round-card.selected');
+    if (!card) return null;
+    var id = Number(card.dataset.roundId);
+    return REG_STATE.rounds.find(function (r) { return r.id === id; }) || null;
+  }
+
+  function bindRoundCards() {
+    document.querySelectorAll('.round-card').forEach(function (c) {
+      c.addEventListener('click', function () {
+        if (c.classList.contains('disabled')) return;
+        document.querySelectorAll('.round-card').forEach(function (x) { x.classList.remove('selected'); });
+        c.classList.add('selected');
+        REG_STATE.selectedRoundId = Number(c.dataset.roundId);
+      });
+    });
+  }
+
   // Step navigation
   const panes = document.querySelectorAll('.step-pane');
   const indi  = document.querySelectorAll('.steps .step');
@@ -412,6 +535,11 @@
     if (cur === 1) {
       const any = document.getElementById('lvl1').checked || document.getElementById('lvl2').checked;
       if (!any) { alert('응시 급수를 1개 이상 선택해 주세요.'); return; }
+      if (!document.querySelector('.round-card.selected')) {
+        alert('응시 회차를 선택해 주세요.'); return;
+      }
+      const venue = document.getElementById('venueSelect').value;
+      if (!venue) { alert('시험장을 선택해 주세요.'); return; }
     }
     if (cur === 4) return;
     // Update STEP4 summary on STEP3 → 4
@@ -422,15 +550,6 @@
     const cur = +document.querySelector('.step-pane.active').dataset.s;
     go(cur - 1);
   }));
-
-  // Round card selection
-  document.querySelectorAll('.round-card').forEach(c => {
-    c.addEventListener('click', () => {
-      if (c.classList.contains('disabled')) return;
-      document.querySelectorAll('.round-card').forEach(x => x.classList.remove('selected'));
-      c.classList.add('selected');
-    });
-  });
 
   // STEP 3 — enable next only when all 5 checks are checked
   const photoChecks = document.querySelectorAll('.check-photo input');
@@ -458,15 +577,99 @@
     if (l1) lvls.push('TOPIK Ⅰ');
     if (l2) lvls.push('TOPIK Ⅱ');
     document.getElementById('sumLevels').innerHTML = '<strong>' + lvls.join(' · ') + '</strong>' + (lvls.length === 2 ? ' <span style="font-size:12px; color:var(--text-3);">(동시 접수)</span>' : '');
+
+    const round = getSelectedRound();
+    const sumRound = document.getElementById('sumRound');
+    if (sumRound) {
+      sumRound.innerHTML = round
+        ? '<strong>' + (round.title || ('제' + round.round_no + '회')) + '</strong> · ' + fmtDateYmd(round.exam_date)
+        : '—';
+    }
+    const venueSel = document.getElementById('venueSelect');
+    const sumVenue = document.getElementById('sumVenue');
+    if (sumVenue && venueSel) {
+      const opt = venueSel.options[venueSel.selectedIndex];
+      sumVenue.textContent = opt && opt.value ? opt.textContent : '—';
+    }
+    const u = REG_STATE.profile;
+    if (u) {
+      var birth = u.birth_date;
+      if (birth && birth.length === 8) birth = birth.slice(0,4) + '-' + birth.slice(4,6) + '-' + birth.slice(6,8);
+      document.getElementById('sumNameKo').textContent = u.name_ko || '—';
+      document.getElementById('sumNameEn').textContent = u.name_en || '—';
+      document.getElementById('sumBirth').textContent = birth || '—';
+      document.getElementById('sumPhone').textContent = u.phone || '—';
+      document.getElementById('sumEmail').textContent = u.email || '—';
+    }
   }
 
-  // Submit
-  document.getElementById('btnSubmit').addEventListener('click', () => {
+  function buildSubmitPayload() {
+    const round = getSelectedRound();
+    const levels = [];
+    if (document.getElementById('lvl1').checked) levels.push('I');
+    if (document.getElementById('lvl2').checked) levels.push('II');
+    return {
+      exam_round_id: round ? round.id : REG_STATE.selectedRoundId,
+      exam_levels: levels,
+      exam_venue_id: Number(document.getElementById('venueSelect').value) || undefined,
+      photo_checklist_confirmed: true,
+      terms_agreed: [],
+    };
+  }
+
+  function showSubmitError(msg) {
+    const el = document.getElementById('submitError');
+    if (!el) { alert(msg); return; }
+    el.textContent = msg;
+    el.style.display = msg ? 'block' : 'none';
+  }
+
+  // Submit — API (Phase 1); demo token falls back to modal only
+  document.getElementById('btnSubmit').addEventListener('click', function () {
     if (!document.getElementById('agreeTerms').checked) {
       alert('약관에 동의해 주세요.'); return;
     }
-    localStorage.removeItem(DRAFT_KEY); // 제출 완료 시 임시저장 제거
-    TPKM.openModal('modalDone');
+    showSubmitError('');
+
+    if (!window.TopikApi || !TopikApi.isLoggedIn()) {
+      alert('로그인이 필요합니다.'); location.href = 'login.html?next=' + encodeURIComponent('register.html'); return;
+    }
+
+    var token = TopikApi.getAccessToken();
+    if (!TopikApi.useApi || !TopikApi.baseUrl || token === 'demo-local') {
+      localStorage.removeItem(DRAFT_KEY);
+      TPKM.openModal('modalDone');
+      return;
+    }
+
+    var btn = document.getElementById('btnSubmit');
+    btn.disabled = true;
+    btn.textContent = '제출 중…';
+
+    TopikApi.submitApplication(buildSubmitPayload()).then(function (res) {
+      btn.disabled = false;
+      btn.textContent = '접수하기';
+      if (res.ok) {
+        localStorage.removeItem(DRAFT_KEY);
+        try {
+          sessionStorage.setItem('topik_last_submission', JSON.stringify(res.body));
+        } catch (e) {}
+        location.href = 'mypage.html?submitted=1';
+        return;
+      }
+      var err = (res.body && res.body.error) || {};
+      var msg = err.message || '접수에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+      if (res.status === 401) {
+        alert('로그인이 만료되었습니다. 다시 로그인해 주세요.');
+        location.href = 'login.html?next=' + encodeURIComponent('register.html');
+        return;
+      }
+      showSubmitError(msg);
+    }).catch(function () {
+      btn.disabled = false;
+      btn.textContent = '접수하기';
+      showSubmitError('네트워크 오류가 발생했습니다. API 서버 연결을 확인해 주세요.');
+    });
   });
 
   // ===== 저장 후 나가기 (임시저장) / 재진입 시 복원 =====
@@ -476,6 +679,8 @@
     const cards = [...document.querySelectorAll('.round-card')];
     return {
       step: +document.querySelector('.step-pane.active').dataset.s,
+      roundId: REG_STATE.selectedRoundId,
+      venueId: document.getElementById('venueSelect').value || null,
       round: cards.findIndex(c => c.classList.contains('selected')),
       lvl1: document.getElementById('lvl1').checked,
       lvl2: document.getElementById('lvl2').checked,
@@ -506,10 +711,19 @@
     }
 
     const cards = [...document.querySelectorAll('.round-card')];
-    if (typeof d.round === 'number' && d.round >= 0 && cards[d.round] && !cards[d.round].classList.contains('disabled')) {
+    if (d.roundId) {
+      const match = cards.find(c => Number(c.dataset.roundId) === Number(d.roundId));
+      if (match && !match.classList.contains('disabled')) {
+        cards.forEach(x => x.classList.remove('selected'));
+        match.classList.add('selected');
+        REG_STATE.selectedRoundId = Number(d.roundId);
+      }
+    } else if (typeof d.round === 'number' && d.round >= 0 && cards[d.round] && !cards[d.round].classList.contains('disabled')) {
       cards.forEach(x => x.classList.remove('selected'));
       cards[d.round].classList.add('selected');
+      if (cards[d.round].dataset.roundId) REG_STATE.selectedRoundId = Number(cards[d.round].dataset.roundId);
     }
+    if (d.venueId) document.getElementById('venueSelect').value = String(d.venueId);
     document.getElementById('lvl1').checked = !!d.lvl1;
     document.getElementById('lvl2').checked = !!d.lvl2;
     if (Array.isArray(d.photoChecks)) {

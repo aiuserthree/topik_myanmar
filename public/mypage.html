@@ -8,6 +8,19 @@
 <style>
   .my-wrap { max-width: 900px; margin: 0 auto; padding: 24px 16px 48px; }
 
+  .submit-banner {
+    display: none;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    background: var(--success-bg, #ecfdf5);
+    border: 1px solid var(--success, #059669);
+    border-radius: var(--radius-md);
+    color: var(--success, #059669);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .submit-banner.show { display: block; }
+
   .me-card {
     display: flex; gap: 16px; align-items: center;
     padding: 20px;
@@ -47,7 +60,6 @@
   }
   .my-tabs button.active .ct { background: var(--primary); color: #fff; }
 
-  /* Application card */
   .app-card {
     background: #fff;
     border: 1px solid var(--border);
@@ -79,35 +91,14 @@
 
   @media (max-width: 599px) {
     .app-card { position: relative; }
-    .app-head {
-      display: block;
-      position: relative;
-      flex-wrap: nowrap;
-    }
-    .app-head .lt {
-      min-width: 0;
-      padding-right: 112px;
-    }
-    .app-head .lt h3 {
-      display: block;
-      line-height: 1.35;
-    }
-    .app-head .rt {
-      position: static;
-      display: block;
-      margin-top: 6px;
-    }
+    .app-head { display: block; position: relative; flex-wrap: nowrap; }
+    .app-head .lt { min-width: 0; padding-right: 112px; }
+    .app-head .lt h3 { display: block; line-height: 1.35; }
+    .app-head .rt { position: static; display: block; margin-top: 6px; }
     .app-head .rt .status {
-      position: absolute;
-      top: 16px;
-      right: 18px;
-      z-index: 1;
-      white-space: nowrap;
+      position: absolute; top: 16px; right: 18px; z-index: 1; white-space: nowrap;
     }
-    .app-head .rt .apply-n {
-      display: block;
-      text-align: left;
-    }
+    .app-head .rt .apply-n { display: block; text-align: left; }
   }
 
   .app-grid {
@@ -117,9 +108,7 @@
     gap: 12px;
   }
   .app-grid .it .l { font-size: 12px; color: var(--text-3); margin-bottom: 2px; }
-  .app-grid .it .v {
-    font-size: 14px; color: var(--text); font-weight: 600;
-  }
+  .app-grid .it .v { font-size: 14px; color: var(--text); font-weight: 600; }
   .app-grid .it .v.exam-num {
     font-family: 'Inter', sans-serif; letter-spacing: 0.04em;
     color: var(--st-number);
@@ -151,21 +140,15 @@
   .empty h3 { font-size: 16px; margin-bottom: 8px; color: var(--text-2); }
   .empty p { font-size: 13.5px; margin-bottom: 16px; }
 
-  /* 접수 확인증 인쇄 — A4 1매 정돈 (열린 확인증 모달만 출력) */
   @media print {
     body.printing-confirm > *:not(#modalConfirm) { display: none !important; }
     body.printing-confirm #modalConfirm {
-      position: static !important;
-      display: block !important;
-      background: #fff !important;
-      padding: 0 !important;
+      position: static !important; display: block !important;
+      background: #fff !important; padding: 0 !important;
     }
     body.printing-confirm #modalConfirm .modal {
-      max-width: 100% !important;
-      max-height: none !important;
-      box-shadow: none !important;
-      border: 0 !important;
-      margin: 0 !important;
+      max-width: 100% !important; max-height: none !important;
+      box-shadow: none !important; border: 0 !important; margin: 0 !important;
     }
     body.printing-confirm #modalConfirm .modal-head .btn-text,
     body.printing-confirm #modalConfirm .modal-foot { display: none !important; }
@@ -179,182 +162,27 @@
 <main class="page" role="main">
   <div class="my-wrap">
 
-    <!-- 회원 카드 -->
-    <div class="me-card">
+    <div id="submitBanner" class="submit-banner" role="status">
+      접수가 완료되었습니다. 아래에서 접수 내역을 확인해 주세요.
+    </div>
+
+    <div class="me-card" id="meCard">
       <div class="avatar">PHOTO</div>
       <div class="info">
-        <h2>홍길동</h2>
-        <div class="en">HONG GILDONG</div>
-        <div class="meta">+95 9 1234 5678 · user@example.com</div>
+        <h2 id="meNameKo">—</h2>
+        <div class="en" id="meNameEn">—</div>
+        <div class="meta" id="meMeta">—</div>
       </div>
       <a href="mypage-profile.html" class="edit">내정보 수정</a>
     </div>
 
     <div class="my-tabs">
-      <button class="active" data-tab="active">진행 중인 접수 <span class="ct">5</span></button>
-      <button data-tab="past">지난 접수 <span class="ct">3</span></button>
+      <button class="active" data-tab="active" type="button">진행 중인 접수 <span class="ct" id="ctActive">0</span></button>
+      <button data-tab="past" type="button">지난 접수 <span class="ct" id="ctPast">0</span></button>
     </div>
 
-    <section class="tab-pane active" data-tab="active">
-
-      <!-- 카드 1: 수험번호 부여됨 (승인완료) -->
-      <div class="app-card" data-status="number">
-        <div class="app-head">
-          <div class="lt">
-            <h3><span class="round-n">제98회</span> <span class="lvls">TOPIK Ⅰ · TOPIK Ⅱ (동시 접수)</span></h3>
-            <div class="meta">시험일 2026.04.12 (일) · 양곤 시험장</div>
-          </div>
-          <div class="rt">
-            <span class="status status-number">수험번호 부여</span>
-            <span class="apply-n">접수번호 TPKM-98-001234</span>
-          </div>
-        </div>
-        <div class="app-grid">
-          <div class="it"><div class="l">수험번호</div><div class="v exam-num">98011234</div></div>
-          <div class="it"><div class="l">사진 심사</div><div class="v" style="color: var(--success);">승인 완료</div></div>
-          <div class="it"><div class="l">응시료 수납</div><div class="v" style="color: var(--success);">완료</div></div>
-          <div class="it"><div class="l">접수일</div><div class="v" style="color:var(--text-2); font-weight:500;">2026.02.03</div></div>
-        </div>
-        <div class="app-actions">
-          <button class="btn btn-secondary btn-sm" data-act="confirm" onclick="TPKM.openModal('modalConfirm')">접수 확인증</button>
-          <a href="ticket.html" class="btn btn-primary btn-sm" data-act="ticket">수험표 출력</a>
-        </div>
-      </div>
-
-      <!-- 카드 2: 사진 심사 중 -->
-      <div class="app-card" data-status="photo">
-        <div class="app-head">
-          <div class="lt">
-            <h3><span class="round-n">제99회</span> <span class="lvls">TOPIK Ⅱ</span></h3>
-            <div class="meta">시험일 2026.07.05 (일) · 양곤 시험장</div>
-          </div>
-          <div class="rt">
-            <span class="status status-photo">사진 심사 중</span>
-            <span class="apply-n">접수번호 TPKM-99-000128</span>
-          </div>
-        </div>
-        <div class="app-grid">
-          <div class="it"><div class="l">수험번호</div><div class="v pending">부여 전</div></div>
-          <div class="it"><div class="l">사진 심사</div><div class="v" style="color: var(--st-photo);">심사 중</div></div>
-          <div class="it"><div class="l">응시료 수납</div><div class="v" style="color: var(--st-pay);">대기</div></div>
-          <div class="it"><div class="l">접수일</div><div class="v" style="color:var(--text-2); font-weight:500;">2026.05.04</div></div>
-        </div>
-        <div class="app-actions">
-          <button class="btn btn-secondary btn-sm" data-act="confirm" onclick="TPKM.openModal('modalConfirm')">접수 확인증</button>
-          <button class="btn btn-ghost btn-sm" data-act="cancel" onclick="TPKM.openModal('modalCancel')">접수 취소</button>
-        </div>
-      </div>
-
-      <!-- 카드 3: 접수완료 (사진 심사 전) -->
-      <div class="app-card" data-status="applied">
-        <div class="app-head">
-          <div class="lt">
-            <h3><span class="round-n">제99회</span> <span class="lvls">TOPIK Ⅰ</span></h3>
-            <div class="meta">시험일 2026.07.05 (일) · 양곤 시험장</div>
-          </div>
-          <div class="rt">
-            <span class="status status-applied">접수완료</span>
-            <span class="apply-n">접수번호 TPKM-99-000301</span>
-          </div>
-        </div>
-        <div class="app-grid">
-          <div class="it"><div class="l">수험번호</div><div class="v pending">부여 전</div></div>
-          <div class="it"><div class="l">사진 심사</div><div class="v" style="color: var(--text-3);">대기</div></div>
-          <div class="it"><div class="l">응시료 수납</div><div class="v" style="color: var(--st-pay);">대기</div></div>
-          <div class="it"><div class="l">접수일</div><div class="v" style="color:var(--text-2); font-weight:500;">2026.05.06</div></div>
-        </div>
-        <div class="app-actions">
-          <button class="btn btn-secondary btn-sm" data-act="confirm" onclick="TPKM.openModal('modalConfirm')">접수 확인증</button>
-          <button class="btn btn-ghost btn-sm" data-act="cancel" onclick="TPKM.openModal('modalCancel')">접수 취소</button>
-        </div>
-      </div>
-
-      <!-- 카드 4: 수납대기 (사진 승인, 응시료 수납 전) -->
-      <div class="app-card" data-status="pay">
-        <div class="app-head">
-          <div class="lt">
-            <h3><span class="round-n">제98회</span> <span class="lvls">TOPIK Ⅱ</span></h3>
-            <div class="meta">시험일 2026.04.12 (일) · 양곤 시험장</div>
-          </div>
-          <div class="rt">
-            <span class="status status-pay">수납대기</span>
-            <span class="apply-n">접수번호 TPKM-98-001277</span>
-          </div>
-        </div>
-        <div class="app-grid">
-          <div class="it"><div class="l">수험번호</div><div class="v pending">부여 전</div></div>
-          <div class="it"><div class="l">사진 심사</div><div class="v" style="color: var(--success);">승인 완료</div></div>
-          <div class="it"><div class="l">응시료 수납</div><div class="v" style="color: var(--st-pay);">대기</div></div>
-          <div class="it"><div class="l">접수일</div><div class="v" style="color:var(--text-2); font-weight:500;">2026.02.05</div></div>
-        </div>
-        <div class="app-actions">
-          <button class="btn btn-secondary btn-sm" data-act="confirm" onclick="TPKM.openModal('modalConfirm')">접수 확인증</button>
-          <button class="btn btn-ghost btn-sm" data-act="cancel" onclick="TPKM.openModal('modalCancel')">접수 취소</button>
-        </div>
-      </div>
-
-      <!-- 카드 5: 반려 (사진 부적합) -->
-      <div class="app-card" data-status="rejected">
-        <div class="app-head">
-          <div class="lt">
-            <h3><span class="round-n">제99회</span> <span class="lvls">TOPIK Ⅰ</span></h3>
-            <div class="meta">시험일 2026.07.05 (일) · 양곤 시험장</div>
-          </div>
-          <div class="rt">
-            <span class="status status-rejected">반려</span>
-            <span class="apply-n">접수번호 TPKM-99-000455</span>
-          </div>
-        </div>
-        <div class="app-grid">
-          <div class="it"><div class="l">수험번호</div><div class="v pending">부여 전</div></div>
-          <div class="it"><div class="l">사진 심사</div><div class="v" style="color: var(--st-rejected);">반려 (정면 아님)</div></div>
-          <div class="it"><div class="l">응시료 수납</div><div class="v" style="color: var(--st-pay);">대기</div></div>
-          <div class="it"><div class="l">접수일</div><div class="v" style="color:var(--text-2); font-weight:500;">2026.05.04</div></div>
-        </div>
-        <div class="app-actions">
-          <a href="mypage-profile.html" class="btn btn-primary btn-sm" data-act="rephoto">사진 재등록</a>
-        </div>
-      </div>
-
-    </section>
-
-    <section class="tab-pane" data-tab="past" style="display:none;">
-      <!-- 지난 접수 -->
-      <div class="app-card" data-status="approved">
-        <div class="app-head">
-          <div class="lt">
-            <h3><span class="round-n">제97회</span> <span class="lvls">TOPIK Ⅰ</span></h3>
-            <div class="meta">시험일 2025.10.19 · 양곤 시험장</div>
-          </div>
-          <div class="rt">
-            <span class="status status-approved">응시 완료</span>
-            <span class="apply-n">접수번호 TPKM-97-008842</span>
-          </div>
-        </div>
-        <div class="app-grid">
-          <div class="it"><div class="l">수험번호</div><div class="v exam-num">97018842</div></div>
-          <div class="it"><div class="l">합격 등급</div><div class="v" style="color:var(--primary);">2급</div></div>
-          <div class="it"><div class="l">총점</div><div class="v">156 / 200</div></div>
-          <div class="it"><div class="l">발표일</div><div class="v" style="color:var(--text-2); font-weight:500;">2025.12.04</div></div>
-        </div>
-      </div>
-
-      <div class="app-card" data-status="cancel">
-        <div class="app-head">
-          <div class="lt">
-            <h3><span class="round-n">제96회</span> <span class="lvls">TOPIK Ⅰ</span></h3>
-            <div class="meta">시험일 2025.07.13 · 양곤 시험장</div>
-          </div>
-          <div class="rt">
-            <span class="status status-cancel">취소됨</span>
-          </div>
-        </div>
-        <div class="app-grid">
-          <div class="it"><div class="l">취소 사유</div><div class="v" style="font-weight:500; color:var(--text-2);">본인 취소 (수납 전)</div></div>
-          <div class="it"><div class="l">취소일</div><div class="v" style="color:var(--text-2); font-weight:500;">2025.05.10</div></div>
-        </div>
-      </div>
-    </section>
+    <section class="tab-pane active" data-tab="active" id="paneActive"></section>
+    <section class="tab-pane" data-tab="past" id="panePast" style="display:none;"></section>
 
   </div>
 </main>
@@ -362,34 +190,19 @@
 <div id="site-footer"></div>
 <div id="site-tabbar"></div>
 
-<!-- 접수 확인증 모달 -->
 <div class="modal-backdrop" id="modalConfirm">
   <div class="modal" style="max-width: 540px;">
     <div class="modal-head" style="display:flex; justify-content:space-between; align-items:center;">
       <h3>접수 확인증</h3>
-      <button onclick="printConfirm()" class="btn btn-text btn-sm">인쇄</button>
+      <button type="button" onclick="printConfirm()" class="btn btn-text btn-sm">인쇄</button>
     </div>
-    <div class="modal-body">
-      <table class="table" style="margin: 0;">
-        <tbody style="font-size: 13.5px;">
-          <tr><th style="width: 110px;">회차</th><td>제98회 TOPIK</td></tr>
-          <tr><th>접수번호</th><td style="font-family:'Inter',sans-serif;">TPKM-98-001234</td></tr>
-          <tr><th>수험번호</th><td style="font-family:'Inter',sans-serif; color: var(--st-number); font-weight:700;">98011234</td></tr>
-          <tr><th>응시 급수</th><td>TOPIK Ⅰ · TOPIK Ⅱ</td></tr>
-          <tr><th>접수일</th><td>2026.02.03</td></tr>
-          <tr><th>응시자</th><td>홍길동 / HONG GILDONG</td></tr>
-          <tr><th>생년월일</th><td>1996-01-15</td></tr>
-          <tr><th>수납 상태</th><td><span class="status status-approved">완료</span></td></tr>
-        </tbody>
-      </table>
-    </div>
+    <div class="modal-body" id="confirmBody"></div>
     <div class="modal-foot">
-      <button class="btn btn-secondary" onclick="TPKM.closeModal('modalConfirm')">닫기</button>
+      <button type="button" class="btn btn-secondary" onclick="TPKM.closeModal('modalConfirm')">닫기</button>
     </div>
   </div>
 </div>
 
-<!-- 취소 confirm 모달 -->
 <div class="modal-backdrop" id="modalCancel">
   <div class="modal">
     <div class="modal-head"><h3>접수를 취소하시겠습니까?</h3></div>
@@ -400,50 +213,364 @@
         <div>
           <strong>취소는 오프라인 수납 전까지만 가능합니다.</strong>
           수납 완료 후에는 <a href="refund-correction.html" class="text-primary" style="text-decoration:underline;">환불·정보정정신청 게시판</a>을 이용해 주세요.
-          환불 정책은 <a href="rules-fee.html" class="text-primary" style="text-decoration:underline;">응시료 규정</a>을 참고해 주세요.
         </div>
       </div>
     </div>
     <div class="modal-foot">
-      <button class="btn btn-secondary" onclick="TPKM.closeModal('modalCancel')">닫기</button>
-      <button class="btn btn-danger" onclick="TPKM.closeModal('modalCancel'); alert('접수가 취소되었습니다.');">접수 취소</button>
+      <button type="button" class="btn btn-secondary" onclick="TPKM.closeModal('modalCancel')">닫기</button>
+      <button type="button" class="btn btn-danger" onclick="TPKM.closeModal('modalCancel'); alert('접수 취소 API는 Phase 2에서 연동됩니다.');">접수 취소</button>
     </div>
   </div>
 </div>
 
+<script src="shared/api-client.js"></script>
 <script src="assets/common.js"></script>
 <script>
-  document.querySelectorAll('.my-tabs button').forEach(b => {
-    b.addEventListener('click', () => {
-      document.querySelectorAll('.my-tabs button').forEach(x => x.classList.remove('active'));
+(function () {
+  'use strict';
+
+  var PHOTO_LABELS = {
+    pending: { text: '대기', color: 'var(--text-3)' },
+    approved: { text: '승인 완료', color: 'var(--success)' },
+    rejected: { text: '반려', color: 'var(--st-rejected)' }
+  };
+  var PAY_LABELS = {
+    unpaid: { text: '대기', color: 'var(--st-pay)' },
+    paid: { text: '완료', color: 'var(--success)' },
+    refunded: { text: '환불', color: 'var(--text-3)' }
+  };
+  var REJECT_CODES = {
+    not_frontal: '정면 아님',
+    hat_glasses: '모자·안경',
+    bw_photo: '흑백 사진',
+    blurry: '흐림',
+    not_self: '본인 아님',
+    other: '기타'
+  };
+
+  var currentProfile = null;
+  var currentItems = { active: [], past: [] };
+
+  function esc(s) {
+    if (s == null) return '';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function roundTitle(item) {
+    var r = item.exam_round || {};
+    if (r.title) return esc(r.title);
+    if (r.round_no) return '제' + esc(r.round_no) + '회';
+    return 'TOPIK';
+  }
+
+  function primaryLevel(item) {
+    return (item.levels && item.levels[0]) || {};
+  }
+
+  function photoCell(level) {
+    var pr = PHOTO_LABELS[level.photo_review_status] || PHOTO_LABELS.pending;
+    if (level.photo_review_status === 'rejected') {
+      var note = level.photo_reject_code
+        ? (REJECT_CODES[level.photo_reject_code] || level.photo_reject_code)
+        : '반려';
+      return '<div class="v" style="color: var(--st-rejected);">반려 (' + esc(note) + ')</div>';
+    }
+    if (level.display_status === 'photo_review') {
+      return '<div class="v" style="color: var(--st-photo);">심사 중</div>';
+    }
+    return '<div class="v" style="color:' + pr.color + ';">' + esc(pr.text) + '</div>';
+  }
+
+  function payCell(level) {
+    var p = PAY_LABELS[level.payment_status] || PAY_LABELS.unpaid;
+    return '<div class="v" style="color:' + p.color + ';">' + esc(p.text) + '</div>';
+  }
+
+  function examNumCell(item) {
+    var nums = (item.levels || [])
+      .map(function (l) {
+        if (l.exam_number_visible && l.exam_number) return l.exam_number;
+        return null;
+      })
+      .filter(Boolean);
+    if (nums.length) {
+      return '<div class="v exam-num">' + esc(nums.join(' / ')) + '</div>';
+    }
+    return '<div class="v pending">부여 전</div>';
+  }
+
+  function buildCard(item) {
+    var st = item.fo_card_status || 'applied';
+    var lvl = item.levels_text || '';
+    var pl = primaryLevel(item);
+    var applyNo = pl.application_no || '';
+    var submitted = item.submitted_at_formatted || '';
+    var meta = '시험일 ' + esc(item.exam_date_formatted || '') +
+      (item.venue && item.venue.name_ko ? ' · ' + esc(item.venue.name_ko) : '');
+
+    var actions = '';
+    var beforePay = ['applied', 'photo', 'pay'].indexOf(st) >= 0;
+    var ticketOk = st === 'number';
+    var confirmOk = ['applied', 'photo', 'pay', 'number', 'approved'].indexOf(st) >= 0;
+    var rejected = st === 'rejected';
+
+    if (confirmOk) {
+      actions += '<button type="button" class="btn btn-secondary btn-sm" data-act="confirm" data-sub="' +
+        esc(item.submission_id) + '">접수 확인증</button>';
+    }
+    if (ticketOk) {
+      actions += '<a href="ticket.html" class="btn btn-primary btn-sm" data-act="ticket">수험표 출력</a>';
+    }
+    if (beforePay && !rejected) {
+      actions += '<button type="button" class="btn btn-ghost btn-sm" data-act="cancel" onclick="TPKM.openModal(\'modalCancel\')">접수 취소</button>';
+    }
+    if (rejected) {
+      actions += '<a href="mypage-profile.html" class="btn btn-primary btn-sm" data-act="rephoto">사진 재등록</a>';
+    }
+
+    var statusClass = 'status status-' + st;
+    var statusLabel = esc(item.card_status_label || '');
+
+    return (
+      '<div class="app-card" data-status="' + esc(st) + '" data-submission-id="' + esc(item.submission_id) + '">' +
+        '<div class="app-head">' +
+          '<div class="lt">' +
+            '<h3><span class="round-n">' + roundTitle(item) + '</span> <span class="lvls">' + esc(lvl) + '</span></h3>' +
+            '<div class="meta">' + meta + '</div>' +
+          '</div>' +
+          '<div class="rt">' +
+            '<span class="' + statusClass + '">' + statusLabel + '</span>' +
+            (applyNo ? '<span class="apply-n">접수번호 ' + esc(applyNo) + '</span>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="app-grid">' +
+          '<div class="it"><div class="l">수험번호</div>' + examNumCell(item) + '</div>' +
+          '<div class="it"><div class="l">사진 심사</div>' + photoCell(pl) + '</div>' +
+          '<div class="it"><div class="l">응시료 수납</div>' + payCell(pl) + '</div>' +
+          '<div class="it"><div class="l">접수일</div><div class="v" style="color:var(--text-2); font-weight:500;">' + esc(submitted) + '</div></div>' +
+        '</div>' +
+        (actions ? '<div class="app-actions">' + actions + '</div>' : '') +
+      '</div>'
+    );
+  }
+
+  function emptyHtml(tab) {
+    if (tab === 'past') {
+      return '<div class="empty"><h3>지난 접수가 없습니다</h3><p>완료되거나 취소된 회차 접수가 여기에 표시됩니다.</p></div>';
+    }
+    return (
+      '<div class="empty">' +
+        '<h3>진행 중인 접수가 없습니다</h3>' +
+        '<p>시험 접수를 진행해 주세요.</p>' +
+        '<a href="register.html" class="btn btn-primary">시험 접수하기</a>' +
+      '</div>'
+    );
+  }
+
+  function renderLists() {
+    var activeEl = document.getElementById('paneActive');
+    var pastEl = document.getElementById('panePast');
+    var active = currentItems.active || [];
+    var past = currentItems.past || [];
+
+    document.getElementById('ctActive').textContent = String(active.length);
+    document.getElementById('ctPast').textContent = String(past.length);
+
+    activeEl.innerHTML = active.length
+      ? active.map(buildCard).join('')
+      : emptyHtml('active');
+    pastEl.innerHTML = past.length
+      ? past.map(buildCard).join('')
+      : emptyHtml('past');
+
+    gateActions();
+    bindConfirmButtons();
+  }
+
+  function fillProfile(user) {
+    if (!user) return;
+    currentProfile = user;
+    document.getElementById('meNameKo').textContent = user.name_ko || user.name || '—';
+    document.getElementById('meNameEn').textContent = user.name_en || '—';
+    var meta = [];
+    if (user.phone) meta.push(user.phone);
+    if (user.email) meta.push(user.email);
+    document.getElementById('meMeta').textContent = meta.join(' · ') || '—';
+  }
+
+  function fillProfileFromAuth() {
+    var u = window.TPKMAuth && TPKMAuth.user;
+    if (u) {
+      fillProfile({
+        name_ko: u.name,
+        name_en: '',
+        phone: '',
+        email: u.email
+      });
+    }
+  }
+
+  function openConfirmForItem(item) {
+    var pl = primaryLevel(item);
+    var levels = (item.levels || []).map(function (l) {
+      return l.exam_level === 'II' ? 'TOPIK Ⅱ' : 'TOPIK Ⅰ';
+    }).join(' · ');
+    var payDone = (item.levels || []).some(function (l) {
+      return l.payment_status === 'paid';
+    });
+    var u = currentProfile || {};
+    var birth = u.birth_date;
+    if (birth && birth.length === 8) {
+      birth = birth.slice(0, 4) + '-' + birth.slice(4, 6) + '-' + birth.slice(6, 8);
+    }
+    document.getElementById('confirmBody').innerHTML =
+      '<table class="table" style="margin: 0;"><tbody style="font-size: 13.5px;">' +
+        '<tr><th style="width:110px;">회차</th><td>' + roundTitle(item) + '</td></tr>' +
+        '<tr><th>접수번호</th><td style="font-family:Inter,sans-serif;">' + esc(pl.application_no) + '</td></tr>' +
+        '<tr><th>수험번호</th><td style="font-family:Inter,sans-serif;">' +
+          (pl.exam_number_visible && pl.exam_number ? esc(pl.exam_number) : '부여 전') + '</td></tr>' +
+        '<tr><th>응시 급수</th><td>' + esc(levels) + '</td></tr>' +
+        '<tr><th>접수일</th><td>' + esc(item.submitted_at_formatted) + '</td></tr>' +
+        '<tr><th>응시자</th><td>' + esc(u.name_ko || '') + ' / ' + esc(u.name_en || '') + '</td></tr>' +
+        '<tr><th>생년월일</th><td>' + esc(birth || '—') + '</td></tr>' +
+        '<tr><th>수납 상태</th><td><span class="status ' +
+          (payDone ? 'status-approved">완료' : 'status-pay">대기') + '</span></td></tr>' +
+      '</tbody></table>';
+    TPKM.openModal('modalConfirm');
+  }
+
+  function bindConfirmButtons() {
+    document.querySelectorAll('[data-act="confirm"][data-sub]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var sub = btn.getAttribute('data-sub');
+        var item = (currentItems.active || []).concat(currentItems.past || [])
+          .find(function (i) { return String(i.submission_id) === String(sub); });
+        if (item) openConfirmForItem(item);
+      });
+    });
+  }
+
+  function gateActions() {
+    document.querySelectorAll('.app-card[data-status]').forEach(function (card) {
+      var st = card.dataset.status;
+      var beforePay = ['applied', 'photo', 'pay'].indexOf(st) >= 0;
+      var ticketOk = st === 'number';
+      var confirmOk = ['applied', 'photo', 'pay', 'number', 'approved'].indexOf(st) >= 0;
+      card.querySelectorAll('[data-act="cancel"]').forEach(function (b) {
+        b.style.display = beforePay ? '' : 'none';
+      });
+      card.querySelectorAll('[data-act="ticket"]').forEach(function (b) {
+        b.style.display = ticketOk ? '' : 'none';
+      });
+      card.querySelectorAll('[data-act="confirm"]').forEach(function (b) {
+        b.style.display = confirmOk ? '' : 'none';
+      });
+    });
+  }
+
+  function applyApiPayload(body) {
+    var items = body.items || [];
+    currentItems.active = body.active || items.filter(function (i) { return i.tab === 'active'; });
+    currentItems.past = body.past || items.filter(function (i) { return i.tab === 'past'; });
+    renderLists();
+  }
+
+  var MOCK = {
+    active: [
+      {
+        submission_id: 1,
+        fo_card_status: 'number',
+        card_status_label: '수험번호 부여',
+        levels_text: 'TOPIK Ⅰ · TOPIK Ⅱ (동시 접수)',
+        exam_date_formatted: '2026.04.12 (일)',
+        submitted_at_formatted: '2026.02.03',
+        exam_round: { title: '제98회', round_no: 98 },
+        venue: { name_ko: '양곤 시험장' },
+        levels: [{
+          application_no: 'TPKM-98-001234',
+          exam_number: '98011234',
+          exam_number_visible: true,
+          photo_review_status: 'approved',
+          payment_status: 'paid',
+          display_status: 'exam_number_assigned'
+        }]
+      }
+    ],
+    past: []
+  };
+
+  function loadApplications() {
+    var useApi = window.TopikApi && TopikApi.useApi && TopikApi.baseUrl &&
+      TopikApi.isLoggedIn() && TopikApi.getAccessToken() !== 'demo-local';
+
+    if (!useApi) {
+      currentItems = { active: MOCK.active, past: MOCK.past };
+      renderLists();
+      return;
+    }
+
+    TopikApi.getMyApplications().then(function (res) {
+      if (res.ok && res.body) {
+        applyApiPayload(res.body);
+        return;
+      }
+      currentItems = { active: MOCK.active, past: MOCK.past };
+      renderLists();
+    }).catch(function () {
+      currentItems = { active: MOCK.active, past: MOCK.past };
+      renderLists();
+    });
+  }
+
+  function loadMe() {
+    if (!window.TopikApi || !TopikApi.useApi || !TopikApi.baseUrl || !TopikApi.isLoggedIn()) {
+      fillProfileFromAuth();
+      return;
+    }
+    if (TopikApi.getAccessToken() === 'demo-local') {
+      fillProfileFromAuth();
+      return;
+    }
+    TopikApi.getMe().then(function (res) {
+      if (res.ok && res.body && res.body.user) fillProfile(res.body.user);
+      else fillProfileFromAuth();
+    }).catch(fillProfileFromAuth);
+  }
+
+  document.querySelectorAll('.my-tabs button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.my-tabs button').forEach(function (x) {
+        x.classList.remove('active');
+      });
       b.classList.add('active');
-      document.querySelectorAll('.tab-pane').forEach(p => p.style.display = (p.dataset.tab === b.dataset.tab ? '' : 'none'));
+      document.querySelectorAll('.tab-pane').forEach(function (p) {
+        p.style.display = p.dataset.tab === b.dataset.tab ? '' : 'none';
+      });
     });
   });
 
-  // ===== 상태별 액션 버튼 노출 제어 =====
-  // 취소: 수납 전(접수완료/사진심사중/수납대기)에만 가능
-  // 수험표 출력: 수험번호 부여 & 승인완료 상태에서만 가능
-  // 접수 확인증: 취소/반려를 제외한 진행 상태에서 노출
-  function gateActions() {
-    document.querySelectorAll('.app-card[data-status]').forEach(card => {
-      const st = card.dataset.status;
-      const beforePay  = ['applied', 'photo', 'pay'].includes(st);
-      const ticketOk   = st === 'number';
-      const confirmOk  = ['applied', 'photo', 'pay', 'number', 'approved'].includes(st);
-      card.querySelectorAll('[data-act="cancel"]').forEach(b => b.style.display = beforePay ? '' : 'none');
-      card.querySelectorAll('[data-act="ticket"]').forEach(b => b.style.display = ticketOk ? '' : 'none');
-      card.querySelectorAll('[data-act="confirm"]').forEach(b => b.style.display = confirmOk ? '' : 'none');
-    });
+  if (new URLSearchParams(location.search).get('submitted') === '1') {
+    document.getElementById('submitBanner').classList.add('show');
+    if (history.replaceState) {
+      history.replaceState(null, '', location.pathname);
+    }
   }
-  gateActions();
 
-  // 접수 확인증만 깔끔하게 인쇄 (A4 1매)
-  function printConfirm() {
+  window.printConfirm = function () {
     document.body.classList.add('printing-confirm');
     window.print();
-  }
-  window.addEventListener('afterprint', () => document.body.classList.remove('printing-confirm'));
+  };
+  window.addEventListener('afterprint', function () {
+    document.body.classList.remove('printing-confirm');
+  });
+
+  loadMe();
+  loadApplications();
+})();
 </script>
 </body>
 </html>

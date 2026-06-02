@@ -56,11 +56,57 @@
       svg: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>' }
   ];
 
-  // ---- 상태 헬퍼 ----
+  // ---- 상태 헬퍼 (API sessionStorage + legacy tpkm_user localStorage) ----
+  const TOKEN_ACCESS = 'topik_access_token';
+  const TOKEN_USER = 'topik_user';
+
+  function mapApiStoredUser(raw) {
+    if (!raw) return null;
+    return {
+      name: raw.name_ko || raw.name || (raw.email || '').split('@')[0] || 'User',
+      email: raw.email,
+      id: raw.id,
+      role: raw.role
+    };
+  }
+
+  function readApiSessionUser() {
+    try {
+      if (!sessionStorage.getItem(TOKEN_ACCESS) && !localStorage.getItem(TOKEN_ACCESS)) return null;
+      const raw = sessionStorage.getItem(TOKEN_USER) || localStorage.getItem(TOKEN_USER);
+      return mapApiStoredUser(raw ? JSON.parse(raw) : null);
+    } catch (e) { return null; }
+  }
+
+  function clearApiSession() {
+    [sessionStorage, localStorage].forEach(store => {
+      try {
+        store.removeItem(TOKEN_ACCESS);
+        store.removeItem('topik_refresh_token');
+        store.removeItem(TOKEN_USER);
+      } catch (e) { /* ignore */ }
+    });
+    if (window.TopikApi && typeof TopikApi.logout === 'function') TopikApi.logout();
+  }
+
   const Auth = {
-    get user() { try { return JSON.parse(localStorage.getItem('tpkm_user') || 'null'); } catch (e) { return null; } },
+    get user() {
+      const apiUser = readApiSessionUser();
+      if (apiUser) return apiUser;
+      try { return JSON.parse(localStorage.getItem('tpkm_user') || 'null'); } catch (e) { return null; }
+    },
+    isLoggedIn() {
+      try {
+        if (sessionStorage.getItem(TOKEN_ACCESS) || localStorage.getItem(TOKEN_ACCESS)) return true;
+      } catch (e) { /* ignore */ }
+      if (window.TopikApi && TopikApi.isLoggedIn && TopikApi.isLoggedIn()) return true;
+      return !!this.user;
+    },
     login(u) { localStorage.setItem('tpkm_user', JSON.stringify(u)); },
-    logout() { localStorage.removeItem('tpkm_user'); }
+    logout() {
+      clearApiSession();
+      localStorage.removeItem('tpkm_user');
+    }
   };
   window.TPKMAuth = Auth;
 
@@ -260,7 +306,7 @@
     document.getElementById('btnLogoutMobile')?.addEventListener('click', onLogout);
 
     // ---- Login guard on GNB/drawer protected menus ----
-    if (!Auth.user) {
+    if (!Auth.isLoggedIn()) {
       wrap.querySelectorAll('a[href]').forEach(a => {
         const href = a.getAttribute('href');
         if (PROTECTED.has(href)) {
@@ -362,7 +408,7 @@
   function checkLoginGuard() {
     const body = document.body;
     if (!body.hasAttribute('data-require-login')) return;
-    if (Auth.user) return;
+    if (Auth.isLoggedIn()) return;
     const next = encodeURIComponent(location.pathname.split('/').pop() + location.search);
     location.replace('login.html?next=' + next);
   }

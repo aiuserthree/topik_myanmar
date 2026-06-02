@@ -12,7 +12,7 @@ export async function examVenuesRoutes(app: FastifyInstance) {
          WHERE is_active = true
          ORDER BY venue_code`
       );
-      return { data: rows };
+      return { items: rows };
     } catch (err) {
       app.log.error(err);
       return reply.status(503).send({ error: "database_unavailable" });

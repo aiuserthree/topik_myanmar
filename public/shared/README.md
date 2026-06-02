@@ -18,6 +18,7 @@ A안·B안·C안 FO/BO 프로토타입이 공유하는 스크립트. **운영 �
 
 | 파일 | 전역/역할 | 주요 로드 페이지 |
 |------|-----------|------------------|
+| `api-client.js` | `TopikApi` — JWT·마스터·접수 제출 (`login`, `getMe`, `getExamRounds`, `getExamVenues`, `submitApplication`) | C FO `login.html` (Phase 0), `register.html` (Phase 1); `common.js`는 토큰 키만 직접 읽음 |
 | `roster-codes.js` | `TPKM_ROSTER_CODES` — 직업·응시동기·목적 코드/라벨 | A/B/C: 회원가입·프로필 (`signup`, `register`, `mypage-profile`) |
 | `topik-lib-loader.js` | SheetJS 등 CDN 순차 로드 | A: `admin.html` (동적 로더) |
 | `topik-mail.js` | 이메일 outbox mock · 14종 `template_key` | C BO `admin.html`, A/B admin |
@@ -56,6 +57,33 @@ B/C FO는 각 안의 `js/`·`assets/`에 별도 구현이 있을 수 있음 — 
 | 접수/회차 mock | `content-store.js`, BO core | `/applications`, `/admin/exam-rounds` |
 
 `roster-codes.js`는 DB `job_code` 등 **마스터 데이터**로 이전; FO는 API 또는 빌드타임 JSON 로드로 교체 예정.
+
+### Phase 0 — C FO 로그인 연동 테스트
+
+```bash
+# 터미널 1 — API
+cd api && npm run dev
+
+# 터미널 2 — FO (C안 → public/)
+cd /path/to/Myanmar && python3 build.py
+cd public && python3 -m http.server 8080
+```
+
+- URL: `http://localhost:8080/login.html`
+- API 기본: `http://localhost:3000` (`localhost` / `127.0.0.1` FO 호스트에서 자동)
+- 데모: `demo@topik-mm.local` / `DemoUser!2026`
+- 오버라이드: `<meta name="topik-api-base" content="https://api.example.com">` 또는 로드 전 `window.API_BASE_URL = '…'`
+- API 없이 화면만: `window.USE_API = false` (콘솔, login.html 로드 전)
+
+### Phase 1 — C FO 접수 제출 연동 테스트
+
+1. API + DB: `cd api && npm run dev` (Postgres·migrate·seed 선행)
+2. FO: `python3 build.py` → `cd public && python3 -m http.server 8080`
+3. `http://localhost:8080/login.html` — `demo@topik-mm.local` / `DemoUser!2026`
+4. `http://localhost:8080/register.html` — 회차·시험장·급수 선택 → 4단계 **접수하기**
+5. 성공 시 `mypage.html?submitted=1` 로 이동 (완료 이메일 없음, 0527)
+
+**한계 (Phase 1):** 마이페이지 목록·수험표·임시저장(`tpkm_reg_draft`)은 mock/localStorage. 사진은 프로필 `photo_file_id` 또는 `photo_base64` stub만. `USE_API=false` 또는 `demo-local` 토큰은 제출 시 모달만( API 미호출).
 
 ## 의도적 예외 (중복 유지)
 
