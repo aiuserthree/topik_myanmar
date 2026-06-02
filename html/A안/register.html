@@ -118,6 +118,7 @@
   </style>
   <link rel="stylesheet" href="css/mobile.css?v=20260529"/>
   <script src="js/profile-store.js"></script>
+  <script src="js/roster-codes.js"></script>
 <script src="js/fo-nav.js"></script>
 <script src="js/fo-footer.js"></script>
   <!-- ════ SVG ICON SPRITE (공통 적용) ════ -->
@@ -469,9 +470,10 @@
 <script>
   var NATIONALITY_MAP={'MM':'미얀마 (Myanmar)','KR':'대한민국','EN':'영어','OTHER':'기타'};
   var FIRST_LANG_MAP={'MM':'버마어(미얀마어)','KO':'한국어','EN':'영어','OTHER':'기타'};
-  var JOB_MAP={'1':'학생','2':'회사원','3':'공무원','4':'자영업','5':'전문직','6':'주부','7':'무직','8':'교사','9':'군인','10':'농업·어업','11':'기타','12':'미상'};
-  var MOTIVE_MAP={'1':'유학 및 진학','2':'취업 및 이민','3':'자격 취득','4':'개인적 관심','5':'학업 요건','6':'장학금 신청','7':'비자 발급','8':'기업 요구','9':'한국 문화 관심','10':'기타','11':'미상'};
-  var PURPOSE_MAP={'1':'대학 입학','2':'대학원 입학','3':'취업','4':'비자 발급','5':'장학금','6':'자격증','7':'개인 학습','8':'기업 요구','9':'유학','10':'이민','11':'한국어 교육','12':'연구','13':'교환학생','14':'기타','15':'미상'};
+  function rosterLabel(kind, code){
+    var R=window.TPKM_ROSTER_CODES;
+    return R&&code?R.label(kind,code):'';
+  }
 
   function setROField(id,val){
     var el=document.getElementById(id);
@@ -496,9 +498,9 @@
       setROField('r-phone',p.phone);
       setROField('r-email',p.email);
       setROField('r-firstLangText',FIRST_LANG_MAP[p.firstLang]||p.firstLang||'—');
-      setROField('r-jobText',JOB_MAP[p.occupation]||p.occupation||'—');
-      setROField('r-motiveText',MOTIVE_MAP[p.motive]||p.motive||'—');
-      setROField('r-purposeText',PURPOSE_MAP[p.purpose]||p.purpose||'—');
+      setROField('r-jobText',rosterLabel('job',p.occupation)||p.occupation||'—');
+      setROField('r-motiveText',rosterLabel('motive',p.motive)||p.motive||'—');
+      setROField('r-purposeText',rosterLabel('purpose',p.purpose)||p.purpose||'—');
       var ban=document.getElementById('prefillBanner');
       if(ban)ban.style.display='block';
     }
