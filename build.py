@@ -46,7 +46,7 @@ if SHARED_SRC.is_dir():
     print(f"Copied {SHARED_SRC} → {dst_shared}")
 
 # FO source uses ../../shared/ for repo-tree preview; public/ is flat.
-API_META = '<meta name="topik-api-base" content="">'
+API_META = '<meta name="topik-api-base" content="https://topikmyanmar-production.up.railway.app">'
 VIEWPORT_META = '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">'
 
 for html in DST.glob("*.html"):

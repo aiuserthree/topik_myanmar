@@ -11,7 +11,7 @@
 | 항목 | 값 (임시) |
 |------|-----------|
 | FO (Vercel) | `https://topik-myanmar.vercel.app` |
-| API (Railway) | 배포 후 `https://<service>.up.railway.app` |
+| API (Railway) | `https://topikmyanmar-production.up.railway.app` |
 | DB | Railway PostgreSQL addon |
 | 로컬 DB | `docker-compose.yml` (PostgreSQL 15) |
 
@@ -56,7 +56,7 @@
 Railway URL 확정 후 FO HTML의 API meta를 갱신:
 
 ```html
-<meta name="topik-api-base" content="https://YOUR-SERVICE.up.railway.app">
+<meta name="topik-api-base" content="https://topikmyanmar-production.up.railway.app">
 ```
 
 - **권장:** `build.py` 의 `API_META` 상수를 Railway URL로 변경 → `python3 build.py` → Vercel 재배포  
