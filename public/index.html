@@ -197,8 +197,8 @@
     padding: 3px 8px; border-radius: 99px;
     line-height: 1.2;
   }
-  .tl-badge--upcoming { background: var(--bg-2); color: var(--text-3); }
   .tl-badge--active { background: var(--primary); color: #fff; }
+  .tl-badge[hidden] { display: none; }
   .tl-badge--ended { background: var(--success-50); color: var(--success); }
   .tl-badge--tbd { background: var(--bg-2); color: var(--text-3); }
   .tl-card.done { background: var(--bg-2); opacity: 0.85; }
@@ -264,7 +264,7 @@
     <div class="container">
       <div class="hero-inner">
         <div>
-          <div class="round-badge" id="heroRoundBadge"><strong>제107회</strong> 한국어능력시험 (2026.10.18) 접수 예정</div>
+          <div class="round-badge is-upcoming" id="heroRoundBadge"><strong>제107회</strong> 한국어능력시험 (2026.10.18)</div>
           <h1 style="margin-top:18px;">
             미얀마 <span class="accent">한국어능력시험</span><br>
             공식 접수 시스템
@@ -310,19 +310,19 @@
       </div>
       <div class="timeline" id="examTimeline">
         <div class="tl-card" data-tl-start="2026-07-17" data-tl-end="2026-07-21">
-          <span class="tl-badge tl-badge--upcoming" aria-hidden="true">예정</span>
+          <span class="tl-badge" aria-hidden="true" hidden></span>
           <div class="step-n">STEP 01</div>
           <div class="step-t">원서 접수</div>
           <div class="step-d">2026.07.17(금) — 07.21(화)</div>
         </div>
         <div class="tl-card" data-tl-start="2026-07-24" data-tl-end="2026-07-26">
-          <span class="tl-badge tl-badge--upcoming" aria-hidden="true">예정</span>
+          <span class="tl-badge" aria-hidden="true" hidden></span>
           <div class="step-n">STEP 02</div>
           <div class="step-t">응시료 납부 (오프라인)</div>
           <div class="step-d">2026.07.24(금) — 07.26(일)</div>
         </div>
         <div class="tl-card" data-tl-start="2026-10-18" data-tl-end="2026-10-18">
-          <span class="tl-badge tl-badge--upcoming" aria-hidden="true">예정</span>
+          <span class="tl-badge" aria-hidden="true" hidden></span>
           <div class="step-n">STEP 03</div>
           <div class="step-t">시험 시행</div>
           <div class="step-d">2026.10.18 (일)</div>
@@ -479,29 +479,36 @@
       var badge = card.querySelector('.tl-badge');
       if (!badge) return;
       card.classList.remove('active', 'done');
-      var label, state;
       if (card.hasAttribute('data-tl-tbd')) {
-        label = '미정';
-        state = 'tbd';
+        badge.hidden = false;
+        badge.textContent = '미정';
+        badge.className = 'tl-badge tl-badge--tbd';
+        badge.setAttribute('aria-hidden', 'true');
+        return;
+      }
+      var startYmd = card.getAttribute('data-tl-start');
+      var endYmd = card.getAttribute('data-tl-end');
+      if (!startYmd || !endYmd) return;
+      var now = Date.now();
+      var start = dayStart(startYmd);
+      var end = dayEnd(endYmd);
+      if (now < start) {
+        badge.hidden = true;
+        badge.textContent = '';
+        badge.className = 'tl-badge';
+        badge.setAttribute('aria-hidden', 'true');
+        return;
+      }
+      var label, state;
+      badge.hidden = false;
+      if (now <= end) {
+        label = '진행중';
+        state = 'active';
+        card.classList.add('active');
       } else {
-        var startYmd = card.getAttribute('data-tl-start');
-        var endYmd = card.getAttribute('data-tl-end');
-        if (!startYmd || !endYmd) return;
-        var now = Date.now();
-        var start = dayStart(startYmd);
-        var end = dayEnd(endYmd);
-        if (now < start) {
-          label = '예정';
-          state = 'upcoming';
-        } else if (now <= end) {
-          label = '진행중';
-          state = 'active';
-          card.classList.add('active');
-        } else {
-          label = '종료';
-          state = 'ended';
-          card.classList.add('done');
-        }
+        label = '종료';
+        state = 'ended';
+        card.classList.add('done');
       }
       badge.textContent = label;
       badge.className = 'tl-badge tl-badge--' + state;
@@ -512,7 +519,8 @@
     var now = Date.now();
     if (heroBadge && now < REG_START) {
       heroBadge.classList.add('is-upcoming');
-      heroBadge.innerHTML = '<strong>제107회</strong> 한국어능력시험 (2026.10.18) 접수 예정';
+      heroBadge.classList.remove('is-closed');
+      heroBadge.innerHTML = '<strong>제107회</strong> 한국어능력시험 (2026.10.18)';
     } else if (heroBadge && now >= REG_START && now <= REG_END) {
       heroBadge.classList.remove('is-upcoming', 'is-closed');
       heroBadge.innerHTML = '<strong>제107회</strong> 한국어능력시험 (2026.10.18) 접수 진행 중';
@@ -579,7 +587,7 @@
       if (badge && now < regStart) {
         badge.classList.add('is-upcoming');
         if (!badge.classList.contains('is-closed')) {
-          badge.innerHTML = '<strong>제107회</strong> 한국어능력시험 (2026.10.18) 접수 예정';
+          badge.innerHTML = '<strong>제107회</strong> 한국어능력시험 (2026.10.18)';
         }
       } else if (badge && now >= regStart && now <= target && !closed) {
         badge.classList.remove('is-upcoming');
