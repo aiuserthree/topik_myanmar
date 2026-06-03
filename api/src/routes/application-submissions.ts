@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { pool } from "../db.js";
 import { requireFoUser } from "../lib/auth.js";
+import { savePhoto, StorageError } from "../lib/storage.js";
 
 interface SubmitBody {
   exam_round_id?: number;
@@ -69,16 +70,13 @@ async function resolvePhotoFileId(
 ): Promise<number | null> {
   if (body.photo_file_id) return body.photo_file_id;
   if (body.photo_base64 && body.photo_base64.length > 100) {
-    const key = `stub://user/${userId}/photo-${Date.now()}`;
-    const ins = await client.query(
-      `INSERT INTO file_attachments (
-         owner_type, owner_id, storage_key, original_filename,
-         mime_type, size_bytes
-       ) VALUES ('user_photo', $1, $2, 'register-photo.jpg', 'image/jpeg', $3)
-       RETURNING id`,
-      [userId, key, Math.min(body.photo_base64.length, 2_000_000)]
-    );
-    return Number(ins.rows[0].id);
+    const saved = await savePhoto(client, {
+      ownerType: "user_photo",
+      ownerId: userId,
+      base64: body.photo_base64,
+      filename: "register-photo.jpg",
+    });
+    return saved.fileId;
   }
   const userRow = await client.query(
     `SELECT photo_file_id FROM users WHERE id = $1`,
@@ -213,7 +211,18 @@ export async function applicationSubmissionsRoutes(app: FastifyInstance) {
         }
         const user = userRes.rows[0];
 
-        const photoFileId = await resolvePhotoFileId(client, userId, body);
+        let photoFileId: number | null;
+        try {
+          photoFileId = await resolvePhotoFileId(client, userId, body);
+        } catch (err) {
+          if (err instanceof StorageError) {
+            await client.query("ROLLBACK");
+            return reply.status(400).send({
+              error: { code: err.code, message: err.message },
+            });
+          }
+          throw err;
+        }
 
         let termsSnapshot: { term_ids: number[] } = { term_ids: [] };
         if (Array.isArray(body.terms_agreed) && body.terms_agreed.length > 0) {

@@ -17,6 +17,10 @@ export const config = {
     .filter(Boolean),
   // Public FO base used to build deep links inside emails (e.g. password reset)
   publicFoBase: (process.env.PUBLIC_FO_BASE ?? "https://topik-myanmar.vercel.app").replace(/\/$/, ""),
+  // Public BO base for admin notification links (optional)
+  publicBoBase: (process.env.PUBLIC_BO_BASE ?? "").replace(/\/$/, ""),
+  // Internal API key for POST /internal/notifications/enqueue (BO/cron)
+  internalApiKey: process.env.INTERNAL_API_KEY ?? "",
   // Google Sign-In (GIS). Empty clientId = feature disabled (frontend hides button,
   // POST /auth/google → 503). clientSecret unused for ID-token verification but kept
   // for completeness / future server-side OAuth code exchange.
@@ -24,10 +28,33 @@ export const config = {
     clientId: process.env.GOOGLE_CLIENT_ID ?? "",
     clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
   },
+  // Pluggable file storage. provider = local (dev, disk) | s3.
+  // Mirrors the mailer pattern: if s3 is selected but creds are missing we fall
+  // back to local with a warning (see lib/storage.ts). No invented credentials.
+  storage: {
+    provider: (process.env.STORAGE_PROVIDER ?? "local").toLowerCase(),
+    // Local disk root for uploaded photos (relative paths resolve against api/).
+    uploadDir: process.env.UPLOAD_DIR ?? "var/uploads",
+    // Max accepted decoded image size in bytes (default 5 MB).
+    maxBytes: Number(process.env.UPLOAD_MAX_BYTES ?? 5 * 1024 * 1024),
+    s3: {
+      bucket: process.env.S3_BUCKET ?? "",
+      region: process.env.S3_REGION ?? "",
+      accessKeyId: process.env.S3_ACCESS_KEY ?? "",
+      secretAccessKey: process.env.S3_SECRET ?? "",
+      // Optional custom endpoint (MinIO / non-AWS S3-compatible).
+      endpoint: process.env.S3_ENDPOINT ?? "",
+      // Optional key prefix inside the bucket.
+      prefix: (process.env.S3_PREFIX ?? "").replace(/^\/+|\/+$/g, ""),
+    },
+  },
   // Pluggable mailer. provider = console (dev, logs only) | smtp | resend
   mail: {
     provider: (process.env.MAIL_PROVIDER ?? "console").toLowerCase(),
     from: process.env.MAIL_FROM ?? "TOPIK Myanmar <no-reply@topik-mm.local>",
+    supportEmail: process.env.MAIL_SUPPORT ?? "topik.myanmar@koica.go.kr",
+    /** Operator inbox for board_admin_new_post and similar BO alerts */
+    adminNotifyTo: process.env.MAIL_ADMIN_TO ?? "",
     resendApiKey: process.env.RESEND_API_KEY ?? "",
     smtp: {
       host: process.env.SMTP_HOST ?? "",
@@ -37,4 +64,28 @@ export const config = {
       pass: process.env.SMTP_PASS ?? "",
     },
   },
+  // Background email_outbox drain worker (retry of queued/failed sends).
+  // Default OFF so behavior is unchanged unless explicitly enabled.
+  enableEmailWorker:
+    String(process.env.ENABLE_EMAIL_WORKER ?? "").toLowerCase() === "true",
 };
+
+// ---------------------------------------------------------------------------
+// Fail-fast on insecure JWT secrets in production.
+// Dev keeps working with the built-in defaults; production must NOT boot with
+// the dev placeholders (or empty values), otherwise tokens could be forged.
+// ---------------------------------------------------------------------------
+const INSECURE_JWT_SECRETS = new Set(["dev-insecure-secret", "dev-insecure-refresh"]);
+
+if (config.appEnv === "production") {
+  const insecureAccess = !config.jwtSecret || INSECURE_JWT_SECRETS.has(config.jwtSecret);
+  const insecureRefresh =
+    !config.jwtRefreshSecret || INSECURE_JWT_SECRETS.has(config.jwtRefreshSecret);
+  if (insecureAccess || insecureRefresh) {
+    throw new Error(
+      "Refusing to boot in production with insecure JWT secrets. " +
+        "Set strong unique JWT_SECRET and JWT_REFRESH_SECRET env vars " +
+        "(e.g. `openssl rand -base64 48`)."
+    );
+  }
+}

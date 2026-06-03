@@ -2,3 +2,5 @@ node_modules/
 dist/
 .env
 *.log
+# Local photo storage (STORAGE_PROVIDER=local) — never commit uploaded user photos
+var/

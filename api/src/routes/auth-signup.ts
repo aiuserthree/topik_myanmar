@@ -4,8 +4,14 @@ import crypto from "node:crypto";
 import type { FastifyInstance } from "fastify";
 import { config } from "../config.js";
 import { pool } from "../db.js";
-import { queueAndSend } from "../lib/mailer.js";
+import { isMailerLive } from "../lib/mailer.js";
+import {
+  buildEmailDefaults,
+  enqueueEmail,
+  formatVerificationCode,
+} from "../lib/email-templates/enqueue-notification.js";
 import { signAuthTokens as signTokens } from "../lib/auth.js";
+import { savePhoto, StorageError } from "../lib/storage.js";
 import {
   genderToCode,
   isValidEmail,
@@ -61,12 +67,15 @@ interface RegisterBody {
 }
 
 export async function authSignupRoutes(app: FastifyInstance) {
-  app.post<{ Body: { email?: string } }>(
+  app.post<{ Body: { email?: string; preferred_lang?: string } }>(
     "/api/v1/auth/send-verification-code",
+    { config: { rateLimit: { max: 5, timeWindow: "1 minute" } } },
     async (req, reply) => {
       const email = String(req.body?.email ?? "")
         .trim()
         .toLowerCase();
+      const langRaw = String(req.body?.preferred_lang ?? "ko");
+      const locale = ["ko", "my", "en"].includes(langRaw) ? langRaw : "ko";
       if (!isValidEmail(email)) {
         return reply.status(400).send({
           error: { code: "VALIDATION_ERROR", message: "유효한 이메일을 입력해 주세요." },
@@ -110,19 +119,23 @@ export async function authSignupRoutes(app: FastifyInstance) {
           [email, code, expiresAt]
         );
 
-        await queueAndSend(pool, {
-          templateKey: "signup_verification",
-          locale: "ko",
+        const mailResult = await enqueueEmail(pool, {
+          templateKey: "signup_verify_code",
+          locale,
           toEmail: email,
-          subject: "[TOPIK Myanmar] 이메일 인증코드",
-          html:
-            `<p>안녕하세요, TOPIK Myanmar입니다.</p>` +
-            `<p>회원가입 이메일 인증코드는 <strong style="font-size:18px">${code}</strong> 입니다.</p>` +
-            `<p>유효 시간: 5분</p>`,
+          variables: buildEmailDefaults({
+            userName: email.split("@")[0],
+            verificationCode: formatVerificationCode(code),
+            expiresMinutes: "5",
+          }),
         });
 
+        const mailDelivered = isMailerLive() && mailResult.sent;
         const payload: Record<string, unknown> = {
-          message: "인증코드가 발송되었습니다.",
+          message: mailDelivered
+            ? "인증코드가 발송되었습니다."
+            : "인증 요청이 접수되었습니다. 이메일 발송이 지연되거나 설정 중일 수 있습니다. 메일이 오지 않으면 스팸함을 확인하거나 잠시 후 재발송해 주세요.",
+          mail_delivered: mailDelivered,
           expires_in_seconds: 300,
         };
         if (config.appEnv === "development") {
@@ -197,7 +210,10 @@ export async function authSignupRoutes(app: FastifyInstance) {
     }
   );
 
-  app.post<{ Body: RegisterBody }>("/api/v1/auth/register", async (req, reply) => {
+  app.post<{ Body: RegisterBody }>(
+    "/api/v1/auth/register",
+    { config: { rateLimit: { max: 5, timeWindow: "1 minute" } } },
+    async (req, reply) => {
     const body = req.body ?? {};
     const emailFromToken = body.verification_token
       ? verifyVerificationToken(body.verification_token)
@@ -278,16 +294,23 @@ export async function authSignupRoutes(app: FastifyInstance) {
 
       let photoFileId: number | null = null;
       if (body.photo_base64 && body.photo_base64.length > 100) {
-        const key = `stub://signup/${email}/${Date.now()}`;
-        const ins = await client.query(
-          `INSERT INTO file_attachments (
-             owner_type, owner_id, storage_key, original_filename,
-             mime_type, size_bytes
-           ) VALUES ('user_photo', 0, $1, 'signup-photo.jpg', 'image/jpeg', $2)
-           RETURNING id`,
-          [key, Math.min(body.photo_base64.length, 2_000_000)]
-        );
-        photoFileId = Number(ins.rows[0].id);
+        try {
+          const saved = await savePhoto(client, {
+            ownerType: "user_photo",
+            ownerId: 0, // updated to the new user id after insert
+            base64: body.photo_base64,
+            filename: "signup-photo.jpg",
+          });
+          photoFileId = saved.fileId;
+        } catch (err) {
+          await client.query("ROLLBACK");
+          if (err instanceof StorageError) {
+            return reply.status(400).send({
+              error: { code: err.code, message: err.message },
+            });
+          }
+          throw err;
+        }
       }
 
       const hash = await bcrypt.hash(password, 10);

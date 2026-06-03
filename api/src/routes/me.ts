@@ -2,6 +2,11 @@ import bcrypt from "bcrypt";
 import type { FastifyInstance } from "fastify";
 import { pool } from "../db.js";
 import { requireFoUser } from "../lib/auth.js";
+import { savePhoto, StorageError } from "../lib/storage.js";
+import {
+  buildEmailDefaults,
+  enqueueEmail,
+} from "../lib/email-templates/enqueue-notification.js";
 import {
   genderToCode,
   isValidPassword,
@@ -158,16 +163,23 @@ export async function meRoutes(app: FastifyInstance) {
 
         // Optional new photo → file_attachments, then point users.photo_file_id at it.
         if (body.photo_base64 && body.photo_base64.length > 100) {
-          const key = `stub://user/${userId}/photo-${Date.now()}`;
-          const ins = await client.query(
-            `INSERT INTO file_attachments (
-               owner_type, owner_id, storage_key, original_filename,
-               mime_type, size_bytes
-             ) VALUES ('user_photo', $1, $2, 'profile-photo.jpg', 'image/jpeg', $3)
-             RETURNING id`,
-            [userId, key, Math.min(body.photo_base64.length, 2_000_000)]
-          );
-          setField("photo_file_id", Number(ins.rows[0].id));
+          try {
+            const saved = await savePhoto(client, {
+              ownerType: "user_photo",
+              ownerId: userId,
+              base64: body.photo_base64,
+              filename: "profile-photo.jpg",
+            });
+            setField("photo_file_id", saved.fileId);
+          } catch (err) {
+            await client.query("ROLLBACK");
+            if (err instanceof StorageError) {
+              return reply.status(400).send({
+                error: { code: err.code, message: err.message },
+              });
+            }
+            throw err;
+          }
         }
 
         if (sets.length === 0) {
@@ -316,7 +328,8 @@ export async function meRoutes(app: FastifyInstance) {
       try {
         await client.query("BEGIN");
         const { rows } = await client.query(
-          `SELECT password_hash FROM users WHERE id = $1 AND status = 'active' FOR UPDATE`,
+          `SELECT password_hash, email, name_ko, preferred_lang
+           FROM users WHERE id = $1 AND status = 'active' FOR UPDATE`,
           [userId]
         );
         if (rows.length === 0) {
@@ -344,15 +357,17 @@ export async function meRoutes(app: FastifyInstance) {
         }
 
         // Cancel still-cancellable (unpaid) applications.
-        await client.query(
+        const cancelRes = await client.query(
           `UPDATE applications
            SET status = 'cancelled', cancelled_at = NOW(),
                cancel_reason = '회원 탈퇴', updated_at = NOW(), rev = rev + 1
            WHERE user_id = $1
              AND status IN ('submitted', 'photo_review', 'payment_pending')
-             AND payment_status = 'unpaid'`,
+             AND payment_status = 'unpaid'
+           RETURNING id`,
           [userId]
         );
+        const canceledCount = cancelRes.rowCount ?? 0;
 
         await client.query(
           `UPDATE users
@@ -362,6 +377,22 @@ export async function meRoutes(app: FastifyInstance) {
           [userId]
         );
         await client.query("COMMIT");
+
+        const user = rows[0];
+        void enqueueEmail(pool, {
+          templateKey: "account_status",
+          toEmail: String(user.email),
+          userId,
+          locale: String(user.preferred_lang ?? "ko"),
+          variables: buildEmailDefaults({
+            userName: String(user.name_ko ?? user.email),
+            accountAction: "withdrawn",
+            accountStatusLabel: "탈퇴",
+            statusReason: "회원 본인 요청에 의한 탈퇴",
+            statusUntil: "—",
+            canceledApplications: String(canceledCount),
+          }),
+        }).catch(() => undefined);
 
         return { withdrawn: true, message: "회원 탈퇴가 완료되었습니다." };
       } catch (err) {

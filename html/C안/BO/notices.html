@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TOPIK Myanmar BO — 공지 관리</title>
+  <link rel="stylesheet" href="assets/bo.css" />
+</head>
+<body>
+  <header class="bo-topbar">
+    <div class="bo-topbar-left">
+      <strong class="bo-brand">TOPIK Myanmar</strong>
+      <span class="bo-page-title">공지 관리</span>
+    </div>
+    <div class="bo-topbar-right">
+      <span class="bo-admin-id" id="adminId"></span>
+      <button class="bo-btn bo-btn-ghost" id="logoutBtn" type="button">로그아웃</button>
+    </div>
+  </header>
+
+  <nav class="bo-nav">
+    <a href="applications.html">접수 관리</a>
+    <a href="rounds.html">회차 관리</a>
+    <a href="venues.html">시험장 관리</a>
+    <a href="notices.html" class="is-active">공지 관리</a>
+    <a href="faq.html">FAQ 관리</a>
+    <a href="terms.html">약관 관리</a>
+  </nav>
+
+  <section class="bo-page">
+    <div class="bo-page-head">
+      <h1>공지사항</h1>
+      <div class="bo-page-tools">
+        <select id="categoryFilter" class="bo-select">
+          <option value="all">분류 전체</option>
+          <option value="important">중요</option>
+          <option value="registration">접수</option>
+          <option value="exam">시험</option>
+          <option value="result">결과</option>
+        </select>
+        <select id="publishedFilter" class="bo-select">
+          <option value="">발행 전체</option>
+          <option value="1">게시됨</option>
+          <option value="0">미게시</option>
+        </select>
+        <input id="searchInput" class="bo-input" type="search" placeholder="제목 검색" />
+        <button class="bo-btn bo-btn-secondary" id="searchBtn" type="button">검색</button>
+        <button class="bo-btn bo-btn-primary" id="newBtn" type="button">+ 새 공지</button>
+      </div>
+    </div>
+
+    <div class="bo-table-wrap">
+      <table class="bo-table">
+        <thead>
+          <tr>
+            <th>번호</th><th>분류</th><th>제목</th><th>발행</th><th>고정</th>
+            <th>조회</th><th>게시일</th><th>관리</th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr><td colspan="8" class="bo-empty">데이터를 불러오는 중…</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <nav class="bo-pagination" id="pagination"></nav>
+  </section>
+
+  <div class="bo-overlay" id="overlay" hidden></div>
+  <aside class="bo-panel bo-panel-wide" id="formPanel" hidden aria-hidden="true">
+    <div class="bo-panel-head">
+      <h2 id="panelTitle">새 공지</h2>
+      <button class="bo-btn bo-btn-ghost" id="panelClose" type="button">✕</button>
+    </div>
+    <div class="bo-panel-body">
+      <input type="hidden" id="fId" />
+      <div class="bo-form-grid">
+        <div class="bo-field-row">
+          <label for="fCategory">분류</label>
+          <select id="fCategory">
+            <option value="important">중요</option>
+            <option value="registration">접수</option>
+            <option value="exam">시험</option>
+            <option value="result">결과</option>
+          </select>
+        </div>
+        <div class="bo-field-row">
+          <label>옵션</label>
+          <label class="bo-checkbox"><input type="checkbox" id="fPinned" /> 상단 고정</label>
+          <label class="bo-checkbox" id="publishWrap"><input type="checkbox" id="fPublished" /> 작성과 동시에 게시</label>
+        </div>
+        <div class="bo-field-row bo-col-full">
+          <label for="fTitle">제목</label>
+          <input type="text" id="fTitle" maxlength="200" placeholder="공지 제목" />
+        </div>
+        <div class="bo-field-row bo-col-full">
+          <label for="fBody">본문 (HTML 허용)</label>
+          <textarea id="fBody" rows="12" placeholder="<p>내용을 입력하세요.</p>"></textarea>
+          <div class="bo-field-hint">FO 공지 상세에 그대로 렌더링됩니다. 외부 입력 HTML은 신뢰된 운영자만 작성하세요.</div>
+        </div>
+      </div>
+    </div>
+    <div class="bo-panel-foot">
+      <button class="bo-btn bo-btn-secondary" id="cancelBtn" type="button">취소</button>
+      <button class="bo-btn bo-btn-primary" id="saveBtn" type="button">저장</button>
+    </div>
+  </aside>
+
+  <div class="bo-toast" id="toast" hidden></div>
+
+  <script src="../../shared/bo-api-client.js"></script>
+  <script src="assets/bo-common.js"></script>
+  <script src="assets/bo-notices.js"></script>
+</body>
+</html>

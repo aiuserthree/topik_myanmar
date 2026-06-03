@@ -160,7 +160,11 @@
           </div>
           <button class="btn btn-secondary" id="btnConfirmCode" type="button">확인</button>
         </div>
-        <span class="hint">이메일로 발송된 6자리 코드를 입력해 주세요. (유효 5분)</span>
+        <span class="hint" id="otpHint">이메일로 발송된 6자리 코드를 입력해 주세요. (유효 5분)</span>
+        <div class="callout callout-neutral hidden" id="otpMailPending" style="margin-top:10px;">
+          <div class="ico"></div>
+          <div>인증 메일이 아직 도착하지 않았다면 스팸함을 확인해 주세요. 계속 오지 않으면 <strong>topik.myanmar@mofa.go.kr</strong>로 문의해 주세요.</div>
+        </div>
       </div>
 
       <div class="form-row hidden" id="emailOk">
@@ -321,13 +325,13 @@
           <input type="checkbox" class="t-req">
           <span class="box"></span>
           <span><span class="req">[필수]</span> 서비스 이용약관 동의</span>
-          <a href="javascript:void(0)" class="view" style="margin-left:auto;">보기</a>
+          <a href="terms.html" target="_blank" rel="noopener" class="view" style="margin-left:auto;">보기</a>
         </label>
         <label class="check terms-item" style="width:100%;">
           <input type="checkbox" class="t-req">
           <span class="box"></span>
           <span><span class="req">[필수]</span> 개인정보 수집·이용 동의</span>
-          <a href="javascript:void(0)" class="view" style="margin-left:auto;">보기</a>
+          <a href="privacy.html" target="_blank" rel="noopener" class="view" style="margin-left:auto;">보기</a>
         </label>
         <label class="check terms-item" style="width:100%;">
           <input type="checkbox" class="t-opt">
@@ -441,8 +445,19 @@
         return;
       }
       document.getElementById('otpRow').classList.remove('hidden');
-      if (res.body.dev_code) {
+      var host = location.hostname;
+      var localDev = host === 'localhost' || host === '127.0.0.1';
+      if (localDev && res.body && res.body.dev_code) {
         document.getElementById('su-otp').value = res.body.dev_code;
+      }
+      var mailOk = res.body && res.body.mail_delivered !== false;
+      var pending = document.getElementById('otpMailPending');
+      var hint = document.getElementById('otpHint');
+      if (pending) pending.classList.toggle('hidden', mailOk);
+      if (hint && !mailOk) {
+        hint.textContent = '이메일 발송이 지연될 수 있습니다. 메일이 오면 6자리 코드를 입력해 주세요. (유효 5분)';
+      } else if (hint) {
+        hint.textContent = '이메일로 발송된 6자리 코드를 입력해 주세요. (유효 5분)';
       }
       var t = 300;
       var tm = document.getElementById('otpTimer');

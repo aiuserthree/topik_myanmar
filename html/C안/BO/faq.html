@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TOPIK Myanmar BO — FAQ 관리</title>
+  <link rel="stylesheet" href="assets/bo.css" />
+</head>
+<body>
+  <header class="bo-topbar">
+    <div class="bo-topbar-left">
+      <strong class="bo-brand">TOPIK Myanmar</strong>
+      <span class="bo-page-title">FAQ 관리</span>
+    </div>
+    <div class="bo-topbar-right">
+      <span class="bo-admin-id" id="adminId"></span>
+      <button class="bo-btn bo-btn-ghost" id="logoutBtn" type="button">로그아웃</button>
+    </div>
+  </header>
+
+  <nav class="bo-nav">
+    <a href="applications.html">접수 관리</a>
+    <a href="rounds.html">회차 관리</a>
+    <a href="venues.html">시험장 관리</a>
+    <a href="notices.html">공지 관리</a>
+    <a href="faq.html" class="is-active">FAQ 관리</a>
+    <a href="terms.html">약관 관리</a>
+  </nav>
+
+  <section class="bo-page">
+    <div class="bo-page-head">
+      <h1>자주 묻는 질문</h1>
+      <div class="bo-page-tools">
+        <select id="categoryFilter" class="bo-select">
+          <option value="all">분류 전체</option>
+          <option value="account">계정</option>
+          <option value="apply">접수</option>
+          <option value="exam">시험</option>
+          <option value="result">결과</option>
+          <option value="other">기타</option>
+        </select>
+        <select id="activeFilter" class="bo-select">
+          <option value="">노출 전체</option>
+          <option value="1">노출</option>
+          <option value="0">숨김</option>
+        </select>
+        <button class="bo-btn bo-btn-secondary" id="reorderBtn" type="button">정렬 저장</button>
+        <button class="bo-btn bo-btn-primary" id="newBtn" type="button">+ 새 FAQ</button>
+      </div>
+    </div>
+    <div class="bo-field-hint" style="margin-bottom:8px;">정렬 순서(정수) 셀을 수정한 뒤 <b>정렬 저장</b>을 누르면 FO 노출 순서가 반영됩니다. (분류→정렬→ID 순)</div>
+
+    <div class="bo-table-wrap">
+      <table class="bo-table">
+        <thead>
+          <tr>
+            <th>번호</th><th>분류</th><th>정렬</th><th>질문(KO)</th><th>다국어</th><th>노출</th><th>관리</th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr><td colspan="7" class="bo-empty">데이터를 불러오는 중…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="bo-overlay" id="overlay" hidden></div>
+  <aside class="bo-panel bo-panel-wide" id="formPanel" hidden aria-hidden="true">
+    <div class="bo-panel-head">
+      <h2 id="panelTitle">새 FAQ</h2>
+      <button class="bo-btn bo-btn-ghost" id="panelClose" type="button">✕</button>
+    </div>
+    <div class="bo-panel-body">
+      <input type="hidden" id="fId" />
+      <div class="bo-form-grid">
+        <div class="bo-field-row">
+          <label for="fCategory">분류</label>
+          <select id="fCategory">
+            <option value="account">계정</option>
+            <option value="apply">접수</option>
+            <option value="exam">시험</option>
+            <option value="result">결과</option>
+            <option value="other">기타</option>
+          </select>
+        </div>
+        <div class="bo-field-row">
+          <label for="fSort">정렬 순서</label>
+          <input type="number" id="fSort" min="0" value="0" />
+        </div>
+        <div class="bo-field-row bo-col-full">
+          <label for="fQko">질문 (한국어, 필수)</label>
+          <textarea id="fQko" rows="2"></textarea>
+        </div>
+        <div class="bo-field-row bo-col-full">
+          <label for="fAko">답변 (한국어, 필수)</label>
+          <textarea id="fAko" rows="4"></textarea>
+        </div>
+        <div class="bo-field-row">
+          <label for="fQmy">질문 (미얀마어)</label>
+          <textarea id="fQmy" rows="2"></textarea>
+        </div>
+        <div class="bo-field-row">
+          <label for="fQen">질문 (영어)</label>
+          <textarea id="fQen" rows="2"></textarea>
+        </div>
+        <div class="bo-field-row">
+          <label for="fAmy">답변 (미얀마어)</label>
+          <textarea id="fAmy" rows="4"></textarea>
+        </div>
+        <div class="bo-field-row">
+          <label for="fAen">답변 (영어)</label>
+          <textarea id="fAen" rows="4"></textarea>
+        </div>
+        <div class="bo-field-row bo-col-full">
+          <label class="bo-checkbox"><input type="checkbox" id="fActive" checked /> FO에 노출</label>
+        </div>
+      </div>
+    </div>
+    <div class="bo-panel-foot">
+      <button class="bo-btn bo-btn-secondary" id="cancelBtn" type="button">취소</button>
+      <button class="bo-btn bo-btn-primary" id="saveBtn" type="button">저장</button>
+    </div>
+  </aside>
+
+  <div class="bo-toast" id="toast" hidden></div>
+
+  <script src="../../shared/bo-api-client.js"></script>
+  <script src="assets/bo-common.js"></script>
+  <script src="assets/bo-faq.js"></script>
+</body>
+</html>

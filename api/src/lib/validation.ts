@@ -26,3 +26,31 @@ export function genderToCode(raw: string): "1" | "2" | null {
   if (v === "2" || v === "여") return "2";
   return null;
 }
+
+/** Parse a date/datetime string into a Date, or null if absent/invalid. */
+export function parseDateOrNull(raw: unknown): Date | null {
+  if (raw === undefined || raw === null || raw === "") return null;
+  const d = new Date(String(raw));
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+/** Coerce to a finite integer within [min, max], or null if not parseable. */
+export function parseIntInRange(
+  raw: unknown,
+  min: number,
+  max: number
+): number | null {
+  if (raw === undefined || raw === null || raw === "") return null;
+  const n = Number(raw);
+  if (!Number.isFinite(n) || !Number.isInteger(n)) return null;
+  if (n < min || n > max) return null;
+  return n;
+}
+
+/** Trimmed non-empty string capped at maxLen, or null. */
+export function cleanString(raw: unknown, maxLen: number): string | null {
+  if (raw === undefined || raw === null) return null;
+  const s = String(raw).trim();
+  if (!s) return null;
+  return s.slice(0, maxLen);
+}

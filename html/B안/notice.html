@@ -300,8 +300,8 @@ input{font-family:inherit}
  <!-- 고정 공지 -->
  <div class="pinned-notice" onclick="showDetail(0)">
  <span class="pinned-badge">필독</span>
- <span class="pinned-title">제99회 TOPIK 미얀마 접수 안내 (2026.07.12 시행)</span>
- <span class="pinned-date">2026.04.28</span>
+ <span class="pinned-title">제107회 TOPIK 미얀마 접수 안내 (2026.10.18 시행)</span>
+ <span class="pinned-date">2026.07.17</span>
  </div>
  <div class="pinned-notice" onclick="showDetail(1)" style="margin-bottom:16px">
  <span class="pinned-badge">필독</span>
@@ -345,17 +345,18 @@ input{font-family:inherit}
  <button class="back-btn" id="js-back-btn" type="button">← 목록으로</button>
  <div class="detail-head">
  <div class="detail-category">공지사항</div>
- <h2 class="detail-title" id="detail-title">제99회 TOPIK 미얀마 접수 안내</h2>
+ <h2 class="detail-title" id="detail-title">제107회 TOPIK 미얀마 접수 안내</h2>
  <div class="detail-meta">
  <span>작성자 : <strong>관리자</strong></span>
- <span>등록일 : <strong id="detail-date">2026.04.28</strong></span>
+ <span>등록일 : <strong id="detail-date">2026.07.17</strong></span>
  <span>조회 : <strong>1,284</strong></span>
  </div>
  </div>
  <div class="detail-body" id="detail-body">
- <p>주미얀마 대한민국 대사관은 제99회 한국어능력시험(TOPIK) 미얀마 시행에 관한 사항을 아래와 같이 안내합니다.</p>
- <p><strong>■ 접수 기간</strong><br>2026년 5월 1일(금) ~ 5월 31일(일)</p>
- <p><strong>■ 시험일</strong><br>2026년 7월 12일(일)</p>
+ <p>주미얀마 대한민국 대사관은 제107회 한국어능력시험(TOPIK) 미얀마 시행에 관한 사항을 아래와 같이 안내합니다.</p>
+ <p><strong>■ 접수신청기간</strong><br>2026년 7월 17일(금) ~ 7월 21일(화)</p>
+ <p><strong>■ 응시료 납부(오프라인)</strong><br>2026년 7월 24일(금) ~ 7월 26일(일)</p>
+ <p><strong>■ 시험일</strong><br>2026년 10월 18일(일)</p>
  <p><strong>■ 시험 구분 및 시간</strong></p>
  <ul>
  <li>TOPIK Ⅰ (1·2급) : 09:00 ~ 11:40 (100분)</li>
@@ -365,14 +366,14 @@ input{font-family:inherit}
  <p><strong>■ 유의 사항</strong><br>접수 기간 외 신청 불가. 1인 1회 1개 구분 접수 가능. 허위 정보 입력 시 접수 취소.</p>
  <p>기타 문의 사항은 문의게시판을 이용해 주세요.</p>
  </div>
- <div class="detail-attach">📎 첨부파일 : <a href="#">제99회_TOPIK_접수안내.pdf</a></div>
+ <div class="detail-attach">📎 첨부파일 : <a href="#">제107회_TOPIK_접수안내.pdf</a></div>
  <div class="detail-nav">
  <div class="detail-nav-item prev">
  <div class="detail-nav-label">이전</div>
  <div class="detail-nav-title" onclick="showDetail(1)">수험표 사진 규정 변경 안내</div>
  </div>
  <div class="detail-nav-item next">
- <div class="detail-nav-title" onclick="showDetail(2)">제99회 TOPIK 접수 기간 안내</div>
+ <div class="detail-nav-title" onclick="showDetail(2)">제107회 TOPIK 접수 기간 안내</div>
  <div class="detail-nav-label">다음</div>
  </div>
  </div>
@@ -392,7 +393,7 @@ input{font-family:inherit}
  <div class="aside-card">
  <div class="aside-card-title">최근 공지</div>
  <div class="aside-recent-list">
- <div class="aside-recent-item" onclick="showDetail(2)"><div class="aside-recent-title">제99회 TOPIK 접수 기간 안내</div><div class="aside-recent-date">2026.05.01</div></div>
+ <div class="aside-recent-item" onclick="showDetail(2)"><div class="aside-recent-title">제107회 TOPIK 접수 기간 안내</div><div class="aside-recent-date">2026.07.17</div></div>
  <div class="aside-recent-item" onclick="showDetail(3)"><div class="aside-recent-title">2026년 하반기 시험 일정 공고</div><div class="aside-recent-date">2026.04.15</div></div>
  <div class="aside-recent-item" onclick="showDetail(4)"><div class="aside-recent-title">시험 장소 변경 안내</div><div class="aside-recent-date">2026.03.22</div></div>
  </div>
@@ -429,9 +430,9 @@ drawerClose.addEventListener('click',closeDrawer);
 overlay.addEventListener('click',closeDrawer);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer()});
 const notices=[
- {title:'제99회 TOPIK 미얀마 접수 안내 (2026.07.12 시행)',date:'2026.04.28',cat:'important',pinned:true},
+ {title:'제107회 TOPIK 미얀마 접수 안내 (2026.10.18 시행)',date:'2026.07.17',cat:'important',pinned:true},
  {title:'수험표 사진 규정 변경 안내 (2026년 적용)',date:'2026.03.10',cat:'important',pinned:true},
- {no:24,title:'제99회 TOPIK 접수 기간 안내',date:'2026.05.01',cat:'reception',isNew:true},
+ {no:24,title:'제107회 TOPIK 접수 기간 안내',date:'2026.07.17',cat:'reception',isNew:true},
  {no:23,title:'2026년 하반기 TOPIK 시험 일정 공고',date:'2026.04.15',cat:'exam'},
  {no:22,title:'시험 장소 변경 안내 (양곤 시험장)',date:'2026.03.22',cat:'exam'},
  {no:21,title:'제97회 TOPIK 성적 발표 안내',date:'2026.02.18',cat:'result'},

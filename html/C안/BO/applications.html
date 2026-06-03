@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TOPIK Myanmar BO — 접수 관리</title>
+  <link rel="stylesheet" href="assets/bo.css" />
+</head>
+<body>
+  <header class="bo-topbar">
+    <div class="bo-topbar-left">
+      <strong class="bo-brand">TOPIK Myanmar</strong>
+      <span class="bo-page-title">접수 관리</span>
+    </div>
+    <div class="bo-topbar-right">
+      <label class="bo-round-ctx">
+        회차
+        <select id="roundSelect" class="bo-select"></select>
+      </label>
+      <span class="bo-admin-id" id="adminId"></span>
+      <button class="bo-btn bo-btn-ghost" id="logoutBtn" type="button">로그아웃</button>
+    </div>
+  </header>
+
+  <nav class="bo-nav">
+    <a href="applications.html" class="is-active">접수 관리</a>
+    <a href="rounds.html">회차 관리</a>
+    <a href="venues.html">시험장 관리</a>
+    <a href="notices.html">공지 관리</a>
+    <a href="faq.html">FAQ 관리</a>
+    <a href="terms.html">약관 관리</a>
+  </nav>
+
+  <section class="bo-roundstats" id="roundStats" hidden></section>
+
+  <section class="bo-toolbar">
+    <div class="bo-chips" id="statusChips">
+      <button class="bo-chip is-on" data-chip="all" type="button">전체</button>
+      <button class="bo-chip" data-chip="submitted" type="button">접수완료</button>
+      <button class="bo-chip" data-chip="photo_pending" type="button">사진심사 대기</button>
+      <button class="bo-chip" data-chip="payment_pending" type="button">수납대기</button>
+      <button class="bo-chip" data-chip="approved" type="button">승인완료</button>
+      <button class="bo-chip" data-chip="exam_number_assigned" type="button">수험번호 부여</button>
+      <button class="bo-chip" data-chip="refunded" type="button">환불자</button>
+      <button class="bo-chip" data-chip="rejected" type="button">반려</button>
+      <button class="bo-chip" data-chip="cancelled" type="button">취소</button>
+    </div>
+    <div class="bo-filters">
+      <select id="venueFilter" class="bo-select"><option value="">시험장 전체</option></select>
+      <select id="levelFilter" class="bo-select">
+        <option value="">급수 전체</option>
+        <option value="I">TOPIK Ⅰ</option>
+        <option value="II">TOPIK Ⅱ</option>
+      </select>
+      <input id="searchInput" class="bo-input" type="search" placeholder="한글·영문성명 / 생년월일 / 수험번호" />
+      <button class="bo-btn bo-btn-secondary" id="searchBtn" type="button">검색</button>
+    </div>
+  </section>
+
+  <section class="bo-actions">
+    <button class="bo-btn bo-btn-primary" id="assignBtn" type="button">수험번호 일괄 부여</button>
+    <button class="bo-btn bo-btn-secondary" id="rosterBtn" type="button">연명부 엑셀</button>
+    <button class="bo-btn bo-btn-secondary" id="zipBtn" type="button">사진 ZIP</button>
+    <span class="bo-actions-spacer"></span>
+    <span class="bo-result-count" id="resultCount"></span>
+  </section>
+
+  <div class="bo-table-wrap">
+    <table class="bo-table">
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>사진</th>
+          <th>한글성명</th>
+          <th>영문성명</th>
+          <th>생년월일</th>
+          <th>성별</th>
+          <th>국적</th>
+          <th>급수</th>
+          <th>시험장</th>
+          <th>접수일</th>
+          <th>사진심사</th>
+          <th>수납</th>
+          <th>수험번호</th>
+          <th>상태</th>
+          <th>관리</th>
+        </tr>
+      </thead>
+      <tbody id="appRows">
+        <tr><td colspan="15" class="bo-empty">데이터를 불러오는 중…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <nav class="bo-pagination" id="pagination"></nav>
+
+  <!-- 상세 / 사진심사 / 수납 슬라이드 패널 -->
+  <div class="bo-overlay" id="overlay" hidden></div>
+  <aside class="bo-panel" id="detailPanel" hidden aria-hidden="true">
+    <div class="bo-panel-head">
+      <h2 id="panelTitle">접수 상세</h2>
+      <button class="bo-btn bo-btn-ghost" id="panelClose" type="button">✕</button>
+    </div>
+    <div class="bo-panel-body" id="panelBody"></div>
+  </aside>
+
+  <div class="bo-toast" id="toast" hidden></div>
+
+  <script src="../../shared/bo-api-client.js"></script>
+  <script src="assets/bo-ops.js"></script>
+</body>
+</html>

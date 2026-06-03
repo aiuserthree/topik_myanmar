@@ -336,6 +336,21 @@
     `;
   }
 
+  // ---- Favicon (avoid /favicon.ico 404 in smoke tests) ----
+  function ensureFavicon() {
+    if (document.querySelector('link[rel="icon"]')) return;
+    var svg = document.createElement('link');
+    svg.rel = 'icon';
+    svg.type = 'image/svg+xml';
+    svg.href = 'assets/favicon.svg';
+    document.head.appendChild(svg);
+    var ico = document.createElement('link');
+    ico.rel = 'icon';
+    ico.href = 'favicon.ico';
+    ico.sizes = '32x32';
+    document.head.appendChild(ico);
+  }
+
   // ---- Footer (TPKM_FO_0_2_0_0_0_C) ----
   function buildFooter() {
     const wrap = document.querySelector('#site-footer');
@@ -348,8 +363,8 @@
             운영기관 <strong>주미얀마 대한민국 대사관</strong>
           </p>
           <div class="ft-policy">
-            <a href="#" onclick="alert('개인정보처리방침은 별도 페이지로 제공됩니다.');return false;" data-i18n-content="foot.privacy">개인정보처리방침</a>
-            <a href="rules-notice.html" data-i18n-content="foot.terms">이용약관</a>
+            <a href="privacy.html" data-i18n-content="foot.privacy">개인정보처리방침</a>
+            <a href="terms.html" data-i18n-content="foot.terms">이용약관</a>
           </div>
           <p class="copy" data-i18n-content="foot.copy">© 2025–2026 Embassy of the Republic of Korea in Myanmar. All rights reserved.</p>
         </div>
@@ -368,8 +383,8 @@
                 운영기관 <strong>주미얀마 대한민국 대사관</strong>
               </p>
               <div class="ft-policy">
-                <a href="#" onclick="alert('개인정보처리방침은 별도 페이지로 제공됩니다.');return false;" data-i18n-content="foot.privacy">개인정보처리방침</a>
-                <a href="rules-notice.html" data-i18n-content="foot.terms">이용약관</a>
+                <a href="privacy.html" data-i18n-content="foot.privacy">개인정보처리방침</a>
+                <a href="terms.html" data-i18n-content="foot.terms">이용약관</a>
               </div>
             </div>
             <div>
@@ -415,6 +430,7 @@
 
   // ---- DOM ready ----
   function init() {
+    ensureFavicon();
     window.__tpkmRebuildNav = function () { buildHeader(); buildFooter(); buildTabbar(); };
     buildHeader();
     buildFooter();

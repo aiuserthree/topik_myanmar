@@ -1,7 +1,12 @@
 import bcrypt from "bcrypt";
 import type { FastifyInstance } from "fastify";
+import { config } from "../config.js";
 import { pool } from "../db.js";
 import { requireFoUser } from "../lib/auth.js";
+import {
+  buildEmailDefaults,
+  enqueueEmail,
+} from "../lib/email-templates/enqueue-notification.js";
 
 const BOARD_TYPES = new Set(["refund_correction", "inquiry"]);
 const STATUS_LABEL: Record<string, string> = {
@@ -13,6 +18,18 @@ const STATUS_LABEL: Record<string, string> = {
   answered: "답변완료",
 };
 
+function formatDateTime(iso: Date | string | null): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const h = String(d.getHours()).padStart(2, "0");
+  const min = String(d.getMinutes()).padStart(2, "0");
+  return `${y}.${m}.${day} ${h}:${min}`;
+}
+
 function formatDate(iso: Date | string | null): string {
   if (!iso) return "";
   const d = new Date(iso);
@@ -21,6 +38,82 @@ function formatDate(iso: Date | string | null): string {
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}.${m}.${day}`;
+}
+
+const BOARD_NAME: Record<string, string> = {
+  refund_correction: "환불·정보정정신청",
+  inquiry: "문의게시판",
+};
+
+function postDetailUrl(boardType: string, postId: number): string {
+  const base = config.publicFoBase;
+  if (boardType === "refund_correction") {
+    return `${base}/refund-correction.html?id=${postId}`;
+  }
+  return `${base}/qna.html?id=${postId}`;
+}
+
+async function notifyBoardEmails(opts: {
+  boardType: string;
+  postId: number;
+  title: string;
+  category: string | null;
+  isSecret: boolean;
+  submittedAt: Date;
+  userId: number;
+}): Promise<void> {
+  const userRes = await pool.query(
+    `SELECT email, name_ko, preferred_lang FROM users WHERE id = $1 LIMIT 1`,
+    [opts.userId]
+  );
+  const user = userRes.rows[0];
+  if (!user) return;
+
+  const locale = String(user.preferred_lang ?? "ko");
+  const userName = String(user.name_ko ?? user.email);
+  const submittedAt = formatDateTime(opts.submittedAt);
+  const postUrl = postDetailUrl(opts.boardType, opts.postId);
+  const boardName = BOARD_NAME[opts.boardType] ?? opts.boardType;
+  const postIdLabel =
+    opts.boardType === "refund_correction"
+      ? `R-${new Date().getFullYear()}-${String(opts.postId).padStart(4, "0")}`
+      : `Q-${opts.postId}`;
+
+  if (opts.boardType === "refund_correction") {
+    await enqueueEmail(pool, {
+      templateKey: "board_refund_received",
+      toEmail: String(user.email),
+      userId: opts.userId,
+      locale,
+      variables: buildEmailDefaults({
+        userName,
+        boardName,
+        postTitle: opts.title,
+        postId: postIdLabel,
+        submittedAt,
+        postUrl,
+      }),
+    }).catch(() => undefined);
+  }
+
+  const adminTo = config.mail.adminNotifyTo;
+  if (adminTo) {
+    await enqueueEmail(pool, {
+      templateKey: "board_admin_new_post",
+      toEmail: adminTo,
+      userId: null,
+      locale: "ko",
+      variables: buildEmailDefaults({
+        userName,
+        boardName,
+        category: opts.category ?? "—",
+        postTitle: opts.title,
+        submittedAt,
+        secretFlag: opts.isSecret ? "예 (비밀글)" : "아니오",
+        boPostUrl: `${config.publicBoBase || config.publicFoBase + "/admin"}/board/${opts.postId}`,
+      }),
+    }).catch(() => undefined);
+  }
 }
 
 export async function boardRoutes(app: FastifyInstance) {
@@ -216,8 +309,21 @@ export async function boardRoutes(app: FastifyInstance) {
           ]
         );
 
+        const postId = Number(ins.rows[0].id);
+        const createdAt = ins.rows[0].created_at as Date;
+
+        void notifyBoardEmails({
+          boardType,
+          postId,
+          title,
+          category: body.category?.trim() || null,
+          isSecret: !!body.is_secret,
+          submittedAt: createdAt,
+          userId,
+        });
+
         return reply.status(201).send({
-          id: Number(ins.rows[0].id),
+          id: postId,
           message: "신청이 접수되었습니다.",
           date_formatted: formatDate(ins.rows[0].created_at),
         });

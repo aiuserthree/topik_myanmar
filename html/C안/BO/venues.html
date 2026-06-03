@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TOPIK Myanmar BO — 시험장 관리</title>
+  <link rel="stylesheet" href="assets/bo.css" />
+</head>
+<body>
+  <header class="bo-topbar">
+    <div class="bo-topbar-left">
+      <strong class="bo-brand">TOPIK Myanmar</strong>
+      <span class="bo-page-title">시험장 관리</span>
+    </div>
+    <div class="bo-topbar-right">
+      <span class="bo-admin-id" id="adminId"></span>
+      <button class="bo-btn bo-btn-ghost" id="logoutBtn" type="button">로그아웃</button>
+    </div>
+  </header>
+
+  <nav class="bo-nav">
+    <a href="applications.html">접수 관리</a>
+    <a href="rounds.html">회차 관리</a>
+    <a href="venues.html" class="is-active">시험장 관리</a>
+    <a href="notices.html">공지 관리</a>
+    <a href="faq.html">FAQ 관리</a>
+    <a href="terms.html">약관 관리</a>
+  </nav>
+
+  <section class="bo-page">
+    <div class="bo-page-head">
+      <h1>시험장</h1>
+      <div class="bo-page-tools">
+        <select id="activeFilter" class="bo-select">
+          <option value="">사용 전체</option>
+          <option value="1">사용</option>
+          <option value="0">미사용</option>
+        </select>
+        <button class="bo-btn bo-btn-primary" id="newBtn" type="button">+ 새 시험장</button>
+      </div>
+    </div>
+    <div class="bo-field-hint" style="margin-bottom:8px;">시험장 코드(2자리)는 13자리 수험번호의 ④ 시험장코드로 사용됩니다. 접수 이력이 생긴 뒤에는 코드를 변경할 수 없습니다.</div>
+
+    <div class="bo-table-wrap">
+      <table class="bo-table">
+        <thead>
+          <tr>
+            <th>코드</th><th>시험장명</th><th>지역</th><th>정원</th><th>사용</th><th>비고</th><th>관리</th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr><td colspan="7" class="bo-empty">데이터를 불러오는 중…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="bo-overlay" id="overlay" hidden></div>
+  <aside class="bo-panel bo-panel-wide" id="formPanel" hidden aria-hidden="true">
+    <div class="bo-panel-head">
+      <h2 id="panelTitle">새 시험장</h2>
+      <button class="bo-btn bo-btn-ghost" id="panelClose" type="button">✕</button>
+    </div>
+    <div class="bo-panel-body">
+      <input type="hidden" id="fId" />
+      <div class="bo-form-grid">
+        <div class="bo-field-row">
+          <label for="fCode">시험장 코드 (2자리)</label>
+          <input type="text" id="fCode" maxlength="2" placeholder="예: 06" />
+          <div class="bo-field-hint" id="codeHint">접수 이력이 있으면 변경 불가</div>
+        </div>
+        <div class="bo-field-row">
+          <label for="fRegion">지역</label>
+          <select id="fRegion"><option value="">불러오는 중…</option></select>
+        </div>
+        <div class="bo-field-row bo-col-full">
+          <label for="fNameKo">시험장명 (한국어)</label>
+          <input type="text" id="fNameKo" maxlength="100" />
+        </div>
+        <div class="bo-field-row bo-col-full">
+          <label for="fNameEn">시험장명 (영어, 선택)</label>
+          <input type="text" id="fNameEn" maxlength="120" />
+        </div>
+        <div class="bo-field-row bo-col-full">
+          <label for="fAddress">주소 (선택)</label>
+          <input type="text" id="fAddress" />
+        </div>
+        <div class="bo-field-row">
+          <label for="fCapacity">수용 인원 (정원)</label>
+          <input type="number" id="fCapacity" min="0" placeholder="예: 300" />
+        </div>
+        <div class="bo-field-row">
+          <label class="bo-checkbox" style="margin-top:24px;"><input type="checkbox" id="fActive" checked /> 사용</label>
+        </div>
+        <div class="bo-field-row bo-col-full">
+          <label for="fNote">비고 (선택)</label>
+          <textarea id="fNote" rows="2"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="bo-panel-foot">
+      <button class="bo-btn bo-btn-secondary" id="cancelBtn" type="button">취소</button>
+      <button class="bo-btn bo-btn-primary" id="saveBtn" type="button">저장</button>
+    </div>
+  </aside>
+
+  <div class="bo-toast" id="toast" hidden></div>
+
+  <script src="../../shared/bo-api-client.js"></script>
+  <script src="assets/bo-common.js"></script>
+  <script src="assets/bo-venues.js"></script>
+</body>
+</html>

@@ -129,7 +129,9 @@ INSERT INTO users (
     )
 ON CONFLICT (email) DO UPDATE SET
     password_hash = EXCLUDED.password_hash,
-    status = 'active';
+    status = 'active',
+    password_changed_at = NOW() - INTERVAL '200 days',
+    marketing_opt_in = true;
 
 -- ---------------------------------------------------------------------------
 -- Sample notice (제107회 접수 안내)

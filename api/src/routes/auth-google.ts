@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { config } from "../config.js";
 import { pool } from "../db.js";
 import { signAuthTokens } from "../lib/auth.js";
+import { schedulePasswordExpiryReminder } from "../lib/password-expiry-reminder.js";
 
 /**
  * Google Sign-In (Google Identity Services) for the STATIC HTML frontend.
@@ -61,7 +62,10 @@ export async function authGoogleRoutes(app: FastifyInstance) {
   });
 
   // ---- Verify Google ID token → upsert user → issue our JWT pair ----
-  app.post<{ Body: GoogleBody }>("/api/v1/auth/google", async (req, reply) => {
+  app.post<{ Body: GoogleBody }>(
+    "/api/v1/auth/google",
+    { config: { rateLimit: { max: 20, timeWindow: "1 minute" } } },
+    async (req, reply) => {
     if (!config.google.clientId) {
       return reply.status(503).send({ error: "oauth_not_configured" });
     }
@@ -172,6 +176,8 @@ export async function authGoogleRoutes(app: FastifyInstance) {
         email: user.email,
         role: "user",
       });
+
+      schedulePasswordExpiryReminder(pool, user.id, (err) => app.log.error(err));
 
       return {
         access_token: tokens.accessToken,

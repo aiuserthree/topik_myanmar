@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TOPIK Myanmar BO — 관리자 로그인</title>
+  <link rel="stylesheet" href="assets/bo.css" />
+</head>
+<body class="bo-login-body">
+  <main class="bo-login-card">
+    <h1 class="bo-login-title">TOPIK Myanmar</h1>
+    <p class="bo-login-sub">접수 관리 백오피스 (BO)</p>
+
+    <form id="loginForm" class="bo-login-form" autocomplete="off">
+      <label class="bo-field">
+        <span>이메일</span>
+        <input type="email" id="email" name="email" placeholder="admin-dev@topik-mm.local" required />
+      </label>
+      <label class="bo-field">
+        <span>비밀번호</span>
+        <input type="password" id="password" name="password" placeholder="비밀번호" required />
+      </label>
+      <button type="submit" class="bo-btn bo-btn-primary bo-btn-block" id="loginBtn">로그인</button>
+      <p class="bo-login-msg" id="loginMsg" role="alert"></p>
+    </form>
+
+    <p class="bo-login-hint">개발 환경 기본 계정: <code>admin-dev@topik-mm.local</code></p>
+  </main>
+
+  <script src="../../shared/bo-api-client.js"></script>
+  <script>
+    (function () {
+      var form = document.getElementById("loginForm");
+      var msg = document.getElementById("loginMsg");
+      var btn = document.getElementById("loginBtn");
+
+      if (window.TopikBoApi && TopikBoApi.getAccessToken && TopikBoApi.getAccessToken()) {
+        // already logged in
+        location.replace("applications.html");
+        return;
+      }
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        msg.textContent = "";
+        msg.className = "bo-login-msg";
+        var email = document.getElementById("email").value.trim();
+        var password = document.getElementById("password").value;
+        btn.disabled = true;
+        btn.textContent = "로그인 중…";
+        TopikBoApi.login(email, password).then(function (res) {
+          if (res.ok) {
+            location.replace("applications.html");
+          } else {
+            msg.textContent = TopikBoApi.parseError(res) || "로그인에 실패했습니다.";
+            msg.className = "bo-login-msg is-error";
+            btn.disabled = false;
+            btn.textContent = "로그인";
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

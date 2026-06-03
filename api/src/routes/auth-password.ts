@@ -3,19 +3,17 @@ import crypto from "node:crypto";
 import type { FastifyInstance } from "fastify";
 import { config } from "../config.js";
 import { pool } from "../db.js";
-import { queueAndSend } from "../lib/mailer.js";
+import {
+  buildEmailDefaults,
+  enqueueEmail,
+  formatVerificationCode,
+  maskEmail,
+  passwordResetLink,
+} from "../lib/email-templates/enqueue-notification.js";
 import { isValidEmail, isValidPassword, normalizeBirthDate } from "../lib/validation.js";
 
 function randomCode(): string {
   return String(crypto.randomInt(100000, 999999));
-}
-
-function maskEmail(email: string): string {
-  const [local, domain] = String(email).split("@");
-  if (!domain) return email;
-  const visible = local.slice(0, Math.min(2, local.length));
-  const stars = "*".repeat(Math.max(2, local.length - visible.length));
-  return `${visible}${stars}@${domain}`;
 }
 
 const RESET_TTL_SECONDS = 30 * 60;
@@ -67,6 +65,7 @@ export async function authPasswordRoutes(app: FastifyInstance) {
   // ---- forgot-password: issue reset code, queue email ----
   app.post<{ Body: { email?: string } }>(
     "/api/v1/auth/forgot-password",
+    { config: { rateLimit: { max: 5, timeWindow: "1 minute" } } },
     async (req, reply) => {
       const email = String(req.body?.email ?? "")
         .trim()
@@ -80,7 +79,7 @@ export async function authPasswordRoutes(app: FastifyInstance) {
       try {
         // Look up an active email-signup user (Google accounts have no password).
         const userRes = await pool.query(
-          `SELECT id, password_hash, signup_provider
+          `SELECT id, password_hash, signup_provider, name_ko, preferred_lang
            FROM users
            WHERE email = $1 AND status = 'active'
            LIMIT 1`,
@@ -130,16 +129,18 @@ export async function authPasswordRoutes(app: FastifyInstance) {
           [userId, codeHash, expiresAt]
         );
 
-        await queueAndSend(pool, {
+        await enqueueEmail(pool, {
           templateKey: "password_reset",
-          locale: "ko",
+          locale: String(user.preferred_lang ?? "ko"),
           toEmail: email,
           userId,
-          subject: "[TOPIK Myanmar] 비밀번호 재설정 인증코드",
-          html:
-            `<p>안녕하세요, TOPIK Myanmar입니다.</p>` +
-            `<p>비밀번호 재설정 인증코드는 <strong style="font-size:18px">${code}</strong> 입니다.</p>` +
-            `<p>유효 시간: 30분</p>`,
+          variables: buildEmailDefaults({
+            userName: String(user.name_ko ?? email.split("@")[0]),
+            email: maskEmail(email),
+            verificationCode: formatVerificationCode(code),
+            expiresMinutes: "30",
+            resetLink: passwordResetLink(email),
+          }),
         });
 
         if (config.appEnv === "development") {

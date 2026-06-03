@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TOPIK Myanmar BO — 약관 관리</title>
+  <link rel="stylesheet" href="assets/bo.css" />
+</head>
+<body>
+  <header class="bo-topbar">
+    <div class="bo-topbar-left">
+      <strong class="bo-brand">TOPIK Myanmar</strong>
+      <span class="bo-page-title">약관 관리</span>
+    </div>
+    <div class="bo-topbar-right">
+      <span class="bo-admin-id" id="adminId"></span>
+      <button class="bo-btn bo-btn-ghost" id="logoutBtn" type="button">로그아웃</button>
+    </div>
+  </header>
+
+  <nav class="bo-nav">
+    <a href="applications.html">접수 관리</a>
+    <a href="rounds.html">회차 관리</a>
+    <a href="venues.html">시험장 관리</a>
+    <a href="notices.html">공지 관리</a>
+    <a href="faq.html">FAQ 관리</a>
+    <a href="terms.html" class="is-active">약관 관리</a>
+  </nav>
+
+  <section class="bo-page">
+    <div class="bo-page-head">
+      <h1>약관 / 개인정보 처리방침</h1>
+      <div class="bo-page-tools">
+        <select id="typeFilter" class="bo-select">
+          <option value="">종류 전체</option>
+          <option value="service">서비스 이용약관</option>
+          <option value="privacy">개인정보처리방침</option>
+          <option value="marketing">마케팅 수신 동의</option>
+        </select>
+        <button class="bo-btn bo-btn-primary" id="newBtn" type="button">+ 새 약관/버전</button>
+      </div>
+    </div>
+    <div class="bo-field-hint" style="margin-bottom:8px;">게시(publish) 시 같은 종류의 기존 게시본은 자동으로 만료(retired) 처리됩니다. 본문 수정은 초안(draft) 상태에서만 가능하며, 게시된 약관은 새 버전을 만들어 교체하세요. (회원 동의 무결성)</div>
+
+    <div class="bo-table-wrap">
+      <table class="bo-table">
+        <thead>
+          <tr><th>번호</th><th>종류</th><th>버전</th><th>상태</th><th>시행일</th><th>관리</th></tr>
+        </thead>
+        <tbody id="rows">
+          <tr><td colspan="6" class="bo-empty">데이터를 불러오는 중…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="bo-overlay" id="overlay" hidden></div>
+  <aside class="bo-panel bo-panel-wide" id="formPanel" hidden aria-hidden="true">
+    <div class="bo-panel-head">
+      <h2 id="panelTitle">새 약관</h2>
+      <button class="bo-btn bo-btn-ghost" id="panelClose" type="button">✕</button>
+    </div>
+    <div class="bo-panel-body">
+      <input type="hidden" id="fId" />
+      <div class="bo-form-grid">
+        <div class="bo-field-row">
+          <label for="fType">종류</label>
+          <select id="fType">
+            <option value="service">서비스 이용약관</option>
+            <option value="privacy">개인정보처리방침</option>
+            <option value="marketing">마케팅 수신 동의</option>
+          </select>
+        </div>
+        <div class="bo-field-row">
+          <label for="fVersion">버전</label>
+          <input type="text" id="fVersion" maxlength="16" placeholder="예: v1.1" />
+        </div>
+        <div class="bo-field-row bo-col-full">
+          <label for="fEffective">시행일시</label>
+          <input type="datetime-local" id="fEffective" />
+        </div>
+        <div class="bo-field-row bo-col-full">
+          <label for="fBodyKo">본문 (한국어, 필수)</label>
+          <textarea id="fBodyKo" rows="10"></textarea>
+        </div>
+        <div class="bo-field-row">
+          <label for="fBodyMy">본문 (미얀마어)</label>
+          <textarea id="fBodyMy" rows="8"></textarea>
+        </div>
+        <div class="bo-field-row">
+          <label for="fBodyEn">본문 (영어)</label>
+          <textarea id="fBodyEn" rows="8"></textarea>
+        </div>
+      </div>
+      <div class="bo-field-hint" id="editLockHint" style="display:none;color:var(--bo-warn);margin-top:8px;">게시·만료된 버전입니다. 저장하려면 새 버전을 생성하세요.</div>
+    </div>
+    <div class="bo-panel-foot">
+      <button class="bo-btn bo-btn-secondary" id="cancelBtn" type="button">취소</button>
+      <button class="bo-btn bo-btn-primary" id="saveBtn" type="button">초안 저장</button>
+    </div>
+  </aside>
+
+  <div class="bo-toast" id="toast" hidden></div>
+
+  <script src="../../shared/bo-api-client.js"></script>
+  <script src="assets/bo-common.js"></script>
+  <script src="assets/bo-terms.js"></script>
+</body>
+</html>

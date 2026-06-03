@@ -207,7 +207,7 @@
   <div class="page-hero-inner">
     <div class="breadcrumb"><svg class="icon" width="12" height="12"><use href="#ic-register"/></svg><a href="index.html">홈</a> › 시험 접수</div>
     <h1><svg class="icon" width="26" height="26" color="#fff"><use href="#ic-register"/></svg><span data-i18n-content="reg.title">시험 접수</span></h1>
-    <p style="font-size:13px;color:#aab8cc;margin-top:4px;">제98회 TOPIK — 접수기간: 2026.04.01 ~ 2026.04.14</p>
+    <p style="font-size:13px;color:#aab8cc;margin-top:4px;">제107회 TOPIK — 접수기간: 2026.07.17 ~ 2026.07.21</p>
   </div>
 </div>
 
@@ -236,19 +236,20 @@
         <div class="round-card selected" onclick="selectRound(this)">
           <div class="rc-check"><svg class="icon" width="13" height="13" color="white"><use href="#ic-check"/></svg></div>
           <span class="rc-badge open"><svg class="icon" width="10" height="10"><use href="#ic-check"/></svg>접수중</span>
-          <div class="rc-name">제98회 TOPIK</div>
+          <div class="rc-name">제107회 TOPIK</div>
           <div class="rc-date">
-            <span><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>시험일: 2026.05.17</span>
-            <span><svg class="icon" width="11" height="11"><use href="#ic-register"/></svg>접수: 04.01~04.14</span>
+            <span><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>시험일: 2026.10.18</span>
+            <span><svg class="icon" width="11" height="11"><use href="#ic-register"/></svg>접수: 07.17~07.21</span>
+            <span><svg class="icon" width="11" height="11"><use href="#ic-register"/></svg>응시료: 07.24~07.26</span>
           </div>
         </div>
-        <div class="round-card is-disabled" aria-disabled="true" title="접수 예정 회차입니다 — 접수 기간에 선택할 수 있습니다." onclick="selectRound(this)">
+        <div class="round-card is-disabled" aria-disabled="true" title="접수 마감된 회차입니다." onclick="selectRound(this)">
           <div class="rc-check"><svg class="icon" width="13" height="13" color="white"><use href="#ic-check"/></svg></div>
-          <span class="rc-badge soon"><svg class="icon" width="10" height="10"><use href="#ic-calendar"/></svg>예정</span>
-          <div class="rc-name">제99회 TOPIK</div>
+          <span class="rc-badge soon"><svg class="icon" width="10" height="10"><use href="#ic-calendar"/></svg>마감</span>
+          <div class="rc-name">제106회 TOPIK</div>
           <div class="rc-date">
-            <span><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>시험일: 2026.08.17</span>
-            <span><svg class="icon" width="11" height="11"><use href="#ic-register"/></svg>접수: 07.07~07.21</span>
+            <span><svg class="icon" width="11" height="11"><use href="#ic-calendar"/></svg>시험일: 2026.09.19</span>
+            <span><svg class="icon" width="11" height="11"><use href="#ic-register"/></svg>접수: 06.01~07.26</span>
           </div>
         </div>
       </div>
@@ -405,7 +406,7 @@
       <h2><svg class="icon" width="18" height="18" color="var(--red)"><use href="#ic-check"/></svg>접수 내용 최종 확인</h2>
       <p style="font-size:13px;color:var(--gray-text);margin-bottom:16px;">아래 내용을 확인하신 후 접수 완료 버튼을 눌러주세요.</p>
       <table class="confirm-table">
-        <tr><th>회차</th><td>제98회 TOPIK (2026.05.17)</td></tr>
+        <tr><th>회차</th><td>제107회 TOPIK (2026.10.18)</td></tr>
         <tr><th>응시 급수</th><td id="confirm-level">—</td></tr>
         <tr><th>증명사진</th><td>
           <div class="confirm-photo-cell">
@@ -750,7 +751,7 @@
       var profile=window.TMProfile?TMProfile.load():{};
       var photo=window.TMProfile&&TMProfile.loadSignupPhoto?TMProfile.loadSignupPhoto():'';
       var roundCard=document.querySelector('.round-card.selected');
-      var roundName=roundCard?(roundCard.querySelector('.rc-name')||{}).textContent||'제98회 TOPIK':'제98회 TOPIK';
+      var roundName=roundCard?(roundCard.querySelector('.rc-name')||{}).textContent||'제107회 TOPIK':'제107회 TOPIK';
       var lvl=(window.selLevel)||'I';
       var lvLabel=lvl==='BOTH'?'TOPIK Ⅰ + Ⅱ':(lvl==='II'?'TOPIK Ⅱ':'TOPIK Ⅰ');
       var rec={
@@ -772,7 +773,7 @@
         purpose:(document.getElementById('r-purposeText')||{}).value||'',
         photo:photo||'',
         venue:'양곤 시험장 (추후 확정)',
-        examDate:'2026.05.17',
+        examDate:'2026.10.18',
         regDate:new Date().toISOString().slice(0,10).replace(/-/g,'.'),
         status:'pending',         // 접수완료
         photoStatus:'unreviewed', // 사진심사 미실시

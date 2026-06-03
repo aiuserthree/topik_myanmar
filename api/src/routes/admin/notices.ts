@@ -1,0 +1,566 @@
+import type { FastifyInstance } from "fastify";
+import { config } from "../../config.js";
+import { pool } from "../../db.js";
+import { requireAdmin, requireAnyAdmin } from "../../lib/auth.js";
+import { formatDateTime, insertAuditLog } from "../../lib/admin-helpers.js";
+import { cleanString } from "../../lib/validation.js";
+import {
+  buildEmailDefaults,
+  enqueueEmail,
+} from "../../lib/email-templates/enqueue-notification.js";
+
+const CAT_LABEL: Record<string, string> = {
+  important: "중요",
+  registration: "접수",
+  exam: "시험",
+  result: "결과",
+};
+
+const NOTICE_CATEGORIES = new Set(Object.keys(CAT_LABEL));
+
+const BATCH_SIZE = 50;
+const BATCH_DELAY_MS = 120;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function noticeDetailUrl(noticeId: number): string {
+  return `${config.publicFoBase}/notice.html?id=${noticeId}`;
+}
+
+function formatNoticeDate(iso: Date | string | null): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}.${m}.${day}`;
+}
+
+export async function adminNoticesRoutes(app: FastifyInstance) {
+  // -------------------------------------------------------------------------
+  // GET /api/v1/admin/notices — 목록 (미게시 포함, 검색·페이지네이션)
+  // -------------------------------------------------------------------------
+  app.get<{
+    Querystring: {
+      category?: string;
+      q?: string;
+      published?: string;
+      page?: string;
+      page_size?: string;
+    };
+  }>(
+    "/api/v1/admin/notices",
+    { preHandler: requireAnyAdmin },
+    async (req, reply) => {
+      const page = Math.max(1, Number(req.query.page) || 1);
+      const pageSize = Math.min(100, Math.max(1, Number(req.query.page_size) || 20));
+      const offset = (page - 1) * pageSize;
+      const conditions: string[] = [];
+      const params: unknown[] = [];
+      let idx = 1;
+
+      const category = req.query.category?.trim();
+      if (category && category !== "all" && NOTICE_CATEGORIES.has(category)) {
+        conditions.push(`n.category = $${idx++}`);
+        params.push(category);
+      }
+      const q = req.query.q?.trim().toLowerCase();
+      if (q) {
+        conditions.push(`LOWER(n.title) LIKE $${idx++}`);
+        params.push(`%${q}%`);
+      }
+      if (req.query.published === "1" || req.query.published === "true") {
+        conditions.push(`n.is_published = true`);
+      } else if (req.query.published === "0" || req.query.published === "false") {
+        conditions.push(`n.is_published = false`);
+      }
+      const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+
+      try {
+        const countRes = await pool.query(
+          `SELECT COUNT(*)::int AS total FROM notices n ${where}`,
+          params
+        );
+        const total = countRes.rows[0]?.total ?? 0;
+        const listRes = await pool.query(
+          `SELECT n.id, n.category, n.title, n.is_published, n.is_pinned,
+                  n.view_count, n.published_at, n.created_at, n.updated_at,
+                  a.email AS author_email
+           FROM notices n
+           LEFT JOIN admin_users a ON a.id = n.author_admin_id
+           ${where}
+           ORDER BY n.is_pinned DESC, n.created_at DESC, n.id DESC
+           LIMIT $${idx++} OFFSET $${idx++}`,
+          [...params, pageSize, offset]
+        );
+        return {
+          items: listRes.rows.map((r) => ({
+            id: Number(r.id),
+            category: r.category,
+            category_label: CAT_LABEL[r.category] ?? r.category,
+            title: r.title,
+            is_published: r.is_published,
+            is_pinned: r.is_pinned,
+            view_count: Number(r.view_count),
+            published_at: r.published_at,
+            published_at_label: formatNoticeDate(r.published_at),
+            created_at: r.created_at,
+            created_at_label: formatDateTime(r.created_at),
+            author_email: r.author_email,
+          })),
+          pagination: {
+            page,
+            page_size: pageSize,
+            total_items: total,
+            total_pages: Math.ceil(total / pageSize) || 1,
+          },
+        };
+      } catch (err) {
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
+        });
+      }
+    }
+  );
+
+  // -------------------------------------------------------------------------
+  // GET /api/v1/admin/notices/:id — 상세 (미게시 포함)
+  // -------------------------------------------------------------------------
+  app.get<{ Params: { id: string } }>(
+    "/api/v1/admin/notices/:id",
+    { preHandler: requireAnyAdmin },
+    async (req, reply) => {
+      const id = Number(req.params.id);
+      if (!Number.isFinite(id)) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "잘못된 요청입니다." },
+        });
+      }
+      try {
+        const { rows } = await pool.query(
+          `SELECT id, category, title, body_html, is_published, is_pinned,
+                  view_count, published_at, created_at, updated_at
+           FROM notices WHERE id = $1 LIMIT 1`,
+          [id]
+        );
+        if (rows.length === 0) {
+          return reply.status(404).send({
+            error: { code: "NOT_FOUND", message: "공지를 찾을 수 없습니다." },
+          });
+        }
+        const r = rows[0];
+        return {
+          id: Number(r.id),
+          category: r.category,
+          category_label: CAT_LABEL[r.category] ?? r.category,
+          title: r.title,
+          body_html: r.body_html,
+          is_published: r.is_published,
+          is_pinned: r.is_pinned,
+          view_count: Number(r.view_count),
+          published_at: r.published_at,
+          created_at: r.created_at,
+          updated_at: r.updated_at,
+        };
+      } catch (err) {
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
+        });
+      }
+    }
+  );
+
+  // -------------------------------------------------------------------------
+  // POST /api/v1/admin/notices — 생성
+  // -------------------------------------------------------------------------
+  app.post<{
+    Body: {
+      category?: string;
+      title?: string;
+      body_html?: string;
+      is_pinned?: boolean;
+      is_published?: boolean;
+    };
+  }>(
+    "/api/v1/admin/notices",
+    { preHandler: requireAdmin },
+    async (req, reply) => {
+      const body = req.body ?? {};
+      const category = String(body.category ?? "").trim();
+      const title = cleanString(body.title, 200);
+      if (!NOTICE_CATEGORIES.has(category)) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "유효하지 않은 분류입니다." },
+        });
+      }
+      if (!title) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "제목을 입력해 주세요." },
+        });
+      }
+      const bodyHtml = typeof body.body_html === "string" ? body.body_html : "";
+      const isPinned = !!body.is_pinned;
+      const isPublished = !!body.is_published;
+
+      try {
+        const { rows } = await pool.query(
+          `INSERT INTO notices (
+             category, title, body_html, is_published, is_pinned,
+             author_admin_id, published_at
+           ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+           RETURNING id`,
+          [
+            category,
+            title,
+            bodyHtml,
+            isPublished,
+            isPinned,
+            req.authAdmin!.id,
+            isPublished ? new Date() : null,
+          ]
+        );
+        const noticeId = Number(rows[0].id);
+        await insertAuditLog(pool, {
+          adminId: req.authAdmin!.id,
+          targetTable: "notices",
+          targetId: noticeId,
+          action: "notice_create",
+          statusAfter: isPublished ? "published" : "draft",
+          payload: { category, title },
+        });
+        return reply.status(201).send({ id: noticeId, created: true });
+      } catch (err) {
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
+        });
+      }
+    }
+  );
+
+  // -------------------------------------------------------------------------
+  // PATCH /api/v1/admin/notices/:id — 수정
+  // -------------------------------------------------------------------------
+  app.patch<{
+    Params: { id: string };
+    Body: {
+      category?: string;
+      title?: string;
+      body_html?: string;
+      is_pinned?: boolean;
+    };
+  }>(
+    "/api/v1/admin/notices/:id",
+    { preHandler: requireAdmin },
+    async (req, reply) => {
+      const id = Number(req.params.id);
+      const body = req.body ?? {};
+      if (!Number.isFinite(id)) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "잘못된 요청입니다." },
+        });
+      }
+      const sets: string[] = [];
+      const params: unknown[] = [];
+      let idx = 1;
+      if (body.category !== undefined) {
+        const category = String(body.category).trim();
+        if (!NOTICE_CATEGORIES.has(category)) {
+          return reply.status(400).send({
+            error: { code: "VALIDATION_ERROR", message: "유효하지 않은 분류입니다." },
+          });
+        }
+        sets.push(`category = $${idx++}`);
+        params.push(category);
+      }
+      if (body.title !== undefined) {
+        const title = cleanString(body.title, 200);
+        if (!title) {
+          return reply.status(400).send({
+            error: { code: "VALIDATION_ERROR", message: "제목을 입력해 주세요." },
+          });
+        }
+        sets.push(`title = $${idx++}`);
+        params.push(title);
+      }
+      if (body.body_html !== undefined) {
+        sets.push(`body_html = $${idx++}`);
+        params.push(String(body.body_html));
+      }
+      if (body.is_pinned !== undefined) {
+        sets.push(`is_pinned = $${idx++}`);
+        params.push(!!body.is_pinned);
+      }
+      if (sets.length === 0) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "변경할 항목이 없습니다." },
+        });
+      }
+      sets.push(`updated_at = NOW()`);
+      params.push(id);
+      try {
+        const upd = await pool.query(
+          `UPDATE notices SET ${sets.join(", ")} WHERE id = $${idx} RETURNING id`,
+          params
+        );
+        if (upd.rows.length === 0) {
+          return reply.status(404).send({
+            error: { code: "NOT_FOUND", message: "공지를 찾을 수 없습니다." },
+          });
+        }
+        await insertAuditLog(pool, {
+          adminId: req.authAdmin!.id,
+          targetTable: "notices",
+          targetId: id,
+          action: "notice_update",
+        });
+        return { id, updated: true };
+      } catch (err) {
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
+        });
+      }
+    }
+  );
+
+  // -------------------------------------------------------------------------
+  // POST /api/v1/admin/notices/:id/publish | /unpublish — 발행 토글
+  // -------------------------------------------------------------------------
+  const setPublished = (publish: boolean) =>
+    async (
+      req: { params: { id: string }; authAdmin?: { id: number } },
+      reply: import("fastify").FastifyReply
+    ) => {
+      const id = Number(req.params.id);
+      if (!Number.isFinite(id)) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "잘못된 요청입니다." },
+        });
+      }
+      try {
+        const upd = await pool.query(
+          `UPDATE notices
+           SET is_published = $2,
+               published_at = CASE
+                 WHEN $2 = true AND published_at IS NULL THEN NOW()
+                 ELSE published_at END,
+               updated_at = NOW()
+           WHERE id = $1
+           RETURNING id, is_published, published_at`,
+          [id, publish]
+        );
+        if (upd.rows.length === 0) {
+          return reply.status(404).send({
+            error: { code: "NOT_FOUND", message: "공지를 찾을 수 없습니다." },
+          });
+        }
+        await insertAuditLog(pool, {
+          adminId: req.authAdmin!.id,
+          targetTable: "notices",
+          targetId: id,
+          action: publish ? "notice_publish" : "notice_unpublish",
+          statusAfter: publish ? "published" : "draft",
+        });
+        return {
+          id,
+          is_published: upd.rows[0].is_published,
+          published_at: upd.rows[0].published_at,
+        };
+      } catch (err) {
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
+        });
+      }
+    };
+
+  app.post<{ Params: { id: string } }>(
+    "/api/v1/admin/notices/:id/publish",
+    { preHandler: requireAdmin },
+    setPublished(true)
+  );
+  app.post<{ Params: { id: string } }>(
+    "/api/v1/admin/notices/:id/unpublish",
+    { preHandler: requireAdmin },
+    setPublished(false)
+  );
+
+  // -------------------------------------------------------------------------
+  // DELETE /api/v1/admin/notices/:id — 삭제 (notice_view_logs CASCADE)
+  // -------------------------------------------------------------------------
+  app.delete<{ Params: { id: string } }>(
+    "/api/v1/admin/notices/:id",
+    { preHandler: requireAdmin },
+    async (req, reply) => {
+      const id = Number(req.params.id);
+      if (!Number.isFinite(id)) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "잘못된 요청입니다." },
+        });
+      }
+      try {
+        const del = await pool.query(
+          `DELETE FROM notices WHERE id = $1 RETURNING id`,
+          [id]
+        );
+        if (del.rows.length === 0) {
+          return reply.status(404).send({
+            error: { code: "NOT_FOUND", message: "공지를 찾을 수 없습니다." },
+          });
+        }
+        await insertAuditLog(pool, {
+          adminId: req.authAdmin!.id,
+          targetTable: "notices",
+          targetId: id,
+          action: "notice_delete",
+        });
+        return { id, deleted: true };
+      } catch (err) {
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
+        });
+      }
+    }
+  );
+
+  app.post<{ Params: { id: string } }>(
+    "/api/v1/admin/notices/:id/send-marketing",
+    { preHandler: requireAdmin },
+    async (req, reply) => {
+      const noticeId = Number(req.params.id);
+      if (!Number.isFinite(noticeId)) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "잘못된 요청입니다." },
+        });
+      }
+
+      const client = await pool.connect();
+      try {
+        const noticeRes = await client.query(
+          `SELECT id, category, title, is_published, published_at
+           FROM notices WHERE id = $1`,
+          [noticeId]
+        );
+        if (noticeRes.rows.length === 0) {
+          return reply.status(404).send({
+            error: { code: "NOT_FOUND", message: "공지를 찾을 수 없습니다." },
+          });
+        }
+        const notice = noticeRes.rows[0];
+        if (!notice.is_published) {
+          return reply.status(400).send({
+            error: {
+              code: "NOT_PUBLISHED",
+              message: "게시된 공지만 마케팅 발송할 수 있습니다.",
+            },
+          });
+        }
+
+        const recipientsRes = await client.query(
+          `SELECT u.id, u.email, u.name_ko, u.preferred_lang
+           FROM users u
+           WHERE u.status = 'active'
+             AND u.marketing_opt_in = true
+             AND NOT EXISTS (
+               SELECT 1 FROM email_outbox e
+               WHERE e.template_key = 'notice_marketing'
+                 AND e.user_id = u.id
+                 AND e.subject LIKE $1
+                 AND e.status IN ('sent', 'queued')
+             )
+           ORDER BY u.id`,
+          [`%[notice:${noticeId}]%`]
+        );
+
+        const categoryLabel = CAT_LABEL[notice.category] ?? String(notice.category);
+        const publishedAt = formatNoticeDate(notice.published_at);
+        const noticeUrl = noticeDetailUrl(noticeId);
+        const subjectPrefix = `[notice:${noticeId}]`;
+
+        // When the background email worker is enabled, enqueue-only (insert
+        // status='queued') and let the worker drain + retry — this avoids a
+        // long inline for-loop that can time out the request. With the worker
+        // off we keep the original inline send so nothing breaks today.
+        const deferSend = config.enableEmailWorker;
+
+        let queued = 0;
+        let failed = 0;
+        const errors: string[] = [];
+
+        for (let i = 0; i < recipientsRes.rows.length; i += 1) {
+          const user = recipientsRes.rows[i];
+          const locale = String(user.preferred_lang ?? "ko");
+          try {
+            const result = await enqueueEmail(pool, {
+              templateKey: "notice_marketing",
+              toEmail: String(user.email),
+              userId: Number(user.id),
+              locale,
+              deferSend,
+              variables: buildEmailDefaults({
+                userName: String(user.name_ko ?? user.email),
+                noticeTitle: String(notice.title),
+                noticeCategory: categoryLabel,
+                publishedAt,
+                noticeUrl,
+              }),
+            });
+            if (result.sent || result.outboxId) {
+              queued += 1;
+              await pool.query(
+                `UPDATE email_outbox SET subject = $1 WHERE id = $2`,
+                [`${subjectPrefix} ${result.subject}`, result.outboxId]
+              );
+            }
+          } catch (err) {
+            failed += 1;
+            if (errors.length < 5) {
+              errors.push(
+                err instanceof Error ? err.message : String(err)
+              );
+            }
+          }
+
+          // Pacing only matters for inline sends; enqueue-only is fast and the
+          // worker paces actual delivery.
+          if (!deferSend && (i + 1) % BATCH_SIZE === 0) {
+            await sleep(BATCH_DELAY_MS);
+          }
+        }
+
+        await insertAuditLog(client, {
+          adminId: req.authAdmin!.id,
+          targetTable: "notices",
+          targetId: noticeId,
+          action: "notice_marketing_send",
+          statusBefore: "published",
+          statusAfter: `queued:${queued}`,
+        });
+
+        return {
+          notice_id: noticeId,
+          recipients_total: recipientsRes.rows.length,
+          queued,
+          failed,
+          mode: deferSend ? "queued_for_worker" : "inline",
+          errors: errors.length ? errors : undefined,
+          completed_at: formatDateTime(new Date()),
+        };
+      } catch (err) {
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
+        });
+      } finally {
+        client.release();
+      }
+    }
+  );
+}

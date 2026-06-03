@@ -102,8 +102,13 @@ export async function sendMail(
 }
 
 /**
- * Persist an email to email_outbox, attempt delivery, then update the row status.
- * Returns whether the message was actually sent (false in console/dev mode is still "queued").
+ * Persist an email to email_outbox and (unless deferred) attempt delivery,
+ * then update the row status. Returns whether the message was actually sent
+ * (false in console/dev mode is still "queued").
+ *
+ * When `deferSend` is true the row is left in status 'queued' and NOT sent
+ * inline — the background email worker (ENABLE_EMAIL_WORKER) drains it. This is
+ * used by bulk sends to avoid request-time timeouts.
  */
 export async function queueAndSend(
   db: Querier,
@@ -114,6 +119,7 @@ export async function queueAndSend(
     subject: string;
     html: string;
     userId?: number | null;
+    deferSend?: boolean;
   }
 ): Promise<{ outboxId: number; sent: boolean }> {
   const locale = ["ko", "my", "en"].includes(opts.locale ?? "ko")
@@ -129,16 +135,33 @@ export async function queueAndSend(
   );
   const outboxId = Number(ins.rows[0].id);
 
+  // Deferred: leave it queued for the worker to deliver + retry.
+  if (opts.deferSend) {
+    return { outboxId, sent: false };
+  }
+
   const result = await sendMail({
     to: opts.toEmail,
     subject: opts.subject,
     html: opts.html,
   });
 
-  await db.query(
-    `UPDATE email_outbox SET status = $1, sent_at = $2 WHERE id = $3`,
-    [result.ok ? "sent" : "failed", result.ok ? new Date() : null, outboxId]
-  );
+  if (result.ok) {
+    await db.query(
+      `UPDATE email_outbox
+       SET status = 'sent', sent_at = NOW(), last_error = NULL
+       WHERE id = $1`,
+      [outboxId]
+    );
+  } else {
+    // Mark failed and bump retry_count so the worker can pick it up later.
+    await db.query(
+      `UPDATE email_outbox
+       SET status = 'failed', retry_count = retry_count + 1, last_error = $1
+       WHERE id = $2`,
+      [(result.error ?? "send_failed").slice(0, 1000), outboxId]
+    );
+  }
 
   return { outboxId, sent: result.ok };
 }

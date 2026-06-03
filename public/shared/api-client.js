@@ -80,6 +80,71 @@
     }
   }
 
+  function getRefreshToken() {
+    try {
+      return (
+        global.sessionStorage.getItem(STORAGE.refresh) ||
+        global.localStorage.getItem(STORAGE.refresh) ||
+        null
+      );
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Returns the storage object that currently holds the session (the one
+  // persistSession wrote to), so a refreshed token is written back in place
+  // and the persist-vs-session choice is preserved.
+  function tokenStore() {
+    try {
+      if (global.localStorage.getItem(STORAGE.refresh)) return global.localStorage;
+      if (global.sessionStorage.getItem(STORAGE.refresh)) return global.sessionStorage;
+    } catch (e) { /* private mode */ }
+    return null;
+  }
+
+  // Single-flight silent refresh: swaps the stored access (and rotated refresh)
+  // token using the refresh token. Resolves true on success, false otherwise.
+  var refreshInFlight = null;
+  function refreshSession() {
+    if (refreshInFlight) return refreshInFlight;
+    var rt = getRefreshToken();
+    if (!rt || !USE_API || !API_BASE_URL || rt === "demo-local-refresh") {
+      return Promise.resolve(false);
+    }
+    refreshInFlight = fetch(apiUrl("/api/v1/auth/refresh"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ refresh_token: rt }),
+    })
+      .then(function (res) {
+        return res
+          .json()
+          .catch(function () {
+            return {};
+          })
+          .then(function (body) {
+            if (!res.ok || !body || !body.access_token) return false;
+            var store = tokenStore() || global.sessionStorage;
+            try {
+              store.setItem(STORAGE.access, body.access_token);
+              if (body.refresh_token) {
+                store.setItem(STORAGE.refresh, body.refresh_token);
+              }
+            } catch (e) { /* quota / private mode */ }
+            return true;
+          });
+      })
+      .catch(function () {
+        return false;
+      })
+      .then(function (ok) {
+        refreshInFlight = null;
+        return ok;
+      });
+    return refreshInFlight;
+  }
+
   function persistSession(data, persist) {
     var store = storageFor(!!persist);
     var other = storageFor(!persist);
@@ -196,12 +261,17 @@
   }
 
   function apiFetch(path, options) {
-    options = options || {};
+    return doApiFetch(path, options || {}, false);
+  }
+
+  // isRetry guards against loops: we attempt at most one silent refresh + retry.
+  function doApiFetch(path, options, isRetry) {
+    var useAuth = options.auth !== false;
     var headers = Object.assign(
       { Accept: "application/json" },
       options.headers || {}
     );
-    if (options.auth !== false) {
+    if (useAuth) {
       var token = getAccessToken();
       if (token) headers.Authorization = "Bearer " + token;
     }
@@ -227,6 +297,19 @@
           return {};
         })
         .then(function (body) {
+          // Access token likely expired: try one silent refresh, then retry once.
+          if (
+            res.status === 401 &&
+            useAuth &&
+            !isRetry &&
+            getRefreshToken()
+          ) {
+            return refreshSession().then(function (ok) {
+              if (ok) return doApiFetch(path, options, true);
+              clearAllTokenStores();
+              return { ok: false, status: 401, body: body };
+            });
+          }
           return { ok: res.ok, status: res.status, body: body };
         });
     });

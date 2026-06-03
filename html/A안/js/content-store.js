@@ -73,16 +73,17 @@
   function defaultNoticeItems() {
     return [
       {
-        id: "nt_seed_98",
+        id: "nt_seed_107",
         catId: "new",
-        title: "제98회 TOPIK 접수 안내 (양곤 시험장)",
-        date: "2026.04.01",
+        title: "제107회 TOPIK 접수 안내 (양곤 시험장)",
+        date: "2026.07.17",
         views: 128,
         bodyHtml:
-          "<p><strong>제98회 한국어능력시험(TOPIK) 미얀마 시행 접수 안내</strong></p>" +
-          "<p>안녕하세요, TOPIK Myanmar입니다.<br/>제98회 한국어능력시험(TOPIK) 미얀마 시행 원서 접수를 아래와 같이 안내드립니다.</p>" +
-          "<p><strong>■ 접수 기간</strong><br/>2026년 4월 1일(화) ~ 2026년 4월 14일(월) 23:59까지</p>" +
-          "<p><strong>■ 시험 일시</strong><br/>2026년 5월 17일(토)<br/>- TOPIK I: 오전 09:20 (입실 마감 09:05)<br/>- TOPIK II: 오후 12:35 (입실 마감 12:05)</p>" +
+          "<p><strong>제107회 한국어능력시험(TOPIK) 미얀마 시행 접수 안내</strong></p>" +
+          "<p>안녕하세요, TOPIK Myanmar입니다.<br/>제107회 한국어능력시험(TOPIK) 미얀마 시행 원서 접수를 아래와 같이 안내드립니다.</p>" +
+          "<p><strong>■ 접수신청기간</strong><br/>2026년 7월 17일(금) ~ 7월 21일(화) 23:59까지</p>" +
+          "<p><strong>■ 응시료 납부(오프라인)</strong><br/>2026년 7월 24일(금) ~ 7월 26일(일)</p>" +
+          "<p><strong>■ 시험 일시</strong><br/>2026년 10월 18일(일)<br/>- TOPIK I: 오전 09:20 (입실 마감 09:05)<br/>- TOPIK II: 오후 12:35 (입실 마감 12:05)</p>" +
           "<p><strong>■ 시험 장소</strong><br/>양곤 시험장 (상세 위치는 추후 공지)</p>" +
           "<p><strong>■ 응시료</strong><br/>TOPIK I: MMK 55,000 / TOPIK II: MMK 75,000</p>" +
           "<p>접수는 반드시 온라인으로만 가능하며, 방문 접수는 받지 않습니다.<br/>기타 문의사항은 이메일(topik.myanmar@kr.go)로 문의해 주세요.</p>",

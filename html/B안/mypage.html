@@ -376,7 +376,7 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
  <div class="modal-body-pad">
  <table class="receipt-table">
  <tbody>
- <tr><th>회차</th><td>제99회 TOPIK</td></tr>
+ <tr><th>회차</th><td>제107회 TOPIK</td></tr>
  <tr><th>접수번호</th><td>#TK2026-00412</td></tr>
  <tr><th>급수</th><td>TOPIK Ⅰ · TOPIK Ⅱ (동시 접수)</td></tr>
  <tr><th>접수일</th><td>2026.05.10</td></tr>
@@ -385,7 +385,7 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
  <tr><th>한글 성명</th><td>홍길동</td></tr>
  <tr><th>영문 성명</th><td>HONG GILDONG</td></tr>
  <tr><th>생년월일</th><td>19960101</td></tr>
- <tr><th>시험일</th><td>2026.07.12 (일)</td></tr>
+ <tr><th>시험일</th><td>2026.10.18 (일)</td></tr>
  <tr><th>시험장</th><td>양곤 시험장</td></tr>
  </tbody>
  </table>
@@ -401,7 +401,7 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
  <div class="modal" role="dialog" aria-modal="true">
  <div class="modal-title">접수를 취소하시겠습니까?</div>
  <div class="modal-desc">
- 제99회 TOPIK Ⅰ·Ⅱ 동시 접수를 취소합니다. 환불은 <a href="rules-fee.html" class="modal-link">응시료 규정</a>을 따릅니다.<br><br>
+ 제107회 TOPIK Ⅰ·Ⅱ 동시 접수를 취소합니다. 환불은 <a href="rules-fee.html" class="modal-link">응시료 규정</a>을 따릅니다.<br><br>
  <strong>취소는 오프라인 수납 전까지만 가능합니다.</strong> 수납 완료 후에는 <a href="refund-correction.html" class="modal-link">환불·정보정정신청</a> 게시판을 이용해 주세요.<br><br>
  취소 후에는 복구가 불가합니다. 계속하시겠습니까?
  </div>
@@ -449,11 +449,11 @@ document.addEventListener('keydown',function(e){
 document.getElementById('btn-logout').addEventListener('click',function(){TPKMAuth.logout()});
 /* ── 상태별 접수 카드 렌더 (7종 상태 배지) ── */
 const registrations=[
- {round:'제99회 TOPIK · 2026.07.12 (일) · 양곤 시험장',exam:'TOPIK Ⅰ·Ⅱ 동시 접수',examSub:'TOPIK Ⅰ (초급) · TOPIK Ⅱ (중·고급)',status:'접수완료',cls:'s-apply',examNo:'부여 전',examNoPending:true,photo:'대기',pay:'미수납',date:'2026.05.12',regNo:'#TK2026-00461',note:'접수가 완료되었습니다. 사진 심사 후 수납 안내가 발송됩니다.'},
- {round:'제99회 TOPIK · 2026.07.12 (일) · 양곤 시험장',exam:'TOPIK Ⅱ (중·고급)',examSub:'3~6급',status:'사진심사중',cls:'s-photo',examNo:'부여 전',examNoPending:true,photo:'심사중',pay:'미수납',date:'2026.05.10',regNo:'#TK2026-00412',note:'사진 심사가 진행 중입니다. 취소는 오프라인 응시료 수납 전까지 가능합니다.'},
- {round:'제99회 TOPIK · 2026.07.12 (일) · 만달레이 시험장',exam:'TOPIK Ⅰ (초급)',examSub:'1~2급',status:'수납대기',cls:'s-pay',examNo:'부여 전',examNoPending:true,photo:'승인',pay:'수납 대기',date:'2026.05.08',regNo:'#TK2026-00388',note:'오프라인 응시료 수납 대기 중입니다. 수납 완료 후 승인됩니다.'},
- {round:'제99회 TOPIK · 2026.07.12 (일) · 양곤 시험장',exam:'TOPIK Ⅱ (중·고급)',examSub:'3~6급',status:'승인완료',cls:'s-approved',examNo:'부여 전',examNoPending:true,photo:'승인',pay:'수납 완료',date:'2026.05.05',regNo:'#TK2026-00355',note:'수납·승인이 완료되었습니다. 수험번호 부여 후 수험표를 출력할 수 있습니다.'},
- {round:'제99회 TOPIK · 2026.07.12 (일) · 양곤 시험장',exam:'TOPIK Ⅰ (초급)',examSub:'1~2급',status:'수험번호부여',cls:'s-examno',examNo:'0250017A20001',examNoReleaseDate:'2026.06.29',examNoPending:false,photo:'승인',pay:'수납 완료',date:'2026.05.01',regNo:'#TK2026-00301',note:'수험번호가 부여되었습니다.'},
+ {round:'제107회 TOPIK · 2026.10.18 (일) · 양곤 시험장',exam:'TOPIK Ⅰ·Ⅱ 동시 접수',examSub:'TOPIK Ⅰ (초급) · TOPIK Ⅱ (중·고급)',status:'접수완료',cls:'s-apply',examNo:'부여 전',examNoPending:true,photo:'대기',pay:'미수납',date:'2026.05.12',regNo:'#TK2026-00461',note:'접수가 완료되었습니다. 사진 심사 후 수납 안내가 발송됩니다.'},
+ {round:'제107회 TOPIK · 2026.10.18 (일) · 양곤 시험장',exam:'TOPIK Ⅱ (중·고급)',examSub:'3~6급',status:'사진심사중',cls:'s-photo',examNo:'부여 전',examNoPending:true,photo:'심사중',pay:'미수납',date:'2026.05.10',regNo:'#TK2026-00412',note:'사진 심사가 진행 중입니다. 취소는 오프라인 응시료 수납 전까지 가능합니다.'},
+ {round:'제107회 TOPIK · 2026.10.18 (일) · 만달레이 시험장',exam:'TOPIK Ⅰ (초급)',examSub:'1~2급',status:'수납대기',cls:'s-pay',examNo:'부여 전',examNoPending:true,photo:'승인',pay:'수납 대기',date:'2026.05.08',regNo:'#TK2026-00388',note:'오프라인 응시료 수납 대기 중입니다. 수납 완료 후 승인됩니다.'},
+ {round:'제107회 TOPIK · 2026.10.18 (일) · 양곤 시험장',exam:'TOPIK Ⅱ (중·고급)',examSub:'3~6급',status:'승인완료',cls:'s-approved',examNo:'부여 전',examNoPending:true,photo:'승인',pay:'수납 완료',date:'2026.05.05',regNo:'#TK2026-00355',note:'수납·승인이 완료되었습니다. 수험번호 부여 후 수험표를 출력할 수 있습니다.'},
+ {round:'제107회 TOPIK · 2026.10.18 (일) · 양곤 시험장',exam:'TOPIK Ⅰ (초급)',examSub:'1~2급',status:'수험번호부여',cls:'s-examno',examNo:'0250017A20001',examNoReleaseDate:'2026.06.29',examNoPending:false,photo:'승인',pay:'수납 완료',date:'2026.05.01',regNo:'#TK2026-00301',note:'수험번호가 부여되었습니다.'},
  {round:'제98회 TOPIK · 2026.04.19 (일) · 양곤 시험장',exam:'TOPIK Ⅱ (중·고급)',examSub:'3~6급',status:'반려',cls:'s-reject',examNo:'부여 불가',examNoPending:true,photo:'반려',pay:'미수납',date:'2026.02.09',regNo:'#TK2026-00120',note:'사진 규정 미준수로 반려되었습니다. 사진 재등록 후 다시 접수해 주세요.'},
  {round:'제97회 TOPIK · 2025.10.19 (일) · 양곤 시험장',exam:'TOPIK Ⅰ (초급)',examSub:'1~2급',status:'취소됨',cls:'s-cancel',examNo:'부여 전',examNoPending:true,photo:'-',pay:'환불 완료',date:'2025.08.22',regNo:'#TK2025-00098',note:'본 접수 건은 취소되었습니다.'},
 ];

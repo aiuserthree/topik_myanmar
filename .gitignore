@@ -4,3 +4,7 @@ __pycache__/
 
 회의/
 .vercel
+
+# Node tooling (screenshot/export scripts)
+node_modules/
+scripts/node_modules/

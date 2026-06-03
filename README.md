@@ -20,4 +20,6 @@ cd public && python3 -m http.server 8080
 # API 연동 시: cd api && npm run dev  (Postgres + migrate)
 ```
 
+**배포 체크리스트:** `docs/DEPLOY.md` (Resend·Railway·Vercel·DNS 후 스모크)
+
 상세: `docs/기능정의서/배포_아키텍처.md`, `docs/기능정의서/API_배포_가이드_Railway.md`, `api/로컬실행_가이드.md`

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TOPIK Myanmar BO — 회차 관리</title>
+  <link rel="stylesheet" href="assets/bo.css" />
+</head>
+<body>
+  <header class="bo-topbar">
+    <div class="bo-topbar-left">
+      <strong class="bo-brand">TOPIK Myanmar</strong>
+      <span class="bo-page-title">회차 관리</span>
+    </div>
+    <div class="bo-topbar-right">
+      <span class="bo-admin-id" id="adminId"></span>
+      <button class="bo-btn bo-btn-ghost" id="logoutBtn" type="button">로그아웃</button>
+    </div>
+  </header>
+
+  <nav class="bo-nav">
+    <a href="applications.html">접수 관리</a>
+    <a href="rounds.html" class="is-active">회차 관리</a>
+    <a href="venues.html">시험장 관리</a>
+    <a href="notices.html">공지 관리</a>
+    <a href="faq.html">FAQ 관리</a>
+    <a href="terms.html">약관 관리</a>
+  </nav>
+
+  <section class="bo-page">
+    <div class="bo-page-head">
+      <h1>시험 회차</h1>
+      <div class="bo-page-tools">
+        <button class="bo-btn bo-btn-primary" id="newBtn" type="button">+ 새 회차</button>
+      </div>
+    </div>
+
+    <div class="bo-table-wrap">
+      <table class="bo-table">
+        <thead>
+          <tr>
+            <th>회차</th><th>제목</th><th>시험일</th><th>접수상태</th>
+            <th>정원</th><th>유효접수</th><th>시험장</th><th>관리</th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr><td colspan="8" class="bo-empty">데이터를 불러오는 중…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="bo-overlay" id="overlay" hidden></div>
+  <aside class="bo-panel bo-panel-wide" id="formPanel" hidden aria-hidden="true">
+    <div class="bo-panel-head">
+      <h2 id="panelTitle">새 회차</h2>
+      <button class="bo-btn bo-btn-ghost" id="panelClose" type="button">✕</button>
+    </div>
+    <div class="bo-panel-body">
+      <input type="hidden" id="fId" />
+      <div class="bo-form-grid">
+        <div class="bo-field-row">
+          <label for="fRoundNo">회차 번호</label>
+          <input type="number" id="fRoundNo" min="1" max="32767" placeholder="예: 108" />
+          <div class="bo-field-hint" id="roundNoHint">생성 후 변경 불가</div>
+        </div>
+        <div class="bo-field-row">
+          <label for="fStatus">접수 상태</label>
+          <select id="fStatus">
+            <option value="scheduled">예정 (scheduled)</option>
+            <option value="open">접수중 (open)</option>
+            <option value="closed">마감 (closed)</option>
+          </select>
+        </div>
+        <div class="bo-field-row bo-col-full">
+          <label for="fTitle">제목</label>
+          <input type="text" id="fTitle" maxlength="100" placeholder="예: 제108회 TOPIK" />
+        </div>
+        <div class="bo-field-row">
+          <label for="fExamDate">시험일</label>
+          <input type="date" id="fExamDate" />
+        </div>
+        <div class="bo-field-row">
+          <label for="fResultDate">결과 발표일 (선택)</label>
+          <input type="date" id="fResultDate" />
+        </div>
+        <div class="bo-field-row">
+          <label for="fRegStart">접수 시작</label>
+          <input type="datetime-local" id="fRegStart" />
+        </div>
+        <div class="bo-field-row">
+          <label for="fRegEnd">접수 종료</label>
+          <input type="datetime-local" id="fRegEnd" />
+        </div>
+        <div class="bo-field-row">
+          <label for="fFeeI">응시료 Ⅰ (MMK)</label>
+          <input type="number" id="fFeeI" min="0" step="1000" placeholder="50000" />
+        </div>
+        <div class="bo-field-row">
+          <label for="fFeeII">응시료 Ⅱ (MMK)</label>
+          <input type="number" id="fFeeII" min="0" step="1000" placeholder="75000" />
+        </div>
+        <div class="bo-field-row">
+          <label for="fCapacity">정원 (선택)</label>
+          <input type="number" id="fCapacity" min="0" placeholder="1200" />
+        </div>
+        <div class="bo-field-row">
+          <label for="fVisibleAt">수험번호 노출 일시 (선택)</label>
+          <input type="datetime-local" id="fVisibleAt" />
+        </div>
+        <div class="bo-field-row bo-col-full">
+          <label>시험장 매핑</label>
+          <div class="bo-venue-list" id="venueList"><span class="bo-cell-muted">시험장을 불러오는 중…</span></div>
+          <div class="bo-field-hint">선택한 시험장만 해당 회차에서 접수 가능합니다. 이미 접수가 있는 시험장은 해제되지 않습니다.</div>
+        </div>
+        <div class="bo-field-row bo-col-full">
+          <label class="bo-checkbox"><input type="checkbox" id="fActive" checked /> 활성 (FO 노출)</label>
+        </div>
+      </div>
+    </div>
+    <div class="bo-panel-foot">
+      <button class="bo-btn bo-btn-secondary" id="cancelBtn" type="button">취소</button>
+      <button class="bo-btn bo-btn-primary" id="saveBtn" type="button">저장</button>
+    </div>
+  </aside>
+
+  <div class="bo-toast" id="toast" hidden></div>
+
+  <script src="../../shared/bo-api-client.js"></script>
+  <script src="assets/bo-common.js"></script>
+  <script src="assets/bo-rounds.js"></script>
+</body>
+</html>
