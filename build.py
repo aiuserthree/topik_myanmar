@@ -6,8 +6,8 @@ import pathlib
 SHARED_SRC = pathlib.Path("html/shared")
 DST = pathlib.Path("public")
 
-# Paths not served to end users (Vercel project metadata, IA notes)
-SKIP_NAMES = {".vercel", "vercel.json"}
+# Paths not served to end users (Vercel project metadata, IA notes, internal specs)
+SKIP_NAMES = {".vercel", "vercel.json", "docs"}
 
 
 def _resolve_fo_src() -> pathlib.Path:

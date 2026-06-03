@@ -36,7 +36,7 @@ INSERT INTO exam_venues (
 ON CONFLICT (venue_code) DO NOTHING;
 
 -- ---------------------------------------------------------------------------
--- Exam rounds — 제106회 (open) + closed samples
+-- Exam rounds — 제107회 (open) + closed samples
 -- Fees: FO prototype rules-fee (50,000 / 75,000 MMK)
 -- ---------------------------------------------------------------------------
 INSERT INTO exam_rounds (
@@ -46,9 +46,15 @@ INSERT INTO exam_rounds (
     exam_number_visible_at, is_active
 ) VALUES
     (
+        107, '제107회 TOPIK', '2026-10-18',
+        '2026-07-17 00:00:00+06:30', '2026-07-21 23:59:59+06:30', NULL,
+        50000.00, 75000.00, 1200, 'open',
+        '2026-09-01 09:00:00+06:30', true
+    ),
+    (
         106, '제106회 TOPIK', '2026-09-19',
         '2026-06-01 00:00:00+06:30', '2026-07-26 23:59:59+06:30', '2026-10-20',
-        50000.00, 75000.00, 1200, 'open',
+        50000.00, 75000.00, 1200, 'closed',
         '2026-08-01 09:00:00+06:30', true
     ),
     (
@@ -62,7 +68,7 @@ INSERT INTO exam_round_venues (exam_round_id, exam_venue_id)
 SELECT r.id, v.id
 FROM exam_rounds r
 CROSS JOIN exam_venues v
-WHERE r.round_no = 106
+WHERE r.round_no = 107
   AND v.venue_code IN ('01', '02', '03', '04')
 ON CONFLICT (exam_round_id, exam_venue_id) DO NOTHING;
 
@@ -126,7 +132,7 @@ ON CONFLICT (email) DO UPDATE SET
     status = 'active';
 
 -- ---------------------------------------------------------------------------
--- Sample notice (제106회 접수 안내)
+-- Sample notice (제107회 접수 안내)
 -- ---------------------------------------------------------------------------
 INSERT INTO notices (
     category, title, body_html, is_published, is_pinned,
@@ -134,25 +140,43 @@ INSERT INTO notices (
 )
 SELECT
     'important',
-    '제106회 TOPIK 접수 안내(2026.06.01 ~ 07.26)',
-    '<p>제106회 TOPIK 접수가 시작되었습니다. 응시료: TOPIK Ⅰ 50,000 MMK / TOPIK Ⅱ 75,000 MMK (오프라인 수납).</p>',
-    true, true, 0, a.id, '2026-06-01 09:00:00+06:30'
+    '제107회 TOPIK 접수 안내(2026.07.17 ~ 07.21)',
+    '<p>제107회 TOPIK 접수가 시작되었습니다. 시험일: 2026.10.18(일). 응시료 오프라인 수납: 2026.07.24 ~ 07.26. TOPIK Ⅰ 50,000 MMK / TOPIK Ⅱ 75,000 MMK.</p>',
+    true, true, 0, a.id, '2026-07-17 09:00:00+06:30'
 FROM admin_users a
 WHERE a.email = 'admin-dev@topik-mm.local'
   AND NOT EXISTS (
     SELECT 1 FROM notices n
-    WHERE n.title = '제106회 TOPIK 접수 안내(2026.06.01 ~ 07.26)'
+    WHERE n.title = '제107회 TOPIK 접수 안내(2026.07.17 ~ 07.21)'
   );
 
 -- ---------------------------------------------------------------------------
--- Exam number sequences (initialized for round 106)
+-- FAQ (FO 공개)
+-- ---------------------------------------------------------------------------
+INSERT INTO faq_items (category, sort_order, question_ko, answer_ko, is_active)
+SELECT 'account', 1, '회원가입은 어떻게 하나요?',
+       '홈페이지 상단 [회원가입]에서 이메일 인증 후 기본정보·증명사진·약관 동의를 완료하시면 됩니다.', true
+WHERE NOT EXISTS (SELECT 1 FROM faq_items WHERE question_ko = '회원가입은 어떻게 하나요?');
+
+INSERT INTO faq_items (category, sort_order, question_ko, answer_ko, is_active)
+SELECT 'apply', 1, 'TOPIK Ⅰ·Ⅱ 동시 접수가 가능한가요?',
+       '동일 회차에 TOPIK Ⅰ·Ⅱ 동시 접수가 가능합니다. 응시료는 급수별로 개별 오프라인 수납입니다.', true
+WHERE NOT EXISTS (SELECT 1 FROM faq_items WHERE question_ko = 'TOPIK Ⅰ·Ⅱ 동시 접수가 가능한가요?');
+
+INSERT INTO faq_items (category, sort_order, question_ko, answer_ko, is_active)
+SELECT 'exam', 1, '수험표는 어디서 출력하나요?',
+       '수험표는 topik.go.kr에서 출력합니다. 본 사이트 [수험표 출력] 안내를 참고해 주세요.', true
+WHERE NOT EXISTS (SELECT 1 FROM faq_items WHERE question_ko = '수험표는 어디서 출력하나요?');
+
+-- ---------------------------------------------------------------------------
+-- Exam number sequences (initialized for round 107)
 -- ---------------------------------------------------------------------------
 INSERT INTO exam_number_sequences (exam_round_id, exam_venue_id, exam_level, last_serial)
 SELECT r.id, v.id, lvl.level, 0
 FROM exam_rounds r
 CROSS JOIN exam_venues v
 CROSS JOIN (VALUES ('I'), ('II')) AS lvl(level)
-WHERE r.round_no = 106
+WHERE r.round_no = 107
   AND v.venue_code IN ('01', '02', '03', '04')
 ON CONFLICT (exam_round_id, exam_venue_id, exam_level) DO NOTHING;
 

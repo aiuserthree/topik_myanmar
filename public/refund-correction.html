@@ -247,53 +247,14 @@
               <th class="col-status">상태</th>
             </tr>
           </thead>
-          <tbody>
-            <tr onclick="show('detailPane')">
-              <td class="col-num">42</td>
-              <td class="col-type"><span class="badge badge-type-rfd">환불</span></td>
-              <td>제97회 TOPIK Ⅱ 응시료 환불 요청드립니다</td>
-              <td class="col-author">홍길동</td>
-              <td class="col-date">2026.01.18</td>
-              <td class="col-status"><span class="status status-photo">검토 중</span></td>
-            </tr>
-            <tr onclick="TPKM.openModal('modalSecretLock')">
-              <td class="col-num">41</td>
-              <td class="col-type"><span class="badge badge-type-cor">정보정정</span></td>
-              <td><span class="lock">🔒</span> 영문 성명 표기 정정 신청 (여권 기준)</td>
-              <td class="col-author">A***</td>
-              <td class="col-date">2026.01.15</td>
-              <td class="col-status"><span class="status status-approved">처리완료</span></td>
-            </tr>
-            <tr>
-              <td class="col-num">40</td>
-              <td class="col-type"><span class="badge badge-type-rfd">환불</span></td>
-              <td>제96회 응시료 환불 안내 받았습니다</td>
-              <td class="col-author">B***</td>
-              <td class="col-date">2026.01.10</td>
-              <td class="col-status"><span class="status status-approved">처리완료</span></td>
-            </tr>
-            <tr onclick="TPKM.openModal('modalSecretLock')">
-              <td class="col-num">39</td>
-              <td class="col-type"><span class="badge badge-type-cor">정보정정</span></td>
-              <td><span class="lock">🔒</span> 생년월일 정정 요청합니다</td>
-              <td class="col-author">C***</td>
-              <td class="col-date">2026.01.08</td>
-              <td class="col-status"><span class="status status-applied">접수</span></td>
-            </tr>
-            <tr>
-              <td class="col-num">38</td>
-              <td class="col-type"><span class="badge badge-type-rfd">환불</span></td>
-              <td>접수 취소 후 환불 진행 상황 문의</td>
-              <td class="col-author">D***</td>
-              <td class="col-date">2026.01.05</td>
-              <td class="col-status"><span class="status status-rejected">반려</span></td>
-            </tr>
+          <tbody id="rfdListBody">
+            <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-3);">불러오는 중…</td></tr>
           </tbody>
         </table>
         </div>
       </div>
 
-      <nav class="pager"><span class="disabled">‹</span><span class="current">1</span><a href="#">2</a><a href="#">3</a><a href="#">›</a></nav>
+      <nav class="pager" id="rfdPager"></nav>
     </section>
 
     <!-- ============ Write ============ -->
@@ -312,12 +273,12 @@
 
       <div class="form-row">
         <label class="label">제목 <span class="req">*</span></label>
-        <input class="input" placeholder="제목 (100자 이내)" maxlength="100">
+        <input class="input" id="rfdTitle" placeholder="제목 (100자 이내)" maxlength="100">
       </div>
 
       <div class="form-row">
         <label class="label">내용 <span class="req">*</span></label>
-        <textarea class="textarea" rows="8" placeholder="환불·정정 사유, 접수번호, 회차 등을 자세히 작성해 주세요."></textarea>
+        <textarea class="textarea" id="rfdBody" rows="8" placeholder="환불·정정 사유, 접수번호, 회차 등을 자세히 작성해 주세요."></textarea>
       </div>
 
       <div class="form-row">
@@ -335,7 +296,7 @@
 
       <div class="form-row hidden" id="secretPwRow">
         <label class="label">비밀번호 <span class="req">*</span></label>
-        <input class="input" type="password" placeholder="4자리 이상" minlength="4">
+        <input class="input" type="password" id="rfdSecretPw" placeholder="4자리 이상" minlength="4">
       </div>
 
       <div class="form-row">
@@ -344,7 +305,7 @@
 
       <div style="display: flex; gap: 8px; margin-top: 20px;">
         <button class="btn btn-secondary" onclick="show('listPane')">취소</button>
-        <button class="btn btn-primary" style="flex:1;" onclick="alert('신청이 접수되었습니다.'); show('listPane');">제출</button>
+        <button class="btn btn-primary" style="flex:1;" id="btnRefundSubmit">제출</button>
       </div>
     </section>
 
@@ -355,80 +316,19 @@
       <article class="detail-card">
         <div class="detail-head">
           <div style="display:flex; gap: 8px; margin-bottom: 10px;">
-            <span class="badge badge-type-rfd">환불</span>
-            <span class="status status-photo">검토 중</span>
+            <span class="badge badge-type-rfd" id="bdBadge"></span>
+            <span class="status" id="bdStatus"></span>
           </div>
-          <h2>제97회 TOPIK Ⅱ 응시료 환불 요청드립니다</h2>
-          <div class="meta">
-            <span>홍길동</span><span>·</span><span>2026.01.18</span><span>·</span><span>접수번호 TPKM-RFD-042</span>
-          </div>
+          <h2 id="bdTitle"></h2>
+          <div class="meta" id="bdMeta"></div>
         </div>
 
-        <div style="padding: 18px 24px 0;">
-          <div class="status-step">
-            <div class="l">처리 단계</div>
-            <div class="status-bar">
-              <div class="seg done"></div>
-              <div class="seg done"></div>
-              <div class="seg"></div>
-              <div class="seg"></div>
-            </div>
-            <div class="steps-row">
-              <span class="cur">접수</span>
-              <span class="cur">검토 중</span>
-              <span>승인</span>
-              <span>처리 완료</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="detail-body">
-          <p>안녕하세요. 제97회 TOPIK Ⅱ 응시자 홍길동입니다.</p>
-          <p>업무 일정상 시험 응시가 어려워져 환불을 신청드립니다. 응시료 수납 영수증과 신분증 사본을 첨부합니다. 검토 부탁드립니다.</p>
-        </div>
-
-        <div style="padding: 0 24px 20px;">
-          <div class="reply-block">
-            <div class="who"><span class="when">2026.01.19</span></div>
-            <div class="body-r">
-              안녕하세요. 환불 신청 접수되었습니다. 첨부해주신 영수증을 확인하였으며, 환불률 60% 기준으로 검토 중입니다. 검토 완료 시 별도 안내드리겠습니다.
-            </div>
-          </div>
-        </div>
+        <div class="detail-body" id="bdBody"></div>
 
         <div style="padding: 0 24px 24px;">
-          <div class="comments">
-            <h4>댓글 <span style="color: var(--text-3); font-weight: 500;">2</span></h4>
-
-            <!-- 댓글 1 -->
-            <div class="comment-group">
-              <div class="comment">
-                <div class="c-head"><span class="author">홍길동</span><span>·</span><span>2026.01.19</span></div>
-                <div class="c-body">검토해 주셔서 감사합니다. 환불은 어떤 계좌로 입금되나요?</div>
-                <div class="c-actions"><a href="javascript:void(0)" onclick="toggleReplyForm(this)">↩ 답글</a></div>
-              </div>
-              <div class="reply-form-wrap">
-                <div class="reply-form-inner">
-                  <textarea placeholder="답글을 입력하세요"></textarea>
-                  <div class="btn-wrap">
-                    <button class="btn btn-primary btn-sm" onclick="submitReply(this)">등록</button>
-                    <button class="btn btn-secondary btn-sm" onclick="cancelReply(this)">취소</button>
-                  </div>
-                </div>
-              </div>
-              <div class="comment reply">
-                <div class="c-head"><span class="author">운영자</span> <span class="badge badge-info" style="height:18px; padding:0 6px; font-size:10px;">관리자</span><span>·</span><span>2026.01.19</span></div>
-                <div class="c-body">수납 시 입력하신 계좌로 환불됩니다. 변경이 필요하시면 추가 댓글로 알려주세요.</div>
-              </div>
-            </div>
-
-            <!-- 새 댓글 작성 -->
-            <div class="comment-write">
-              <textarea placeholder="댓글을 입력하세요"></textarea>
-              <div class="btn-wrap">
-                <button class="btn btn-primary" onclick="submitComment(this)">등록</button>
-              </div>
-            </div>
+          <div class="reply-block" id="bdReply" style="display:none;">
+            <div class="who"><span class="when" id="bdReplyWhen"></span></div>
+            <div class="body-r" id="bdReplyBody"></div>
           </div>
         </div>
       </article>
@@ -463,9 +363,11 @@
   </div>
 </div>
 
+<script src="shared/api-client.js"></script>
 <script src="assets/common.js"></script>
+<script src="assets/fo-board.js"></script>
 <script>
-  function show(id) {
+  window.show = function (id) {
     document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -473,121 +375,75 @@
   document.getElementById('secretCb')?.addEventListener('change', function () {
     document.getElementById('secretPwRow').classList.toggle('hidden', !this.checked);
   });
-  document.querySelectorAll('.filters .chip').forEach(c => {
-    c.addEventListener('click', () => {
-      document.querySelectorAll('.filters .chip').forEach(x => x.classList.remove('active'));
-      c.classList.add('active');
-    });
+
+  // ---- 목록/상세 (API) ----
+  function rfdBadge(p) {
+    var cat = p.category || '';
+    if (cat === '정보정정') return '<span class="badge badge-type-cor">정보정정</span>';
+    if (cat === '환불') return '<span class="badge badge-type-rfd">환불</span>';
+    return '<span class="badge badge-type-rfd">' + (cat ? cat.replace(/[<>&]/g, '') : '신청') + '</span>';
+  }
+  var board = TPKMBoard.initBoard({
+    boardType: 'refund_correction',
+    listBody: document.getElementById('rfdListBody'),
+    pager: document.getElementById('rfdPager'),
+    colspan: 6,
+    typeCellClass: 'col-type',
+    detailPaneId: 'detailPane',
+    typeCell: rfdBadge,
+    detailBadgeClass: function (p) {
+      return (p.category === '정보정정') ? 'badge badge-type-cor' : 'badge badge-type-rfd';
+    },
+    detail: {
+      title: document.getElementById('bdTitle'),
+      badge: document.getElementById('bdBadge'),
+      status: document.getElementById('bdStatus'),
+      meta: document.getElementById('bdMeta'),
+      body: document.getElementById('bdBody'),
+      reply: document.getElementById('bdReply'),
+      replyWhen: document.getElementById('bdReplyWhen'),
+      replyBody: document.getElementById('bdReplyBody'),
+    },
+    show: window.show,
   });
 
-  /* 비밀글 잠금 해제 (데모: 5회 실패 시 30분 잠금) */
-  (function () {
-    var fails = 0;
-    var btn = document.getElementById('btnSecretUnlock');
-    if (!btn) return;
-    btn.addEventListener('click', function () {
-      var input = document.getElementById('secretPw');
-      var err = document.getElementById('secretPwErr');
-      var pw = (input.value || '').trim();
-      if (!pw) { err.style.display = 'block'; err.textContent = '비밀번호를 입력해 주세요.'; input.focus(); return; }
-      /* 데모: '1234'를 정답으로 가정 */
-      if (pw === '1234') {
-        fails = 0;
-        TPKM.closeModal('modalSecretLock');
-        input.value = ''; err.style.display = 'none';
-        show('detailPane');
-      } else {
-        fails++;
-        if (fails >= 5) {
-          err.style.display = 'block';
-          err.textContent = '비밀번호 5회 오류로 30분간 잠금되었습니다.';
-          btn.disabled = true;
-        } else {
-          err.style.display = 'block';
-          err.textContent = '비밀번호가 일치하지 않습니다. (' + fails + '/5)';
-        }
-        input.value = ''; input.focus();
-      }
+  // ---- 필터: 전체/환불/정보정정 + 검색 ----
+  var typeFilter = 'all';
+  function applyFilters() {
+    var q = (document.querySelector('.board-tools .search input').value || '').trim().toLowerCase();
+    board.setFilter(function (p) {
+      if (typeFilter === '환불' && (p.category || '') !== '환불') return false;
+      if (typeFilter === '정보정정' && (p.category || '') !== '정보정정') return false;
+      if (q && (p.title || '').toLowerCase().indexOf(q) === -1) return false;
+      return true;
     });
-  })();
-
-  /* 대댓글 폼 토글 */
-  function toggleReplyForm(btn) {
-    const group = btn.closest('.comment-group');
-    const wrap = group.querySelector('.reply-form-wrap');
-    const isOpen = wrap.classList.toggle('open');
-    if (isOpen) {
-      wrap.querySelector('textarea').focus();
-    }
   }
+  document.querySelectorAll('.filters .chip').forEach(function (c, i) {
+    c.addEventListener('click', function () {
+      document.querySelectorAll('.filters .chip').forEach(function (x) { x.classList.remove('active'); });
+      c.classList.add('active');
+      typeFilter = i === 1 ? '환불' : i === 2 ? '정보정정' : 'all';
+      applyFilters();
+    });
+  });
+  document.querySelector('.board-tools .search input').addEventListener('input', applyFilters);
 
-  function cancelReply(btn) {
-    const wrap = btn.closest('.reply-form-wrap');
-    wrap.classList.remove('open');
-    wrap.querySelector('textarea').value = '';
-  }
+  TPKMBoard.wireSubmit({
+    boardType: 'refund_correction',
+    submitBtn: document.getElementById('btnRefundSubmit'),
+    titleEl: document.getElementById('rfdTitle'),
+    bodyEl: document.getElementById('rfdBody'),
+    secretRadio: document.getElementById('secretCb'),
+    secretPwEl: document.getElementById('rfdSecretPw'),
+    resolveCategory: function () {
+      var radios = document.getElementsByName('type');
+      return (radios[0] && radios[0].checked) ? '환불' : '정보정정';
+    },
+    onSuccess: function () { show('listPane'); board.load(1); },
+  });
 
-  function submitReply(btn) {
-    const wrap = btn.closest('.reply-form-wrap');
-    const ta = wrap.querySelector('textarea');
-    const text = ta.value.trim();
-    if (!text) { ta.focus(); return; }
-
-    const group = wrap.closest('.comment-group');
-    const today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })
-                  .replace(/\. /g, '.').replace(/\.$/, '');
-
-    const replyEl = document.createElement('div');
-    replyEl.className = 'comment reply';
-    replyEl.innerHTML = `
-      <div class="c-head">
-        <span class="author">홍길동</span><span>·</span><span>${today}</span>
-      </div>
-      <div class="c-body">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</div>`;
-    group.appendChild(replyEl);
-
-    ta.value = '';
-    wrap.classList.remove('open');
-    updateCommentCount(1);
-  }
-
-  function submitComment(btn) {
-    const wrap = btn.closest('.comment-write');
-    const ta = wrap.querySelector('textarea');
-    const text = ta.value.trim();
-    if (!text) { ta.focus(); return; }
-
-    const today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })
-                  .replace(/\. /g, '.').replace(/\.$/, '');
-
-    const group = document.createElement('div');
-    group.className = 'comment-group';
-    group.innerHTML = `
-      <div class="comment">
-        <div class="c-head"><span class="author">홍길동</span><span>·</span><span>${today}</span></div>
-        <div class="c-body">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</div>
-        <div class="c-actions"><a href="javascript:void(0)" onclick="toggleReplyForm(this)">↩ 답글</a></div>
-      </div>
-      <div class="reply-form-wrap">
-        <div class="reply-form-inner">
-          <textarea placeholder="답글을 입력하세요"></textarea>
-          <div class="btn-wrap">
-            <button class="btn btn-primary btn-sm" onclick="submitReply(this)">등록</button>
-            <button class="btn btn-secondary btn-sm" onclick="cancelReply(this)">취소</button>
-          </div>
-        </div>
-      </div>`;
-
-    wrap.parentNode.insertBefore(group, wrap);
-    ta.value = '';
-    updateCommentCount(1);
-  }
-
-  function updateCommentCount(delta) {
-    const h4 = document.querySelector('.comments h4');
-    const span = h4.querySelector('span');
-    span.textContent = parseInt(span.textContent) + delta;
-  }
+  // 최초 로드
+  if (window.TopikApi && TopikApi.isLoggedIn()) board.load(1);
 </script>
 </body>
 </html>

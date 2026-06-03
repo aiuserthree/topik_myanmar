@@ -219,7 +219,7 @@
     </div>
     <div class="modal-foot">
       <button type="button" class="btn btn-secondary" onclick="TPKM.closeModal('modalCancel')">닫기</button>
-      <button type="button" class="btn btn-danger" onclick="TPKM.closeModal('modalCancel'); alert('접수 취소 API는 Phase 2에서 연동됩니다.');">접수 취소</button>
+      <button type="button" class="btn btn-danger" id="btnConfirmCancel">접수 취소</button>
     </div>
   </div>
 </div>
@@ -327,7 +327,10 @@
       actions += '<a href="ticket.html" class="btn btn-primary btn-sm" data-act="ticket">수험표 출력</a>';
     }
     if (beforePay && !rejected) {
-      actions += '<button type="button" class="btn btn-ghost btn-sm" data-act="cancel" onclick="TPKM.openModal(\'modalCancel\')">접수 취소</button>';
+      actions +=
+        '<button type="button" class="btn btn-ghost btn-sm" data-act="cancel" data-sub="' +
+        esc(item.submission_id) +
+        '">접수 취소</button>';
     }
     if (rejected) {
       actions += '<a href="mypage-profile.html" class="btn btn-primary btn-sm" data-act="rephoto">사진 재등록</a>';
@@ -390,6 +393,16 @@
 
     gateActions();
     bindConfirmButtons();
+    bindCancelButtons();
+  }
+
+  function bindCancelButtons() {
+    document.querySelectorAll('[data-act="cancel"][data-sub]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        cancelSubmissionId = btn.getAttribute('data-sub');
+        TPKM.openModal('modalCancel');
+      });
+    });
   }
 
   function fillProfile(user) {
@@ -480,52 +493,71 @@
     renderLists();
   }
 
-  var MOCK = {
-    active: [
-      {
-        submission_id: 1,
-        fo_card_status: 'number',
-        card_status_label: '수험번호 부여',
-        levels_text: 'TOPIK Ⅰ · TOPIK Ⅱ (동시 접수)',
-        exam_date_formatted: '2026.04.12 (일)',
-        submitted_at_formatted: '2026.02.03',
-        exam_round: { title: '제98회', round_no: 98 },
-        venue: { name_ko: '양곤 시험장' },
-        levels: [{
-          application_no: 'TPKM-98-001234',
-          exam_number: '98011234',
-          exam_number_visible: true,
-          photo_review_status: 'approved',
-          payment_status: 'paid',
-          display_status: 'exam_number_assigned'
-        }]
-      }
-    ],
-    past: []
-  };
+  var cancelSubmissionId = null;
+
+  function showLoadError(msg) {
+    var html =
+      '<div class="empty"><h3>접수 내역을 불러올 수 없습니다</h3><p>' +
+      esc(msg) +
+      '</p><button type="button" class="btn btn-secondary" onclick="location.reload()">다시 시도</button></div>';
+    document.getElementById('paneActive').innerHTML = html;
+    document.getElementById('panePast').innerHTML = html;
+    document.getElementById('ctActive').textContent = '0';
+    document.getElementById('ctPast').textContent = '0';
+  }
 
   function loadApplications() {
     var useApi = window.TopikApi && TopikApi.useApi && TopikApi.baseUrl &&
       TopikApi.isLoggedIn() && TopikApi.getAccessToken() !== 'demo-local';
 
     if (!useApi) {
-      currentItems = { active: MOCK.active, past: MOCK.past };
-      renderLists();
+      if (!window.TPKMAuth || !TPKMAuth.isLoggedIn()) {
+        location.href = 'login.html?next=' + encodeURIComponent('mypage.html');
+        return;
+      }
+      showLoadError('API가 연결되지 않았습니다. 로그인 후 다시 시도해 주세요.');
       return;
     }
+
+    document.getElementById('paneActive').innerHTML =
+      '<p style="text-align:center;padding:32px;color:var(--text-3);">접수 내역을 불러오는 중…</p>';
 
     TopikApi.getMyApplications().then(function (res) {
       if (res.ok && res.body) {
         applyApiPayload(res.body);
         return;
       }
-      currentItems = { active: MOCK.active, past: MOCK.past };
-      renderLists();
+      showLoadError(TopikApi.parseError(res));
     }).catch(function () {
-      currentItems = { active: MOCK.active, past: MOCK.past };
-      renderLists();
+      showLoadError('네트워크 오류입니다.');
     });
   }
+
+  document.getElementById('btnConfirmCancel').addEventListener('click', function () {
+    var btn = this;
+    if (!cancelSubmissionId) {
+      TPKM.closeModal('modalCancel');
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = '처리 중…';
+    TopikApi.cancelSubmission(cancelSubmissionId).then(function (res) {
+      btn.disabled = false;
+      btn.textContent = '접수 취소';
+      TPKM.closeModal('modalCancel');
+      if (!res.ok) {
+        alert(TopikApi.parseError(res));
+        return;
+      }
+      cancelSubmissionId = null;
+      loadApplications();
+    }).catch(function () {
+      btn.disabled = false;
+      btn.textContent = '접수 취소';
+      TPKM.closeModal('modalCancel');
+      alert('네트워크 오류입니다.');
+    });
+  });
 
   function loadMe() {
     if (!window.TopikApi || !TopikApi.useApi || !TopikApi.baseUrl || !TopikApi.isLoggedIn()) {

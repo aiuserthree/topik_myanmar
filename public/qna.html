@@ -234,53 +234,14 @@
               <th class="col-status">상태</th>
             </tr>
           </thead>
-          <tbody>
-            <tr onclick="show('detailPane')">
-              <td class="col-num">78</td>
-              <td class="col-cat"><span class="badge badge-outline">접수</span></td>
-              <td>응시료 수납처에서 영수증 발급이 안됩니다</td>
-              <td class="col-author">홍길동</td>
-              <td class="col-date">2026.01.20</td>
-              <td class="col-status"><span class="status status-approved">답변 완료</span></td>
-            </tr>
-            <tr onclick="TPKM.openModal('modalSecretLock')">
-              <td class="col-num">77</td>
-              <td class="col-cat"><span class="badge badge-outline">기타</span></td>
-              <td><span class="lock">🔒</span> 비밀글 — 개인정보 변경 관련 문의</td>
-              <td class="col-author">L***</td>
-              <td class="col-date">2026.01.18</td>
-              <td class="col-status"><span class="status status-photo">답변 대기</span></td>
-            </tr>
-            <tr>
-              <td class="col-num">76</td>
-              <td class="col-cat"><span class="badge badge-outline">시험</span></td>
-              <td>시험 당일 비가 올 경우 입실 방법이 궁금합니다</td>
-              <td class="col-author">M***</td>
-              <td class="col-date">2026.01.17</td>
-              <td class="col-status"><span class="status status-approved">답변 완료</span></td>
-            </tr>
-            <tr>
-              <td class="col-num">75</td>
-              <td class="col-cat"><span class="badge badge-outline">접수</span></td>
-              <td>접수 후 회원정보 변경 가능 시점 문의</td>
-              <td class="col-author">N***</td>
-              <td class="col-date">2026.01.15</td>
-              <td class="col-status"><span class="status status-approved">답변 완료</span></td>
-            </tr>
-            <tr>
-              <td class="col-num">74</td>
-              <td class="col-cat"><span class="badge badge-outline">시험</span></td>
-              <td>쓰기 영역 답안지 작성 시 연필 사용 가능한가요?</td>
-              <td class="col-author">P***</td>
-              <td class="col-date">2026.01.10</td>
-              <td class="col-status"><span class="status status-approved">답변 완료</span></td>
-            </tr>
+          <tbody id="qnaListBody">
+            <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-3);">불러오는 중…</td></tr>
           </tbody>
         </table>
         </div>
       </div>
 
-      <nav class="pager"><span class="disabled">‹</span><span class="current">1</span><a href="#">2</a><a href="#">3</a><a href="#">›</a></nav>
+      <nav class="pager" id="qnaPager"></nav>
     </section>
 
     <!-- ============ Write ============ -->
@@ -290,7 +251,7 @@
 
       <div class="form-row">
         <label class="label">카테고리 <span class="req">*</span></label>
-        <select class="select">
+        <select class="select" id="qnaCategory">
           <option value="">선택</option>
           <option>접수</option><option>시험</option><option>기타</option>
         </select>
@@ -306,17 +267,17 @@
 
       <div class="form-row hidden" id="secretPwRow">
         <label class="label">비밀번호 <span class="req">*</span></label>
-        <input class="input" type="password" placeholder="4자리 이상" minlength="4">
+        <input class="input" type="password" id="qnaSecretPw" placeholder="4자리 이상" minlength="4">
       </div>
 
       <div class="form-row">
         <label class="label">제목 <span class="req">*</span></label>
-        <input class="input" placeholder="제목 (100자 이내)" maxlength="100">
+        <input class="input" id="qnaTitle" placeholder="제목 (100자 이내)" maxlength="100">
       </div>
 
       <div class="form-row">
         <label class="label">내용 <span class="req">*</span></label>
-        <textarea class="textarea" rows="8" placeholder="문의 내용을 자세히 작성해 주세요."></textarea>
+        <textarea class="textarea" id="qnaBody" rows="8" placeholder="문의 내용을 자세히 작성해 주세요."></textarea>
       </div>
 
       <div class="form-row">
@@ -329,7 +290,7 @@
 
       <div style="display: flex; gap: 8px; margin-top: 20px;">
         <button class="btn btn-secondary" onclick="show('listPane')">취소</button>
-        <button class="btn btn-primary" style="flex:1;" onclick="alert('문의가 접수되었습니다.'); show('listPane');">제출</button>
+        <button class="btn btn-primary" style="flex:1;" id="btnQnaSubmit">제출</button>
       </div>
     </section>
 
@@ -340,94 +301,18 @@
       <article class="detail-card">
         <div class="detail-head">
           <div style="display:flex; gap: 8px; margin-bottom: 10px;">
-            <span class="badge badge-outline">접수</span>
-            <span class="status status-approved">답변 완료</span>
+            <span class="badge badge-outline" id="bdBadge"></span>
+            <span class="status" id="bdStatus"></span>
           </div>
-          <h2>응시료 수납처에서 영수증 발급이 안됩니다</h2>
-          <div class="meta">
-            <span>홍길동</span><span>·</span><span>2026.01.20</span><span>·</span><span>조회 56</span>
-          </div>
+          <h2 id="bdTitle"></h2>
+          <div class="meta" id="bdMeta"></div>
         </div>
-        <div class="detail-body">
-          <p>안녕하세요. 어제 응시료 수납을 위해 안내된 양곤 XYZ 은행을 방문했습니다.</p>
-          <p>접수번호를 제시했으나 시스템에서 조회되지 않아 영수증 발급이 되지 않았습니다. 어떻게 해야 할까요?</p>
+        <div class="detail-body" id="bdBody"></div>
+
+        <div class="reply-block" id="bdReply" style="display:none;">
+          <div class="who"><span class="when" id="bdReplyWhen"></span></div>
+          <div class="body-r" id="bdReplyBody"></div>
         </div>
-
-        <div class="reply-block">
-          <div class="who"><span class="when">2026.01.20</span></div>
-          <div class="body-r">
-            안녕하세요. 운영자입니다.<br>
-            확인 결과, 접수 후 BO 시스템 동기화에 약 30분이 소요됩니다. 접수 직후 방문하신 경우 발생할 수 있는 현상입니다. 1시간 후 재방문하시면 정상적으로 영수증 발급이 가능합니다. 양해 부탁드립니다.
-          </div>
-        </div>
-
-        <!-- 댓글 영역 -->
-        <div class="comments">
-          <h4>댓글 <span style="color: var(--text-3); font-weight: 500;">3</span></h4>
-
-          <!-- 댓글 1 -->
-          <div class="comment-group">
-            <div class="comment">
-              <div class="c-head">
-                <span class="author">홍길동</span><span>·</span><span>2026.01.20</span>
-              </div>
-              <div class="c-body">감사합니다! 그렇다면 재방문 시 영수증을 인쇄해 가야 하나요, 아니면 접수번호만 제시해도 되나요?</div>
-              <div class="c-actions">
-                <a href="javascript:void(0)" onclick="toggleReplyForm(this)">↩ 답글</a>
-              </div>
-            </div>
-            <div class="reply-form-wrap">
-              <div class="reply-form-inner">
-                <textarea placeholder="답글을 입력하세요"></textarea>
-                <div class="btn-wrap">
-                  <button class="btn btn-primary btn-sm" onclick="submitReply(this)">등록</button>
-                  <button class="btn btn-secondary btn-sm" onclick="cancelReply(this)">취소</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- 대댓글 -->
-            <div class="comment reply">
-              <div class="c-head">
-                <span class="author">운영자</span>
-                <span class="badge badge-info" style="height:18px; padding:0 6px; font-size:10px;">관리자</span>
-                <span>·</span><span>2026.01.20</span>
-              </div>
-              <div class="c-body">접수번호만 제시하셔도 됩니다. 재방문 시 창구 직원에게 접수번호를 말씀해 주시면 시스템에서 바로 확인해 드립니다.</div>
-            </div>
-          </div>
-
-          <!-- 댓글 2 -->
-          <div class="comment-group">
-            <div class="comment">
-              <div class="c-head">
-                <span class="author">홍길동</span><span>·</span><span>2026.01.21</span>
-              </div>
-              <div class="c-body">재방문 후 정상적으로 영수증을 발급받았습니다. 친절하게 안내해 주셔서 감사합니다!</div>
-              <div class="c-actions">
-                <a href="javascript:void(0)" onclick="toggleReplyForm(this)">↩ 답글</a>
-              </div>
-            </div>
-            <div class="reply-form-wrap">
-              <div class="reply-form-inner">
-                <textarea placeholder="답글을 입력하세요"></textarea>
-                <div class="btn-wrap">
-                  <button class="btn btn-primary btn-sm" onclick="submitReply(this)">등록</button>
-                  <button class="btn btn-secondary btn-sm" onclick="cancelReply(this)">취소</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 새 댓글 작성 -->
-          <div class="comment-write">
-            <textarea placeholder="댓글을 입력하세요"></textarea>
-            <div class="btn-wrap">
-              <button class="btn btn-primary" onclick="submitComment(this)">등록</button>
-            </div>
-          </div>
-        </div>
-
       </article>
     </section>
 
@@ -459,9 +344,11 @@
   </div>
 </div>
 
+<script src="shared/api-client.js"></script>
 <script src="assets/common.js"></script>
+<script src="assets/fo-board.js"></script>
 <script>
-  function show(id) {
+  window.show = function (id) {
     document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -475,92 +362,69 @@
       document.getElementById('secretPwRow').classList.toggle('hidden', !secret);
     });
   });
-  document.querySelectorAll('.qna-tabs button').forEach(b => {
-    b.addEventListener('click', () => {
-      document.querySelectorAll('.qna-tabs button').forEach(x => x.classList.remove('active'));
-      b.classList.add('active');
-    });
+
+  // ---- 목록/상세 (API) ----
+  var board = TPKMBoard.initBoard({
+    boardType: 'inquiry',
+    listBody: document.getElementById('qnaListBody'),
+    pager: document.getElementById('qnaPager'),
+    colspan: 6,
+    typeCellClass: 'col-cat',
+    detailPaneId: 'detailPane',
+    typeCell: function (p) {
+      return '<span class="badge badge-outline">' +
+        (p.category ? p.category.replace(/[<>&]/g, '') : '문의') + '</span>';
+    },
+    detail: {
+      title: document.getElementById('bdTitle'),
+      badge: document.getElementById('bdBadge'),
+      status: document.getElementById('bdStatus'),
+      meta: document.getElementById('bdMeta'),
+      body: document.getElementById('bdBody'),
+      reply: document.getElementById('bdReply'),
+      replyWhen: document.getElementById('bdReplyWhen'),
+      replyBody: document.getElementById('bdReplyBody'),
+    },
+    show: window.show,
   });
 
-  /* 대댓글 폼 토글 */
-  function toggleReplyForm(btn) {
-    const group = btn.closest('.comment-group');
-    const wrap = group.querySelector('.reply-form-wrap');
-    const isOpen = wrap.classList.toggle('open');
-    if (isOpen) {
-      wrap.querySelector('textarea').focus();
-    }
+  // ---- 필터: 탭(전체/일반/비밀) + 카테고리 + 검색 (현재 페이지 클라이언트 필터) ----
+  var tabMode = 'all';
+  function applyFilters() {
+    var cat = document.querySelector('.cat-select').value;
+    var q = (document.querySelector('.board-tools .search input').value || '').trim().toLowerCase();
+    board.setFilter(function (p) {
+      if (tabMode === 'normal' && p.is_secret) return false;
+      if (tabMode === 'secret' && !p.is_secret) return false;
+      if (cat && cat !== '전체 카테고리' && (p.category || '') !== cat) return false;
+      if (q && (p.title || '').toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
   }
+  document.querySelectorAll('.qna-tabs button').forEach(function (b, i) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.qna-tabs button').forEach(function (x) { x.classList.remove('active'); });
+      b.classList.add('active');
+      tabMode = i === 1 ? 'normal' : i === 2 ? 'secret' : 'all';
+      applyFilters();
+    });
+  });
+  document.querySelector('.cat-select').addEventListener('change', applyFilters);
+  document.querySelector('.board-tools .search input').addEventListener('input', applyFilters);
 
-  function cancelReply(btn) {
-    const wrap = btn.closest('.reply-form-wrap');
-    wrap.classList.remove('open');
-    wrap.querySelector('textarea').value = '';
-  }
+  TPKMBoard.wireSubmit({
+    boardType: 'inquiry',
+    submitBtn: document.getElementById('btnQnaSubmit'),
+    titleEl: document.getElementById('qnaTitle'),
+    bodyEl: document.getElementById('qnaBody'),
+    categoryEl: document.getElementById('qnaCategory'),
+    secretRadio: document.getElementById('visSecret'),
+    secretPwEl: document.getElementById('qnaSecretPw'),
+    onSuccess: function () { show('listPane'); board.load(1); },
+  });
 
-  function submitReply(btn) {
-    const wrap = btn.closest('.reply-form-wrap');
-    const ta = wrap.querySelector('textarea');
-    const text = ta.value.trim();
-    if (!text) { ta.focus(); return; }
-
-    const group = wrap.closest('.comment-group');
-    const today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })
-                  .replace(/\. /g, '.').replace(/\.$/, '');
-
-    const replyEl = document.createElement('div');
-    replyEl.className = 'comment reply';
-    replyEl.innerHTML = `
-      <div class="c-head">
-        <span class="author">홍길동</span><span>·</span><span>${today}</span>
-      </div>
-      <div class="c-body">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</div>`;
-    group.appendChild(replyEl);
-
-    ta.value = '';
-    wrap.classList.remove('open');
-
-    /* 댓글 수 갱신 */
-    updateCommentCount(1);
-  }
-
-  function submitComment(btn) {
-    const wrap = btn.closest('.comment-write');
-    const ta = wrap.querySelector('textarea');
-    const text = ta.value.trim();
-    if (!text) { ta.focus(); return; }
-
-    const today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })
-                  .replace(/\. /g, '.').replace(/\.$/, '');
-
-    const group = document.createElement('div');
-    group.className = 'comment-group';
-    group.innerHTML = `
-      <div class="comment">
-        <div class="c-head"><span class="author">홍길동</span><span>·</span><span>${today}</span></div>
-        <div class="c-body">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</div>
-        <div class="c-actions"><a href="javascript:void(0)" onclick="toggleReplyForm(this)">↩ 답글</a></div>
-      </div>
-      <div class="reply-form-wrap">
-        <div class="reply-form-inner">
-          <textarea placeholder="답글을 입력하세요"></textarea>
-          <div class="btn-wrap">
-            <button class="btn btn-primary btn-sm" onclick="submitReply(this)">등록</button>
-            <button class="btn btn-secondary btn-sm" onclick="cancelReply(this)">취소</button>
-          </div>
-        </div>
-      </div>`;
-
-    wrap.parentNode.insertBefore(group, wrap);
-    ta.value = '';
-    updateCommentCount(1);
-  }
-
-  function updateCommentCount(delta) {
-    const h4 = document.querySelector('.comments h4');
-    const span = h4.querySelector('span');
-    span.textContent = parseInt(span.textContent) + delta;
-  }
+  // 최초 로드
+  if (window.TopikApi && TopikApi.isLoggedIn()) board.load(1);
 </script>
 </body>
 </html>

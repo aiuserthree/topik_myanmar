@@ -37,9 +37,20 @@ Server: `http://localhost:3000`
 | GET | `/api/v1/exam-rounds` | — | Exam rounds (`?registration_status=open`) |
 | GET | `/api/v1/exam-venues` | — | Active exam venues |
 | POST | `/api/v1/auth/login` | — | Email/password → JWT (FO user or admin) |
+| GET | `/api/v1/auth/google/config` | — | `{enabled, client_id}` — FO decides whether to render the Google button |
+| POST | `/api/v1/auth/google` | — | Verify Google ID token → upsert user → JWT (503 if not configured) |
+| POST | `/api/v1/auth/send-verification-code` | — | 회원가입 이메일 인증코드 (dev: `dev_code` in response) |
+| POST | `/api/v1/auth/verify-email` | — | 인증코드 확인 → `verification_token` |
+| POST | `/api/v1/auth/register` | — | 회원가입 완료 → JWT |
 | GET | `/api/v1/me` | Bearer | FO profile |
 | POST | `/api/v1/application-submissions` | Bearer | 4단계 접수 제출 (submission + 1–2 applications) |
 | GET | `/api/v1/applications` | Bearer | 마이페이지 접수 목록 (submission별 집계) |
+| POST | `/api/v1/application-submissions/:id/cancel` | Bearer | 접수 취소 (수납 전) |
+| GET | `/api/v1/notices` | — | 공지 목록 (`?category=`, `?home_preview=1`) |
+| GET | `/api/v1/notices/:id` | — | 공지 상세 |
+| GET | `/api/v1/faq` | — | FAQ (`?lang=ko`) |
+| GET | `/api/v1/board/posts` | Bearer | 내 게시글 목록 (`?board_type=inquiry`) |
+| POST | `/api/v1/board/posts` | Bearer | 문의·환불 글 작성 |
 
 ### Submit example (Phase 1)
 
@@ -101,7 +112,15 @@ See `.env.example`. Key variables:
 
 - `DATABASE_URL` — PostgreSQL connection string
 - `JWT_SECRET` / `JWT_REFRESH_SECRET` — token signing
-- `CORS_ORIGINS` — allowed FO origins (Vercel + local)
+- `CORS_ORIGINS` — allowed FO origins (exact match). Any `https://*.vercel.app` origin
+  is also allowed automatically (covers Vercel preview deploys); add custom domains here.
+- `PUBLIC_FO_BASE` — FO origin used to build email deep links (password reset)
+- `MAIL_PROVIDER` (`console` | `resend` | `smtp`) / `MAIL_FROM` / `RESEND_API_KEY` /
+  `SMTP_HOST` `SMTP_PORT` `SMTP_SECURE` `SMTP_USER` `SMTP_PASS` — outbound email
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` — Google Sign-In. Blank = feature off
+  (config endpoint returns `enabled:false`, `POST /auth/google` returns 503). Set
+  `GOOGLE_CLIENT_ID` to a Google Cloud OAuth "Web application" client ID and register
+  every FO origin under **Authorized JavaScript origins** to go live.
 
 ## Related
 

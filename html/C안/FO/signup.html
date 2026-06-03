@@ -176,11 +176,16 @@
         <span style="flex:1; height:1px; background:var(--border);"></span>
       </div>
 
-      <button class="google-btn" style="display:flex; align-items:center; justify-content:center; gap:10px; width:100%; height:48px; background:#fff; border:1px solid var(--border-strong); border-radius:var(--radius-sm); font-size:14.5px; font-weight:500; color:var(--text);" onclick="googleSignup()">
-        <svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.99 10.99 0 0 0 1 12c0 1.77.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-        Google 계정으로 계속하기
-      </button>
-      <p class="body-sm" style="text-align:center; margin-top: 10px;">Google 계정 사용 시 이메일 인증이 자동으로 처리됩니다.</p>
+      <div id="googleArea">
+        <!-- Google Identity Services renders its own button here when OAuth is configured -->
+        <div id="gsiButton" style="display:flex; justify-content:center;"></div>
+        <!-- Fallback shown when OAuth is not configured / GIS unavailable -->
+        <button type="button" class="google-btn" id="googleFallbackBtn" style="display:flex; align-items:center; justify-content:center; gap:10px; width:100%; height:48px; background:#fff; border:1px solid var(--border-strong); border-radius:var(--radius-sm); font-size:14.5px; font-weight:500; color:var(--text);">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.99 10.99 0 0 0 1 12c0 1.77.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          <span id="googleBtnLabel">Google 계정으로 계속하기</span>
+        </button>
+        <p class="body-sm" id="googleHint" style="text-align:center; margin-top: 10px;">Google 계정 사용 시 이메일 인증이 자동으로 처리됩니다.</p>
+      </div>
 
       <div class="form-actions">
         <button class="btn btn-primary btn-block btn-lg" id="btnGoStep2" disabled>다음</button>
@@ -194,31 +199,31 @@
 
       <div class="form-row">
         <label class="label">이메일 (아이디)</label>
-        <input class="input" readonly value="user@example.com">
+        <input class="input" id="su-email-display" readonly value="">
       </div>
 
       <div class="row-2">
         <div class="form-row">
           <label class="label">한글 성명 <span class="req">*</span></label>
-          <input class="input" placeholder="홍길동">
+          <input class="input" id="su-name-ko" placeholder="홍길동">
         </div>
         <div class="form-row">
           <label class="label">영문 성명 (여권 표기) <span class="req">*</span></label>
-          <input class="input" placeholder="HONG GILDONG">
+          <input class="input" id="su-name-en" placeholder="HONG GILDONG">
         </div>
       </div>
 
       <div class="row-2">
         <div class="form-row">
           <label class="label">생년월일 <span class="req">*</span></label>
-          <input class="input" placeholder="YYYYMMDD" maxlength="8">
+          <input class="input" id="su-birth" placeholder="YYYYMMDD" maxlength="8">
         </div>
         <div class="form-row">
           <label class="label">성별 <span class="req">*</span></label>
-          <select class="select">
+          <select class="select" id="su-gender">
             <option value="">선택</option>
-            <option>남</option>
-            <option>여</option>
+            <option value="1">남</option>
+            <option value="2">여</option>
           </select>
         </div>
       </div>
@@ -226,19 +231,20 @@
       <div class="row-2">
         <div class="form-row">
           <label class="label">국적 <span class="req">*</span></label>
-          <select class="select">
+          <select class="select" id="su-nationality">
             <option value="">선택</option>
-            <option>미얀마 (Myanmar)</option>
-            <option>대한민국 (Korea)</option>
+            <option>미얀마</option>
+            <option>대한민국</option>
             <option>기타</option>
           </select>
         </div>
         <div class="form-row">
           <label class="label">제1언어 <span class="req">*</span></label>
-          <select class="select">
+          <select class="select" id="su-lang1">
             <option value="">선택</option>
-            <option>버마어 (Burmese)</option>
-            <option>샨어 (Shan)</option>
+            <option>미얀마어</option>
+            <option>한국어</option>
+            <option>영어</option>
             <option>기타</option>
           </select>
         </div>
@@ -246,7 +252,7 @@
 
       <div class="form-row">
         <label class="label">연락처 <span class="req">*</span></label>
-        <input class="input" placeholder="+95 9 ...">
+        <input class="input" id="su-phone" placeholder="+95 9 ...">
       </div>
 
       <div class="row-2">
@@ -276,7 +282,7 @@
 
       <div class="form-row">
         <label class="label">비밀번호 확인 <span class="req">*</span></label>
-        <input class="input" type="password" placeholder="동일한 비밀번호를 다시 입력">
+        <input class="input" type="password" id="su-pw2" placeholder="동일한 비밀번호를 다시 입력">
       </div>
 
       <div class="form-row">
@@ -364,6 +370,7 @@
   </div>
 </div>
 
+<script src="shared/api-client.js"></script>
 <script src="shared/roster-codes.js"></script>
 <script src="assets/common.js"></script>
 <script src="assets/photo-upload.js"></script>
@@ -379,8 +386,18 @@
     zone: document.getElementById('signupPhotoZone'),
     placeholder: '사진<br>미리보기'
   });
-  if (signupPhotoCtrl && signupPhotoCtrl.setDataUrl) {
-    signupPhotoCtrl.setDataUrl('assets/dummy-portrait.jpg');
+  var verifiedEmail = '';
+  var verificationToken = '';
+  var signupBusy = false;
+
+  function showSignupErr(msg) {
+    alert(msg);
+  }
+
+  function setBusy(btn, busy, label) {
+    if (!btn) return;
+    btn.disabled = busy;
+    if (label) btn.textContent = label;
   }
 
   // Step navigation
@@ -404,34 +421,217 @@
     go(cur - 1);
   }));
 
-  // STEP1: 이메일 인증 시뮬레이션
-  let timerId;
+  var timerId;
   document.getElementById('btnSendCode').addEventListener('click', function () {
-    const e = document.getElementById('su-email').value.trim();
-    if (!e) { alert('이메일을 입력해 주세요.'); return; }
-    document.getElementById('otpRow').classList.remove('hidden');
-    this.textContent = '재발송';
-    let t = 300;
-    const tm = document.getElementById('otpTimer');
-    clearInterval(timerId);
-    timerId = setInterval(() => {
-      t--;
-      tm.textContent = `${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;
-      if (t <= 0) clearInterval(timerId);
-    }, 1000);
+    var btn = this;
+    var e = document.getElementById('su-email').value.trim();
+    if (!e) { showSignupErr('이메일을 입력해 주세요.'); return; }
+    if (!TopikApi.canUseApi()) {
+      showSignupErr('서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.');
+      return;
+    }
+    if (signupBusy) return;
+    signupBusy = true;
+    setBusy(btn, true, '발송 중…');
+    TopikApi.sendVerificationCode(e).then(function (res) {
+      signupBusy = false;
+      setBusy(btn, false, '재발송');
+      if (!res.ok) {
+        showSignupErr(TopikApi.parseError(res));
+        return;
+      }
+      document.getElementById('otpRow').classList.remove('hidden');
+      if (res.body.dev_code) {
+        document.getElementById('su-otp').value = res.body.dev_code;
+      }
+      var t = 300;
+      var tm = document.getElementById('otpTimer');
+      clearInterval(timerId);
+      timerId = setInterval(function () {
+        t--;
+        tm.textContent = String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
+        if (t <= 0) clearInterval(timerId);
+      }, 1000);
+    }).catch(function () {
+      signupBusy = false;
+      setBusy(btn, false, '재발송');
+      showSignupErr('네트워크 오류입니다.');
+    });
   });
-  document.getElementById('btnConfirmCode').addEventListener('click', function () {
-    document.getElementById('emailOk').classList.remove('hidden');
-    document.getElementById('btnGoStep2').disabled = false;
-    clearInterval(timerId);
-  });
-  document.getElementById('btnGoStep2').addEventListener('click', () => go(2));
 
-  function googleSignup() {
-    document.getElementById('emailOk').classList.remove('hidden');
-    document.getElementById('btnGoStep2').disabled = false;
-    setTimeout(() => go(2), 300);
-  }
+  document.getElementById('btnConfirmCode').addEventListener('click', function () {
+    var btn = this;
+    var e = document.getElementById('su-email').value.trim();
+    var code = document.getElementById('su-otp').value.trim();
+    if (!e || code.length !== 6) {
+      showSignupErr('6자리 인증코드를 입력해 주세요.');
+      return;
+    }
+    if (!TopikApi.canUseApi()) {
+      showSignupErr('서버에 연결할 수 없습니다.');
+      return;
+    }
+    setBusy(btn, true, '확인 중…');
+    TopikApi.verifyEmail(e, code).then(function (res) {
+      setBusy(btn, false, '확인');
+      if (!res.ok) {
+        showSignupErr(TopikApi.parseError(res));
+        return;
+      }
+      verifiedEmail = res.body.email || e;
+      verificationToken = res.body.verification_token || '';
+      document.getElementById('emailOk').classList.remove('hidden');
+      document.getElementById('btnGoStep2').disabled = false;
+      document.getElementById('su-email-display').value = verifiedEmail;
+      clearInterval(timerId);
+    }).catch(function () {
+      setBusy(btn, false, '확인');
+      showSignupErr('네트워크 오류입니다.');
+    });
+  });
+
+  document.getElementById('btnGoStep2').addEventListener('click', function () {
+    if (!verificationToken) {
+      showSignupErr('이메일 인증을 완료해 주세요.');
+      return;
+    }
+    go(2);
+  });
+
+  // ---- Google Sign-In (GIS) — gated on backend /auth/google/config ----
+  (function initGoogleSignup() {
+    var GOOGLE_I18N = {
+      KO: {
+        label: 'Google 계정으로 계속하기',
+        helper: 'Google 계정 사용 시 이메일 인증이 자동으로 처리됩니다.',
+        disabled: 'Google 간편가입은 운영 OAuth 설정 후 이용 가능합니다. 이메일 가입을 이용해 주세요.',
+        fail: 'Google 가입에 실패했습니다. 다시 시도해 주세요.',
+        inactive: '이용이 제한된 계정입니다. 고객센터로 문의해 주세요.'
+      },
+      EN: {
+        label: 'Continue with Google',
+        helper: 'Email verification is handled automatically with a Google account.',
+        disabled: 'Google sign-up will be available after OAuth setup. Please use email sign-up.',
+        fail: 'Google sign-up failed. Please try again.',
+        inactive: 'This account is not active. Please contact support.'
+      },
+      MY: {
+        label: 'Google ဖြင့် ဆက်လက်ရန်',
+        helper: 'Google အကောင့်သုံးပါက အီးမေးလ်အတည်ပြုခြင်းကို အလိုအလျောက် ဆောင်ရွက်ပေးပါသည်။',
+        disabled: 'Google ဖြင့် အကောင့်ဖွင့်ခြင်းကို OAuth ပြင်ဆင်ပြီးမှ အသုံးပြုနိုင်ပါမည်။ အီးမေးလ်ဖြင့် ဖွင့်ပါ။',
+        fail: 'Google ဖြင့် အကောင့်ဖွင့်ခြင်း မအောင်မြင်ပါ။ ထပ်စမ်းကြည့်ပါ။',
+        inactive: 'ဤအကောင့်ကို အသုံးပြု၍မရပါ။'
+      }
+    };
+    function lang() {
+      try { return (localStorage.getItem('tpkm_lang') || 'KO').toUpperCase(); }
+      catch (e) { return 'KO'; }
+    }
+    function t() { return GOOGLE_I18N[lang()] || GOOGLE_I18N.KO; }
+    function gisLocale() {
+      var l = lang().toLowerCase();
+      return l === 'en' ? 'en' : (l === 'my' ? 'my' : 'ko');
+    }
+
+    var area = document.getElementById('googleArea');
+    var mount = document.getElementById('gsiButton');
+    var fallback = document.getElementById('googleFallbackBtn');
+    var hint = document.getElementById('googleHint');
+    var label = document.getElementById('googleBtnLabel');
+    var tr = t();
+    if (label) label.textContent = tr.label;
+    if (hint) hint.textContent = tr.helper;
+
+    function showDisabled() {
+      if (mount) mount.style.display = 'none';
+      if (fallback) {
+        fallback.style.display = 'flex';
+        fallback.disabled = true;
+        fallback.style.opacity = '0.55';
+        fallback.style.cursor = 'not-allowed';
+      }
+      if (hint) hint.textContent = tr.disabled;
+    }
+
+    if (fallback) {
+      fallback.addEventListener('click', function () {
+        if (fallback.disabled) showSignupErr(tr.disabled);
+      });
+    }
+
+    if (!window.TopikApi || typeof TopikApi.getGoogleConfig !== 'function' || !TopikApi.canUseApi()) {
+      showDisabled();
+      return;
+    }
+
+    TopikApi.getGoogleConfig().then(function (res) {
+      if (!res.ok || !res.body || !res.body.enabled || !res.body.client_id) {
+        showDisabled();
+        return;
+      }
+      loadGis(res.body.client_id);
+    }).catch(function () { showDisabled(); });
+
+    function loadGis(clientId) {
+      if (window.google && window.google.accounts && window.google.accounts.id) {
+        renderGis(clientId);
+        return;
+      }
+      var existing = document.getElementById('gis-script');
+      var s = existing || document.createElement('script');
+      s.id = 'gis-script';
+      s.src = 'https://accounts.google.com/gsi/client';
+      s.async = true; s.defer = true;
+      s.onload = function () { renderGis(clientId); };
+      s.onerror = function () { showDisabled(); };
+      if (!existing) document.head.appendChild(s);
+    }
+
+    function renderGis(clientId) {
+      try {
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: handleCredential,
+          ux_mode: 'popup'
+        });
+        mount.innerHTML = '';
+        var width = Math.min((area && area.offsetWidth) || 360, 400);
+        window.google.accounts.id.renderButton(mount, {
+          theme: 'outline', size: 'large', type: 'standard',
+          text: 'continue_with', shape: 'rectangular', logo_alignment: 'center',
+          width: width, locale: gisLocale()
+        });
+        if (fallback) fallback.style.display = 'none';
+        if (hint) hint.textContent = tr.helper;
+        mount.style.display = 'flex';
+      } catch (e) {
+        showDisabled();
+      }
+    }
+
+    function handleCredential(response) {
+      var idToken = response && response.credential;
+      if (!idToken) { showSignupErr(tr.fail); return; }
+      TopikApi.loginWithGoogle(idToken).then(function (res) {
+        if (!res.ok) {
+          if (res.status === 403) showSignupErr(tr.inactive);
+          else if (res.status === 503) showSignupErr(tr.disabled);
+          else showSignupErr(tr.fail);
+          return;
+        }
+        var u = (res.body && res.body.user) || {};
+        if (window.TPKMAuth) {
+          TPKMAuth.login({
+            name: u.name_ko || u.name || (u.email || '').split('@')[0],
+            email: u.email, id: u.id, role: u.role
+          });
+        }
+        if (window.__tpkmRebuildNav) __tpkmRebuildNav();
+        var params = new URLSearchParams(location.search);
+        location.href = params.get('next') || 'index.html';
+      }).catch(function () { showSignupErr(tr.fail); });
+    }
+  })();
 
   // PW strength
   document.getElementById('su-pw').addEventListener('input', function () {
@@ -464,10 +664,64 @@
   });
 
   document.getElementById('btnFinish').addEventListener('click', function () {
-    const reqOk = [...reqs].every(r => r.checked);
-    if (!reqOk) { alert('필수 약관에 동의해 주세요.'); return; }
-    TPKMAuth.login({ name: '홍길동', email: 'user@example.com' });
-    TPKM.openModal('modalDone');
+    var btn = this;
+    var reqOk = Array.prototype.slice.call(reqs).every(function (r) { return r.checked; });
+    if (!reqOk) { showSignupErr('필수 약관에 동의해 주세요.'); return; }
+    if (!verificationToken) {
+      showSignupErr('이메일 인증을 완료해 주세요.');
+      return;
+    }
+    var photoState = signupPhotoCtrl && signupPhotoCtrl.getState ? signupPhotoCtrl.getState() : {};
+    var dataUrl = photoState.dataUrl || '';
+    if (!dataUrl || dataUrl.indexOf('data:image') !== 0) {
+      showSignupErr('증명사진을 등록해 주세요.');
+      return;
+    }
+    var photoB64 = dataUrl.indexOf(',') >= 0 ? dataUrl.split(',')[1] : dataUrl;
+
+    var payload = {
+      verification_token: verificationToken,
+      password: document.getElementById('su-pw').value,
+      password_confirm: document.getElementById('su-pw2').value,
+      name_ko: document.getElementById('su-name-ko').value.trim(),
+      name_en: document.getElementById('su-name-en').value.trim(),
+      birth_date: document.getElementById('su-birth').value.trim(),
+      gender: document.getElementById('su-gender').value,
+      nationality: document.getElementById('su-nationality').value,
+      first_language: document.getElementById('su-lang1').value,
+      phone: document.getElementById('su-phone').value.trim(),
+      job_code: Number(document.getElementById('su-job').value),
+      motive_code: Number(document.getElementById('su-motive').value),
+      purpose_code: Number(document.getElementById('su-purpose').value),
+      photo_base64: photoB64,
+      marketing_opt_in: opt.checked,
+      preferred_lang: (localStorage.getItem('tpkm_lang') || 'KO').toLowerCase().slice(0, 2) === 'my' ? 'my' : (localStorage.getItem('tpkm_lang') === 'EN' ? 'en' : 'ko')
+    };
+
+    if (!TopikApi.canUseApi()) {
+      showSignupErr('서버에 연결할 수 없습니다.');
+      return;
+    }
+    setBusy(btn, true, '가입 처리 중…');
+    TopikApi.register(payload).then(function (res) {
+      setBusy(btn, false, '가입 완료');
+      if (!res.ok) {
+        showSignupErr(TopikApi.parseError(res));
+        return;
+      }
+      if (window.TPKMAuth && res.body && res.body.user) {
+        TPKMAuth.login({
+          name: res.body.user.name_ko || res.body.user.email,
+          email: res.body.user.email,
+          id: res.body.user.id
+        });
+      }
+      if (window.__tpkmRebuildNav) __tpkmRebuildNav();
+      TPKM.openModal('modalDone');
+    }).catch(function () {
+      setBusy(btn, false, '가입 완료');
+      showSignupErr('네트워크 오류입니다.');
+    });
   });
 </script>
 </body>

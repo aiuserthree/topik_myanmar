@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt, { type SignOptions } from "jsonwebtoken";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { config } from "../config.js";
 
@@ -6,6 +6,23 @@ export interface JwtPayload {
   sub: string;
   email: string;
   role: "user" | "admin";
+}
+
+/**
+ * Issue the access + refresh JWT pair used across all FO/admin auth routes
+ * (login, register, Google sign-in). Single source of truth for signing —
+ * do not re-implement this in individual routes.
+ */
+export function signAuthTokens(payload: { sub: string; email: string; role: "user" | "admin" }) {
+  const accessOpts: SignOptions = { expiresIn: config.jwtAccessExpires as SignOptions["expiresIn"] };
+  const refreshOpts: SignOptions = { expiresIn: config.jwtRefreshExpires as SignOptions["expiresIn"] };
+  const accessToken = jwt.sign(payload, config.jwtSecret, accessOpts);
+  const refreshToken = jwt.sign(
+    { sub: payload.sub, type: "refresh" },
+    config.jwtRefreshSecret,
+    refreshOpts
+  );
+  return { accessToken, refreshToken };
 }
 
 export interface AuthenticatedUser {

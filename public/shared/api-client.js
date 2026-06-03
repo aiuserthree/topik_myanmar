@@ -260,6 +260,212 @@
     return apiFetch("/api/v1/applications");
   }
 
+  function cancelSubmission(submissionId, reason) {
+    return apiFetch(
+      "/api/v1/application-submissions/" + encodeURIComponent(submissionId) + "/cancel",
+      {
+        method: "POST",
+        body: JSON.stringify({ reason: reason || "사용자 취소" }),
+      }
+    );
+  }
+
+  function sendVerificationCode(email) {
+    return apiFetch("/api/v1/auth/send-verification-code", {
+      method: "POST",
+      auth: false,
+      body: JSON.stringify({ email: email }),
+    });
+  }
+
+  function verifyEmail(email, code) {
+    return apiFetch("/api/v1/auth/verify-email", {
+      method: "POST",
+      auth: false,
+      body: JSON.stringify({ email: email, code: code }),
+    });
+  }
+
+  function register(payload) {
+    return apiFetch("/api/v1/auth/register", {
+      method: "POST",
+      auth: false,
+      body: JSON.stringify(payload),
+    }).then(function (res) {
+      if (res.ok && res.body && res.body.access_token) {
+        persistSession(res.body, true);
+        syncLegacyUser(res.body.user);
+      }
+      return res;
+    });
+  }
+
+  function getGoogleConfig() {
+    return apiFetch("/api/v1/auth/google/config", { auth: false });
+  }
+
+  function loginWithGoogle(idToken) {
+    var lang = "ko";
+    try {
+      var stored = (global.localStorage.getItem("tpkm_lang") || "KO").toLowerCase();
+      if (stored === "my" || stored === "en") lang = stored;
+    } catch (e) { /* private mode */ }
+    return apiFetch("/api/v1/auth/google", {
+      method: "POST",
+      auth: false,
+      body: JSON.stringify({ id_token: idToken, preferred_lang: lang }),
+    }).then(function (res) {
+      if (res.ok && res.body && res.body.access_token) {
+        persistSession(res.body, true);
+        syncLegacyUser(res.body.user);
+      }
+      return res;
+    });
+  }
+
+  function findEmail(payload) {
+    return apiFetch("/api/v1/auth/find-email", {
+      method: "POST",
+      auth: false,
+      body: JSON.stringify(payload || {}),
+    });
+  }
+
+  function forgotPassword(email) {
+    return apiFetch("/api/v1/auth/forgot-password", {
+      method: "POST",
+      auth: false,
+      body: JSON.stringify({ email: email }),
+    });
+  }
+
+  function resetPassword(payload) {
+    return apiFetch("/api/v1/auth/reset-password", {
+      method: "POST",
+      auth: false,
+      body: JSON.stringify(payload || {}),
+    });
+  }
+
+  function updateProfile(payload) {
+    return apiFetch("/api/v1/me", {
+      method: "PATCH",
+      body: JSON.stringify(payload || {}),
+    });
+  }
+
+  function changePassword(payload) {
+    return apiFetch("/api/v1/me/change-password", {
+      method: "POST",
+      body: JSON.stringify(payload || {}),
+    });
+  }
+
+  function withdraw(password) {
+    return apiFetch("/api/v1/me/withdraw", {
+      method: "POST",
+      body: JSON.stringify({ password: password || "" }),
+    });
+  }
+
+  function getNotices(query) {
+    var q = query || {};
+    var parts = [];
+    if (q.category) parts.push("category=" + encodeURIComponent(q.category));
+    if (q.q) parts.push("q=" + encodeURIComponent(q.q));
+    if (q.page) parts.push("page=" + encodeURIComponent(q.page));
+    if (q.page_size) parts.push("page_size=" + encodeURIComponent(q.page_size));
+    if (q.home_preview) parts.push("home_preview=1");
+    var qs = parts.length ? "?" + parts.join("&") : "";
+    return apiFetch("/api/v1/notices" + qs, { auth: false });
+  }
+
+  function getNotice(id, sessionKey) {
+    var qs = sessionKey
+      ? "?session_key=" + encodeURIComponent(sessionKey)
+      : "";
+    return apiFetch("/api/v1/notices/" + encodeURIComponent(id) + qs, {
+      auth: false,
+    });
+  }
+
+  function getFaq(query) {
+    var q = query || {};
+    var parts = [];
+    if (q.lang) parts.push("lang=" + encodeURIComponent(q.lang));
+    if (q.q) parts.push("q=" + encodeURIComponent(q.q));
+    var qs = parts.length ? "?" + parts.join("&") : "";
+    return apiFetch("/api/v1/faq" + qs, { auth: false });
+  }
+
+  function getBoardPosts(boardType, query) {
+    var q = query || {};
+    var parts = ["board_type=" + encodeURIComponent(boardType)];
+    if (q.page) parts.push("page=" + encodeURIComponent(q.page));
+    return apiFetch("/api/v1/board/posts?" + parts.join("&"));
+  }
+
+  function getBoardPost(id) {
+    return apiFetch("/api/v1/board/posts/" + encodeURIComponent(id));
+  }
+
+  function createBoardPost(payload) {
+    return apiFetch("/api/v1/board/posts", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  function forgotPassword(email) {
+    return apiFetch("/api/v1/auth/forgot-password", {
+      method: "POST",
+      auth: false,
+      body: JSON.stringify({ email: email }),
+    });
+  }
+
+  function resetPassword(payload) {
+    return apiFetch("/api/v1/auth/reset-password", {
+      method: "POST",
+      auth: false,
+      body: JSON.stringify(payload),
+    });
+  }
+
+  function updateMe(payload) {
+    return apiFetch("/api/v1/me", {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  function changePassword(payload) {
+    return apiFetch("/api/v1/me/change-password", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  function parseError(res) {
+    if (!res) return "요청을 처리할 수 없습니다.";
+    var b = res.body || {};
+    if (b.error && b.error.message) return b.error.message;
+    if (b.error && typeof b.error === "string") return b.error;
+    if (b.message) return b.message;
+    if (res.status === 401) return "로그인이 필요합니다.";
+    if (res.status === 409) return "이미 처리된 요청입니다.";
+    if (res.status === 429) return "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.";
+    if (res.status === 0 || res.error === "network_error") {
+      return "네트워크 오류입니다. 연결 상태를 확인해 주세요.";
+    }
+    if (res.error === "api_disabled") return "API 연결이 설정되지 않았습니다.";
+    return "요청을 처리할 수 없습니다. (" + (res.status || "오류") + ")";
+  }
+
+  function canUseApi() {
+    return USE_API && !!API_BASE_URL;
+  }
+
   global.TopikApi = {
     baseUrl: API_BASE_URL,
     useApi: USE_API,
@@ -285,5 +491,31 @@
     getExamVenues: getExamVenues,
     submitApplication: submitApplication,
     getMyApplications: getMyApplications,
+    cancelSubmission: cancelSubmission,
+    sendVerificationCode: sendVerificationCode,
+    verifyEmail: verifyEmail,
+    register: register,
+    getGoogleConfig: getGoogleConfig,
+    loginWithGoogle: loginWithGoogle,
+    findEmail: findEmail,
+    forgotPassword: forgotPassword,
+    resetPassword: resetPassword,
+    updateProfile: updateProfile,
+    updateMe: updateProfile,
+    changePassword: changePassword,
+    withdraw: withdraw,
+    getNotices: getNotices,
+    getNotice: getNotice,
+    getFaq: getFaq,
+    getBoardPosts: getBoardPosts,
+    getBoardPost: getBoardPost,
+    createBoardPost: createBoardPost,
+    forgotPassword: forgotPassword,
+    resetPassword: resetPassword,
+    updateMe: updateMe,
+    changePassword: changePassword,
+    parseError: parseError,
+    canUseApi: canUseApi,
+    persistSession: persistSession,
   };
 })(typeof window !== "undefined" ? window : globalThis);

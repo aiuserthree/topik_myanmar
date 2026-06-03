@@ -15,4 +15,26 @@ export const config = {
     .split(",")
     .map((o) => o.trim())
     .filter(Boolean),
+  // Public FO base used to build deep links inside emails (e.g. password reset)
+  publicFoBase: (process.env.PUBLIC_FO_BASE ?? "https://topik-myanmar.vercel.app").replace(/\/$/, ""),
+  // Google Sign-In (GIS). Empty clientId = feature disabled (frontend hides button,
+  // POST /auth/google → 503). clientSecret unused for ID-token verification but kept
+  // for completeness / future server-side OAuth code exchange.
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+  },
+  // Pluggable mailer. provider = console (dev, logs only) | smtp | resend
+  mail: {
+    provider: (process.env.MAIL_PROVIDER ?? "console").toLowerCase(),
+    from: process.env.MAIL_FROM ?? "TOPIK Myanmar <no-reply@topik-mm.local>",
+    resendApiKey: process.env.RESEND_API_KEY ?? "",
+    smtp: {
+      host: process.env.SMTP_HOST ?? "",
+      port: Number(process.env.SMTP_PORT ?? 587),
+      secure: String(process.env.SMTP_SECURE ?? "false") === "true",
+      user: process.env.SMTP_USER ?? "",
+      pass: process.env.SMTP_PASS ?? "",
+    },
+  },
 };

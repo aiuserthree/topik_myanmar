@@ -168,49 +168,8 @@
               <th class="col-date">작성일</th>
             </tr>
           </thead>
-          <tbody>
-            <tr onclick="openDetail()">
-              <td class="col-num">—</td>
-              <td class="col-cat"><span class="badge badge-important">중요</span></td>
-              <td class="col-title imp">제98회 TOPIK 미얀마 시행 접수 안내 — 응시료 수납처 변경 공지 <span class="badge badge-new" style="margin-left:6px;">NEW</span></td>
-              <td class="col-date">2026.01.20</td>
-            </tr>
-            <tr onclick="openDetail()">
-              <td class="col-num">28</td>
-              <td class="col-cat"><span class="badge badge-info">접수</span></td>
-              <td class="col-title">2026년 TOPIK 시험 일정 안내 (제98회 ~ 제101회)</td>
-              <td class="col-date">2026.01.15</td>
-            </tr>
-            <tr onclick="openDetail()">
-              <td class="col-num">27</td>
-              <td class="col-cat"><span class="badge badge-info">접수</span></td>
-              <td class="col-title">TOPIK Ⅰ·Ⅱ 동시 접수 시 응시료 안내</td>
-              <td class="col-date">2026.01.10</td>
-            </tr>
-            <tr onclick="openDetail()">
-              <td class="col-num">26</td>
-              <td class="col-cat"><span class="badge badge-outline">시험</span></td>
-              <td class="col-title">시험 당일 신분증 지참 및 입실 시간 안내</td>
-              <td class="col-date">2025.12.28</td>
-            </tr>
-            <tr onclick="openDetail()">
-              <td class="col-num">25</td>
-              <td class="col-cat"><span class="badge badge-outline">결과</span></td>
-              <td class="col-title">제97회 합격자 발표 및 성적표 발급 안내</td>
-              <td class="col-date">2025.12.15</td>
-            </tr>
-            <tr onclick="openDetail()">
-              <td class="col-num">24</td>
-              <td class="col-cat"><span class="badge badge-outline">시험</span></td>
-              <td class="col-title">제97회 TOPIK 시험장 위치 및 교통편 안내</td>
-              <td class="col-date">2025.10.05</td>
-            </tr>
-            <tr onclick="openDetail()">
-              <td class="col-num">23</td>
-              <td class="col-cat"><span class="badge badge-outline">시험</span></td>
-              <td class="col-title">우기철 시험장 출입 안전 안내</td>
-              <td class="col-date">2025.09.18</td>
-            </tr>
+          <tbody id="noticeTbody">
+            <tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-3);">공지를 불러오는 중…</td></tr>
           </tbody>
         </table>
         </div>
@@ -233,43 +192,14 @@
 
       <article class="detail-card">
         <div class="detail-head">
-          <div style="display:flex; gap: 8px; margin-bottom: 10px;">
-            <span class="badge badge-important">중요</span>
-            <span class="badge badge-new">NEW</span>
-          </div>
-          <h2>제98회 TOPIK 미얀마 시행 접수 안내 — 응시료 수납처 변경 공지</h2>
-          <div class="meta">
-            <span>주미얀마 대사관</span><span>·</span><span>2026.01.20</span><span>·</span><span>조회 1,234</span>
-          </div>
+          <div class="meta" id="noticeDetailMeta" style="margin-bottom:10px;"></div>
+          <h2 id="noticeDetailTitle">공지</h2>
         </div>
-        <div class="detail-body">
-          <p>안녕하세요. 주미얀마 대한민국 대사관입니다.</p>
-          <p>2026년 제98회 한국어능력시험(TOPIK) 미얀마 시행 접수와 관련해 응시료 수납처가 일부 변경되었음을 안내드립니다.</p>
-
-          <h3>주요 변경 사항</h3>
-          <ul>
-            <li>기존 수납처: 양곤 ABC 은행</li>
-            <li><strong>변경 수납처: 양곤 XYZ 은행 (시내 본점 및 만달레이 지점)</strong></li>
-            <li>운영 시간: 평일 09:00 — 15:00</li>
-          </ul>
-
-          <h3>접수 일정</h3>
-          <ul>
-            <li>접수 기간: 2026.02.01 — 02.15</li>
-            <li>시험일: 2026.04.12 (일)</li>
-            <li>합격 발표: 2026.05.28</li>
-          </ul>
-
-          <p style="margin-top: 24px;">기타 자세한 사항은 본 사이트의 ‘TOPIK 안내’ 페이지를 참고해 주시기 바랍니다. 감사합니다.</p>
-        </div>
-        <div class="attach">
-          <div class="l">첨부파일</div>
-          <a href="#">제98회_접수안내문.pdf</a>
-        </div>
+        <div class="detail-body" id="noticeDetailBody"></div>
       </article>
 
       <nav class="nav-prev-next" aria-label="이전·다음 글">
-        <a href="#" class="nav-pn"><span class="l">이전</span><span class="t">2026년 TOPIK 시험 일정 안내 (제98회 ~ 제101회)</span></a>
+        <a href="#" class="nav-pn"><span class="l">이전</span><span class="t">2026년 TOPIK 시험 일정 안내 (제107회)</span></a>
         <a href="#" class="nav-pn disabled"><span class="l">다음</span><span class="t">— 다음 글이 없습니다 —</span></a>
       </nav>
 
@@ -283,47 +213,68 @@
 <div id="site-footer"></div>
 <div id="site-tabbar"></div>
 
+<script src="shared/api-client.js"></script>
 <script src="assets/common.js"></script>
+<script src="assets/fo-notices.js"></script>
 <script>
-  function openDetail() {
-    document.getElementById('listView').classList.add('hidden');
-    document.getElementById('detailView').classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  var activeCat = 'all';
+  var searchQ = '';
+  var searchInput = document.querySelector('.board-tools .search input');
+  var tbody = document.getElementById('noticeTbody');
+
   function closeDetail() {
     document.getElementById('listView').classList.remove('hidden');
     document.getElementById('detailView').classList.remove('active');
+    if (history.replaceState) history.replaceState(null, '', 'notice.html');
   }
-  // ===== 분류 칩 + 제목 검색 필터 =====
-  const catMap = { imp: '중요', apply: '접수', exam: '시험', result: '결과' };
-  let activeCat = 'all';
-  const searchInput = document.querySelector('.board-tools .search input');
+  window.closeDetail = closeDetail;
 
-  function filterNotices() {
-    const q = (searchInput.value || '').trim().toLowerCase();
-    let visible = 0;
-    document.querySelectorAll('#listView tbody tr').forEach(tr => {
-      const catText = (tr.querySelector('.col-cat')?.textContent || '').trim();
-      const title = (tr.querySelector('.col-title')?.textContent || '').toLowerCase();
-      const catOk = activeCat === 'all' || catText === catMap[activeCat];
-      const qOk = !q || title.includes(q);
-      const ok = catOk && qOk;
-      tr.style.display = ok ? '' : 'none';
-      if (ok) visible++;
+  function reloadNotices() {
+    var empty = document.getElementById('noticeEmpty');
+    if (empty) empty.style.display = 'none';
+    TPKMNotices.loadList({
+      category: activeCat,
+      q: searchQ,
+      onData: function (items) {
+        TPKMNotices.renderTableRows(tbody, items);
+        if (empty) empty.style.display = items.length ? 'none' : '';
+      },
+      onError: function (msg) {
+        tbody.innerHTML =
+          '<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--danger);">' +
+          msg + '</td></tr>';
+      },
+      onFallback: function () {
+        tbody.innerHTML =
+          '<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-3);">공지를 불러올 수 없습니다.</td></tr>';
+      },
     });
-    const empty = document.getElementById('noticeEmpty');
-    if (empty) empty.style.display = visible ? 'none' : '';
   }
 
-  document.querySelectorAll('.filters .chip').forEach(c => {
-    c.addEventListener('click', () => {
-      document.querySelectorAll('.filters .chip').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.filters .chip').forEach(function (c) {
+    c.addEventListener('click', function () {
+      document.querySelectorAll('.filters .chip').forEach(function (x) {
+        x.classList.remove('active');
+      });
       c.classList.add('active');
       activeCat = c.dataset.cat || 'all';
-      filterNotices();
+      reloadNotices();
     });
   });
-  searchInput.addEventListener('input', filterNotices);
+
+  var searchTimer;
+  searchInput.addEventListener('input', function () {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(function () {
+      searchQ = (searchInput.value || '').trim();
+      reloadNotices();
+    }, 300);
+  });
+
+  reloadNotices();
+
+  var openId = new URLSearchParams(location.search).get('id');
+  if (openId) TPKMNotices.openDetail(openId);
 </script>
 </body>
 </html>

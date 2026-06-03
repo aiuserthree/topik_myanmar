@@ -290,4 +290,106 @@ export async function applicationsRoutes(app: FastifyInstance) {
       }
     }
   );
+
+  app.post<{
+    Params: { submissionId: string };
+    Body: { reason?: string };
+  }>(
+    "/api/v1/application-submissions/:submissionId/cancel",
+    { preHandler: requireFoUser },
+    async (req, reply) => {
+      const userId = req.authUser!.id;
+      const submissionId = Number(req.params.submissionId);
+      const reason = String(req.body?.reason ?? "").trim() || "사용자 취소";
+
+      if (!Number.isFinite(submissionId)) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "잘못된 요청입니다." },
+        });
+      }
+
+      const client = await pool.connect();
+      try {
+        await client.query("BEGIN");
+
+        const subRes = await client.query(
+          `SELECT id, user_id FROM application_submissions
+           WHERE id = $1 FOR UPDATE`,
+          [submissionId]
+        );
+        if (subRes.rows.length === 0 || Number(subRes.rows[0].user_id) !== userId) {
+          await client.query("ROLLBACK");
+          return reply.status(404).send({
+            error: { code: "NOT_FOUND", message: "접수 내역을 찾을 수 없습니다." },
+          });
+        }
+
+        const appsRes = await client.query(
+          `SELECT id, status, payment_status
+           FROM applications
+           WHERE submission_id = $1 AND user_id = $2
+           FOR UPDATE`,
+          [submissionId, userId]
+        );
+
+        if (appsRes.rows.length === 0) {
+          await client.query("ROLLBACK");
+          return reply.status(404).send({
+            error: { code: "NOT_FOUND", message: "접수 건이 없습니다." },
+          });
+        }
+
+        for (const app of appsRes.rows) {
+          if (app.status === "cancelled") continue;
+          if (app.payment_status === "paid") {
+            await client.query("ROLLBACK");
+            return reply.status(422).send({
+              error: {
+                code: "BUSINESS_RULE_VIOLATION",
+                message:
+                  "오프라인 수납이 완료된 접수는 취소할 수 없습니다. 환불·정보정정신청 게시판을 이용해 주세요.",
+              },
+            });
+          }
+          if (!["submitted", "photo_review", "payment_pending"].includes(app.status)) {
+            await client.query("ROLLBACK");
+            return reply.status(422).send({
+              error: {
+                code: "BUSINESS_RULE_VIOLATION",
+                message: "현재 상태에서는 접수를 취소할 수 없습니다.",
+              },
+            });
+          }
+        }
+
+        const now = new Date();
+        for (const app of appsRes.rows) {
+          if (app.status === "cancelled") continue;
+          await client.query(
+            `UPDATE applications
+             SET status = 'cancelled', cancelled_at = $1, cancel_reason = $2,
+                 updated_at = NOW(), rev = rev + 1
+             WHERE id = $3`,
+            [now, reason, app.id]
+          );
+        }
+
+        await client.query("COMMIT");
+
+        return {
+          submission_id: submissionId,
+          cancelled: true,
+          message: "접수가 취소되었습니다.",
+        };
+      } catch (err) {
+        await client.query("ROLLBACK");
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
+        });
+      } finally {
+        client.release();
+      }
+    }
+  );
 }

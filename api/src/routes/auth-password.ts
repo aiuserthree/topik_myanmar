@@ -1,0 +1,283 @@
+import bcrypt from "bcrypt";
+import crypto from "node:crypto";
+import type { FastifyInstance } from "fastify";
+import { config } from "../config.js";
+import { pool } from "../db.js";
+import { queueAndSend } from "../lib/mailer.js";
+import { isValidEmail, isValidPassword, normalizeBirthDate } from "../lib/validation.js";
+
+function randomCode(): string {
+  return String(crypto.randomInt(100000, 999999));
+}
+
+function maskEmail(email: string): string {
+  const [local, domain] = String(email).split("@");
+  if (!domain) return email;
+  const visible = local.slice(0, Math.min(2, local.length));
+  const stars = "*".repeat(Math.max(2, local.length - visible.length));
+  return `${visible}${stars}@${domain}`;
+}
+
+const RESET_TTL_SECONDS = 30 * 60;
+
+export async function authPasswordRoutes(app: FastifyInstance) {
+  // ---- find-email (아이디 찾기): match name + birth + phone → masked emails ----
+  app.post<{ Body: { name_ko?: string; birth_date?: string; phone?: string } }>(
+    "/api/v1/auth/find-email",
+    async (req, reply) => {
+      const nameKo = String(req.body?.name_ko ?? "").trim();
+      const birth = normalizeBirthDate(String(req.body?.birth_date ?? ""));
+      const phone = String(req.body?.phone ?? "").trim();
+
+      if (!nameKo || !birth || !phone) {
+        return reply.status(400).send({
+          error: {
+            code: "VALIDATION_ERROR",
+            message: "이름, 생년월일, 연락처를 모두 입력해 주세요.",
+          },
+        });
+      }
+
+      try {
+        const { rows } = await pool.query(
+          `SELECT email, signup_provider, created_at
+           FROM users
+           WHERE name_ko = $1 AND birth_date = $2 AND phone = $3 AND status = 'active'
+           ORDER BY created_at ASC
+           LIMIT 5`,
+          [nameKo, birth, phone]
+        );
+        return {
+          count: rows.length,
+          matches: rows.map((r) => ({
+            email_masked: maskEmail(String(r.email)),
+            provider: r.signup_provider === "google" ? "google" : "email",
+            created_at: r.created_at,
+          })),
+        };
+      } catch (err) {
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "서버 오류가 발생했습니다." },
+        });
+      }
+    }
+  );
+
+  // ---- forgot-password: issue reset code, queue email ----
+  app.post<{ Body: { email?: string } }>(
+    "/api/v1/auth/forgot-password",
+    async (req, reply) => {
+      const email = String(req.body?.email ?? "")
+        .trim()
+        .toLowerCase();
+      if (!isValidEmail(email)) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "유효한 이메일을 입력해 주세요." },
+        });
+      }
+
+      try {
+        // Look up an active email-signup user (Google accounts have no password).
+        const userRes = await pool.query(
+          `SELECT id, password_hash, signup_provider
+           FROM users
+           WHERE email = $1 AND status = 'active'
+           LIMIT 1`,
+          [email]
+        );
+
+        // Generic response to avoid account enumeration; dev_code only when a
+        // resettable account actually exists.
+        const genericPayload: Record<string, unknown> = {
+          message:
+            "입력하신 이메일이 가입되어 있다면 비밀번호 재설정 인증코드를 발송했습니다.",
+          expires_in_seconds: RESET_TTL_SECONDS,
+        };
+
+        const user = userRes.rows[0];
+        const resettable = !!user && !!user.password_hash;
+        if (!resettable) {
+          // Google / non-existent: still return generic success.
+          return genericPayload;
+        }
+
+        const userId = Number(user.id);
+
+        // Rate limit: 1 request / 60s per user.
+        const recent = await pool.query(
+          `SELECT id FROM password_reset_tokens
+           WHERE user_id = $1 AND created_at > NOW() - INTERVAL '60 seconds'
+           ORDER BY id DESC LIMIT 1`,
+          [userId]
+        );
+        if (recent.rows.length > 0) {
+          return reply.status(429).send({
+            error: {
+              code: "RATE_LIMITED",
+              message: "잠시 후 다시 요청해 주세요. (1분 간격)",
+            },
+          });
+        }
+
+        const code = randomCode();
+        const codeHash = await bcrypt.hash(code, 10);
+        const expiresAt = new Date(Date.now() + RESET_TTL_SECONDS * 1000);
+
+        await pool.query(
+          `INSERT INTO password_reset_tokens (user_id, token_hash, expires_at)
+           VALUES ($1, $2, $3)`,
+          [userId, codeHash, expiresAt]
+        );
+
+        await queueAndSend(pool, {
+          templateKey: "password_reset",
+          locale: "ko",
+          toEmail: email,
+          userId,
+          subject: "[TOPIK Myanmar] 비밀번호 재설정 인증코드",
+          html:
+            `<p>안녕하세요, TOPIK Myanmar입니다.</p>` +
+            `<p>비밀번호 재설정 인증코드는 <strong style="font-size:18px">${code}</strong> 입니다.</p>` +
+            `<p>유효 시간: 30분</p>`,
+        });
+
+        if (config.appEnv === "development") {
+          genericPayload.dev_code = code;
+        }
+        return genericPayload;
+      } catch (err) {
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "서버 오류가 발생했습니다." },
+        });
+      }
+    }
+  );
+
+  // ---- reset-password: verify code + set new password ----
+  app.post<{
+    Body: {
+      email?: string;
+      code?: string;
+      password?: string;
+      password_confirm?: string;
+    };
+  }>("/api/v1/auth/reset-password", async (req, reply) => {
+    const body = req.body ?? {};
+    const email = String(body.email ?? "")
+      .trim()
+      .toLowerCase();
+    const code = String(body.code ?? "").trim();
+    const password = String(body.password ?? "");
+    const passwordConfirm = String(body.password_confirm ?? "");
+
+    if (!isValidEmail(email) || code.length !== 6) {
+      return reply.status(400).send({
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "이메일과 6자리 인증코드를 입력해 주세요.",
+        },
+      });
+    }
+    if (!isValidPassword(password)) {
+      return reply.status(400).send({
+        error: {
+          code: "VALIDATION_ERROR",
+          message:
+            "비밀번호는 8자 이상, 영문·숫자·특수문자를 각각 포함해야 합니다.",
+        },
+      });
+    }
+    if (password !== passwordConfirm) {
+      return reply.status(400).send({
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "비밀번호 확인이 일치하지 않습니다.",
+        },
+      });
+    }
+
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      const userRes = await client.query(
+        `SELECT id FROM users
+         WHERE email = $1 AND status = 'active'
+         LIMIT 1`,
+        [email]
+      );
+      if (userRes.rows.length === 0) {
+        await client.query("ROLLBACK");
+        return reply.status(400).send({
+          error: {
+            code: "INVALID_CODE",
+            message: "인증코드가 올바르지 않거나 만료되었습니다.",
+          },
+        });
+      }
+      const userId = Number(userRes.rows[0].id);
+
+      const tokensRes = await client.query(
+        `SELECT id, token_hash FROM password_reset_tokens
+         WHERE user_id = $1 AND consumed_at IS NULL AND expires_at > NOW()
+         ORDER BY id DESC
+         LIMIT 5`,
+        [userId]
+      );
+
+      let matchedId: number | null = null;
+      for (const row of tokensRes.rows) {
+        // eslint-disable-next-line no-await-in-loop
+        const ok = await bcrypt.compare(code, row.token_hash);
+        if (ok) {
+          matchedId = Number(row.id);
+          break;
+        }
+      }
+
+      if (!matchedId) {
+        await client.query("ROLLBACK");
+        return reply.status(400).send({
+          error: {
+            code: "INVALID_CODE",
+            message: "인증코드가 올바르지 않거나 만료되었습니다.",
+          },
+        });
+      }
+
+      const newHash = await bcrypt.hash(password, 10);
+      await client.query(
+        `UPDATE users
+         SET password_hash = $1, password_changed_at = NOW(),
+             updated_at = NOW(), rev = rev + 1
+         WHERE id = $2`,
+        [newHash, userId]
+      );
+
+      // Consume the used token and invalidate any other outstanding ones.
+      await client.query(
+        `UPDATE password_reset_tokens
+         SET consumed_at = NOW()
+         WHERE user_id = $1 AND consumed_at IS NULL`,
+        [userId]
+      );
+
+      await client.query("COMMIT");
+
+      return {
+        reset: true,
+        message: "비밀번호가 변경되었습니다. 새 비밀번호로 로그인해 주세요.",
+      };
+    } catch (err) {
+      await client.query("ROLLBACK");
+      app.log.error(err);
+      return reply.status(503).send({
+        error: { code: "INTERNAL_ERROR", message: "서버 오류가 발생했습니다." },
+      });
+    } finally {
+      client.release();
+    }
+  });
+}

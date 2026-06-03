@@ -1,24 +1,11 @@
 import bcrypt from "bcrypt";
-import jwt, { type SignOptions } from "jsonwebtoken";
 import type { FastifyInstance } from "fastify";
-import { config } from "../config.js";
 import { pool } from "../db.js";
+import { signAuthTokens as signTokens } from "../lib/auth.js";
 
 interface LoginBody {
   email?: string;
   password?: string;
-}
-
-function signTokens(payload: { sub: string; email: string; role: "user" | "admin" }) {
-  const accessOpts: SignOptions = { expiresIn: config.jwtAccessExpires as SignOptions["expiresIn"] };
-  const refreshOpts: SignOptions = { expiresIn: config.jwtRefreshExpires as SignOptions["expiresIn"] };
-  const accessToken = jwt.sign(payload, config.jwtSecret, accessOpts);
-  const refreshToken = jwt.sign(
-    { sub: payload.sub, type: "refresh" },
-    config.jwtRefreshSecret,
-    refreshOpts
-  );
-  return { accessToken, refreshToken };
 }
 
 export async function authRoutes(app: FastifyInstance) {
