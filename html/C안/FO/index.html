@@ -39,7 +39,8 @@
     content: ""; width: 6px; height: 6px; border-radius: 50%;
     background: var(--success); animation: pulse 2s infinite;
   }
-  .hero .round-badge.is-closed::before {
+  .hero .round-badge.is-closed::before,
+  .hero .round-badge.is-upcoming::before {
     background: var(--text-4); animation: none;
   }
   @keyframes pulse {
@@ -189,22 +190,18 @@
   }
   .tl-card.active .step-n { color: var(--primary); }
   .tl-card.active .step-t { color: var(--primary-700); }
-  .tl-card.active::after {
-    content: "진행 중";
+  .tl-badge {
     position: absolute; top: 12px; right: 12px;
     font-size: 11px; font-weight: 700;
-    background: var(--primary); color: #fff;
     padding: 3px 8px; border-radius: 99px;
+    line-height: 1.2;
   }
+  .tl-badge--upcoming { background: var(--bg-2); color: var(--text-3); }
+  .tl-badge--active { background: var(--primary); color: #fff; }
+  .tl-badge--ended { background: var(--success-50); color: var(--success); }
+  .tl-badge--tbd { background: var(--bg-2); color: var(--text-3); }
   .tl-card.done { background: var(--bg-2); opacity: 0.85; }
   .tl-card.done .step-n { color: var(--success); }
-  .tl-card.done::after {
-    content: "완료";
-    position: absolute; top: 12px; right: 12px;
-    font-size: 11px; font-weight: 700;
-    background: var(--success-50); color: var(--success);
-    padding: 3px 8px; border-radius: 99px;
-  }
   @media (min-width: 768px) { .timeline { grid-template-columns: repeat(4, 1fr); } }
 
   /* ============ Quicklinks ============ */
@@ -266,7 +263,7 @@
     <div class="container">
       <div class="hero-inner">
         <div>
-          <div class="round-badge"><strong>제107회</strong> 한국어능력시험 (2026.10.18) 접수 진행 중</div>
+          <div class="round-badge" id="heroRoundBadge"><strong>제107회</strong> 한국어능력시험 (2026.10.18) 접수 예정</div>
           <h1 style="margin-top:18px;">
             미얀마 <span class="accent">한국어능력시험</span><br>
             공식 접수 시스템
@@ -310,23 +307,27 @@
         </div>
         <a href="guide-overview.html" class="more">전체 일정</a>
       </div>
-      <div class="timeline">
-        <div class="tl-card active">
+      <div class="timeline" id="examTimeline">
+        <div class="tl-card" data-tl-start="2026-07-17" data-tl-end="2026-07-21">
+          <span class="tl-badge tl-badge--upcoming" aria-hidden="true">예정</span>
           <div class="step-n">STEP 01</div>
           <div class="step-t">원서 접수</div>
           <div class="step-d">2026.07.17(금) — 07.21(화)</div>
         </div>
-        <div class="tl-card">
+        <div class="tl-card" data-tl-start="2026-07-24" data-tl-end="2026-07-26">
+          <span class="tl-badge tl-badge--upcoming" aria-hidden="true">예정</span>
           <div class="step-n">STEP 02</div>
           <div class="step-t">응시료 납부 (오프라인)</div>
           <div class="step-d">2026.07.24(금) — 07.26(일)</div>
         </div>
-        <div class="tl-card">
+        <div class="tl-card" data-tl-start="2026-10-18" data-tl-end="2026-10-18">
+          <span class="tl-badge tl-badge--upcoming" aria-hidden="true">예정</span>
           <div class="step-n">STEP 03</div>
           <div class="step-t">시험 시행</div>
           <div class="step-d">2026.10.18 (일)</div>
         </div>
-        <div class="tl-card">
+        <div class="tl-card" data-tl-tbd>
+          <span class="tl-badge tl-badge--tbd" aria-hidden="true">미정</span>
           <div class="step-n">STEP 04</div>
           <div class="step-t">합격 발표</div>
           <div class="step-d">추후 공지</div>
@@ -460,15 +461,73 @@
     });
   })();
 
-  // D-Day countdown (target: 2026-07-21 23:59:59 GMT+6:30 — 제107회 접수 마감, 데모: 접수 진행 중)
+  // 제107회 일정 상태 (미얀마 +06:30)
+  (function () {
+    var TZ = '+06:30';
+    var REG_START = new Date('2026-07-17T00:00:00' + TZ).getTime();
+    var REG_END = new Date('2026-07-21T23:59:59' + TZ).getTime();
+
+    function dayStart(ymd) {
+      return new Date(ymd + 'T00:00:00' + TZ).getTime();
+    }
+    function dayEnd(ymd) {
+      return new Date(ymd + 'T23:59:59' + TZ).getTime();
+    }
+
+    document.querySelectorAll('#examTimeline .tl-card').forEach(function (card) {
+      var badge = card.querySelector('.tl-badge');
+      if (!badge) return;
+      card.classList.remove('active', 'done');
+      var label, state;
+      if (card.hasAttribute('data-tl-tbd')) {
+        label = '미정';
+        state = 'tbd';
+      } else {
+        var startYmd = card.getAttribute('data-tl-start');
+        var endYmd = card.getAttribute('data-tl-end');
+        if (!startYmd || !endYmd) return;
+        var now = Date.now();
+        var start = dayStart(startYmd);
+        var end = dayEnd(endYmd);
+        if (now < start) {
+          label = '예정';
+          state = 'upcoming';
+        } else if (now <= end) {
+          label = '진행중';
+          state = 'active';
+          card.classList.add('active');
+        } else {
+          label = '종료';
+          state = 'ended';
+          card.classList.add('done');
+        }
+      }
+      badge.textContent = label;
+      badge.className = 'tl-badge tl-badge--' + state;
+      badge.setAttribute('aria-hidden', 'true');
+    });
+
+    var heroBadge = document.getElementById('heroRoundBadge');
+    var now = Date.now();
+    if (heroBadge && now < REG_START) {
+      heroBadge.classList.add('is-upcoming');
+      heroBadge.innerHTML = '<strong>제107회</strong> 한국어능력시험 (2026.10.18) 접수 예정';
+    } else if (heroBadge && now >= REG_START && now <= REG_END) {
+      heroBadge.classList.remove('is-upcoming', 'is-closed');
+      heroBadge.innerHTML = '<strong>제107회</strong> 한국어능력시험 (2026.10.18) 접수 진행 중';
+    }
+  })();
+
+  // D-Day countdown (target: 2026-07-21 23:59:59 GMT+6:30 — 제107회 접수 마감)
   // 접수 마감 시각 도달 시 '접수 마감 / 다음 회차 안내' 상태로 자동 전환 (기능정의서 FO 메인)
   (function () {
     const target = new Date('2026-07-21T23:59:59+06:30').getTime();
+    const regStart = new Date('2026-07-17T00:00:00+06:30').getTime();
     const grid = document.getElementById('ddayGrid');
     const dday = document.querySelector('.dday');
     const head = dday ? dday.querySelector('.dday-head') : null;
     const foot = dday ? dday.querySelector('.dday-foot') : null;
-    const badge = document.querySelector('.hero .round-badge');
+    const badge = document.getElementById('heroRoundBadge');
     const el = {
       d: document.getElementById('dd-d'),
       h: document.getElementById('dd-h'),
@@ -515,7 +574,17 @@
     }
 
     function tick() {
-      const diff = target - Date.now();
+      const now = Date.now();
+      if (badge && now < regStart) {
+        badge.classList.add('is-upcoming');
+        if (!badge.classList.contains('is-closed')) {
+          badge.innerHTML = '<strong>제107회</strong> 한국어능력시험 (2026.10.18) 접수 예정';
+        }
+      } else if (badge && now >= regStart && now <= target && !closed) {
+        badge.classList.remove('is-upcoming');
+        badge.innerHTML = '<strong>제107회</strong> 한국어능력시험 (2026.10.18) 접수 진행 중';
+      }
+      const diff = target - now;
       if (diff <= 0) { showClosed(); return; }
       let rest = diff;
       const day = Math.floor(rest / 86400000); rest -= day * 86400000;
