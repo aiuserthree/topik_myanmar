@@ -96,11 +96,13 @@ INSERT INTO admin_users (name, email, password_hash, role, is_active) VALUES
     (
         'Dev Super Admin',
         'admin-dev@topik-mm.local',
-        '$2b$10$UUVqcoQbgj8mvvcNpgOT7.FCgnvpSyfmv/2IHnkAOPwceJqXUZcjy',
+        '$2b$10$tcLNPqr7RRi3XTyeSPbn..Rtrsdh6vjo63B3PfgJ8o7t6Gu/Wt852',
         'super',
         true
     )
-ON CONFLICT (email) DO NOTHING;
+ON CONFLICT (email) DO UPDATE SET
+    password_hash = EXCLUDED.password_hash,
+    is_active = true;
 
 -- ---------------------------------------------------------------------------
 -- Demo FO user (DEV ONLY — NOT for production)
@@ -113,13 +115,15 @@ INSERT INTO users (
 ) VALUES
     (
         'demo@topik-mm.local',
-        '$2b$10$If.U2FosirErz388QRy5Hu87K62Co3aJq4J9tamlTKKZiZw2iRate',
+        '$2b$10$5D7qxBkYxqLUGW8mMsd86eEIQ5tGuJnR7V2/AXvYjVI/rYEeiLL4e',
         'email',
         '데모 사용자', 'Demo User',
         '19980101', '1', '미얀마', '미얀마어', '+959123456789',
         2, 3, 3, 'ko', 'active'
     )
-ON CONFLICT (email) DO NOTHING;
+ON CONFLICT (email) DO UPDATE SET
+    password_hash = EXCLUDED.password_hash,
+    status = 'active';
 
 -- ---------------------------------------------------------------------------
 -- Sample notice (제106회 접수 안내)
