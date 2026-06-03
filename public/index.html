@@ -200,7 +200,6 @@
   .tl-badge--active { background: var(--primary); color: #fff; }
   .tl-badge[hidden] { display: none; }
   .tl-badge--ended { background: var(--success-50); color: var(--success); }
-  .tl-badge--tbd { background: var(--bg-2); color: var(--text-3); }
   .tl-card.done { background: var(--bg-2); opacity: 0.85; }
   .tl-card.done .step-n { color: var(--success); }
   @media (min-width: 768px) { .timeline { grid-template-columns: repeat(4, 1fr); } }
@@ -328,7 +327,7 @@
           <div class="step-d">2026.10.18 (일)</div>
         </div>
         <div class="tl-card" data-tl-tbd>
-          <span class="tl-badge tl-badge--tbd" aria-hidden="true">미정</span>
+          <span class="tl-badge" aria-hidden="true" hidden></span>
           <div class="step-n">STEP 04</div>
           <div class="step-t">합격 발표</div>
           <div class="step-d">추후 공지</div>
@@ -479,13 +478,6 @@
       var badge = card.querySelector('.tl-badge');
       if (!badge) return;
       card.classList.remove('active', 'done');
-      if (card.hasAttribute('data-tl-tbd')) {
-        badge.hidden = false;
-        badge.textContent = '미정';
-        badge.className = 'tl-badge tl-badge--tbd';
-        badge.setAttribute('aria-hidden', 'true');
-        return;
-      }
       var startYmd = card.getAttribute('data-tl-start');
       var endYmd = card.getAttribute('data-tl-end');
       if (!startYmd || !endYmd) return;
