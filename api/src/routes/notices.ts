@@ -1,4 +1,4 @@
-import type { FastifyInstance } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import { pool } from "../db.js";
 
 const CAT_LABEL: Record<string, string> = {
@@ -7,6 +7,20 @@ const CAT_LABEL: Record<string, string> = {
   exam: "시험",
   result: "결과",
 };
+
+/** Absolute base URL of the public API (proxy-aware) for building file links. */
+function publicApiBase(req: FastifyRequest): string {
+  const fwdProto = String((req.headers["x-forwarded-proto"] as string) || "")
+    .split(",")[0]
+    .trim();
+  const proto = fwdProto || req.protocol || "https";
+  const host = String(
+    (req.headers["x-forwarded-host"] as string) || req.headers.host || ""
+  )
+    .split(",")[0]
+    .trim();
+  return host ? `${proto}://${host}` : "";
+}
 
 function formatDate(iso: Date | string | null): string {
   if (!iso) return "";
@@ -145,6 +159,29 @@ export async function noticesRoutes(app: FastifyInstance) {
           );
         }
 
+        // Post attachments (owner_id = notice id). Inline editor images live as
+        // owner_id = 0 and are referenced from body_html, so they are excluded.
+        const attRes = await pool.query(
+          `SELECT id, original_filename, mime_type, size_bytes
+           FROM file_attachments
+           WHERE owner_type = 'notice' AND owner_id = $1
+           ORDER BY id ASC`,
+          [id]
+        );
+        const base = publicApiBase(req);
+        const fileUrl = (fileId: number, dl: boolean) => {
+          const p = `/api/v1/public/notice-files/${fileId}${dl ? "?dl=1" : ""}`;
+          return base ? base + p : p;
+        };
+        const attachments = attRes.rows.map((a) => ({
+          id: Number(a.id),
+          filename: a.original_filename,
+          mime: a.mime_type,
+          size: Number(a.size_bytes),
+          download_url: fileUrl(Number(a.id), true),
+          inline_url: fileUrl(Number(a.id), false),
+        }));
+
         const row = rows[0];
         return {
           id: Number(row.id),
@@ -156,6 +193,7 @@ export async function noticesRoutes(app: FastifyInstance) {
           view_count: row.view_count + (viewIns.rows.length > 0 ? 1 : 0),
           published_at: row.published_at,
           date_formatted: formatDate(row.published_at ?? row.created_at),
+          attachments,
         };
       } catch (err) {
         app.log.error(err);

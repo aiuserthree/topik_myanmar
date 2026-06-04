@@ -53,7 +53,7 @@ if SHARED_SRC.is_dir():
 for html in DST.glob("*.html"):
     text = html.read_text(encoding="utf-8")
     patched = text.replace("../../shared/", "shared/")
-    if 'name="topik-api-base"' not in patched:
+    if '<meta name="topik-api-base"' not in patched:
         viewport_idx = patched.find('name="viewport"')
         if viewport_idx != -1:
             close = patched.find("/>", viewport_idx)

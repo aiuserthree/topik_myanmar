@@ -52,7 +52,7 @@ VIEWPORT_META = '<meta name="viewport" content="width=device-width, initial-scal
 for html in DST.glob("*.html"):
     text = html.read_text(encoding="utf-8")
     patched = text.replace("../../shared/", "shared/")
-    if 'name="topik-api-base"' not in patched and VIEWPORT_META in patched:
+    if '<meta name="topik-api-base"' not in patched and VIEWPORT_META in patched:
         patched = patched.replace(
             VIEWPORT_META,
             VIEWPORT_META + "\n" + API_META,

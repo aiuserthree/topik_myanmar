@@ -302,7 +302,7 @@
       <div class="sec-head">
         <div>
           <div class="eyebrow">Schedule</div>
-          <h2 style="margin-top:6px;">제107회 시험 일정</h2>
+          <h2 id="schedTitle" style="margin-top:6px;">제107회 시험 일정</h2>
         </div>
         <a href="guide-overview.html" class="more">전체 일정</a>
       </div>
@@ -460,101 +460,133 @@
     });
   })();
 
-  // 제107회 일정 상태 (미얀마 +06:30)
+  // 회차 일정 — BO가 설정한 회차 데이터를 반영(미얀마 +06:30).
+  // API 미가용/실패 시에는 아래 정적 폴백값으로 기존 화면을 그대로 유지한다.
   (function () {
     var TZ = '+06:30';
-    var REG_START = new Date('2026-07-17T00:00:00' + TZ).getTime();
-    var REG_END = new Date('2026-07-21T23:59:59' + TZ).getTime();
+    var MMT_MS = (6 * 60 + 30) * 60000; // UTC → 미얀마 시간 보정
+    var WD = ['일', '월', '화', '수', '목', '금', '토'];
 
-    function dayStart(ymd) {
-      return new Date(ymd + 'T00:00:00' + TZ).getTime();
+    // 정적 폴백값(현행 하드코딩과 동일한 시점). 접수시작/마감은 절대 시각 기준.
+    var SCHED = {
+      roundNo: 107,
+      examDate: '2026-10-18T00:00:00+06:30',
+      regStart: '2026-07-17T00:00:00+06:30',
+      regEnd: '2026-07-21T23:59:59+06:30',
+      resultDate: null,
+      payPeriod: '2026.07.24 ~ 07.26', // 응시료 납부 기간은 회차 데이터에 없어 고정 표기
+    };
+
+    function pad(n) { return String(Math.max(0, n)).padStart(2, '0'); }
+    function mmt(v) {
+      if (!v) return null;
+      var d = (v instanceof Date) ? v : new Date(v);
+      return isNaN(d.getTime()) ? null : new Date(d.getTime() + MMT_MS);
     }
-    function dayEnd(ymd) {
-      return new Date(ymd + 'T23:59:59' + TZ).getTime();
-    }
+    function ymd(v) { var d = mmt(v); return d ? d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate()) : ''; }
+    function ymdDot(v) { var d = mmt(v); return d ? d.getUTCFullYear() + '.' + pad(d.getUTCMonth() + 1) + '.' + pad(d.getUTCDate()) : '--'; }
+    function mdDot(v) { var d = mmt(v); return d ? pad(d.getUTCMonth() + 1) + '.' + pad(d.getUTCDate()) : '--'; }
+    function wd(v) { var d = mmt(v); return d ? '(' + WD[d.getUTCDay()] + ')' : ''; }
 
-    document.querySelectorAll('#examTimeline .tl-card').forEach(function (card) {
-      var badge = card.querySelector('.tl-badge');
-      if (!badge) return;
-      card.classList.remove('active', 'done');
-      var startYmd = card.getAttribute('data-tl-start');
-      var endYmd = card.getAttribute('data-tl-end');
-      if (!startYmd || !endYmd) return;
-      var now = Date.now();
-      var start = dayStart(startYmd);
-      var end = dayEnd(endYmd);
-      if (now < start) {
-        badge.hidden = true;
-        badge.textContent = '';
-        badge.className = 'tl-badge';
-        badge.setAttribute('aria-hidden', 'true');
-        return;
-      }
-      var label, state;
-      badge.hidden = false;
-      if (now <= end) {
-        label = '진행중';
-        state = 'active';
-        card.classList.add('active');
-      } else {
-        label = '종료';
-        state = 'ended';
-        card.classList.add('done');
-      }
-      badge.textContent = label;
-      badge.className = 'tl-badge tl-badge--' + state;
-      badge.setAttribute('aria-hidden', 'true');
-    });
+    function roundTag() { return '제' + SCHED.roundNo + '회'; }
+    function examDot() { return ymdDot(SCHED.examDate); }
+    function regPeriod() { return ymdDot(SCHED.regStart) + ' ~ ' + mdDot(SCHED.regEnd); }
 
-    var heroBadge = document.getElementById('heroRoundBadge');
-    var now = Date.now();
-    if (heroBadge && now < REG_START) {
-      heroBadge.classList.add('is-upcoming');
-      heroBadge.classList.remove('is-closed');
-      heroBadge.innerHTML = '<strong>제107회</strong> 한국어능력시험 (2026.10.18)';
-    } else if (heroBadge && now >= REG_START && now <= REG_END) {
-      heroBadge.classList.remove('is-upcoming', 'is-closed');
-      heroBadge.innerHTML = '<strong>제107회</strong> 한국어능력시험 (2026.10.18) 접수 진행 중';
-    }
-  })();
-
-  // D-Day countdown (target: 2026-07-21 23:59:59 GMT+6:30 — 제107회 접수 마감)
-  // 접수 마감 시각 도달 시 '접수 마감 / 다음 회차 안내' 상태로 자동 전환 (기능정의서 FO 메인)
-  (function () {
-    const target = new Date('2026-07-21T23:59:59+06:30').getTime();
-    const regStart = new Date('2026-07-17T00:00:00+06:30').getTime();
-    const grid = document.getElementById('ddayGrid');
-    const dday = document.querySelector('.dday');
-    const head = dday ? dday.querySelector('.dday-head') : null;
-    const foot = dday ? dday.querySelector('.dday-foot') : null;
-    const badge = document.getElementById('heroRoundBadge');
-    const el = {
+    var dday = document.querySelector('.dday');
+    var head = dday ? dday.querySelector('.dday-head') : null;
+    var foot = dday ? dday.querySelector('.dday-foot') : null;
+    var grid = document.getElementById('ddayGrid');
+    var badge = document.getElementById('heroRoundBadge');
+    var schedTitle = document.getElementById('schedTitle');
+    var el = {
       d: document.getElementById('dd-d'),
       h: document.getElementById('dd-h'),
       m: document.getElementById('dd-m'),
       s: document.getElementById('dd-s')
     };
-    let timer = null;
-    let closed = false;
-    function pad(n) { return String(Math.max(0, n)).padStart(2, '0'); }
+    var timer = null;
+    var closed = false;
 
+    function footHtml(isClosed) {
+      if (isClosed) {
+        return '<span>시험일 <strong>' + examDot() + '</strong></span>' +
+               '<span>응시료 납부 <strong>' + SCHED.payPeriod + '</strong></span>';
+      }
+      return '<span>접수 기간 <strong>' + regPeriod() + '</strong></span>' +
+             '<span>응시료 납부 <strong>' + SCHED.payPeriod + '</strong></span>' +
+             '<span>시험일 <strong>' + examDot() + '</strong></span>';
+    }
+
+    // 접수기간·시험일·회차번호 등 정적 텍스트를 SCHED 기준으로 다시 그린다.
+    function paintStatic() {
+      if (head) {
+        var ttl = head.querySelector('.ttl');
+        if (ttl) ttl.innerHTML = '<strong>' + roundTag() + '</strong> 접수 마감까지';
+      }
+      if (foot) foot.innerHTML = footHtml(false);
+      if (schedTitle) schedTitle.textContent = roundTag() + ' 시험 일정';
+
+      var cards = document.querySelectorAll('#examTimeline .tl-card');
+      if (cards[0]) { // STEP 01 원서 접수
+        cards[0].setAttribute('data-tl-start', ymd(SCHED.regStart));
+        cards[0].setAttribute('data-tl-end', ymd(SCHED.regEnd));
+        var s1 = cards[0].querySelector('.step-d');
+        if (s1) s1.textContent = ymdDot(SCHED.regStart) + wd(SCHED.regStart) + ' — ' + mdDot(SCHED.regEnd) + wd(SCHED.regEnd);
+      }
+      if (cards[2]) { // STEP 03 시험 시행
+        cards[2].setAttribute('data-tl-start', ymd(SCHED.examDate));
+        cards[2].setAttribute('data-tl-end', ymd(SCHED.examDate));
+        var s3 = cards[2].querySelector('.step-d');
+        if (s3) s3.textContent = ymdDot(SCHED.examDate) + ' ' + wd(SCHED.examDate);
+      }
+      if (cards[3]) { // STEP 04 합격 발표
+        var s4 = cards[3].querySelector('.step-d');
+        if (s4) s4.textContent = SCHED.resultDate ? (ymdDot(SCHED.resultDate) + ' ' + wd(SCHED.resultDate)) : '추후 공지';
+      }
+    }
+
+    function paintTimelineBadges() {
+      var now = Date.now();
+      document.querySelectorAll('#examTimeline .tl-card').forEach(function (card) {
+        var b = card.querySelector('.tl-badge');
+        if (!b) return;
+        card.classList.remove('active', 'done');
+        var startYmd = card.getAttribute('data-tl-start');
+        var endYmd = card.getAttribute('data-tl-end');
+        if (!startYmd || !endYmd) {
+          b.hidden = true; b.textContent = ''; b.className = 'tl-badge';
+          b.setAttribute('aria-hidden', 'true');
+          return;
+        }
+        var start = new Date(startYmd + 'T00:00:00' + TZ).getTime();
+        var end = new Date(endYmd + 'T23:59:59' + TZ).getTime();
+        if (now < start) {
+          b.hidden = true; b.textContent = ''; b.className = 'tl-badge';
+          b.setAttribute('aria-hidden', 'true');
+          return;
+        }
+        b.hidden = false;
+        if (now <= end) { b.textContent = '진행중'; b.className = 'tl-badge tl-badge--active'; card.classList.add('active'); }
+        else { b.textContent = '종료'; b.className = 'tl-badge tl-badge--ended'; card.classList.add('done'); }
+        b.setAttribute('aria-hidden', 'true');
+      });
+    }
+
+    // 접수 마감 시각 도달 시 '접수 마감 / 다음 회차 안내' 상태로 자동 전환 (기능정의서 FO 메인)
     function showClosed() {
       if (closed) return;
       closed = true;
       if (timer) clearInterval(timer);
-      // 히어로 배지 → 다음 회차 안내
       if (badge) {
         badge.classList.add('is-closed');
-        badge.innerHTML = '<strong>제107회</strong> 한국어능력시험 접수 마감';
+        badge.innerHTML = '<strong>' + roundTag() + '</strong> 한국어능력시험 접수 마감';
       }
-      // D-Day 카드 헤더 → 마감 표시, LIVE 인디케이터 제거
       if (head) {
-        const live = head.querySelector('.live');
+        var live = head.querySelector('.live');
         if (live) live.remove();
-        const ttl = head.querySelector('.ttl');
-        if (ttl) ttl.innerHTML = '<strong>제107회</strong> 접수 마감';
+        var ttl = head.querySelector('.ttl');
+        if (ttl) ttl.innerHTML = '<strong>' + roundTag() + '</strong> 접수 마감';
       }
-      // 카운트다운 그리드 → 마감 안내 + 다음 회차 CTA
       if (grid) {
         grid.style.display = 'block';
         grid.innerHTML =
@@ -566,38 +598,69 @@
             '<a href="guide-overview.html" class="btn btn-secondary btn-sm" style="margin-top:14px;">다음 회차 일정 보기</a>' +
           '</div>';
       }
-      if (foot) {
-        foot.innerHTML =
-          '<span>시험일 <strong>2026.10.18</strong></span>' +
-          '<span>응시료 납부 <strong>2026.07.24 ~ 07.26</strong></span>';
-      }
+      if (foot) foot.innerHTML = footHtml(true);
     }
 
     function tick() {
-      const now = Date.now();
-      if (badge && now < regStart) {
+      var now = Date.now();
+      var regStartMs = new Date(SCHED.regStart).getTime();
+      var target = new Date(SCHED.regEnd).getTime();
+      if (badge && now < regStartMs) {
         badge.classList.add('is-upcoming');
         if (!badge.classList.contains('is-closed')) {
-          badge.innerHTML = '<strong>제107회</strong> 한국어능력시험 (2026.10.18)';
+          badge.innerHTML = '<strong>' + roundTag() + '</strong> 한국어능력시험 (' + examDot() + ')';
         }
-      } else if (badge && now >= regStart && now <= target && !closed) {
+      } else if (badge && now >= regStartMs && now <= target && !closed) {
         badge.classList.remove('is-upcoming');
-        badge.innerHTML = '<strong>제107회</strong> 한국어능력시험 (2026.10.18) 접수 진행 중';
+        badge.innerHTML = '<strong>' + roundTag() + '</strong> 한국어능력시험 (' + examDot() + ') 접수 진행 중';
       }
-      const diff = target - now;
+      var diff = target - now;
       if (diff <= 0) { showClosed(); return; }
-      let rest = diff;
-      const day = Math.floor(rest / 86400000); rest -= day * 86400000;
-      const hr  = Math.floor(rest / 3600000);  rest -= hr  * 3600000;
-      const min = Math.floor(rest / 60000);    rest -= min * 60000;
-      const sec = Math.floor(rest / 1000);
-      el.d.textContent = pad(day);
-      el.h.textContent = pad(hr);
-      el.m.textContent = pad(min);
-      el.s.textContent = pad(sec);
+      var rest = diff;
+      var day = Math.floor(rest / 86400000); rest -= day * 86400000;
+      var hr  = Math.floor(rest / 3600000);  rest -= hr  * 3600000;
+      var min = Math.floor(rest / 60000);    rest -= min * 60000;
+      var sec = Math.floor(rest / 1000);
+      if (el.d) el.d.textContent = pad(day);
+      if (el.h) el.h.textContent = pad(hr);
+      if (el.m) el.m.textContent = pad(min);
+      if (el.s) el.s.textContent = pad(sec);
     }
-    tick();
-    timer = setInterval(tick, 1000);
+
+    function render() {
+      closed = false; // 회차 갱신 시 마감 상태 재평가
+      paintStatic();
+      paintTimelineBadges();
+      if (timer) clearInterval(timer);
+      tick();
+      timer = setInterval(tick, 1000);
+    }
+
+    render(); // 정적 폴백으로 즉시 렌더
+
+    function pickRound(items) {
+      var open = items.filter(function (r) { return r.registration_status === 'open'; });
+      if (open.length) return open[0];
+      var scheduled = items.filter(function (r) { return r.registration_status === 'scheduled'; })
+        .sort(function (a, b) { return new Date(a.registration_start_at) - new Date(b.registration_start_at); });
+      if (scheduled.length) return scheduled[0];
+      return items[0];
+    }
+
+    // BO가 설정한 실제 회차로 덮어쓰기 (공개 엔드포인트는 접수기간을 그대로 반환)
+    if (window.TopikApi && TopikApi.useApi) {
+      TopikApi.getExamRounds().then(function (res) {
+        if (!res.ok || !res.body || !Array.isArray(res.body.items) || !res.body.items.length) return;
+        var r = pickRound(res.body.items);
+        if (!r || !r.registration_start_at || !r.registration_end_at) return;
+        if (r.round_no != null) SCHED.roundNo = r.round_no;
+        SCHED.examDate = r.exam_date || SCHED.examDate;
+        SCHED.regStart = r.registration_start_at;
+        SCHED.regEnd = r.registration_end_at;
+        SCHED.resultDate = r.result_announcement_date || null;
+        render();
+      }).catch(function () { /* 정적 폴백 유지 */ });
+    }
   })();
 </script>
 </body>

@@ -67,6 +67,53 @@ const EXT_BY_MIME: Record<string, string> = {
   "image/gif": "gif",
 };
 
+// -----------------------------------------------------------------------------
+// Generic (non-photo) attachment support — notice editor inline images + notice
+// post attachments. Distinct allow-lists keep inline images image-only while
+// post attachments also accept common document formats.
+// -----------------------------------------------------------------------------
+const EXT_BY_MIME_ALL: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "application/pdf": "pdf",
+  "application/msword": "doc",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+  "application/vnd.ms-excel": "xls",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
+  "application/vnd.ms-powerpoint": "ppt",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation": "pptx",
+  "application/zip": "zip",
+  "application/x-hwp": "hwp",
+  "application/haansofthwp": "hwp",
+  "application/x-hwpx": "hwpx",
+  "text/plain": "txt",
+  "text/csv": "csv",
+};
+
+const MIME_BY_EXT: Record<string, string> = (() => {
+  const m: Record<string, string> = {};
+  for (const [mime, ext] of Object.entries(EXT_BY_MIME_ALL)) {
+    if (!m[ext]) m[ext] = mime;
+  }
+  m.jpeg = "image/jpeg";
+  return m;
+})();
+
+/** Allowed mime types for in-body editor images (image-only). */
+export const NOTICE_IMAGE_MIME = new Set([
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+]);
+
+/** Allowed mime types for notice post attachments (images + common docs). */
+export const NOTICE_FILE_MIME = new Set(Object.keys(EXT_BY_MIME_ALL));
+
 let warnedS3Fallback = false;
 
 /** Effective storage mode after credential validation (s3 → local fallback). */
@@ -109,6 +156,37 @@ export function decodeBase64Image(raw: string): { buffer: Buffer; mime: string }
   const buffer = Buffer.from(data, "base64");
   if (!EXT_BY_MIME[mime]) mime = "image/jpeg";
   return { buffer, mime };
+}
+
+/**
+ * Decode an arbitrary base64 string or data URL into bytes + the data-URL mime
+ * (null when the input is bare base64 with no declared mime). Unlike
+ * decodeBase64Image this does NOT coerce the mime to an image type — callers
+ * validate against an explicit allow-list.
+ */
+export function decodeBase64Data(raw: string): {
+  buffer: Buffer;
+  mime: string | null;
+} {
+  let mime: string | null = null;
+  let data = raw;
+  const m = /^data:([^;,]+)(;base64)?,(.*)$/s.exec(raw);
+  if (m) {
+    mime = (m[1] || "").toLowerCase() || null;
+    data = m[3] ?? "";
+  }
+  return { buffer: Buffer.from(data, "base64"), mime };
+}
+
+function guessMimeFromName(name: string): string | null {
+  const ext = path.extname(name || "").replace(/^\./, "").toLowerCase();
+  return ext ? MIME_BY_EXT[ext] ?? null : null;
+}
+
+function sanitizeFilename(name: string | undefined, fallback: string): string {
+  const base = (name ?? "").split(/[\\/]/).pop() ?? "";
+  const cleaned = base.replace(/[\u0000-\u001f\u007f]/g, "").trim();
+  return (cleaned || fallback).slice(0, 200);
 }
 
 async function getS3Client(): Promise<{
@@ -241,6 +319,137 @@ async function writeLocal(
   // Store a POSIX-style relative key regardless of host OS.
   const rel = path.join(sub, name).split(path.sep).join("/");
   return `local:${rel}`;
+}
+
+async function writeLocalUnder(
+  subdir: string,
+  ext: string,
+  buffer: Buffer
+): Promise<string> {
+  const root = resolveUploadDir();
+  const dir = path.join(root, subdir);
+  await fs.mkdir(dir, { recursive: true });
+  const name = `${Date.now()}-${crypto.randomBytes(6).toString("hex")}.${ext}`;
+  await fs.writeFile(path.join(dir, name), buffer);
+  const rel = path.join(subdir, name).split(path.sep).join("/");
+  return `local:${rel}`;
+}
+
+function s3KeyUnder(subdir: string, ext: string): string {
+  const prefix = config.storage.s3.prefix;
+  const base = `${subdir}/${Date.now()}-${crypto
+    .randomBytes(6)
+    .toString("hex")}.${ext}`;
+  return prefix ? `${prefix}/${base}` : base;
+}
+
+export interface SaveBase64FileInput {
+  /** file_attachments.owner_type. */
+  ownerType: "notice";
+  /** file_attachments.owner_id (notice id; 0 for inline editor images). */
+  ownerId: number;
+  /** Raw base64 or data URL. */
+  base64: string;
+  /** Original filename shown to users / used for download. */
+  filename?: string;
+  /** Client-declared mime (used when the payload is bare base64). */
+  declaredMime?: string;
+  /** Allow-list the resolved mime must satisfy. */
+  allowedMime: Set<string>;
+  /** Max accepted decoded size in bytes. */
+  maxBytes: number;
+  /** Storage sub-folder root (e.g. "notices" or "notice-images"). */
+  subdir: string;
+}
+
+/**
+ * Decode + persist an arbitrary (validated) attachment, insert the
+ * file_attachments row, return its id. Throws StorageError on empty / oversized
+ * / disallowed payloads so callers can surface a 400.
+ */
+export async function saveBase64File(
+  db: Querier,
+  input: SaveBase64FileInput
+): Promise<SavedFile> {
+  const { buffer, mime: urlMime } = decodeBase64Data(input.base64);
+  if (buffer.length === 0) {
+    throw new StorageError("EMPTY_FILE", "파일 데이터가 비어 있습니다.");
+  }
+  if (buffer.length > input.maxBytes) {
+    throw new StorageError(
+      "FILE_TOO_LARGE",
+      `용량이 너무 큽니다. (최대 ${Math.floor(
+        input.maxBytes / (1024 * 1024)
+      )}MB)`
+    );
+  }
+
+  const filename = sanitizeFilename(input.filename, "file");
+  // Prefer the data-URL mime, then the client-declared mime, then a guess from
+  // the filename extension — accept the first that is in the allow-list.
+  const candidates = [
+    (urlMime || "").toLowerCase(),
+    (input.declaredMime || "").toLowerCase(),
+    (guessMimeFromName(filename) || "").toLowerCase(),
+  ];
+  let mime = candidates.find((c) => c && input.allowedMime.has(c)) || "";
+  if (!mime) {
+    throw new StorageError(
+      "UNSUPPORTED_TYPE",
+      "허용되지 않는 파일 형식입니다."
+    );
+  }
+  if (mime === "image/jpg") mime = "image/jpeg";
+
+  const ext =
+    EXT_BY_MIME_ALL[mime] ||
+    path.extname(filename).replace(/^\./, "").toLowerCase() ||
+    "bin";
+  const checksum = crypto.createHash("sha256").update(buffer).digest("hex");
+  const folder = `${input.subdir}/${input.ownerId || "inline"}`;
+
+  let storageKey: string;
+  if (storageMode() === "s3") {
+    const sdk = await getS3Client();
+    if (!sdk) {
+      storageKey = await writeLocalUnder(folder, ext, buffer);
+    } else {
+      const key = s3KeyUnder(folder, ext);
+      const cmd = new sdk.PutObjectCommand({
+        Bucket: config.storage.s3.bucket,
+        Key: key,
+        Body: buffer,
+        ContentType: mime,
+      });
+      await (sdk.client as { send: (c: unknown) => Promise<unknown> }).send(cmd);
+      storageKey = `s3:${key}`;
+    }
+  } else {
+    storageKey = await writeLocalUnder(folder, ext, buffer);
+  }
+
+  const ins = await db.query(
+    `INSERT INTO file_attachments (
+       owner_type, owner_id, storage_key, original_filename,
+       mime_type, size_bytes, checksum_sha256
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+     RETURNING id`,
+    [
+      input.ownerType,
+      input.ownerId,
+      storageKey,
+      filename,
+      mime,
+      buffer.length,
+      checksum,
+    ]
+  );
+  return {
+    fileId: Number(ins.rows[0].id),
+    storageKey,
+    mimeType: mime,
+    sizeBytes: buffer.length,
+  };
 }
 
 export interface ResolvedFile {

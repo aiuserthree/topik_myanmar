@@ -345,6 +345,31 @@
   function publishNotice(id) { return send("POST", "/api/v1/admin/notices/" + encodeURIComponent(id) + "/publish", {}); }
   function unpublishNotice(id) { return send("POST", "/api/v1/admin/notices/" + encodeURIComponent(id) + "/unpublish", {}); }
 
+  // 공지 본문 인라인 이미지 업로드 → { id, url(absolute), path }
+  function uploadNoticeImage(dataUrl, filename, mime) {
+    return send("POST", "/api/v1/admin/notices/images", {
+      data: dataUrl, filename: filename || "image", mime: mime || "",
+    });
+  }
+  // 공지 첨부파일
+  function listNoticeAttachments(id) {
+    return apiFetch("/api/v1/admin/notices/" + encodeURIComponent(id) + "/attachments");
+  }
+  function uploadNoticeAttachment(id, dataUrl, filename, mime) {
+    return send("POST", "/api/v1/admin/notices/" + encodeURIComponent(id) + "/attachments", {
+      data: dataUrl, filename: filename || "file", mime: mime || "",
+    });
+  }
+  function deleteNoticeAttachment(id, fileId) {
+    return send("DELETE", "/api/v1/admin/notices/" + encodeURIComponent(id) + "/attachments/" + encodeURIComponent(fileId));
+  }
+  // 절대 URL — FO에 저장되는 본문 이미지 src 등에 사용 (배포 BO는 meta로 API base 주입)
+  function noticeFileUrl(fileId, download) {
+    if (!fileId) return "";
+    var base = (API_BASE_URL || "").replace(/\/$/, "");
+    return base + "/api/v1/public/notice-files/" + encodeURIComponent(fileId) + (download ? "?dl=1" : "");
+  }
+
   // --- FAQ 관리 -------------------------------------------------------------
   function listFaq(params) { return apiFetch("/api/v1/admin/faq" + buildQuery(params)); }
   function getFaq(id) { return apiFetch("/api/v1/admin/faq/" + encodeURIComponent(id)); }
@@ -419,6 +444,11 @@
     deleteNotice: deleteNotice,
     publishNotice: publishNotice,
     unpublishNotice: unpublishNotice,
+    uploadNoticeImage: uploadNoticeImage,
+    listNoticeAttachments: listNoticeAttachments,
+    uploadNoticeAttachment: uploadNoticeAttachment,
+    deleteNoticeAttachment: deleteNoticeAttachment,
+    noticeFileUrl: noticeFileUrl,
     listFaq: listFaq,
     getFaq: getFaq,
     createFaq: createFaq,

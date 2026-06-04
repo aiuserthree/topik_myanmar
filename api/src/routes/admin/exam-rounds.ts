@@ -229,8 +229,10 @@ export async function adminExamRoundsRoutes(app: FastifyInstance) {
     async (_req, reply) => {
       try {
         const { rows } = await pool.query(
-          `SELECT r.id, r.round_no, r.title, r.exam_date, r.registration_status,
-                  r.exam_number_visible_at, r.capacity,
+          `SELECT r.id, r.round_no, r.title, r.exam_date,
+                  r.registration_start_at, r.registration_end_at,
+                  r.result_announcement_date, r.fee_level_i, r.fee_level_ii,
+                  r.registration_status, r.exam_number_visible_at, r.capacity,
                   COUNT(a.id) FILTER (WHERE a.status NOT IN ('cancelled','rejected')) AS active_count,
                   COUNT(a.id) FILTER (WHERE a.payment_status = 'paid') AS paid_count,
                   COUNT(a.id) FILTER (WHERE a.exam_number IS NOT NULL) AS assigned_count
@@ -269,6 +271,11 @@ export async function adminExamRoundsRoutes(app: FastifyInstance) {
             round_no: Number(r.round_no),
             title: r.title,
             exam_date: r.exam_date,
+            registration_start_at: r.registration_start_at,
+            registration_end_at: r.registration_end_at,
+            result_announcement_date: r.result_announcement_date,
+            fee_level_i: r.fee_level_i,
+            fee_level_ii: r.fee_level_ii,
             registration_status: r.registration_status,
             exam_number_visible_at: r.exam_number_visible_at,
             capacity: r.capacity != null ? Number(r.capacity) : null,

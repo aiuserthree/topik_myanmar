@@ -6,6 +6,40 @@
 <title>관리자 콘솔 — TOPIK Myanmar</title>
 <link rel="stylesheet" href="assets/fo-styles.css">
 <link rel="stylesheet" href="assets/admin.css">
+
+<!-- Quill 2.0.3 — modern, actively-maintained vanilla WYSIWYG (notice editor) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css">
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<style>
+  /* 공지 본문 에디터 (Quill) */
+  .notice-editor-host { display: block; }
+  .notice-editor-host .ql-container { min-height: 260px; font-size: 14px; }
+  .notice-editor-host .ql-editor { min-height: 260px; line-height: 1.7; }
+  .notice-editor-host .ql-toolbar.ql-snow,
+  .notice-editor-host .ql-container.ql-snow { border-color: var(--border, #dbe0e6); }
+  .notice-editor-host .ql-toolbar.ql-snow { border-top-left-radius: 6px; border-top-right-radius: 6px; }
+  .notice-editor-host .ql-container.ql-snow { border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; }
+  .notice-editor-host .ql-editor img { max-width: 100%; height: auto; }
+  .notice-editor-host.is-busy { opacity: .6; pointer-events: none; }
+  /* 첨부파일 위젯 */
+  .nt-attach-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .nt-attach-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 10px; border: 1px solid var(--border, #dbe0e6);
+    border-radius: 6px; background: #fff; font-size: 13px;
+  }
+  .nt-attach-item .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .nt-attach-item .sz { color: var(--text-3, #6b7588); font-size: 12px; white-space: nowrap; }
+  .nt-attach-item.removed .nm { text-decoration: line-through; color: var(--text-3, #6b7588); }
+  .nt-attach-item .x { border: 0; background: none; cursor: pointer; color: var(--text-3, #6b7588); padding: 2px 4px; line-height: 1; }
+  .nt-attach-item .x:hover { color: var(--danger, #d8345f); }
+  .nt-attach-drop {
+    margin-top: 8px; padding: 14px; text-align: center;
+    border: 1.5px dashed var(--border, #dbe0e6); border-radius: 8px;
+    color: var(--text-3, #6b7588); font-size: 13px; cursor: pointer; background: var(--bg-2, #f7f8fa);
+  }
+  .nt-attach-drop:hover { border-color: var(--primary, #2f6df6); color: var(--primary, #2f6df6); }
+</style>
 </head>
 <body class="admin">
 

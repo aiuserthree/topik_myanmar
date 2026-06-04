@@ -1,13 +1,51 @@
-import type { FastifyInstance } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import { config } from "../../config.js";
 import { pool } from "../../db.js";
 import { requireAdmin, requireAnyAdmin } from "../../lib/auth.js";
 import { formatDateTime, insertAuditLog } from "../../lib/admin-helpers.js";
 import { cleanString } from "../../lib/validation.js";
 import {
+  saveBase64File,
+  StorageError,
+  NOTICE_IMAGE_MIME,
+  NOTICE_FILE_MIME,
+} from "../../lib/storage.js";
+import {
   buildEmailDefaults,
   enqueueEmail,
 } from "../../lib/email-templates/enqueue-notification.js";
+
+// Upload payloads arrive as base64 JSON, so the request body can be a few MB.
+// Raise the per-route body limit above Fastify's 1 MB default accordingly.
+const IMAGE_BODY_LIMIT = 12 * 1024 * 1024; // editor inline images (≤8 MB raw)
+const FILE_BODY_LIMIT = 30 * 1024 * 1024; // post attachments (≤20 MB raw)
+const IMAGE_MAX_BYTES = config.storage.maxBytes; // reuse photo cap (default 5 MB)
+const FILE_MAX_BYTES = 20 * 1024 * 1024;
+
+/**
+ * Absolute base URL of the public API as seen by browsers. Built from the proxy
+ * forwarding headers (Railway sets x-forwarded-proto=https) so the URLs we bake
+ * into notice bodies / attachment lists work cross-origin from the FO. Falls
+ * back to the Fastify-parsed protocol/host when no proxy headers are present.
+ */
+function publicApiBase(req: FastifyRequest): string {
+  const fwdProto = String(
+    (req.headers["x-forwarded-proto"] as string) || ""
+  )
+    .split(",")[0]
+    .trim();
+  const proto = fwdProto || req.protocol || "https";
+  const host = String(
+    (req.headers["x-forwarded-host"] as string) || req.headers.host || ""
+  )
+    .split(",")[0]
+    .trim();
+  return host ? `${proto}://${host}` : "";
+}
+
+function noticeFilePath(fileId: number): string {
+  return `/api/v1/public/notice-files/${fileId}`;
+}
 
 const CAT_LABEL: Record<string, string> = {
   important: "중요",
@@ -414,6 +452,13 @@ export async function adminNoticesRoutes(app: FastifyInstance) {
             error: { code: "NOT_FOUND", message: "공지를 찾을 수 없습니다." },
           });
         }
+        // Best-effort cleanup of this notice's post attachments (owner_id = id).
+        // Inline editor images (owner_id = 0) are referenced by URL inside the
+        // body HTML and are intentionally left untouched.
+        await pool.query(
+          `DELETE FROM file_attachments WHERE owner_type = 'notice' AND owner_id = $1`,
+          [id]
+        );
         await insertAuditLog(pool, {
           adminId: req.authAdmin!.id,
           targetTable: "notices",
@@ -560,6 +605,210 @@ export async function adminNoticesRoutes(app: FastifyInstance) {
         });
       } finally {
         client.release();
+      }
+    }
+  );
+
+  // -------------------------------------------------------------------------
+  // POST /api/v1/admin/notices/images — 본문 인라인 이미지 업로드
+  // Stored as file_attachments(owner_type='notice', owner_id=0) so it is served
+  // publicly by GET /api/v1/public/notice-files/:id and embedded in body HTML.
+  // -------------------------------------------------------------------------
+  app.post<{ Body: { data?: string; filename?: string; mime?: string } }>(
+    "/api/v1/admin/notices/images",
+    { preHandler: requireAdmin, bodyLimit: IMAGE_BODY_LIMIT },
+    async (req, reply) => {
+      const body = req.body ?? {};
+      if (typeof body.data !== "string" || body.data.length < 10) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "이미지 데이터가 없습니다." },
+        });
+      }
+      try {
+        const saved = await saveBase64File(pool, {
+          ownerType: "notice",
+          ownerId: 0,
+          base64: body.data,
+          filename: body.filename || "image",
+          declaredMime: body.mime,
+          allowedMime: NOTICE_IMAGE_MIME,
+          maxBytes: IMAGE_MAX_BYTES,
+          subdir: "notice-images",
+        });
+        await insertAuditLog(pool, {
+          adminId: req.authAdmin!.id,
+          targetTable: "file_attachments",
+          targetId: saved.fileId,
+          action: "notice_image_upload",
+        });
+        const base = publicApiBase(req);
+        const path = noticeFilePath(saved.fileId);
+        return reply.status(201).send({
+          id: saved.fileId,
+          url: base ? base + path : path,
+          path,
+          mime: saved.mimeType,
+          size: saved.sizeBytes,
+        });
+      } catch (err) {
+        if (err instanceof StorageError) {
+          return reply.status(400).send({
+            error: { code: err.code, message: err.message },
+          });
+        }
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "upload_failed" },
+        });
+      }
+    }
+  );
+
+  // -------------------------------------------------------------------------
+  // GET /api/v1/admin/notices/:id/attachments — 첨부파일 목록
+  // -------------------------------------------------------------------------
+  app.get<{ Params: { id: string } }>(
+    "/api/v1/admin/notices/:id/attachments",
+    { preHandler: requireAnyAdmin },
+    async (req, reply) => {
+      const id = Number(req.params.id);
+      if (!Number.isFinite(id)) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "잘못된 요청입니다." },
+        });
+      }
+      try {
+        const { rows } = await pool.query(
+          `SELECT id, original_filename, mime_type, size_bytes, created_at
+           FROM file_attachments
+           WHERE owner_type = 'notice' AND owner_id = $1
+           ORDER BY id ASC`,
+          [id]
+        );
+        return {
+          items: rows.map((r) => ({
+            id: Number(r.id),
+            filename: r.original_filename,
+            mime: r.mime_type,
+            size: Number(r.size_bytes),
+            created_at: r.created_at,
+          })),
+        };
+      } catch (err) {
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
+        });
+      }
+    }
+  );
+
+  // -------------------------------------------------------------------------
+  // POST /api/v1/admin/notices/:id/attachments — 첨부파일 업로드
+  // -------------------------------------------------------------------------
+  app.post<{
+    Params: { id: string };
+    Body: { data?: string; filename?: string; mime?: string };
+  }>(
+    "/api/v1/admin/notices/:id/attachments",
+    { preHandler: requireAdmin, bodyLimit: FILE_BODY_LIMIT },
+    async (req, reply) => {
+      const id = Number(req.params.id);
+      const body = req.body ?? {};
+      if (!Number.isFinite(id)) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "잘못된 요청입니다." },
+        });
+      }
+      if (typeof body.data !== "string" || body.data.length < 10) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "파일 데이터가 없습니다." },
+        });
+      }
+      try {
+        const exists = await pool.query(
+          `SELECT id FROM notices WHERE id = $1 LIMIT 1`,
+          [id]
+        );
+        if (exists.rows.length === 0) {
+          return reply.status(404).send({
+            error: { code: "NOT_FOUND", message: "공지를 찾을 수 없습니다." },
+          });
+        }
+        const saved = await saveBase64File(pool, {
+          ownerType: "notice",
+          ownerId: id,
+          base64: body.data,
+          filename: body.filename || "file",
+          declaredMime: body.mime,
+          allowedMime: NOTICE_FILE_MIME,
+          maxBytes: FILE_MAX_BYTES,
+          subdir: "notices",
+        });
+        await insertAuditLog(pool, {
+          adminId: req.authAdmin!.id,
+          targetTable: "notices",
+          targetId: id,
+          action: "notice_attachment_add",
+        });
+        return reply.status(201).send({
+          id: saved.fileId,
+          filename: body.filename || "file",
+          mime: saved.mimeType,
+          size: saved.sizeBytes,
+        });
+      } catch (err) {
+        if (err instanceof StorageError) {
+          return reply.status(400).send({
+            error: { code: err.code, message: err.message },
+          });
+        }
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "upload_failed" },
+        });
+      }
+    }
+  );
+
+  // -------------------------------------------------------------------------
+  // DELETE /api/v1/admin/notices/:id/attachments/:fileId — 첨부파일 삭제
+  // -------------------------------------------------------------------------
+  app.delete<{ Params: { id: string; fileId: string } }>(
+    "/api/v1/admin/notices/:id/attachments/:fileId",
+    { preHandler: requireAdmin },
+    async (req, reply) => {
+      const id = Number(req.params.id);
+      const fileId = Number(req.params.fileId);
+      if (!Number.isFinite(id) || !Number.isFinite(fileId)) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "잘못된 요청입니다." },
+        });
+      }
+      try {
+        const del = await pool.query(
+          `DELETE FROM file_attachments
+           WHERE id = $1 AND owner_type = 'notice' AND owner_id = $2
+           RETURNING id`,
+          [fileId, id]
+        );
+        if (del.rows.length === 0) {
+          return reply.status(404).send({
+            error: { code: "NOT_FOUND", message: "첨부파일을 찾을 수 없습니다." },
+          });
+        }
+        await insertAuditLog(pool, {
+          adminId: req.authAdmin!.id,
+          targetTable: "notices",
+          targetId: id,
+          action: "notice_attachment_delete",
+        });
+        return { id: fileId, deleted: true };
+      } catch (err) {
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
+        });
       }
     }
   );
