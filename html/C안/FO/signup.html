@@ -648,6 +648,13 @@
     }
   })();
 
+  // 영문 성명 — 입력 시 대문자 변환 (여권 표기)
+  document.getElementById('su-name-en').addEventListener('input', function () {
+    var v = this.value;
+    var upper = v.toUpperCase();
+    if (v !== upper) this.value = upper;
+  });
+
   // PW strength
   document.getElementById('su-pw').addEventListener('input', function () {
     const v = this.value;
