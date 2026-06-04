@@ -133,7 +133,7 @@ persisted via a pluggable driver (`lib/storage.ts`), and `file_attachments` reco
 `storage_key` / `mime_type` / `size_bytes` / `checksum_sha256` (no more `stub://`).
 - `STORAGE_PROVIDER=local` (default) writes to `UPLOAD_DIR` (default `api/var/uploads`, gitignored)
   and serves bytes via `GET /api/v1/files/:id` (owner or admin only).
-- `STORAGE_PROVIDER=s3` uploads via `@aws-sdk/client-s3` and serves a presigned GET (302 redirect).
+- `STORAGE_PROVIDER=s3` uploads via `@aws-sdk/client-s3`; GET `/files/:id` streams the object through the API (no S3 presigned redirect — avoids FO `fetch`/CORS failures).
   Requires `S3_BUCKET/S3_REGION/S3_ACCESS_KEY/S3_SECRET` (+ optional `S3_ENDPOINT/S3_PREFIX`); if any
   are missing it logs a warning and **falls back to local** (mirrors the mailer console fallback).
 - `storage_key` is provider-tagged (`local:…` / `s3:…`). Legacy `stub://` rows resolve to 404.

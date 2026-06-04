@@ -10,7 +10,8 @@ import { config } from "../config.js";
  * STORAGE_PROVIDER:
  *   - "local" → write decoded bytes under UPLOAD_DIR (default api/var/uploads),
  *               served via GET /api/v1/files/:id. (default — works with no creds)
- *   - "s3"    → upload to S3 (or S3-compatible) and serve via presigned GET URL.
+ *   - "s3"    → upload to S3; GET /files/:id streams the object through the API
+ *               (avoids browser CORS failures on presigned redirect + fetch/blob).
  *               Requires S3_BUCKET/S3_REGION/S3_ACCESS_KEY/S3_SECRET (+ optional
  *               S3_ENDPOINT/S3_PREFIX). If any are missing we fall back to local
  *               with a warning (mirrors the mailer console fallback). No invented
@@ -461,10 +462,32 @@ export interface ResolvedFile {
   redirectUrl?: string;
 }
 
+async function resolveS3Stream(
+  objectKey: string,
+  mime: string,
+  filename: string
+): Promise<ResolvedFile | null> {
+  const sdk = await getS3Client();
+  if (!sdk) return null;
+  try {
+    const cmd = new sdk.GetObjectCommand({
+      Bucket: config.storage.s3.bucket,
+      Key: objectKey,
+    });
+    const res = (await (
+      sdk.client as { send: (c: unknown) => Promise<unknown> }
+    ).send(cmd)) as { Body?: Readable };
+    if (!res.Body) return null;
+    return { kind: "stream", mime, filename, stream: res.Body };
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Resolve a file_attachments row to deliverable content.
  *  - local → fs read stream
- *  - s3    → presigned GET URL (302 redirect) or object stream fallback
+ *  - s3    → S3 object read stream (proxied by GET /files/:id; no presigned redirect)
  *  - legacy stub:// → null (NOT_FOUND)
  */
 export async function resolveFile(row: FileRow): Promise<ResolvedFile | null> {
@@ -484,19 +507,7 @@ export async function resolveFile(row: FileRow): Promise<ResolvedFile | null> {
   }
 
   if (key.startsWith("s3:")) {
-    const objectKey = key.slice("s3:".length);
-    const sdk = await getS3Client();
-    if (!sdk) return null;
-    try {
-      const cmd = new sdk.GetObjectCommand({
-        Bucket: config.storage.s3.bucket,
-        Key: objectKey,
-      });
-      const url = await sdk.getSignedUrl(sdk.client, cmd, { expiresIn: 300 });
-      return { kind: "redirect", mime, filename, redirectUrl: url };
-    } catch {
-      return null;
-    }
+    return resolveS3Stream(key.slice("s3:".length), mime, filename);
   }
 
   // legacy stub:// or unknown scheme

@@ -200,11 +200,15 @@
       (token ? "?token=" + encodeURIComponent(token) : "");
   }
 
+  /**
+   * fetch() + blob — only safe when GET /files/:id returns bytes on the API origin.
+   * Prefer fileUrl() + <img src> for profile photos (S3 presigned redirects break CORS).
+   */
   function fetchFileBlob(fileId, isRetry) {
     if (!fileId || !USE_API || !API_BASE_URL || isFileUnavailable(fileId)) {
       return Promise.resolve(null);
     }
-    var headers = { Accept: "application/json" };
+    var headers = { Accept: "image/*,*/*" };
     var token = getAccessToken();
     if (token) headers.Authorization = "Bearer " + token;
     return fetch(apiUrl("/api/v1/files/" + encodeURIComponent(fileId)), { headers: headers })
