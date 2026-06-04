@@ -296,6 +296,8 @@ export async function meRoutes(app: FastifyInstance) {
         const photoUnavailable = await isPhotoUnavailable(
           u.photo_file_id != null ? Number(u.photo_file_id) : null
         );
+        // Only report upload failure when this request did not persist a new photo.
+        const reportPhotoError = photoError != null && newPhotoFileId == null;
         return {
           user: {
             id: u.id,
@@ -317,10 +319,10 @@ export async function meRoutes(app: FastifyInstance) {
             marketing_opt_in: u.marketing_opt_in,
             rev: u.rev,
           },
-          message: photoError
+          message: reportPhotoError
             ? "기본정보가 저장되었습니다. 다만 사진 업로드에 실패하여 사진은 반영되지 않았습니다."
             : "회원정보가 수정되었습니다.",
-          ...(photoError ? { photo_error: photoError } : {}),
+          ...(reportPhotoError ? { photo_error: photoError! } : {}),
         };
       } catch (err) {
         if (client && began) {

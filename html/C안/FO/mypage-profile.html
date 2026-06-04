@@ -226,6 +226,7 @@
 })();
 
   var photoChanged = false;
+  var lastKnownPhotoFileId = null;
   var profilePhotoCtrl = TPKMPhoto.bind({
     zone: document.getElementById('profilePhotoZone'),
     placeholder: '현재 사진',
@@ -287,6 +288,7 @@
       setSelectValue($('pf-motive'), u.motive_code);
       setSelectValue($('pf-purpose'), u.purpose_code);
       $('pf-email').value = u.email || '';
+      lastKnownPhotoFileId = u.photo_file_id != null ? Number(u.photo_file_id) : null;
       if (u.photo_file_id) showProfilePhoto(u.photo_file_id, u.photo_unavailable);
     });
   }
@@ -312,12 +314,15 @@
       alert('한글 성명, 영문 성명, 연락처는 필수입니다.');
       return;
     }
+    var photoAttempted = false;
     if (photoChanged && profilePhotoCtrl && profilePhotoCtrl.getState) {
       var st = profilePhotoCtrl.getState();
       if (st.dataUrl && st.dataUrl.indexOf('data:image') === 0) {
         payload.photo_base64 = st.dataUrl.indexOf(',') >= 0 ? st.dataUrl.split(',')[1] : st.dataUrl;
+        photoAttempted = true;
       }
     }
+    var photoIdBeforeSave = lastKnownPhotoFileId;
     btn.disabled = true;
     var prev = btn.textContent;
     btn.textContent = '저장 중…';
@@ -325,20 +330,29 @@
       btn.disabled = false;
       btn.textContent = prev;
       if (!res.ok) { alert(TopikApi.parseError(res)); return; }
-      var photoFailed = !!(res.body && res.body.photo_error);
-      // 사진 업로드가 실패한 경우엔 photoChanged를 유지해 다음 저장 시 재전송한다.
+      var u = res.body && res.body.user;
+      var newPhotoId = u && u.photo_file_id != null ? Number(u.photo_file_id) : null;
+      var photoSaved = photoAttempted && newPhotoId != null &&
+        (photoIdBeforeSave == null || newPhotoId !== photoIdBeforeSave);
+      // photo_error alone is not enough — confirm the server persisted a new file id.
+      var photoFailed = !!(res.body && res.body.photo_error) && !photoSaved;
       photoChanged = photoFailed;
+      if (photoSaved) lastKnownPhotoFileId = newPhotoId;
       // GNB 사용자 이름 동기화
-      if (res.body && res.body.user && TopikApi.syncLegacyUser) {
-        TopikApi.syncLegacyUser(res.body.user);
+      if (u && TopikApi.syncLegacyUser) {
+        TopikApi.syncLegacyUser(u);
         if (window.__tpkmRebuildNav) __tpkmRebuildNav();
       }
-      if (!photoFailed && res.body && res.body.user && res.body.user.photo_file_id) {
-        showProfilePhoto(res.body.user.photo_file_id, res.body.user.photo_unavailable);
+      if (!photoFailed && newPhotoId) {
+        showProfilePhoto(newPhotoId, u.photo_unavailable);
       }
-      alert((res.body && res.body.message) ||
-        (photoFailed ? '기본정보는 저장되었지만 사진 업로드에 실패했습니다. 잠시 후 다시 시도해 주세요.'
-                     : '회원정보가 수정되었습니다.'));
+      var alertMsg = photoFailed
+        ? ((res.body && res.body.message) ||
+           '기본정보는 저장되었지만 사진 업로드에 실패했습니다. 잠시 후 다시 시도해 주세요.')
+        : ((res.body && res.body.message && !res.body.photo_error)
+           ? res.body.message
+           : '회원정보가 수정되었습니다.');
+      alert(alertMsg);
     }).catch(function () {
       btn.disabled = false;
       btn.textContent = prev;
