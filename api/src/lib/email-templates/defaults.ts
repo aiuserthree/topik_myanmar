@@ -1,10 +1,10 @@
 import { config } from "../../config.js";
 import type { EmailVariables } from "./types.js";
 
-/** Format 6-digit code as "123 456" for display in email. */
+/** Format 6-digit code as continuous digits for display in email. */
 export function formatVerificationCode(code: string): string {
   const digits = code.replace(/\D/g, "");
-  if (digits.length === 6) return `${digits.slice(0, 3)} ${digits.slice(3)}`;
+  if (digits.length === 6) return digits;
   return code;
 }
 
