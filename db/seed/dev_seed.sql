@@ -111,6 +111,25 @@ ON CONFLICT (email) DO UPDATE SET
     is_active = true;
 
 -- ---------------------------------------------------------------------------
+-- Bootstrap admin (사용자 요청 — BO 로그인용)
+-- 로그인 ID: admin   /   비밀번호: admin1234!@#$
+-- ⚠ 약한 고정 자격증명. 정식 오픈 전 비밀번호 교체(create-admin) 또는 이 블록 제거 권장.
+-- Hash: bcrypt cost 10
+-- ---------------------------------------------------------------------------
+INSERT INTO admin_users (name, email, password_hash, role, is_active) VALUES
+    (
+        '관리자',
+        'admin',
+        '$2b$10$jMF.j3S4M3UnNBiBByZH5ObL1RXOSCRTOn0pEP7YHq8Pl6ASSbxKu',
+        'super',
+        true
+    )
+ON CONFLICT (email) DO UPDATE SET
+    password_hash = EXCLUDED.password_hash,
+    role = EXCLUDED.role,
+    is_active = true;
+
+-- ---------------------------------------------------------------------------
 -- Demo FO user (DEV ONLY — NOT for production)
 -- Email: demo@topik-mm.local / Password: DemoUser!2026
 -- ---------------------------------------------------------------------------
