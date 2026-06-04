@@ -7,8 +7,17 @@
 
   var STORAGE = {
     access: "bo_access_token",
+    refresh: "bo_refresh_token",
     admin: "bo_admin",
   };
+
+  /** Map the admin_users.role column to the Korean label shown in the BO chrome. */
+  function roleLabelKo(role) {
+    if (role === "super") return "최고관리자";
+    if (role === "standard" || role === "manager" || role === "general") return "일반관리자";
+    if (role === "readonly" || role === "viewer") return "조회관리자";
+    return role || "관리자";
+  }
 
   function resolveBaseUrl() {
     if (typeof global.TOPIK_API_BASE === "string" && global.TOPIK_API_BASE.trim()) {
@@ -43,9 +52,20 @@
     }
   }
 
+  function getRefreshToken() {
+    try {
+      return global.sessionStorage.getItem(STORAGE.refresh);
+    } catch (e) {
+      return null;
+    }
+  }
+
   function persistSession(data) {
     try {
       global.sessionStorage.setItem(STORAGE.access, data.access_token);
+      if (data.refresh_token) {
+        global.sessionStorage.setItem(STORAGE.refresh, data.refresh_token);
+      }
       if (data.user) {
         var u = data.user;
         global.sessionStorage.setItem(
@@ -54,7 +74,7 @@
             id: u.id,
             email: u.email,
             name: u.name || u.name_ko || "관리자",
-            role: u.role === "super" ? "최고관리자" : u.role === "manager" ? "일반관리자" : u.role,
+            role: roleLabelKo(u.role),
             roleKey: u.role,
           })
         );
@@ -65,11 +85,50 @@
   function logout() {
     try {
       global.sessionStorage.removeItem(STORAGE.access);
+      global.sessionStorage.removeItem(STORAGE.refresh);
       global.sessionStorage.removeItem(STORAGE.admin);
     } catch (e) { /* ignore */ }
   }
 
-  function apiFetch(path, options) {
+  /** Called once a 401 survives a refresh attempt: clear session + let the host redirect to login. */
+  function handleUnauthorized() {
+    logout();
+    var bo = global.TopikBoApi;
+    if (bo && typeof bo.onUnauthorized === "function") {
+      try { bo.onUnauthorized(); } catch (e) { /* ignore */ }
+    }
+  }
+
+  // Single-flight silent refresh using the stored refresh token (admin: sub).
+  var refreshInFlight = null;
+  function refreshSession() {
+    if (refreshInFlight) return refreshInFlight;
+    var rt = getRefreshToken();
+    if (!rt || !USE_API) return Promise.resolve(false);
+    refreshInFlight = fetch(apiUrl("/api/v1/auth/refresh"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ refresh_token: rt }),
+    })
+      .then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (body) {
+          if (!res.ok || !body || !body.access_token) return false;
+          try {
+            global.sessionStorage.setItem(STORAGE.access, body.access_token);
+            if (body.refresh_token) {
+              global.sessionStorage.setItem(STORAGE.refresh, body.refresh_token);
+            }
+          } catch (e) { /* private mode */ }
+          return true;
+        });
+      })
+      .catch(function () { return false; })
+      .then(function (ok) { refreshInFlight = null; return ok; });
+    return refreshInFlight;
+  }
+
+  // isRetry guards against loops: we attempt at most one silent refresh + retry.
+  function doApiFetch(path, options, isRetry) {
     options = options || {};
     var headers = Object.assign({ Accept: "application/json" }, options.headers || {});
     var token = getAccessToken();
@@ -84,16 +143,31 @@
       method: options.method || "GET",
       headers: headers,
       body: options.body,
-    }).then(function (res) {
-      return res
-        .json()
-        .catch(function () {
-          return {};
-        })
-        .then(function (body) {
-          return { ok: res.ok, status: res.status, body: body };
-        });
-    });
+    })
+      .then(function (res) {
+        return res
+          .json()
+          .catch(function () {
+            return {};
+          })
+          .then(function (body) {
+            if (res.status === 401 && !isRetry) {
+              return refreshSession().then(function (ok) {
+                if (ok) return doApiFetch(path, options, true);
+                handleUnauthorized();
+                return { ok: false, status: 401, body: body };
+              });
+            }
+            return { ok: res.ok, status: res.status, body: body };
+          });
+      })
+      .catch(function (err) {
+        return { ok: false, status: 0, error: "network_error", message: err && err.message, body: {} };
+      });
+  }
+
+  function apiFetch(path, options) {
+    return doApiFetch(path, options, false);
   }
 
   function login(email, password) {
@@ -320,6 +394,9 @@
     login: login,
     logout: logout,
     getAccessToken: getAccessToken,
+    getRefreshToken: getRefreshToken,
+    refreshSession: refreshSession,
+    onUnauthorized: null,
     apiFetch: apiFetch,
     approveApplication: approveApplication,
     rejectApplication: rejectApplication,

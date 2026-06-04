@@ -42,6 +42,8 @@ function InquiriesPanel() {
       )
     ),
 
+    h(DemoNote, { message: '문의 게시판 목록 조회 API(관리자)가 아직 없어 샘플 데이터로 표시됩니다. (답변 등록 API는 존재) 표시·답변·삭제는 데모입니다.' }),
+
     h('div', { className: 'filterbar' },
       h('div', { className: 'chips' },
         [['all','전체'],['public','일반'],['secret','비밀']].map(([k, l]) => (

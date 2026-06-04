@@ -167,12 +167,12 @@
       <form id="loginForm" autocomplete="on" novalidate>
         <div class="form-row">
           <label class="label" for="adminId">아이디 <span class="req">*</span></label>
-          <input class="input" id="adminId" name="id" type="text" placeholder="예: admin01" autocomplete="username" value="admin01">
+          <input class="input" id="adminId" name="id" type="text" placeholder="발급받은 관리자 아이디" autocomplete="username" value="">
         </div>
         <div class="form-row">
           <label class="label" for="adminPw">비밀번호 <span class="req">*</span></label>
           <div class="pw-wrap">
-            <input class="input" id="adminPw" name="pw" type="password" placeholder="비밀번호" autocomplete="current-password" value="topik2026!">
+            <input class="input" id="adminPw" name="pw" type="password" placeholder="비밀번호" autocomplete="current-password" value="">
             <button type="button" class="pw-toggle" id="pwToggle">표시</button>
           </div>
         </div>
@@ -185,13 +185,15 @@
         <button class="btn btn-primary btn-block" style="margin-top:20px;height:46px;" type="submit">로그인</button>
       </form>
 
-      <div class="auth-hint demo-only">
-        <strong style="color:var(--text-2);">데모 안내</strong> · 아무 아이디/비밀번호로 로그인할 수 있습니다. 5회 연속 실패 시 계정 잠금. <br>
-        예시 계정: <code>admin01 / topik2026!</code> (최고관리자)
+      <div class="auth-hint">
+        <strong style="color:var(--text-2);">로그인 안내</strong> · 발급받은 관리자 계정으로 로그인하세요. 비밀번호를 5회 연속 틀리면 일정 시간 잠금됩니다.<br>
+        계정 문의는 시스템 관리자(최고관리자)에게 요청해 주세요.
       </div>
     </div>
   </div>
 
+<!-- Live admin API client (window.TopikBoApi) -->
+<script src="../../shared/bo-api-client.js"></script>
 <script>
   // password toggle
   const pwToggle = document.getElementById('pwToggle');
@@ -201,37 +203,64 @@
     else { pw.type = 'password'; pwToggle.textContent = '표시'; }
   });
 
-  // 5회 실패 잠금 로직(데모: localStorage 카운트)
-  let fails = parseInt(localStorage.getItem('bo_login_fails') || '0', 10);
-
+  // 5회 실패 잠금(클라이언트 보조) — 실제 인증/잠금은 서버(API)에서 수행
+  const LOCK_LIMIT = 5;
   const form = document.getElementById('loginForm');
   const err = document.getElementById('errBanner');
-  const attempts = document.getElementById('attempts');
+  const submitBtn = form.querySelector('button[type="submit"]');
+
+  function showError(title, message, suffix) {
+    err.classList.add('show');
+    err.querySelector('strong').textContent = title;
+    err.querySelector('div').innerHTML =
+      '<strong>' + title + '</strong> · ' + message +
+      (suffix ? ' <span style="font-family:\'Inter\',sans-serif;">' + suffix + '</span>' : '');
+  }
+
+  function failCount() { return parseInt(localStorage.getItem('bo_login_fails') || '0', 10) || 0; }
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const id = document.getElementById('adminId').value.trim();
     const pwv = pw.value;
+    err.classList.remove('show');
+
     if (!id || !pwv) {
-      err.classList.add('show');
-      err.querySelector('strong').textContent = '입력 누락';
-      err.querySelector('div').innerHTML = '<strong>입력 누락</strong> · 아이디와 비밀번호를 모두 입력해주세요.';
+      showError('입력 누락', '아이디와 비밀번호를 모두 입력해주세요.');
+      return;
+    }
+    if (failCount() >= LOCK_LIMIT) {
+      showError('계정 잠금', '로그인 실패 횟수를 초과했습니다. 잠시 후 다시 시도해 주세요.');
+      return;
+    }
+    if (!window.TopikBoApi || !TopikBoApi.useApi) {
+      showError('환경 오류', 'API 서버 주소가 설정되지 않았습니다. 관리자에게 문의하세요.');
       return;
     }
 
-    // 데모: 무조건 성공 → 세션 저장 후 admin.html 이동
-    sessionStorage.setItem('bo_session', JSON.stringify({
-      id: id,
-      name: id === 'admin01' ? '김관리' : (id === 'editor01' ? '박편집' : '관리자'),
-      role: id === 'admin01' ? 'super' : (id === 'editor01' ? 'general' : 'viewer'),
-      loginAt: new Date().toISOString(),
-      ip: '203.0.113.42'
-    }));
-    localStorage.setItem('bo_login_fails', '0');
-    // ?next= 파라미터 보존
-    const params = new URLSearchParams(location.search);
-    const next = params.get('next');
-    location.replace(next && next.startsWith('admin') ? next : 'admin.html');
+    const origLabel = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = '로그인 중…';
+
+    TopikBoApi.login(id, pwv).then((res) => {
+      if (res && res.ok) {
+        localStorage.setItem('bo_login_fails', '0');
+        const params = new URLSearchParams(location.search);
+        const next = params.get('next');
+        location.replace(next && next.indexOf('admin') === 0 ? next : 'admin.html');
+        return;
+      }
+      const fails = failCount() + 1;
+      localStorage.setItem('bo_login_fails', String(fails));
+      const msg = TopikBoApi.parseError ? TopikBoApi.parseError(res) : '아이디 또는 비밀번호가 올바르지 않습니다.';
+      showError('로그인 실패', msg, '(' + fails + '/' + LOCK_LIMIT + ')');
+      submitBtn.disabled = false;
+      submitBtn.textContent = origLabel;
+    }).catch(() => {
+      showError('네트워크 오류', '서버에 연결할 수 없습니다. 연결 상태를 확인해 주세요.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = origLabel;
+    });
   });
 </script>
 </body>

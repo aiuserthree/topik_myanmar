@@ -57,15 +57,33 @@ function App() {
   const [sbOpen, setSbOpen] = useState(false);
   const state = useStore();
 
-  // Boot: session check + load me into store
+  // Boot: real auth check + load admin identity into store
   useEffect(() => {
-    const raw = sessionStorage.getItem('bo_session');
-    if (!raw) { location.replace('login.html?next=' + encodeURIComponent('admin.html')); return; }
-    const me = JSON.parse(raw);
+    const api = window.TopikBoApi;
+    const next = encodeURIComponent('admin.html' + (location.hash || ''));
+    if (!api || !api.getAccessToken()) {
+      location.replace('login.html?next=' + next);
+      return;
+    }
+    // Global 401 handler: cleared token → bounce to login (refresh already tried in client)
+    api.onUnauthorized = () => { location.replace('login.html?next=' + next); };
+
+    // Admin identity from sessionStorage (set by TopikBoApi.login on the login page)
+    let admin = null;
+    try { admin = JSON.parse(sessionStorage.getItem('bo_admin') || 'null'); } catch (e) { admin = null; }
+    const roleNorm = { super: 'super', standard: 'general', manager: 'general', general: 'general', readonly: 'viewer', viewer: 'viewer' };
+    const roleKey = admin && admin.roleKey;
+    const me = {
+      id: admin ? (admin.email || admin.id || 'admin') : 'admin',
+      email: admin ? (admin.email || '') : '',
+      name: admin ? (admin.name || '관리자') : '관리자',
+      role: roleNorm[roleKey] || 'super',
+      roleKey: roleKey || 'super',
+    };
     DataStore.state.me = me;
     DataStore.notify();
-    try { sessionStorage.setItem('tpkm_bo_admin', JSON.stringify({ role: me.role || 'super', name: me.name || me.id })); } catch (e) {}
-    if (window.TOPIKBoCore) TOPIKBoCore.startSessionHeartbeat(me.id || me.name, me.name);
+    try { sessionStorage.setItem('tpkm_bo_admin', JSON.stringify({ role: me.role, name: me.name })); } catch (e) {}
+    if (window.TOPIKBoCore) TOPIKBoCore.startSessionHeartbeat(me.id, me.name);
   }, []);
 
   useEffect(() => {
@@ -86,7 +104,7 @@ function App() {
   const navigate = useCallback((id) => { location.hash = id; }, []);
   const logout = useCallback(() => {
     if (!confirm('로그아웃 하시겠습니까?')) return;
-    DataStore.addAudit({ type: '관리자계정', targetId: state.me?.id || '', action: '로그아웃', memo: '' });
+    if (window.TopikBoApi) TopikBoApi.logout();
     sessionStorage.removeItem('bo_session');
     location.replace('login.html');
   }, [state.me]);

@@ -2,7 +2,7 @@
    panels/dashboard.js — 대시보드 (vanilla port of dashboard.jsx)
    ============================================================ */
 
-function DashboardPanel() {
+function DashboardPanelInner() {
   const state = useStore();
   const me = state.me;
   const session = state.sessions.find(s => s.id === state.activeSessionId);
@@ -66,6 +66,8 @@ function DashboardPanel() {
         h('a', { className: 'btn btn-primary', href: '#applicants' }, h(I.Users, { style: { width: 14, height: 14 } }), ' 접수자 목록')
       )
     ),
+
+    h(DemoNote, { message: '접수 KPI·분포·최근 접수자·회차 정보·최근 공지는 실데이터입니다. 처리 이력·환불/문의 위젯은 관리자 목록 API가 없어 샘플로 표시됩니다.' }),
 
     // KPI Grid
     h('div', { className: 'kpi-grid' },
@@ -253,6 +255,14 @@ function Kpi({ color, label, val, hint }) {
     h('div', { className: 'val' }, DataStore.fmtNum(val)),
     hint && h('div', { className: 'delta' }, hint)
   );
+}
+
+function DashboardPanel() {
+  return h(ResourceGate, {
+    loader: () => BoData.loadRoundContext().then(r => (r && r.error) ? r : BoData.loadNotices()),
+    deps: [DataStore.state.activeSessionId],
+    inner: DashboardPanelInner,
+  });
 }
 
 window.DashboardPanel = DashboardPanel;

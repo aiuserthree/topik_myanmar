@@ -15,10 +15,24 @@ const STATUS_CHIPS = [
 
 const REJECT_REASONS = ['사진 부적합', '정보 불일치', '중복 접수', '기타'];
 
-function ApplicantsPanel() {
+// admin_audit_logs.action(영문) → 화면 표기(한국어)
+const APP_ACTION_LABEL = {
+  application_approve: '승인', application_reject: '반려',
+  photo_review_approve: '사진 승인', photo_review_reject: '사진 반려',
+  payment_complete: '수납', payment_cancel: '수납취소', exam_number_assign: '수험번호부여',
+};
+
+function ApplicantsPanelInner() {
   const state = useStore();
   const sessionId = state.activeSessionId;
+  const session = state.sessions.find(s => s.id === sessionId);
   const apps = useMemo(() => state.applicants.filter(a => a.sessionId === sessionId), [state.applicants, sessionId]);
+
+  // 수험번호/수험표 노출 시점 (회차 exam_number_visible_at) — 게이트가 회차 상세를 미리 로드함
+  const visInit = session && session.examVisibleAt ? new Date(session.examVisibleAt) : null;
+  const visValid = visInit && !isNaN(visInit.getTime());
+  const [visDate, setVisDate] = useState(visValid ? visInit.toISOString().slice(0, 10) : '');
+  const [visTime, setVisTime] = useState(visValid ? visInit.toISOString().slice(11, 16) : '09:00');
 
   // ---- Filter / search ----
   const [statusF, setStatusF] = useState('all');
@@ -81,31 +95,23 @@ function ApplicantsPanel() {
   // expose detail open to other panels (Dashboard 'Recent')
   useEffect(() => { window.openApplicantDetail = (id) => setDetailId(id); }, []);
 
-  // ---- 사진 심사 (인라인) handlers — TPKM_BO_2_1_3 ----
+  // ---- 사진 심사 (인라인) handlers — TPKM_BO_2_1_3 → /photo-review API ----
   const doPhotoApprove = (id) => {
     const a = state.applicants.find(x => x.id === id);
     if (!a) return;
-    const before = { photoStatus: a.photoStatus, status: a.status };
-    a.photoStatus = 'approved';
-    a.photoOk = true;
-    // 사진 승인으로 후속 상태 진행
-    if (a.status === 'photo') a.status = a.paid ? 'approved' : 'pay';
-    DataStore.addAudit({ type: '사진', targetId: id, action: '승인', before, after: { photoStatus: 'approved', status: a.status }, memo: '' });
-    DataStore.notify();
-    toastOk('사진이 승인되었습니다.', { title: '사진 심사', type: 'success' });
+    return TopikBoApi.photoReview(a.apiId, { action: 'approve', rev: a.rev }).then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      return BoData.reload('apps').then(() => toastOk('사진이 승인되었습니다.', { title: '사진 심사', type: 'success' }));
+    });
   };
   const doPhotoReject = (id, reason) => {
     const a = state.applicants.find(x => x.id === id);
     if (!a) return;
     if (!reason || !reason.trim()) { toastErr('반려 사유를 입력해주세요.'); return; }
-    const before = { photoStatus: a.photoStatus, status: a.status, rejectReason: a.rejectReason };
-    a.photoStatus = 'rejected';
-    a.photoOk = false;
-    a.status = 'rejected';
-    a.rejectReason = reason;
-    DataStore.addAudit({ type: '사진', targetId: id, action: '반려', before, after: { photoStatus: 'rejected', status: 'rejected', rejectReason: reason }, memo: reason });
-    DataStore.notify();
-    toastOk('사진이 반려되었습니다. 응시자에게 이메일이 발송됩니다.', { title: '사진 심사', type: 'success' });
+    return TopikBoApi.photoReview(a.apiId, { action: 'reject', photo_reject_code: 'other', photo_reject_note: reason, rev: a.rev }).then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      return BoData.reload('apps').then(() => toastOk('사진이 반려되었습니다. 응시자에게 이메일이 발송됩니다.', { title: '사진 심사', type: 'success' }));
+    });
   };
   const doApprove = (ids) => {
     // 사진 미심사 행 가드 — 사진 승인 완료 건만 승인 가능
@@ -117,119 +123,93 @@ function ApplicantsPanel() {
       toastErr(`사진 미심사 ${blocked.length}건이 포함되어 있습니다. 행의 ‘사진심사’ 버튼으로 먼저 심사해주세요.`, { title: '승인 불가' });
       return;
     }
-    let n = 0;
-    ids.forEach(id => {
-      const a = state.applicants.find(x => x.id === id);
-      if (!a) return;
-      const before = { status: a.status };
-      a.status = 'approved';
-      n++;
-      DataStore.addAudit({ type: '접수자', targetId: id, action: '승인', before, after: { status: 'approved' }, memo: '' });
+    const rows = ids.map(id => state.applicants.find(x => x.id === id)).filter(Boolean);
+    return Promise.all(rows.map(a => TopikBoApi.approveApplication(a.apiId, { rev: a.rev }))).then(results => {
+      const okN = results.filter(r => r.ok).length;
+      const errN = results.length - okN;
+      return BoData.reload('apps').then(() => {
+        if (okN) toastOk(`${okN}건이 승인되었습니다. (이메일 통지 전송)`, { title: '승인 완료', type: 'success' });
+        if (errN) toastErr(`${errN}건은 처리하지 못했습니다.`);
+        setApproveModal(null);
+      });
     });
-    DataStore.notify();
-    toastOk(`${n}건이 승인되었습니다. (이메일 통지 전송)`, { title: '승인 완료', type: 'success' });
-    setApproveModal(null);
   };
 
   const doReject = (ids, reason) => {
     if (!reason || !reason.trim()) { toastErr('반려 사유를 입력해주세요.'); return; }
-    let n = 0;
-    ids.forEach(id => {
-      const a = state.applicants.find(x => x.id === id);
-      if (!a) return;
-      const before = { status: a.status, rejectReason: a.rejectReason };
-      a.status = 'rejected';
-      a.rejectReason = reason;
-      n++;
-      DataStore.addAudit({ type: '접수자', targetId: id, action: '반려', before, after: { status: 'rejected', rejectReason: reason }, memo: reason });
+    const rows = ids.map(id => state.applicants.find(x => x.id === id)).filter(Boolean);
+    return Promise.all(rows.map(a => TopikBoApi.rejectApplication(a.apiId, { reject_code: 'other', reject_note: reason, rev: a.rev }))).then(results => {
+      const okN = results.filter(r => r.ok).length;
+      const errN = results.length - okN;
+      return BoData.reload('apps').then(() => {
+        if (okN) toastOk(`${okN}건이 반려되었습니다. (이메일 통지)`, { title: '반려 완료', type: 'success' });
+        if (errN) toastErr(`${errN}건은 처리하지 못했습니다.`);
+        setRejectModal(null);
+      });
     });
-    DataStore.notify();
-    toastOk(`${n}건이 반려되었습니다. (이메일 통지)`, { title: '반려 완료', type: 'success' });
-    setRejectModal(null);
   };
 
   const doPay = (ids, info) => {
-    let n = 0;
-    ids.forEach(id => {
-      const a = state.applicants.find(x => x.id === id);
-      if (!a || a.paid) return;
-      const before = { paid: a.paid, status: a.status };
-      a.paid = true;
-      a.paidAt = new Date().toISOString().replace('T', ' ').slice(0, 16);
-      a.receipt = info.receipt || `R-${Math.floor(10000 + Math.random() * 89999)}`;
-      a.memo = (a.memo || '') + (info.memo ? `[수납] ${info.memo}\n` : '');
-      // 사진 OK 이면 자동 승인 후보, 아닐 시 photo 상태 유지
-      if (a.photoOk && a.status === 'pay') a.status = 'approved';
-      else if (a.status === 'applied') a.status = a.photoOk ? 'approved' : 'photo';
-      n++;
-      DataStore.addAudit({ type: '접수자', targetId: id, action: '수납', before, after: { paid: true, status: a.status }, memo: info.memo || '' });
+    const rows = ids.map(id => state.applicants.find(x => x.id === id)).filter(a => a && !a.paid);
+    if (!rows.length) { toastErr('수납 처리할 대상이 없습니다.'); return; }
+    // 사진 미승인 건은 동시 사진 승인(approve_photo)으로 통과시킨다(수납 모달의 사진 승인과 동일 정책).
+    return Promise.all(rows.map(a => TopikBoApi.markPayment(a.apiId, {
+      receipt_no: info.receipt || '', payment_memo: info.memo || '', approve_photo: true, rev: a.rev,
+    }))).then(results => {
+      const okN = results.filter(r => r.ok).length;
+      const errN = results.length - okN;
+      return BoData.reload('apps').then(() => {
+        if (okN) toastOk(`${okN}건 수납 처리되었습니다.`, { title: '수납 완료', type: 'success' });
+        if (errN) toastErr(`${errN}건은 처리하지 못했습니다. (정원 초과/상태 확인)`);
+        setPayModal(null);
+      });
     });
-    DataStore.notify();
-    toastOk(`${n}건 수납 처리되었습니다.`, { title: '수납 완료', type: 'success' });
-    setPayModal(null);
   };
 
-  // 수납취소 — 수납을 취소하고 미수납(수납대기) 상태로 되돌린다(토글). 수험번호는 유지.
+  // 수납취소(환불) — 서버는 payment_status='refunded'(환불자) 처리, 수험번호는 유지.
   const doCancelPay = (ids, reason) => {
-    let n = 0;
-    ids.forEach(id => {
-      const a = state.applicants.find(x => x.id === id);
-      if (!a || !a.paid) return;
-      const before = { paid: a.paid, status: a.status, paidAt: a.paidAt, receipt: a.receipt };
-      a.paid = false;
-      a.paidAt = '';
-      a.receipt = '';
-      a.status = 'pay';                    // 미수납(수납대기)로 되돌림
-      if (reason && reason.trim()) a.memo = (a.memo || '') + `[수납취소] ${reason}\n`;
-      n++;
-      DataStore.addAudit({ type: '접수자', targetId: id, action: '수납취소', before, after: { paid: false, status: 'pay' }, memo: reason || '' });
+    if (!reason || !reason.trim()) { toastErr('취소(환불) 사유를 입력해주세요.'); return; }
+    const rows = ids.map(id => state.applicants.find(x => x.id === id)).filter(a => a && a.paid);
+    if (!rows.length) { toastErr('수납 취소할 대상이 없습니다.'); setPayModal(null); return; }
+    return Promise.all(rows.map(a => TopikBoApi.cancelPayment(a.apiId, { reason: reason, rev: a.rev }))).then(results => {
+      const okN = results.filter(r => r.ok).length;
+      const errN = results.length - okN;
+      return BoData.reload('apps').then(() => {
+        if (okN) toastOk(`${okN}건이 수납 취소(환불) 처리되었습니다. 수험번호는 유지됩니다.`, { title: '수납 취소', type: 'success' });
+        if (errN) toastErr(`${errN}건은 처리하지 못했습니다.`);
+        setPayModal(null);
+      });
     });
-    DataStore.notify();
-    if (n) toastOk(`${n}건 수납이 취소되어 미수납(수납대기)으로 변경되었습니다.`, { title: '수납 취소', type: 'success' });
-    else toastErr('수납 취소할 대상이 없습니다.');
-    setPayModal(null);
   };
 
-  // 수험번호 13자리 일괄 부여
+  // 수험번호 13자리 일괄 부여 — /assign-exam-numbers (dry_run 미리보기 → 확정)
   const doAssignExam = (preview = false) => {
-    const session = state.sessions.find(s => s.id === sessionId);
-    // 대상: paid && photoOk && status NOT IN (cancel, rejected) && exam 비어있음
-    const targets = state.applicants
-      .filter(a => a.sessionId === sessionId)
-      .filter(a => a.paid && a.photoOk && !['cancel', 'rejected'].includes(a.status) && !a.exam);
-    // 같은 시험장에서 동시접수(Ⅰ+Ⅱ) 강제: 본 데모에서는 lvl=동시 동일 처리
-    // 알파벳 오름차순(영문)
-    const sorted = targets.slice().sort((a, b) => a.nameEn.localeCompare(b.nameEn));
-
-    // 그룹: 시험장×수준(7/8)
-    const seqs = {}; // key: venueCode|lvlCode → 0001 시작
-    const result = [];
-    for (const a of sorted) {
-      const v = state.venues.find(x => x.id === a.venueId);
-      const venueCode = v ? v.code : '01';
-      const regionCode = v ? v.regionCode : '001';
-      const lvlCodes = a.level === '동시' ? ['7', '8'] : [a.level === 'Ⅰ' ? '7' : '8'];
-      const assigned = [];
-      for (const lc of lvlCodes) {
-        const key = venueCode + '|' + lc;
-        seqs[key] = (seqs[key] || 0) + 1;
-        const num = `025${regionCode}${lc}${venueCode}${String(seqs[key]).padStart(4, '0')}`;
-        assigned.push(num);
+    const roundId = Number(sessionId);
+    if (!roundId) {
+      toastErr('회차를 선택해 주세요.');
+      return Promise.resolve({ result: [], targets: 0, skipped: 0, error: true });
+    }
+    return TopikBoApi.assignExamNumbers(roundId, { dry_run: !!preview }).then(res => {
+      if (!res.ok) {
+        toastErr(TopikBoApi.parseError(res));
+        return { result: [], targets: 0, skipped: 0, error: true };
       }
-      result.push({ id: a.id, name: a.nameEn, nameKo: a.nameKo, exam: assigned.join(' / '), level: a.level });
-    }
-
-    if (preview) return { result, targets: targets.length, skipped: state.applicants.filter(a => a.sessionId === sessionId).length - targets.length };
-
-    // 확정
-    for (const r of result) {
-      const a = state.applicants.find(x => x.id === r.id);
-      a.exam = r.exam;
-      DataStore.addAudit({ type: '접수자', targetId: r.id, action: '수험번호부여', after: { exam: a.exam }, memo: `회차 ${session?.no} 알파벳순 부여` });
-    }
-    DataStore.notify();
-    toastOk(`${result.length}건에 수험번호가 일괄 부여되었습니다.`, { title: '수험번호 부여 완료' });
-    return { result, targets: targets.length };
+      const b = res.body || {};
+      const result = (b.samples || []).map(s => {
+        const ap = state.applicants.find(x => x.apiId === s.application_id) || {};
+        return {
+          id: s.application_id, name: ap.nameEn || '', nameKo: ap.nameKo || '',
+          exam: s.exam_number, level: s.exam_level === 'II' ? 'Ⅱ' : 'Ⅰ',
+        };
+      });
+      if (!preview) {
+        return BoData.reload('apps').then(() => {
+          toastOk(`${b.assigned_now || 0}건에 수험번호가 일괄 부여되었습니다.`, { title: '수험번호 부여 완료' });
+          return { result, targets: b.assigned_now || 0, total: b.total_assigned || 0, skipped: 0 };
+        });
+      }
+      return { result, targets: b.assigned_now || 0, total: b.total_assigned || 0, skipped: 0 };
+    });
   };
 
   const myRole = state.me?.role || 'super';
@@ -312,7 +292,7 @@ function ApplicantsPanel() {
           h('tbody', null,
             pageRows.map(a => h('tr', { key: a.id },
               h('td', { className: 'num' }, a.no),
-              h('td', null, h(PhotoThumb, { status: a.photoStatus, name: a.nameKo, seed: a.id })),
+              h('td', null, h(PhotoThumb, { status: a.photoStatus, name: a.nameKo, seed: a.id, fileId: a.photoFileId })),
               h('td', null, h('a', { style: { color: 'var(--primary)', fontWeight: 600, cursor: 'pointer' }, onClick: () => setDetailId(a.id) }, a.nameKo)),
               h('td', null, a.nameEn),
               h('td', null, h('span', { className: 'code-id' }, 'TOPIK ', a.level)),
@@ -351,15 +331,23 @@ function ApplicantsPanel() {
       ),
       h('div', { className: 'acard-body', style: { display: 'flex', gap: 12, alignItems: 'flex-start', flexWrap: 'wrap' } },
         h(FormRow, { label: '노출 시작일', hint: '이 날짜 이전에는 FO에서 수험번호 미노출' },
-          h('input', { type: 'date', className: 'input', style: { height: 38, width: 200 }, defaultValue: '2026-08-15' })
+          h('input', { type: 'date', className: 'input', style: { height: 38, width: 200 }, value: visDate, onChange: e => setVisDate(e.target.value) })
         ),
         h(FormRow, { label: '노출 시작 시각' },
-          h('input', { type: 'time', className: 'input', style: { height: 38, width: 140 }, defaultValue: '09:00' })
+          h('input', { type: 'time', className: 'input', style: { height: 38, width: 140 }, value: visTime, onChange: e => setVisTime(e.target.value) })
         ),
         // 버튼을 form-row 컬럼으로 감싸고, 빈 라벨로 라벨 높이만큼 자리만 차지시켜 입력칸과 같은 줄에 맞춤
         h('div', { className: 'form-row', style: { marginBottom: 0 } },
           h('label', { className: 'label', style: { visibility: 'hidden' } }, '\u00A0'),
-          h('button', { className: 'btn btn-primary', style: { height: 38 }, onClick: () => { DataStore.addAudit({ type: '회차', targetId: sessionId, action: '수정', memo: '수험번호 노출 시점 변경' }); toastOk('노출 시점이 저장되었습니다.'); } }, '노출 시점 저장')
+          h('button', { className: 'btn btn-primary', style: { height: 38 }, onClick: () => {
+            const roundId = Number(sessionId);
+            if (!roundId) { toastErr('회차를 선택해 주세요.'); return; }
+            const iso = visDate ? (visDate + 'T' + (visTime || '00:00') + ':00') : null;
+            TopikBoApi.updateExamRound(roundId, { exam_number_visible_at: iso }).then(res => {
+              if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+              toastOk('수험번호/수험표 노출 시점이 저장되었습니다.');
+            });
+          } }, '노출 시점 저장')
         )
       )
     ),
@@ -394,8 +382,11 @@ function ApplicantsPanel() {
   );
 }
 
-// ---- thumb (initial-based avatar with subtle gradient) ----
-function PhotoThumb({ status, name, seed }) {
+// ---- thumb: real photo via authenticated fileUrl, else initial-based avatar ----
+function PhotoThumb({ status, name, seed, fileId }) {
+  if (fileId && window.TopikBoApi) {
+    return h('img', { className: 'photo', src: TopikBoApi.fileUrl(fileId), alt: name || '증명사진', style: { objectFit: 'cover' } });
+  }
   if (status === 'pending') return h('div', { className: 'photo', style: { background: 'var(--st-photo-bg)', color: 'var(--st-photo)' } }, '미심사');
   if (status === 'rejected') return h('div', { className: 'photo', style: { background: 'var(--st-rejected-bg)', color: 'var(--st-rejected)' } }, '반려');
   const hue = (seed.charCodeAt(seed.length - 1) * 17) % 360;
@@ -446,9 +437,11 @@ function PhotoReviewLP({ id, onClose, onApprove, onReject }) {
   },
     h('div', { style: { display: 'flex', gap: 16 } },
       h('div', { style: { flex: '0 0 150px' } },
-        a.photoStatus === 'rejected'
-          ? h('div', { className: 'photo-lg', style: { background: 'var(--st-rejected-bg)', color: 'var(--st-rejected)' } }, '반려된 사진')
-          : h('div', { className: 'photo-lg', onClick: () => setZoom(true), style: { cursor: 'zoom-in', background: `linear-gradient(160deg, hsl(${hue} 40% 84%), hsl(${hue} 35% 58%))`, color: '#fff', fontSize: 64, fontWeight: 700 } }, a.nameKo.slice(0, 1)),
+        a.photoFileId && window.TopikBoApi
+          ? h('img', { className: 'photo-lg', onClick: () => setZoom(true), src: TopikBoApi.fileUrl(a.photoFileId), alt: a.nameKo, style: { cursor: 'zoom-in', objectFit: 'cover' } })
+          : a.photoStatus === 'rejected'
+            ? h('div', { className: 'photo-lg', style: { background: 'var(--st-rejected-bg)', color: 'var(--st-rejected)' } }, '반려된 사진')
+            : h('div', { className: 'photo-lg', onClick: () => setZoom(true), style: { cursor: 'zoom-in', background: `linear-gradient(160deg, hsl(${hue} 40% 84%), hsl(${hue} 35% 58%))`, color: '#fff', fontSize: 64, fontWeight: 700 } }, a.nameKo.slice(0, 1)),
         h('div', { style: { marginTop: 8, display: 'flex', gap: 6 } },
           h('button', { className: 'ibtn', style: { flex: 1 }, onClick: () => setZoom(true) }, h(I.Eye, { style: { width: 12, height: 12 } }), ' 원본'),
           h('button', { className: 'ibtn', style: { flex: 1 } }, h(I.Download, { style: { width: 12, height: 12 } }), ' 받기')
@@ -483,7 +476,9 @@ function PhotoReviewLP({ id, onClose, onApprove, onReject }) {
     ),
 
     zoom && h('div', { className: 'modal-backdrop open', style: { zIndex: 340 }, onClick: () => setZoom(false) },
-      h('div', { style: { width: 'min(420px, 90vw)', aspectRatio: '3/4', borderRadius: 10, background: `linear-gradient(160deg, hsl(${hue} 40% 80%), hsl(${hue} 35% 48%))`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 160, fontWeight: 700 } }, a.nameKo.slice(0, 1))
+      a.photoFileId && window.TopikBoApi
+        ? h('img', { src: TopikBoApi.fileUrl(a.photoFileId), alt: a.nameKo, style: { width: 'min(420px, 90vw)', borderRadius: 10, objectFit: 'contain' } })
+        : h('div', { style: { width: 'min(420px, 90vw)', aspectRatio: '3/4', borderRadius: 10, background: `linear-gradient(160deg, hsl(${hue} 40% 80%), hsl(${hue} 35% 48%))`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 160, fontWeight: 700 } }, a.nameKo.slice(0, 1))
     )
   );
 }
@@ -494,17 +489,29 @@ function ApplicantDetailLP({ id, onClose, onApprove, onReject, onPay, onPhotoApp
   const a = state.applicants.find(x => x.id === id);
   const [tab, setTab] = useState('profile');
   const [memo, setMemo] = useState('');
+  const [detail, setDetail] = useState(null);
+  // 상세(처리 이력·연락처·반려 사유)는 상세 API에서 로드
+  useEffect(() => {
+    if (a && a.apiId) {
+      TopikBoApi.getApplication(a.apiId).then(res => { if (res.ok) setDetail(res.body); });
+    }
+  }, [id]);
   if (!a) return null;
   const venue = state.venues.find(v => v.id === a.venueId);
-  const log = state.audit.filter(l => l.targetId === id);
+  const dUser = (detail && detail.user) || {};
+  const dApp = (detail && detail.application) || {};
+  const phoneVal = dUser.phone || a.tel || '—';
+  const rejectReason = dApp.reject_note || a.rejectReason || '—';
+  const paymentMemo = dApp.payment_memo || '';
+  const log = ((detail && detail.audit_logs) || []).map((l, i) => ({
+    id: 'al' + i, ts: l.created_at_label || '', type: '접수자',
+    action: APP_ACTION_LABEL[l.action] || l.action,
+    actor: l.admin_name || l.admin_email || '—', ip: '',
+    memo: l.memo || (l.status_after ? '상태: ' + l.status_after : ''),
+  }));
 
   const addMemo = () => {
-    if (!memo.trim()) return;
-    a.memo = (a.memo || '') + `[${new Date().toISOString().slice(0, 16).replace('T', ' ')}/${state.me?.id}] ${memo}\n`;
-    DataStore.addAudit({ type: '접수자', targetId: id, action: '수정', memo: '관리자 메모 추가' });
-    DataStore.notify();
-    setMemo('');
-    toastOk('메모가 추가되었습니다.');
+    toast('접수 건 관리자 메모 저장 API가 아직 제공되지 않습니다. (데모)', { title: '메모', type: 'success' });
   };
 
   return h(LP, {
@@ -526,7 +533,7 @@ function ApplicantDetailLP({ id, onClose, onApprove, onReject, onPay, onPhotoApp
 
     tab === 'profile' && h('div', { style: { display: 'grid', gridTemplateColumns: '240px 1fr', gap: 24 } },
       h('div', null,
-        h(PhotoLarge, { status: a.photoStatus, name: a.nameKo, seed: a.id }),
+        h(PhotoLarge, { status: a.photoStatus, name: a.nameKo, seed: a.id, fileId: a.photoFileId }),
         h('div', { style: { marginTop: 10, display: 'flex', gap: 6 } },
           h('button', { className: 'ibtn', style: { flex: 1 } }, h(I.Download, { style: { width: 12, height: 12 } }), ' 원본 받기'),
           h('button', { className: 'ibtn', style: { flex: 1 } }, '회전 보정')
@@ -544,7 +551,7 @@ function ApplicantDetailLP({ id, onClose, onApprove, onReject, onPay, onPhotoApp
           h(KV, { k: '제1언어', v: a.l1 }),
           h(KV, { k: '직업', v: a.job }),
           h(KV, { k: '이메일', v: a.email }),
-          h(KV, { k: '전화', v: a.tel }),
+          h(KV, { k: '전화', v: phoneVal }),
           h(KV, { k: '편의지원', v: a.accommodation ? '신청' : '미신청' })
         ),
 
@@ -559,20 +566,21 @@ function ApplicantDetailLP({ id, onClose, onApprove, onReject, onPay, onPhotoApp
           h(KV, { k: '영수증', v: a.receipt || '—' }),
           h(KV, { k: '수험번호', v: a.exam ? h('code', { className: 'code-id', style: { color: 'var(--st-number)', fontWeight: 700 } }, a.exam) : '미부여' }),
           h(KV, { k: '접수일시', v: a.appliedAt }),
-          h(KV, { k: '반려 사유', v: a.rejectReason || '—' })
+          h(KV, { k: '반려 사유', v: rejectReason })
         )
       )
     ),
 
     tab === 'memo' && h('div', null,
+      h(DemoNote, { message: '접수 건 관리자 메모 저장 API가 아직 없어, 입력 메모는 저장되지 않습니다. 수납 메모는 아래에 표시됩니다.' }),
       h(FormRow, { label: '새 메모 추가' },
         h('textarea', { className: 'textarea', rows: '3', value: memo, onChange: e => setMemo(e.target.value), placeholder: '이 응시자에 대한 관리자 메모를 입력하세요' })
       ),
       h('button', { className: 'btn btn-primary', onClick: addMemo, disabled: !memo.trim() }, '메모 추가'),
       h('hr', { style: { margin: '20px 0', border: 'none', borderTop: '1px solid var(--border)' } }),
       h('div', null,
-        h('div', { className: 'label', style: { fontWeight: 600, color: 'var(--text-2)', marginBottom: 6 } }, '지난 메모'),
-        h('pre', { style: { background: 'var(--bg-2)', padding: 12, borderRadius: 6, fontSize: 12.5, whiteSpace: 'pre-wrap', fontFamily: 'inherit', color: 'var(--text-2)', maxHeight: 280, overflow: 'auto' } }, a.memo || '메모 없음')
+        h('div', { className: 'label', style: { fontWeight: 600, color: 'var(--text-2)', marginBottom: 6 } }, '수납 메모'),
+        h('pre', { style: { background: 'var(--bg-2)', padding: 12, borderRadius: 6, fontSize: 12.5, whiteSpace: 'pre-wrap', fontFamily: 'inherit', color: 'var(--text-2)', maxHeight: 280, overflow: 'auto' } }, paymentMemo || '메모 없음')
       )
     ),
 
@@ -635,7 +643,10 @@ function KV({ k, v }) {
   );
 }
 
-function PhotoLarge({ status, name, seed }) {
+function PhotoLarge({ status, name, seed, fileId }) {
+  if (fileId && window.TopikBoApi) {
+    return h('img', { className: 'photo-lg', src: TopikBoApi.fileUrl(fileId), alt: name || '증명사진', style: { objectFit: 'cover' } });
+  }
   if (status === 'pending') return h('div', { className: 'photo-lg', style: { background: 'var(--st-photo-bg)', color: 'var(--st-photo)' } }, '사진 미심사');
   if (status === 'rejected') return h('div', { className: 'photo-lg', style: { background: 'var(--st-rejected-bg)', color: 'var(--st-rejected)' } }, '사진 반려');
   const hue = (seed.charCodeAt(seed.length - 1) * 17) % 360;
@@ -692,7 +703,7 @@ function PayModal({ modal, onClose, onPay, onCancel, onPhotoApprove }) {
         h('thead', null, h('tr', null, h('th', null, '사진'), h('th', null, '한글성명'), h('th', null, '영문성명'), h('th', null, '생년월일'), h('th', null, '급수'), h('th', null, '시험장'), h('th', null, '사진심사'), h('th', null, '현 상태'))),
         h('tbody', null,
           rows.map(a => h('tr', { key: a.id },
-            h('td', null, h(PhotoThumb, { status: a.photoStatus, name: a.nameKo, seed: a.id })),
+            h('td', null, h(PhotoThumb, { status: a.photoStatus, name: a.nameKo, seed: a.id, fileId: a.photoFileId })),
             h('td', null, a.nameKo),
             h('td', null, a.nameEn),
             h('td', { className: 'code' }, a.dob),
@@ -788,14 +799,18 @@ function RejectModal({ modal, onClose, onConfirm }) {
 // ===== 수험번호 일괄 부여 (TPKM_BO_2_1_7) =====
 function ExamAssignModal({ onClose, doAssign }) {
   const [preview, setPreview] = useState(null);
-  useEffect(() => { setPreview(doAssign(true)); }, []);
-  if (!preview) return null;
-  const confirm = () => { doAssign(false); onClose(); };
+  const [busy, setBusy] = useState(false);
+  useEffect(() => { doAssign(true).then(setPreview); }, []);
+  if (!preview) return h(Modal, {
+    open: true, onClose: onClose, title: '수험번호 13자리 일괄 부여',
+    footer: h('button', { className: 'btn btn-secondary', onClick: onClose }, '닫기')
+  }, h('div', { className: 'empty', style: { padding: '24px 0' } }, '대상을 계산하는 중…'));
+  const confirm = () => { setBusy(true); doAssign(false).then(() => onClose()); };
   return h(Modal, {
     open: true, onClose: onClose, title: '수험번호 13자리 일괄 부여',
     footer: h(Fragment, null,
       h('button', { className: 'btn btn-secondary', onClick: onClose }, '취소'),
-      h('button', { className: 'btn btn-primary', onClick: confirm, disabled: preview.result.length === 0 }, preview.result.length, '건 일괄 부여')
+      h('button', { className: 'btn btn-primary', onClick: confirm, disabled: busy || preview.targets === 0 }, preview.targets, '건 일괄 부여')
     )
   },
     h('div', { style: { fontSize: 13, color: 'var(--text-2)' } },
@@ -806,21 +821,22 @@ function ExamAssignModal({ onClose, doAssign }) {
       )
     ),
     h('div', { className: 'kpi-grid', style: { margin: '14px 0' } },
-      h('div', { className: 'kpi' }, h('div', { className: 'label' }, '부여 대상'), h('div', { className: 'val' }, preview.result.length)),
-      h('div', { className: 'kpi' }, h('div', { className: 'label' }, '제외(누락 사유)'), h('div', { className: 'val' }, preview.skipped || 0))
+      h('div', { className: 'kpi' }, h('div', { className: 'label' }, '신규 부여 대상'), h('div', { className: 'val' }, preview.targets)),
+      h('div', { className: 'kpi' }, h('div', { className: 'label' }, '부여 완료(누계)'), h('div', { className: 'val' }, preview.total || 0))
     ),
     h('div', { style: { maxHeight: 260, overflow: 'auto', border: '1px solid var(--border)', borderRadius: 6 } },
       h('table', { className: 'dg', style: { fontSize: 12 } },
         h('thead', null, h('tr', null, h('th', null, '한글성명'), h('th', null, '영문성명'), h('th', null, '급수'), h('th', null, '수험번호(미리보기)'))),
         h('tbody', null,
-          preview.result.slice(0, 50).map(r => h('tr', { key: r.id },
-            h('td', null, r.nameKo), h('td', null, r.name),
+          preview.result.map(r => h('tr', { key: r.id },
+            h('td', null, r.nameKo || '—'), h('td', null, r.name || '—'),
             h('td', null, r.level),
             h('td', null, h('code', { className: 'code-id', style: { color: 'var(--st-number)', fontWeight: 700 } }, r.exam))
-          ))
+          )),
+          !preview.result.length && h('tr', null, h('td', { colSpan: '4', style: { textAlign: 'center', color: 'var(--text-3)', padding: 12 } }, '대상 없음'))
         )
       ),
-      preview.result.length > 50 && h('div', { style: { padding: 8, textAlign: 'center', fontSize: 12, color: 'var(--text-3)', background: 'var(--bg-2)' } }, '… 외 ', preview.result.length - 50, '건')
+      preview.targets > preview.result.length && h('div', { style: { padding: 8, textAlign: 'center', fontSize: 12, color: 'var(--text-3)', background: 'var(--bg-2)' } }, '미리보기 샘플 ', preview.result.length, '건 표시 · 실제 부여 ', preview.targets, '건')
     )
   );
 }
@@ -842,25 +858,24 @@ function ExcelExportModal({ onClose, rows }) {
   }, [rows, state.venues]);
   const session = state.sessions.find(s => s.id === state.activeSessionId);
 
+  const [busy, setBusy] = useState(false);
   const doExport = () => {
-    const role = (DataStore.getAdminSession && DataStore.getAdminSession()?.role) || 'super';
-    if (window.TOPIKBoBridge && !TOPIKBoBridge.enforcePerm(role, '접수 관리|엑셀·사진 zip 다운로드', 'execute')) return;
-    const run = () => {
-      DataStore.addAudit({ type: '접수자', targetId: '—', action: '게시', memo: `연명부 엑셀 내보내기(${rows.length}건, ${mode === 'full' ? '회차전체 zip' : '현재 필터'})` });
-      toastOk(`${rows.length}건의 연명부 엑셀 파일을 생성했습니다.`, { title: '엑셀 생성 완료' });
-      onClose();
-    };
-    if (window.TOPIKBoBridge) {
-      TOPIKBoBridge.exportRosterExcel({ mode, rows, state }).then(run).catch(e => toastErr(e.message || '엑셀 생성 실패'));
-      return;
-    }
-    run();
+    const roundId = Number(state.activeSessionId);
+    if (!roundId) { toastErr('회차를 선택해 주세요.'); return; }
+    setBusy(true);
+    const fname = `제${session?.no || ''}회 TOPIK 지원자 연명부.xlsx`;
+    // 서버가 시험장×급수별 시트로 분할 생성 (연명부 양식 11컬럼)
+    TopikBoApi.downloadRoster(roundId, {}, fname).then(res => {
+      setBusy(false);
+      if (res && res.ok) { toastOk('연명부 엑셀 파일을 내려받았습니다.', { title: '엑셀 생성 완료' }); onClose(); }
+      else { toastErr(TopikBoApi.parseError(res) || '엑셀 생성 실패'); }
+    });
   };
   return h(Modal, {
     open: true, onClose: onClose, title: '연명부 양식 엑셀 내보내기',
     footer: h(Fragment, null,
       h('button', { className: 'btn btn-secondary', onClick: onClose }, '취소'),
-      h('button', { className: 'btn btn-primary', onClick: doExport }, '다운로드')
+      h('button', { className: 'btn btn-primary', onClick: doExport, disabled: busy }, busy ? '생성 중…' : '다운로드')
     )
   },
     h('div', { style: { fontSize: 13, color: 'var(--text-2)' } },
@@ -887,25 +902,24 @@ function ZipExportModal({ onClose, rows }) {
   const state = useStore();
   const includeMissing = useMemo(() => rows.some(a => !a.photoOk || a.status === 'rejected'), [rows]);
   const missingCount = rows.filter(a => !a.photoOk || a.status === 'rejected').length;
+  const session = state.sessions.find(s => s.id === state.activeSessionId);
+  const [busy, setBusy] = useState(false);
   const doExport = () => {
-    const role = (DataStore.getAdminSession && DataStore.getAdminSession()?.role) || 'super';
-    if (window.TOPIKBoBridge && !TOPIKBoBridge.enforcePerm(role, '접수 관리|엑셀·사진 zip 다운로드', 'execute')) return;
-    const done = () => {
-      DataStore.addAudit({ type: '접수자', targetId: '—', action: '게시', memo: `사진 zip 다운로드(${rows.length}건, 폴더구조 {지역}/{시험장}/TOPIK_{급수}/{수험번호}.jpg)` });
-      toastOk(`${rows.length - missingCount}장의 사진 zip 파일을 생성했습니다.`, { title: 'ZIP 생성 완료' });
-      onClose();
-    };
-    if (window.TOPIKBoBridge) {
-      TOPIKBoBridge.exportPhotosZip({ rows, state }).then(done).catch(e => toastErr(e.message || 'ZIP 생성 실패'));
-      return;
-    }
-    done();
+    const roundId = Number(state.activeSessionId);
+    if (!roundId) { toastErr('회차를 선택해 주세요.'); return; }
+    setBusy(true);
+    const fname = `제${session?.no || ''}회 TOPIK 사진.zip`;
+    TopikBoApi.downloadPhotosZip(roundId, {}, fname).then(res => {
+      setBusy(false);
+      if (res && res.ok) { toastOk('사진 zip 파일을 내려받았습니다.', { title: 'ZIP 생성 완료' }); onClose(); }
+      else { toastErr(TopikBoApi.parseError(res) || 'ZIP 생성 실패'); }
+    });
   };
   return h(Modal, {
     open: true, onClose: onClose, title: '사진 일괄 다운로드 (zip)',
     footer: h(Fragment, null,
       h('button', { className: 'btn btn-secondary', onClick: onClose }, '취소'),
-      h('button', { className: 'btn btn-primary', onClick: doExport }, '다운로드')
+      h('button', { className: 'btn btn-primary', onClick: doExport, disabled: busy }, busy ? '생성 중…' : '다운로드')
     )
   },
     h('div', { style: { fontSize: 13, color: 'var(--text-2)', marginBottom: 12 } },
@@ -932,6 +946,16 @@ function ZipExportModal({ onClose, rows }) {
 
 // quick icon
 I.Hash = (p) => h('svg', Object.assign({ viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '1.8', strokeLinecap: 'round', strokeLinejoin: 'round' }, p), h('path', { d: 'M4 9h16M4 15h16M10 3 8 21M16 3l-2 18' }));
+
+// 데이터 게이트 — 회차/시험장/접수자(현재 회차)를 API에서 로드한 뒤 내부 패널 렌더.
+// deps 에 activeSessionId 를 넣어 회차 전환 시 자동 재조회.
+function ApplicantsPanel() {
+  return h(ResourceGate, {
+    loader: () => BoData.loadRoundContext(),
+    deps: [DataStore.state.activeSessionId],
+    inner: ApplicantsPanelInner,
+  });
+}
 
 window.ApplicantsPanel = ApplicantsPanel;
 // 사진 심사 패널(photos.jsx)에서 재사용할 수 있도록 노출

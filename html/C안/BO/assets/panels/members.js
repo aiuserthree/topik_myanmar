@@ -58,6 +58,8 @@ function MembersPanel() {
       )
     ),
 
+    h(DemoNote, { message: '회원 목록 조회 API가 아직 없어 샘플 데이터로 표시됩니다. 표시·수정·정지/탈퇴/PW초기화는 데모이며 실제 회원 데이터에 반영되지 않습니다.' }),
+
     h('div', { className: 'filterbar' },
       h('div', { className: 'chips' },
         h('button', { className: `chip ${stF === 'all' ? 'active' : ''}`, onClick: () => setStF('all') }, '전체', h('span', { className: 'cnt' }, counts.all)),

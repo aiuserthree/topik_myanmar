@@ -2,9 +2,9 @@
    panels/faq.js — FAQ 관리 (vanilla port of faq.jsx)
    ============================================================ */
 
-const FAQ_CATS = ['접수','시험','결과','기타'];
+const FAQ_CATS = ['계정','접수','시험','결과','기타'];
 
-function FaqPanel() {
+function FaqPanelInner() {
   const state = useStore();
   const [catF, setCatF] = useState('all');
   const [q, setQ] = useState('');
@@ -14,36 +14,40 @@ function FaqPanel() {
   const filtered = useMemo(() => {
     let r = state.faqs.slice();
     if (catF !== 'all') r = r.filter(f => f.cat === catF);
-    if (q) r = r.filter(f => f.question.toLowerCase().includes(q.toLowerCase()));
+    if (q) r = r.filter(f => (f.question || '').toLowerCase().includes(q.toLowerCase()));
     return r.sort((a,b) => a.cat.localeCompare(b.cat) || a.order - b.order);
   }, [state.faqs, catF, q]);
 
   const save = (data) => {
-    if (data.id) {
-      const f = state.faqs.find(x => x.id === data.id);
-      const before = { ...f };
-      Object.assign(f, data);
-      DataStore.addAudit({ type: 'FAQ', targetId: f.id, action: '수정', before, after: { ...f }, memo: '' });
-      toastOk('FAQ가 수정되었습니다.');
-    } else {
-      const id = 'f' + (state.faqs.length + 1);
-      const nw = { id, no: state.faqs.length + 1, ...data };
-      state.faqs.push(nw);
-      DataStore.addAudit({ type: 'FAQ', targetId: id, action: '생성', after: { ...nw }, memo: '' });
-      toastOk('FAQ가 등록되었습니다.');
-    }
-    DataStore.notify();
-    setEdit(null);
+    const payload = {
+      category: BoData.FAQ_L2C[data.cat] || 'other',
+      sort_order: parseInt(data.order, 10) || 0,
+      question_ko: (data.question || '').trim(),
+      answer_ko: (data.answer || '').trim(),
+      question_my: data.questionMy || null,
+      question_en: data.questionEn || null,
+      answer_my: data.answerMy || null,
+      answer_en: data.answerEn || null,
+    };
+    const run = data.apiId
+      ? TopikBoApi.updateFaq(data.apiId, payload)
+      : TopikBoApi.createFaq(Object.assign({ is_active: true }, payload));
+    return run.then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      return BoData.reload('faq').then(() => {
+        toastOk(data.apiId ? 'FAQ가 수정되었습니다.' : 'FAQ가 등록되었습니다.');
+        setEdit(null);
+      });
+    });
   };
 
   const remove = () => {
     const f = state.faqs.find(x => x.id === delId);
     if (!f) return;
-    state.faqs.splice(state.faqs.indexOf(f), 1);
-    DataStore.addAudit({ type: 'FAQ', targetId: f.id, action: '삭제', before: { ...f }, memo: '' });
-    DataStore.notify();
-    setDelId(null);
-    toastOk('FAQ가 삭제되었습니다.');
+    TopikBoApi.deleteFaq(f.apiId).then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      BoData.reload('faq').then(() => { setDelId(null); toastOk('FAQ가 삭제되었습니다.'); });
+    });
   };
 
   return h(Fragment, null,
@@ -155,6 +159,10 @@ function FaqEditLP({ edit, onClose, onSave }) {
       )
     )
   );
+}
+
+function FaqPanel() {
+  return h(ResourceGate, { loader: () => BoData.loadFaq(), deps: [], inner: FaqPanelInner });
 }
 
 window.FaqPanel = FaqPanel;

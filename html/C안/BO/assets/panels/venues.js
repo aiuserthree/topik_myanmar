@@ -3,40 +3,53 @@
    고객사 수정 0526: 좌석배치도/책임자/연락처 입력 항목 없음 (비고에 자유 기재)
    ============================================================ */
 
-function VenuesPanel() {
+function VenuesPanelInner() {
   const state = useStore();
   const [edit, setEdit] = useState(null);
 
   const list = state.venues.slice().sort((a,b) => a.regionCode.localeCompare(b.regionCode) || a.code.localeCompare(b.code));
 
   const save = (data) => {
-    if (data.id) {
-      const v = state.venues.find(x => x.id === data.id);
-      const before = { ...v };
-      Object.assign(v, data);
-      DataStore.addAudit({ type: '시험장', targetId: v.id, action: '수정', before, after: { ...v }, memo: '' });
-      toastOk(`${v.nameKo} 정보가 수정되었습니다.`);
-    } else {
-      // 코드 중복 검사 (동일 지역 내)
-      if (state.venues.some(v => v.regionCode === data.regionCode && v.code === data.code)) {
-        toastErr('동일 지역 내 시험장 코드가 중복됩니다.'); return false;
-      }
-      const id = 'v' + (Math.max(...state.venues.map(x => parseInt(x.id.slice(1)))) + 1).toString().padStart(2, '0');
-      const nw = { id, active: true, ...data };
-      state.venues.push(nw);
-      DataStore.addAudit({ type: '시험장', targetId: id, action: '생성', after: { ...nw }, memo: '' });
-      toastOk(`${nw.nameKo}가 등록되었습니다.`);
+    if (data.apiId) {
+      const orig = state.venues.find(x => x.id === data.id);
+      const payload = {
+        name_ko: data.nameKo,
+        name_en: data.nameEn || null,
+        address: data.address || null,
+        region_code: data.regionCode,
+        capacity: parseInt(data.cap, 10) || 0,
+        note: data.memo || null,
+      };
+      // venue_code 는 접수 이력 있으면 변경 불가(서버 검증) → 변경된 경우에만 전송
+      if (orig && orig.code !== data.code) payload.venue_code = data.code;
+      return TopikBoApi.updateVenue(data.apiId, payload).then(res => {
+        if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+        return BoData.reload('venues').then(() => { toastOk(`${data.nameKo} 정보가 수정되었습니다.`); setEdit(null); });
+      });
     }
-    DataStore.notify();
-    setEdit(null);
+    const payload = {
+      venue_code: data.code,
+      name_ko: data.nameKo,
+      name_en: data.nameEn || null,
+      address: data.address || null,
+      country_code: '025',
+      region_code: data.regionCode,
+      capacity: parseInt(data.cap, 10) || 0,
+      note: data.memo || null,
+      is_active: true,
+    };
+    return TopikBoApi.createVenue(payload).then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      return BoData.reload('venues').then(() => { toastOk(`${data.nameKo}가 등록되었습니다.`); setEdit(null); });
+    });
   };
 
   const toggleActive = (v) => {
-    const before = { active: v.active };
-    v.active = !v.active;
-    DataStore.addAudit({ type: '시험장', targetId: v.id, action: '수정', before, after: { active: v.active }, memo: v.active ? '활성화' : '비활성화' });
-    DataStore.notify();
-    toastOk(`시험장이 ${v.active ? '활성화' : '비활성화'}되었습니다.`);
+    const fn = v.active ? TopikBoApi.deactivateVenue : TopikBoApi.activateVenue;
+    return fn(v.apiId).then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      return BoData.reload('venues').then(() => toastOk(`시험장이 ${v.active ? '비활성화' : '활성화'}되었습니다.`));
+    });
   };
 
   return h(Fragment, null,
@@ -148,6 +161,10 @@ function VenueEditLP({ edit, onClose, onSave }) {
       )
     )
   );
+}
+
+function VenuesPanel() {
+  return h(ResourceGate, { loader: () => BoData.loadVenuesPanel(), deps: [], inner: VenuesPanelInner });
 }
 
 window.VenuesPanel = VenuesPanel;

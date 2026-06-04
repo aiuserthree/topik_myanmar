@@ -2,49 +2,73 @@
    panels/sessions.js — 회차 관리 (vanilla port of sessions.jsx, TPKM_BO_3_1_*)
    ============================================================ */
 
-function SessionsPanel() {
+function regStatusCode(s) {
+  return s === 'open' ? 'open' : s === 'closed' ? 'closed' : 'scheduled';
+}
+
+function SessionsPanelInner() {
   const state = useStore();
-  const [edit, setEdit] = useState(null); // {id} or {new:true}
+  const [edit, setEdit] = useState(null); // {id} | {copy} | {new:true}
   const [delId, setDelId] = useState(null);
 
   const sessions = state.sessions.slice().sort((a,b) => (b.examDate || '').localeCompare(a.examDate || ''));
 
   const save = (data) => {
-    const session = data.id ? state.sessions.find(s => s.id === data.id) : null;
-    if (session) {
-      const before = { ...session };
-      Object.assign(session, data);
-      DataStore.addAudit({ type: '회차', targetId: session.id, action: '수정', before, after: { ...session }, memo: '회차 수정' });
-      toastOk(`${session.name} 정보가 수정되었습니다.`);
-    } else {
-      const id = 's' + (Math.max(...state.sessions.map(s => parseInt(s.id.slice(1)))) + 1);
-      const nw = { id, applicants: 0, ...data };
-      state.sessions.push(nw);
-      DataStore.addAudit({ type: '회차', targetId: id, action: '생성', after: { ...nw }, memo: '회차 신규 등록' });
-      toastOk(`${nw.name} 회차가 등록되었습니다.`);
-    }
-    DataStore.notify();
-    setEdit(null);
+    const venueIds = (data.venues || []).map(Number).filter(function (n) { return n > 0; });
+    const body = {
+      round_no: parseInt(data.no, 10),
+      title: data.name,
+      exam_date: data.examDate,
+      registration_start_at: data.applyStart,
+      registration_end_at: data.applyEnd,
+      result_announcement_date: data.resultDate || null,
+      fee_level_i: parseInt(data.feeI, 10),
+      fee_level_ii: parseInt(data.feeII, 10),
+      capacity: parseInt(data.cap, 10),
+      registration_status: regStatusCode(data.status),
+      venue_ids: venueIds,
+    };
+    const run = data.apiId
+      ? TopikBoApi.updateExamRound(data.apiId, body)
+      : TopikBoApi.createExamRound(body);
+    return run.then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      return BoData.reload('sessions').then(() => {
+        toastOk(data.apiId ? `${data.name} 정보가 수정되었습니다.` : `${data.name} 회차가 등록되었습니다.`);
+        setEdit(null);
+      });
+    });
   };
 
+  // 복제: 백엔드에 복제 API가 없어 → 원본 정보를 채운 '등록' 폼을 연다(검토 후 등록).
   const duplicate = (s) => {
-    const id = 's' + (Math.max(...state.sessions.map(x => parseInt(x.id.slice(1)))) + 1);
-    const copy = { ...s, id, no: s.no + 1, name: `제${s.no + 1}회 TOPIK(복제)`, status: 'planned', applicants: 0 };
-    state.sessions.push(copy);
-    DataStore.addAudit({ type: '회차', targetId: id, action: '생성', after: { ...copy }, memo: `복제: ${s.name}` });
-    DataStore.notify();
-    toastOk('회차가 복제되었습니다.');
+    TopikBoApi.getExamRound(s.apiId).then(res => {
+      const r = (res.ok && res.body && res.body.round) ? res.body.round : {};
+      const baseNo = (r.round_no || s.no) + 1;
+      setEdit({ copy: {
+        no: baseNo,
+        name: `제${baseNo}회 TOPIK`,
+        examDate: (r.exam_date || '').slice(0, 10),
+        applyStart: (r.registration_start_at || '').slice(0, 10),
+        applyEnd: (r.registration_end_at || '').slice(0, 10),
+        resultDate: (r.result_announcement_date || '').slice(0, 10),
+        cap: r.capacity != null ? Number(r.capacity) : s.cap,
+        feeI: r.fee_level_i != null ? Number(r.fee_level_i) : 0,
+        feeII: r.fee_level_ii != null ? Number(r.fee_level_ii) : 0,
+        venues: (res.ok && res.body.venue_ids) ? res.body.venue_ids.map(String) : (s.venues || []),
+        status: 'planned',
+      } });
+    });
   };
 
+  // 폐지: 회차 삭제 API가 없어 → is_active=false 로 soft-delete(FO 노출 중단). 접수 정보는 보존.
   const remove = () => {
     const s = state.sessions.find(x => x.id === delId);
     if (!s) return;
-    const idx = state.sessions.indexOf(s);
-    state.sessions.splice(idx, 1);
-    DataStore.addAudit({ type: '회차', targetId: s.id, action: '삭제', before: { ...s }, memo: '회차 폐지' });
-    DataStore.notify();
-    setDelId(null);
-    toastOk('회차가 폐지되었습니다.');
+    TopikBoApi.updateExamRound(s.apiId, { is_active: false }).then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      BoData.reload('sessions').then(() => { setDelId(null); toastOk('회차가 비공개(soft-delete) 처리되었습니다. FO 노출이 중단됩니다.'); });
+    });
   };
 
   return h(Fragment, null,
@@ -113,14 +137,38 @@ function SessionsPanel() {
 function SessionEditLP({ edit, onClose, onSave }) {
   const state = useStore();
   const existing = edit.id ? state.sessions.find(s => s.id === edit.id) : null;
-  const [f, setF] = useState(existing ? { ...existing } : {
-    no: (Math.max(...state.sessions.map(s => s.no)) + 1),
+  const blank = {
+    no: (state.sessions.length ? Math.max.apply(null, state.sessions.map(s => s.no)) : 0) + 1,
     name: '',
     applyStart: '', applyEnd: '', examDate: '', resultDate: '',
     cap: 1000, feeI: 12000, feeII: 15000, venues: [], status: 'planned'
-  });
+  };
+  const [f, setF] = useState(existing ? { ...existing } : (edit.copy ? Object.assign({}, blank, edit.copy) : blank));
 
-  useEffect(() => { if (!f.name && !existing) setF(s => ({ ...s, name: `제${s.no}회 TOPIK` })); }, []);
+  useEffect(() => { if (!f.name && !existing && !edit.copy) setF(s => ({ ...s, name: `제${s.no}회 TOPIK` })); }, []);
+
+  // 기존 회차 상세(접수기간·응시료·시험장 매핑)는 목록 API에 없어 상세 API에서 로드
+  useEffect(() => {
+    if (existing && existing.apiId) {
+      TopikBoApi.getExamRound(existing.apiId).then(res => {
+        if (res.ok && res.body && res.body.round) {
+          const r = res.body.round;
+          setF(s => ({ ...s,
+            no: r.round_no, name: r.title,
+            examDate: (r.exam_date || '').slice(0, 10),
+            applyStart: (r.registration_start_at || '').slice(0, 10),
+            applyEnd: (r.registration_end_at || '').slice(0, 10),
+            resultDate: (r.result_announcement_date || '').slice(0, 10),
+            cap: r.capacity != null ? Number(r.capacity) : s.cap,
+            feeI: r.fee_level_i != null ? Number(r.fee_level_i) : 0,
+            feeII: r.fee_level_ii != null ? Number(r.fee_level_ii) : 0,
+            status: r.registration_status === 'open' ? 'open' : r.registration_status === 'closed' ? 'closed' : 'planned',
+            venues: Array.isArray(res.body.venue_ids) ? res.body.venue_ids.map(String) : (s.venues || []),
+          }));
+        }
+      });
+    }
+  }, []);
 
   const set = (k, v) => setF(s => ({ ...s, [k]: v }));
   const toggleVenue = (vid) => set('venues', f.venues.includes(vid) ? f.venues.filter(x => x !== vid) : [...f.venues, vid]);
@@ -185,6 +233,10 @@ function SessionEditLP({ edit, onClose, onSave }) {
       '※ 모든 필수 항목 입력 + 일정 순서(접수시작 < 접수마감 < 시험일 < 발표일) + 시험장 1개 이상 선택이 필요합니다.'
     )
   );
+}
+
+function SessionsPanel() {
+  return h(ResourceGate, { loader: () => BoData.loadSessionsPanel(), deps: [], inner: SessionsPanelInner });
 }
 
 window.SessionsPanel = SessionsPanel;

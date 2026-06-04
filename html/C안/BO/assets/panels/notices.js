@@ -5,53 +5,57 @@
 
 const NOTICE_CATS = ['중요','접수','시험','결과'];
 
-function NoticesPanel() {
+function NoticesPanelInner() {
   const state = useStore();
   const [q, setQ] = useState('');
   const [catF, setCatF] = useState('all');
   const [edit, setEdit] = useState(null);
   const [delId, setDelId] = useState(null);
+  const [busy, setBusy] = useState(false);
 
   const filtered = useMemo(() => {
     let r = state.notices.slice();
     if (catF !== 'all') r = r.filter(n => n.cat === catF);
     if (q) r = r.filter(n => n.title.toLowerCase().includes(q.toLowerCase()));
-    return r.sort((a,b) => (b.pin?1:0) - (a.pin?1:0) || b.createdAt.localeCompare(a.createdAt));
+    return r.sort((a,b) => (b.pin?1:0) - (a.pin?1:0) || (b.createdAt||'').localeCompare(a.createdAt||''));
   }, [state.notices, q, catF]);
 
   const save = (data) => {
-    if (data.id) {
-      const n = state.notices.find(x => x.id === data.id);
-      const before = { ...n };
-      Object.assign(n, data);
-      DataStore.addAudit({ type: '공지', targetId: n.id, action: '수정', before, after: { ...n }, memo: '' });
-      toastOk('공지가 수정되었습니다.');
-    } else {
-      const id = 'n' + (state.notices.length + 1);
-      const nw = { id, no: state.notices.length + 1, author: state.me?.id || 'admin01', createdAt: new Date().toISOString().slice(0,16).replace('T',' '), views: 0, ...data };
-      state.notices.unshift(nw);
-      DataStore.addAudit({ type: '공지', targetId: id, action: '생성', after: { ...nw }, memo: '신규 게시' });
-      // 고객사 수정 0527 — 마케팅 동의자에 이메일 일괄 발송
-      if (nw.public) {
-        const targets = state.members.filter(m => m.marketing && m.status === 'active').length;
-        DataStore.addAudit({ type: '공지', targetId: id, action: '게시', memo: `마케팅수신동의자 ${targets}명 이메일 일괄 발송` });
-        toastOk(`공지 등록 완료 · 마케팅 동의 회원 ${targets}명에게 알림 이메일을 발송했습니다.`);
-      } else {
-        toastOk('공지가 등록되었습니다.');
-      }
-    }
-    DataStore.notify();
-    setEdit(null);
+    const payload = {
+      category: BoData.NOTICE_L2C[data.cat] || 'registration',
+      title: (data.title || '').trim(),
+      body_html: data.body || '',
+      is_pinned: !!data.pin,
+    };
+    setBusy(true);
+    const run = data.apiId
+      ? TopikBoApi.updateNotice(data.apiId, payload).then(res => {
+          if (!res.ok) return res;
+          const orig = state.notices.find(x => x.id === data.id);
+          if (orig && orig.public !== data.public) {
+            return data.public ? TopikBoApi.publishNotice(data.apiId) : TopikBoApi.unpublishNotice(data.apiId);
+          }
+          return res;
+        })
+      : TopikBoApi.createNotice(Object.assign({ is_published: !!data.public }, payload));
+    return run.then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); setBusy(false); return; }
+      return BoData.reload('notices').then(() => {
+        toastOk(data.apiId ? '공지가 수정되었습니다.' : '공지가 등록되었습니다.');
+        setBusy(false);
+        setEdit(null);
+      });
+    });
   };
 
   const remove = () => {
     const n = state.notices.find(x => x.id === delId);
     if (!n) return;
-    state.notices.splice(state.notices.indexOf(n), 1);
-    DataStore.addAudit({ type: '공지', targetId: n.id, action: '삭제', before: { ...n }, memo: 'soft-delete' });
-    DataStore.notify();
-    setDelId(null);
-    toastOk('공지가 삭제되었습니다.');
+    setBusy(true);
+    TopikBoApi.deleteNotice(n.apiId).then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); setBusy(false); return; }
+      BoData.reload('notices').then(() => { setDelId(null); setBusy(false); toastOk('공지가 삭제되었습니다.'); });
+    });
   };
 
   return h(Fragment, null,
@@ -141,12 +145,20 @@ function NoticeEditLP({ edit, onClose, onSave }) {
   const valid = f.title.trim();
   const isNew = !n;
 
+  // 기존 공지 본문(body_html)은 상세 API에서 로드
+  useEffect(() => {
+    if (n && n.apiId) {
+      TopikBoApi.getNotice(n.apiId).then(res => {
+        if (res.ok && res.body) setF(s => ({ ...s, body: res.body.body_html || '' }));
+      });
+    }
+  }, []);
+
   // 다국어(KO/MY/EN) 입력 — KO 필수, MY/EN 선택
   const [lang, setLang] = useState('KO');
   const titleKey = lang === 'KO' ? 'title' : lang === 'MY' ? 'titleMy' : 'titleEn';
   const bodyKey  = lang === 'KO' ? 'body'  : lang === 'MY' ? 'bodyMy'  : 'bodyEn';
   const titlePh  = lang === 'KO' ? '예) 제106회 TOPIK 접수 안내' : lang === 'MY' ? 'ဥပမာ - ၁၀၆ ကြိမ်မြောက် TOPIK လျှောက်ထားရန်' : 'e.g. 106th TOPIK Application Guide';
-  const marketingTargets = state.members.filter(m => m.marketing && m.status === 'active').length;
 
   return h(LP, {
     open: true, title: n ? `공지 수정 — ${n.title}` : '공지 작성', onClose: onClose, size: 'wide',
@@ -196,10 +208,15 @@ function NoticeEditLP({ edit, onClose, onSave }) {
     ),
 
     isNew && f.public && h('div', { style: { padding: 12, background: 'var(--st-applied-bg)', color: 'var(--st-applied)', borderRadius: 6, fontSize: 12.5, marginBottom: 10 } },
-      'ⓘ 게시 시 마케팅 수신 동의 회원 ', h('b', null, marketingTargets, '명'), '에게 알림 이메일이 일괄 발송됩니다.', h('br'),
-      h('span', { style: { fontSize: 11.5, color: 'var(--text-3)' } }, '제목 + FO 공지사항 페이지 링크 포함 (본문 전체 미발송). 수정/삭제 시 발송하지 않습니다.')
+      'ⓘ 게시(공개)하면 FO 공지사항 페이지에 즉시 노출됩니다.', h('br'),
+      h('span', { style: { fontSize: 11.5, color: 'var(--text-3)' } }, '※ 다국어(MY/EN) 입력과 마케팅 수신 동의 회원 일괄 발송은 별도 메뉴/작업으로 처리됩니다. (현재 한국어 제목·본문이 저장됩니다.)')
     )
   );
+}
+
+// 데이터 로딩 게이트 — API에서 공지 목록을 받아온 뒤 내부 패널을 렌더
+function NoticesPanel() {
+  return h(ResourceGate, { loader: () => BoData.loadNotices(), deps: [], inner: NoticesPanelInner });
 }
 
 window.NoticesPanel = NoticesPanel;

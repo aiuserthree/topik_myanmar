@@ -4,7 +4,7 @@
 
 const TERM_KINDS = ['이용약관','개인정보','마케팅'];
 
-function TermsPanel() {
+function TermsPanelInner() {
   const state = useStore();
   const [kindF, setKindF] = useState('all');
   const [edit, setEdit] = useState(null);
@@ -20,52 +20,42 @@ function TermsPanel() {
   }, [state.terms, kindF]);
 
   const save = (data) => {
-    if (data.id) {
+    if (data.apiId) {
       const t = state.terms.find(x => x.id === data.id);
-      if (t.status !== 'draft') { toastErr('게시된 약관은 수정할 수 없습니다. 신규 버전을 등록해주세요.'); return; }
-      const before = { ...t };
-      Object.assign(t, data);
-      DataStore.addAudit({ type: '약관', targetId: t.id, action: '수정', before, after: { ...t }, memo: '' });
-      toastOk('약관 초안이 수정되었습니다.');
-    } else {
-      const id = 't' + (state.terms.length + 1);
-      const nw = { id, status: 'draft', author: state.me?.id || 'admin01', publishedAt: '', retiredAt: '', ...data };
-      state.terms.push(nw);
-      DataStore.addAudit({ type: '약관', targetId: id, action: '생성', after: { ...nw }, memo: '초안 등록' });
-      toastOk('약관 초안이 등록되었습니다.');
+      if (t && t.status !== 'draft') { toastErr('게시된 약관은 수정할 수 없습니다. 신규 버전을 등록해주세요.'); return; }
+      const payload = { version: (data.version || '').trim(), body_ko: (data.body || '').trim() };
+      if (data.scheduledAt) payload.effective_at = data.scheduledAt;
+      return TopikBoApi.updateTerm(data.apiId, payload).then(res => {
+        if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+        return BoData.reload('terms').then(() => { toastOk('약관 초안이 수정되었습니다.'); setEdit(null); });
+      });
     }
-    DataStore.notify();
-    setEdit(null);
+    const payload = {
+      term_type: BoData.TERM_L2C[data.kind] || 'service',
+      version: (data.version || '').trim(),
+      body_ko: (data.body || '').trim(),
+    };
+    if (data.scheduledAt) payload.effective_at = data.scheduledAt;
+    return TopikBoApi.createTerm(payload).then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      return BoData.reload('terms').then(() => { toastOk('약관 초안이 등록되었습니다.'); setEdit(null); });
+    });
   };
 
   const doPublish = () => {
     const t = state.terms.find(x => x.id === publish);
-    // 동종 기존 게시 버전 폐지
-    state.terms.forEach(x => {
-      if (x.kind === t.kind && x.status === 'pub' && x.id !== t.id) {
-        x.status = 'retired';
-        x.retiredAt = new Date().toISOString().slice(0,10);
-        DataStore.addAudit({ type: '약관', targetId: x.id, action: '폐지', memo: `신규 ${t.version} 게시에 따라 자동 폐지` });
-      }
+    if (!t) return;
+    // 백엔드가 같은 종류의 기존 게시본을 자동으로 retired 처리함
+    return TopikBoApi.publishTerm(t.apiId).then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      return BoData.reload('terms').then(() => { setPublish(null); toastOk(`${t.kind} ${t.version}가 게시되었습니다.`); });
     });
-    const before = { status: t.status };
-    t.status = 'pub';
-    t.publishedAt = new Date().toISOString().slice(0,10);
-    DataStore.addAudit({ type: '약관', targetId: t.id, action: '게시', before, after: { status: 'pub' }, memo: '회원 재동의 정책: 다음 로그인 시 재동의' });
-    DataStore.notify();
-    setPublish(null);
-    toastOk(`${t.kind} ${t.version}가 게시되었습니다.`);
   };
 
+  // 게시본 수동 폐지 API는 없음 — 같은 종류의 새 버전 게시 시 자동 폐지된다는 안내만 제공.
   const doRetire = () => {
-    const t = state.terms.find(x => x.id === retire);
-    const before = { status: t.status };
-    t.status = 'retired';
-    t.retiredAt = new Date().toISOString().slice(0,10);
-    DataStore.addAudit({ type: '약관', targetId: t.id, action: '폐지', before, after: { status: 'retired' }, memo: '관리자 폐지' });
-    DataStore.notify();
     setRetire(null);
-    toastOk('약관이 폐지되었습니다.');
+    toast('게시본은 직접 폐지할 수 없습니다. 같은 종류의 새 버전을 게시하면 기존 게시본이 자동으로 폐지(retired) 처리됩니다.', { title: '약관 폐지 안내', type: 'success', duration: 6000 });
   };
 
   return h(Fragment, null,
@@ -132,13 +122,13 @@ function TermsPanel() {
       )
     ),
     retire && (
-      h(Modal, { open: true, onClose: () => setRetire(null), title: '약관 폐지', danger: true,
+      h(Modal, { open: true, onClose: () => setRetire(null), title: '약관 폐지 안내',
         footer: h(Fragment, null,
-          h('button', { className: 'btn btn-secondary', onClick: () => setRetire(null) }, '취소'),
-          h('button', { className: 'btn btn-danger', onClick: doRetire }, '폐지')
+          h('button', { className: 'btn btn-secondary', onClick: () => setRetire(null) }, '닫기'),
+          h('button', { className: 'btn btn-primary', onClick: doRetire }, '확인')
         )
       },
-        h('div', null, '약관을 폐지하시겠습니까? 버전과 동의 이력은 보존되며, FO 노출이 중단됩니다.')
+        h('div', null, '게시된 약관은 직접 폐지할 수 없습니다. 같은 종류의 ', h('b', null, '새 버전을 게시'), '하면 기존 게시본이 자동으로 폐지(retired)됩니다. 버전과 동의 이력은 영구 보존됩니다.')
       )
     ),
     consent && h(ConsentLogLP, { onClose: () => setConsent(false) })
@@ -150,6 +140,14 @@ function TermEditLP({ edit, onClose, onSave }) {
   const t0 = edit.id ? state.terms.find(x => x.id === edit.id) : null;
   const [f, setF] = useState(t0 ? { ...t0 } : { kind: '이용약관', version: 'v1.0', body: '', scheduledAt: '' });
   const set = (k, v) => setF(s => ({ ...s, [k]: v }));
+  // 기존 약관 본문(body_ko)은 상세 API에서 로드
+  useEffect(() => {
+    if (t0 && t0.apiId) {
+      TopikBoApi.getTerm(t0.apiId).then(res => {
+        if (res.ok && res.body) setF(s => ({ ...s, body: res.body.body_ko || '' }));
+      });
+    }
+  }, []);
   const valid = f.kind && f.version && true;
   return h(LP, { open: true, title: t0 ? `약관 수정 — ${t0.kind} ${t0.version}` : '약관 등록', sub: '게시 전에만 본문 수정 가능 · 게시 후에는 신규 버전 등록', onClose: onClose,
     footer: h(Fragment, null,
@@ -181,6 +179,14 @@ function TermEditLP({ edit, onClose, onSave }) {
 function TermPreviewLP({ id, onClose }) {
   const state = useStore();
   const t = state.terms.find(x => x.id === id);
+  const [body, setBody] = useState(t ? t.body : '');
+  useEffect(() => {
+    if (t && t.apiId) {
+      TopikBoApi.getTerm(t.apiId).then(res => {
+        if (res.ok && res.body) setBody(res.body.body_ko || '');
+      });
+    }
+  }, []);
   if (!t) return null;
   return h(LP, { open: true, title: `미리보기 — ${t.kind} ${t.version}`, sub: 'FO 표시 형태로 렌더링', onClose: onClose,
     footer: h('button', { className: 'btn btn-secondary', onClick: onClose }, '닫기')
@@ -188,7 +194,7 @@ function TermPreviewLP({ id, onClose }) {
     h('article', { style: { background: 'var(--bg)', padding: 20, borderRadius: 8, border: '1px solid var(--border)' } },
       h('h2', { style: { fontSize: 20, marginBottom: 8 } }, t.kind, ' (', t.version, ')'),
       h('div', { style: { fontSize: 12, color: 'var(--text-3)', marginBottom: 16 } }, '게시일: ', t.publishedAt || '미게시'),
-      h('pre', { style: { whiteSpace: 'pre-wrap', fontFamily: 'inherit', fontSize: 14, color: 'var(--text-2)', lineHeight: 1.7 } }, t.body || '— 본문 미입력 —')
+      h('pre', { style: { whiteSpace: 'pre-wrap', fontFamily: 'inherit', fontSize: 14, color: 'var(--text-2)', lineHeight: 1.7 } }, body || '— 본문 미입력 —')
     )
   );
 }
@@ -215,6 +221,7 @@ function ConsentLogLP({ onClose }) {
       h('button', { className: 'btn btn-primary', onClick: exportCSV }, h(I.Download, { style: { width: 12, height: 12 } }), ' CSV 내보내기')
     )
   },
+    h(DemoNote, { message: '약관 동의 이력 조회 API가 아직 없어 샘플 데이터로 표시됩니다.' }),
     h('div', { className: 'filterbar' },
       h('div', { className: 'controls' },
         h('select', { className: 'select', value: memberF, onChange: e => setMemberF(e.target.value), style: { minWidth: 180 } },
@@ -247,6 +254,10 @@ function ConsentLogLP({ onClose }) {
       )
     )
   );
+}
+
+function TermsPanel() {
+  return h(ResourceGate, { loader: () => BoData.loadTerms(), deps: [], inner: TermsPanelInner });
 }
 
 window.TermsPanel = TermsPanel;

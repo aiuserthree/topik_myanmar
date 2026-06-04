@@ -17,6 +17,8 @@ function AdminsPanel() {
       )
     ),
 
+    h(DemoNote, { message: '관리자 계정 목록 조회 API가 아직 없어 샘플 데이터로 표시됩니다. 계정 등록·수정·비활성화는 데모입니다. (비밀번호 초기화 API는 별도 존재)' }),
+
     !canManage && h('div', { style: { padding: 14, background: 'var(--st-photo-bg)', color: 'var(--st-photo)', borderRadius: 8, marginBottom: 14, fontSize: 13 } },
       'ⓘ 최고관리자(super)만 계정을 관리할 수 있습니다. 현재 권한: ', h('b', null, DataStore.roleLabel(myRole)), ' (조회 전용)'
     ),

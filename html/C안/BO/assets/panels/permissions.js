@@ -114,6 +114,8 @@ function PermissionsPanel() {
       )
     ),
 
+    h(DemoNote, { message: '권한 매트릭스 저장 API가 아직 없어 화면 내 편집만 가능한 데모입니다. 실제 권한은 백엔드 역할(super/standard/readonly)로 적용됩니다.' }),
+
     !canManage && h('div', { style: { padding: 14, background: 'var(--st-photo-bg)', color: 'var(--st-photo)', borderRadius: 8, marginBottom: 14, fontSize: 13 } },
       'ⓘ 최고관리자(super)만 권한을 편집할 수 있습니다. 현재 권한: ', h('b', null, DataStore.roleLabel(myRole)), ' (조회 전용)'
     ),

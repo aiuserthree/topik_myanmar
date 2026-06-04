@@ -59,6 +59,8 @@ function AuditPanel() {
       )
     ),
 
+    h(DemoNote, { message: '통합 처리 이력 조회 API가 아직 없어 샘플 데이터로 표시됩니다. (접수 건별 처리 이력은 접수자 상세에서 실데이터로 제공됩니다.)' }),
+
     h('div', { className: 'filterbar' },
       h('div', { className: 'chips' },
         h('button', { className: `chip ${range === 0 ? 'active' : ''}`, onClick: () => setRange(0) }, '전체 기간', h('span', { className: 'cnt' }, baseLog.length)),
