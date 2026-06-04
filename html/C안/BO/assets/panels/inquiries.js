@@ -1,7 +1,7 @@
 /* ============================================================
    panels/inquiries.js — 문의게시판 관리 (vanilla port of inquiries.jsx)
    - 전체/일반/비밀 탭, 카테고리, 상태(답변대기/답변완료), 검색
-   - 답변 작성·답변 완료 처리(토글), 댓글/대댓글
+   - 답변 작성·답변등록/완료처리, 댓글/대댓글
    ============================================================ */
 
 const INQ_CATS = ['접수','시험','기타'];
@@ -113,7 +113,6 @@ function InquiryDetailLP({ id, onClose }) {
   const state = useStore();
   const q = state.inquiries.find(x => x.id === id);
   const [reply, setReply] = useState('');
-  const [done, setDone] = useState(q && q.status === 'done');
   const [comment, setComment] = useState('');
   const [commentPublic, setCommentPublic] = useState(!(q && q.secret));
   const [detail, setDetail] = useState(null);
@@ -137,7 +136,7 @@ function InquiryDetailLP({ id, onClose }) {
     setBusy(true);
     TopikBoApi.replyBoardPost(q.apiId, {
       reply: reply, activity_type: '공식 답변',
-      workflow_status: done ? 'answered' : 'awaiting_reply',
+      workflow_status: 'answered',
     }).then(res => {
       setBusy(false);
       if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
@@ -163,7 +162,7 @@ function InquiryDetailLP({ id, onClose }) {
     open: true, size: 'wide', title: q.title, sub: `작성자 ${q.author} · 작성일 ${q.createdAt} · ${q.secret ? '비밀글' : '일반글'}`, onClose: onClose,
     footer: h(Fragment, null,
       h('button', { className: 'btn btn-secondary', onClick: onClose }, '닫기'),
-      h('button', { className: 'btn btn-primary', onClick: submit, disabled: !reply.trim() || busy }, done ? '답변 등록 · 완료 처리' : '답변 등록')
+      h('button', { className: 'btn btn-primary', onClick: submit, disabled: !reply.trim() || busy }, '답변등록/완료처리')
     )
   },
     h(FieldSet, { legend: '문의 내용', cols: 1 },
@@ -179,12 +178,6 @@ function InquiryDetailLP({ id, onClose }) {
     h(FieldSet, { legend: '답변 작성', cols: 1 },
       h(FormRow, { label: '답변 내용', required: true },
         h('textarea', { className: 'textarea', rows: '5', value: reply, onChange: e => setReply(e.target.value), placeholder: '답변 내용을 입력하세요.' })
-      ),
-      h(FormRow, null,
-        h('label', { style: { fontSize: 13, display: 'inline-flex', gap: 6, alignItems: 'center' } },
-          h('input', { type: 'checkbox', checked: done, onChange: e => setDone(e.target.checked) }),
-          "답변 완료 처리 (상태를 '답변완료'로 전환 + 작성자 이메일 통지)"
-        )
       )
     ),
 
