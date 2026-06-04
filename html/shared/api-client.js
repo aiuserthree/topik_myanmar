@@ -176,6 +176,18 @@
     return base + path;
   }
 
+  /**
+   * Authenticated <img src> URL for the logged-in user's own file (증명사진).
+   * Token rides in the query string because <img> can't set an Authorization
+   * header; the files route accepts ?token= for exactly this case.
+   */
+  function fileUrl(fileId) {
+    if (!fileId) return "";
+    var token = getAccessToken();
+    return apiUrl("/api/v1/files/" + encodeURIComponent(fileId)) +
+      (token ? "?token=" + encodeURIComponent(token) : "");
+  }
+
   function login(email, password, options) {
     options = options || {};
     var persist = !!options.persist;
@@ -499,36 +511,6 @@
     });
   }
 
-  function forgotPassword(email) {
-    return apiFetch("/api/v1/auth/forgot-password", {
-      method: "POST",
-      auth: false,
-      body: JSON.stringify({ email: email }),
-    });
-  }
-
-  function resetPassword(payload) {
-    return apiFetch("/api/v1/auth/reset-password", {
-      method: "POST",
-      auth: false,
-      body: JSON.stringify(payload),
-    });
-  }
-
-  function updateMe(payload) {
-    return apiFetch("/api/v1/me", {
-      method: "PATCH",
-      body: JSON.stringify(payload),
-    });
-  }
-
-  function changePassword(payload) {
-    return apiFetch("/api/v1/me/change-password", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
-  }
-
   function parseError(res) {
     if (!res) return "요청을 처리할 수 없습니다.";
     var b = res.body || {};
@@ -566,6 +548,7 @@
     logout: logout,
     isLoggedIn: isLoggedIn,
     getAccessToken: getAccessToken,
+    fileUrl: fileUrl,
     getUser: getUser,
     syncLegacyUser: syncLegacyUser,
     apiFetch: apiFetch,
@@ -593,10 +576,6 @@
     getBoardPosts: getBoardPosts,
     getBoardPost: getBoardPost,
     createBoardPost: createBoardPost,
-    forgotPassword: forgotPassword,
-    resetPassword: resetPassword,
-    updateMe: updateMe,
-    changePassword: changePassword,
     parseError: parseError,
     canUseApi: canUseApi,
     persistSession: persistSession,

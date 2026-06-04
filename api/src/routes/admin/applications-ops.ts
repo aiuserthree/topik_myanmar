@@ -279,6 +279,17 @@ export async function adminApplicationsOpsRoutes(app: FastifyInstance) {
           [appId]
         );
 
+        const memoRes = await pool.query(
+          `SELECT m.id, m.body, m.created_at,
+                  au.email AS admin_email, au.name AS admin_name
+           FROM application_memos m
+           LEFT JOIN admin_users au ON au.id = m.admin_user_id
+           WHERE m.application_id = $1
+           ORDER BY m.created_at DESC
+           LIMIT 100`,
+          [appId]
+        );
+
         return {
           application: {
             id: Number(a.id),
@@ -346,12 +357,133 @@ export async function adminApplicationsOpsRoutes(app: FastifyInstance) {
             admin_email: l.admin_email,
             admin_name: l.admin_name,
           })),
+          memos: memoRes.rows.map((m) => ({
+            id: Number(m.id),
+            body: m.body,
+            created_at: m.created_at,
+            created_at_label: formatDateTime(m.created_at),
+            admin_email: m.admin_email,
+            admin_name: m.admin_name,
+          })),
         };
       } catch (err) {
         app.log.error(err);
         return reply.status(503).send({
           error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
         });
+      }
+    }
+  );
+
+  // -------------------------------------------------------------------------
+  // GET /api/v1/admin/applications/:id/memos — 접수 건 관리자 메모 이력
+  // -------------------------------------------------------------------------
+  app.get<{ Params: { id: string } }>(
+    "/api/v1/admin/applications/:id/memos",
+    { preHandler: requireAnyAdmin },
+    async (req, reply) => {
+      const appId = Number(req.params.id);
+      if (!Number.isFinite(appId)) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "잘못된 요청입니다." },
+        });
+      }
+      try {
+        const { rows } = await pool.query(
+          `SELECT m.id, m.body, m.created_at,
+                  au.email AS admin_email, au.name AS admin_name
+           FROM application_memos m
+           LEFT JOIN admin_users au ON au.id = m.admin_user_id
+           WHERE m.application_id = $1
+           ORDER BY m.created_at DESC
+           LIMIT 100`,
+          [appId]
+        );
+        return {
+          items: rows.map((m) => ({
+            id: Number(m.id),
+            body: m.body,
+            created_at: m.created_at,
+            created_at_label: formatDateTime(m.created_at),
+            admin_email: m.admin_email,
+            admin_name: m.admin_name,
+          })),
+        };
+      } catch (err) {
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
+        });
+      }
+    }
+  );
+
+  // -------------------------------------------------------------------------
+  // POST /api/v1/admin/applications/:id/memos — 접수 건 관리자 메모 추가
+  // -------------------------------------------------------------------------
+  app.post<{ Params: { id: string }; Body: { body?: string } }>(
+    "/api/v1/admin/applications/:id/memos",
+    { preHandler: requireAdmin },
+    async (req, reply) => {
+      const appId = Number(req.params.id);
+      const memoBody = String(req.body?.body ?? "").trim();
+      if (!Number.isFinite(appId)) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "잘못된 요청입니다." },
+        });
+      }
+      if (!memoBody) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "메모 내용을 입력해 주세요." },
+        });
+      }
+
+      const client = await pool.connect();
+      try {
+        await client.query("BEGIN");
+        const exists = await client.query(
+          `SELECT id FROM applications WHERE id = $1 LIMIT 1`,
+          [appId]
+        );
+        if (exists.rows.length === 0) {
+          await client.query("ROLLBACK");
+          return reply.status(404).send({
+            error: { code: "NOT_FOUND", message: "접수 건을 찾을 수 없습니다." },
+          });
+        }
+        const ins = await client.query(
+          `INSERT INTO application_memos (application_id, admin_user_id, body)
+           VALUES ($1, $2, $3)
+           RETURNING id, body, created_at`,
+          [appId, req.authAdmin!.id, memoBody.slice(0, 5000)]
+        );
+        await insertAuditLog(client, {
+          adminId: req.authAdmin!.id,
+          targetTable: "applications",
+          targetId: appId,
+          action: "memo_add",
+          memo: memoBody.slice(0, 200),
+        });
+        await client.query("COMMIT");
+        const m = ins.rows[0];
+        return reply.status(201).send({
+          memo: {
+            id: Number(m.id),
+            body: m.body,
+            created_at: m.created_at,
+            created_at_label: formatDateTime(m.created_at),
+            admin_email: req.authAdmin!.email,
+            admin_name: null,
+          },
+        });
+      } catch (err) {
+        await client.query("ROLLBACK");
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
+        });
+      } finally {
+        client.release();
       }
     }
   );

@@ -231,8 +231,9 @@
     placeholder: '현재 사진',
     onChange: function () { photoChanged = true; }
   });
+  var DUMMY_PORTRAIT = 'assets/dummy-portrait.jpg';
   if (profilePhotoCtrl && profilePhotoCtrl.setDataUrl) {
-    profilePhotoCtrl.setDataUrl('assets/dummy-portrait.jpg');
+    profilePhotoCtrl.setDataUrl(DUMMY_PORTRAIT);
   }
 
   document.querySelectorAll('.profile-tabs button').forEach(b => {
@@ -274,6 +275,9 @@
       setSelectValue($('pf-motive'), u.motive_code);
       setSelectValue($('pf-purpose'), u.purpose_code);
       $('pf-email').value = u.email || '';
+      if (u.photo_file_id && TopikApi.fileUrl && profilePhotoCtrl && profilePhotoCtrl.setDataUrl) {
+        profilePhotoCtrl.setDataUrl(TopikApi.fileUrl(u.photo_file_id));
+      }
     });
   }
   loadProfile();

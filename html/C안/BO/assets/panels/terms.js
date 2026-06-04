@@ -203,6 +203,7 @@ function ConsentLogLP({ onClose }) {
   const state = useStore();
   const [memberF, setMemberF] = useState('all');
   const [kindF, setKindF] = useState('all');
+  const res = useBoResource(() => BoData.loadConsents(), []);
   const filtered = useMemo(() => {
     let r = state.consents.slice();
     if (memberF !== 'all') r = r.filter(c => c.memberId === memberF);
@@ -211,17 +212,29 @@ function ConsentLogLP({ onClose }) {
   }, [state.consents, memberF, kindF]);
 
   const exportCSV = () => {
-    DataStore.addAudit({ type: '약관', targetId: '—', action: '게시', memo: `약관 동의 이력 CSV 내보내기(${filtered.length}건) — 감사 자료` });
-    toastOk('동의 이력 CSV를 생성했습니다.');
+    const head = ['시각', '회원ID', '회원명', '약관', '버전', 'IP', '방식'];
+    const rows = filtered.map(c => [c.ts, c.memberId, c.name || '', c.termsKind, c.version, c.ip, c.method]);
+    const csv = '\uFEFF' + [head].concat(rows)
+      .map(r => r.map(v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"').join(','))
+      .join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = '약관동의이력.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toastOk(`동의 이력 CSV를 생성했습니다. (${filtered.length}건)`);
   };
 
-  return h(LP, { open: true, size: 'wide', title: '약관 동의 이력', sub: '회원·버전별 동의 시점/IP/방식 (감사 자료)', onClose: onClose,
+  return h(LP, { open: true, size: 'wide', title: '약관 동의 이력', sub: '회원·버전별 동의 시점/IP (감사 자료)', onClose: onClose,
     footer: h(Fragment, null,
       h('button', { className: 'btn btn-secondary', onClick: onClose }, '닫기'),
-      h('button', { className: 'btn btn-primary', onClick: exportCSV }, h(I.Download, { style: { width: 12, height: 12 } }), ' CSV 내보내기')
+      h('button', { className: 'btn btn-primary', onClick: exportCSV, disabled: res.loading || !!res.error || !filtered.length }, h(I.Download, { style: { width: 12, height: 12 } }), ' CSV 내보내기')
     )
   },
-    h(DemoNote, { message: '약관 동의 이력 조회 API가 아직 없어 샘플 데이터로 표시됩니다.' }),
     h('div', { className: 'filterbar' },
       h('div', { className: 'controls' },
         h('select', { className: 'select', value: memberF, onChange: e => setMemberF(e.target.value), style: { minWidth: 180 } },
@@ -234,7 +247,9 @@ function ConsentLogLP({ onClose }) {
         )
       )
     ),
-    h('div', { className: 'dg-wrap', style: { marginTop: 12 } },
+    res.loading ? h(LoadingState)
+      : res.error ? h(ErrorState, { error: res.error, onRetry: res.reload })
+      : h('div', { className: 'dg-wrap', style: { marginTop: 12 } },
       h('div', { className: 'dg-scroll' },
         h('table', { className: 'dg' },
           h('thead', null, h('tr', null, h('th', null, '시각'), h('th', null, '회원ID'), h('th', null, '약관'), h('th', null, '버전'), h('th', null, 'IP'), h('th', null, '방식'))),
@@ -248,7 +263,8 @@ function ConsentLogLP({ onClose }) {
                 h('td', { className: 'code muted' }, c.ip),
                 h('td', null, h('span', { className: 'tag' }, c.method))
               )
-            ))
+            )),
+            !filtered.length && h('tr', null, h('td', { colSpan: 6, className: 'empty', style: { padding: '24px 0' } }, '동의 이력이 없습니다.'))
           )
         )
       )

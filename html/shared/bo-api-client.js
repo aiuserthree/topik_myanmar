@@ -227,8 +227,8 @@
     return parts.length ? "?" + parts.join("&") : "";
   }
 
-  function listExamRounds() {
-    return apiFetch("/api/v1/admin/exam-rounds");
+  function listExamRounds(params) {
+    return apiFetch("/api/v1/admin/exam-rounds" + buildQuery(params));
   }
 
   function listApplications(params) {
@@ -237,6 +237,17 @@
 
   function getApplication(id) {
     return apiFetch("/api/v1/admin/applications/" + encodeURIComponent(id));
+  }
+
+  function listApplicationMemos(id) {
+    return apiFetch("/api/v1/admin/applications/" + encodeURIComponent(id) + "/memos");
+  }
+
+  function addApplicationMemo(id, body) {
+    return apiFetch("/api/v1/admin/applications/" + encodeURIComponent(id) + "/memos", {
+      method: "POST",
+      body: JSON.stringify({ body: body || "" }),
+    });
   }
 
   function markPayment(id, payload) {
@@ -402,6 +413,7 @@
   function updateTerm(id, body) { return send("PATCH", "/api/v1/admin/terms/" + encodeURIComponent(id), body); }
   function publishTerm(id) { return send("POST", "/api/v1/admin/terms/" + encodeURIComponent(id) + "/publish", {}); }
   function deleteTerm(id) { return send("DELETE", "/api/v1/admin/terms/" + encodeURIComponent(id)); }
+  function listTermAgreements(params) { return apiFetch("/api/v1/admin/term-agreements" + buildQuery(params)); }
 
   // --- 회원(members/users) 관리 -------------------------------------------
   function listMembers(params) { return apiFetch("/api/v1/admin/users" + buildQuery(params)); }
@@ -454,6 +466,8 @@
     listExamRounds: listExamRounds,
     listApplications: listApplications,
     getApplication: getApplication,
+    listApplicationMemos: listApplicationMemos,
+    addApplicationMemo: addApplicationMemo,
     markPayment: markPayment,
     cancelPayment: cancelPayment,
     assignExamNumbers: assignExamNumbers,
@@ -497,6 +511,7 @@
     updateTerm: updateTerm,
     publishTerm: publishTerm,
     deleteTerm: deleteTerm,
+    listTermAgreements: listTermAgreements,
     listMembers: listMembers,
     updateMember: updateMember,
     resetMemberPassword: resetMemberPassword,

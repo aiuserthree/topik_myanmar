@@ -223,21 +223,27 @@ export async function adminExamRoundsRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   // GET /api/v1/admin/exam-rounds — 회차 컨텍스트 셀렉터(읽기 전용, 통계 포함)
   // -------------------------------------------------------------------------
-  app.get(
+  app.get<{ Querystring: { include_inactive?: string } }>(
     "/api/v1/admin/exam-rounds",
     { preHandler: requireAnyAdmin },
-    async (_req, reply) => {
+    async (req, reply) => {
       try {
+        const includeInactive =
+          req.query.include_inactive === "1" ||
+          req.query.include_inactive === "true";
         const { rows } = await pool.query(
           `SELECT r.id, r.round_no, r.title, r.exam_date,
                   r.registration_start_at, r.registration_end_at,
+                  r.payment_start_at, r.payment_end_at,
                   r.result_announcement_date, r.fee_level_i, r.fee_level_ii,
                   r.registration_status, r.exam_number_visible_at, r.capacity,
+                  r.is_active,
                   COUNT(a.id) FILTER (WHERE a.status NOT IN ('cancelled','rejected')) AS active_count,
                   COUNT(a.id) FILTER (WHERE a.payment_status = 'paid') AS paid_count,
                   COUNT(a.id) FILTER (WHERE a.exam_number IS NOT NULL) AS assigned_count
            FROM exam_rounds r
            LEFT JOIN applications a ON a.exam_round_id = r.id
+           ${includeInactive ? "" : "WHERE r.is_active = true"}
            GROUP BY r.id
            ORDER BY r.round_no DESC`
         );
@@ -273,12 +279,15 @@ export async function adminExamRoundsRoutes(app: FastifyInstance) {
             exam_date: r.exam_date,
             registration_start_at: r.registration_start_at,
             registration_end_at: r.registration_end_at,
+            payment_start_at: r.payment_start_at,
+            payment_end_at: r.payment_end_at,
             result_announcement_date: r.result_announcement_date,
             fee_level_i: r.fee_level_i,
             fee_level_ii: r.fee_level_ii,
             registration_status: r.registration_status,
             exam_number_visible_at: r.exam_number_visible_at,
             capacity: r.capacity != null ? Number(r.capacity) : null,
+            is_active: r.is_active,
             stats: {
               active: Number(r.active_count),
               paid: Number(r.paid_count),
@@ -312,7 +321,8 @@ export async function adminExamRoundsRoutes(app: FastifyInstance) {
       try {
         const { rows } = await pool.query(
           `SELECT id, round_no, title, exam_date, registration_start_at,
-                  registration_end_at, result_announcement_date,
+                  registration_end_at, payment_start_at, payment_end_at,
+                  result_announcement_date,
                   fee_level_i, fee_level_ii, capacity, registration_status,
                   exam_number_visible_at, is_active, rev, created_at, updated_at
            FROM exam_rounds WHERE id = $1 LIMIT 1`,
@@ -359,6 +369,8 @@ export async function adminExamRoundsRoutes(app: FastifyInstance) {
       exam_date?: string;
       registration_start_at?: string;
       registration_end_at?: string;
+      payment_start_at?: string | null;
+      payment_end_at?: string | null;
       result_announcement_date?: string | null;
       fee_level_i?: number | null;
       fee_level_ii?: number | null;
@@ -412,6 +424,8 @@ export async function adminExamRoundsRoutes(app: FastifyInstance) {
       const capacity = body.capacity == null ? null : parseIntInRange(body.capacity, 0, 1000000);
       const resultDate = parseDateOnly(body.result_announcement_date);
       const visibleAt = parseDateOrNull(body.exam_number_visible_at);
+      const payStart = parseDateOrNull(body.payment_start_at);
+      const payEnd = parseDateOrNull(body.payment_end_at);
       const isActive = body.is_active === undefined ? true : !!body.is_active;
 
       const client = await pool.connect();
@@ -420,9 +434,10 @@ export async function adminExamRoundsRoutes(app: FastifyInstance) {
         const ins = await client.query(
           `INSERT INTO exam_rounds (
              round_no, title, exam_date, registration_start_at, registration_end_at,
+             payment_start_at, payment_end_at,
              result_announcement_date, fee_level_i, fee_level_ii, capacity,
              registration_status, exam_number_visible_at, is_active
-           ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+           ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
            RETURNING id`,
           [
             roundNo,
@@ -430,6 +445,8 @@ export async function adminExamRoundsRoutes(app: FastifyInstance) {
             examDate,
             regStart,
             regEnd,
+            payStart,
+            payEnd,
             resultDate,
             feeI === undefined ? null : feeI,
             feeII === undefined ? null : feeII,
@@ -486,6 +503,8 @@ export async function adminExamRoundsRoutes(app: FastifyInstance) {
       exam_date?: string;
       registration_start_at?: string;
       registration_end_at?: string;
+      payment_start_at?: string | null;
+      payment_end_at?: string | null;
       result_announcement_date?: string | null;
       fee_level_i?: number | null;
       fee_level_ii?: number | null;
@@ -567,6 +586,34 @@ export async function adminExamRoundsRoutes(app: FastifyInstance) {
             });
           }
           setField("registration_end_at", d);
+        }
+        if (body.payment_start_at !== undefined) {
+          if (body.payment_start_at === null || body.payment_start_at === "") {
+            setField("payment_start_at", null);
+          } else {
+            const d = parseDateOrNull(body.payment_start_at);
+            if (!d) {
+              await client.query("ROLLBACK");
+              return reply.status(400).send({
+                error: { code: "VALIDATION_ERROR", message: "납부 시작 일시가 올바르지 않습니다." },
+              });
+            }
+            setField("payment_start_at", d);
+          }
+        }
+        if (body.payment_end_at !== undefined) {
+          if (body.payment_end_at === null || body.payment_end_at === "") {
+            setField("payment_end_at", null);
+          } else {
+            const d = parseDateOrNull(body.payment_end_at);
+            if (!d) {
+              await client.query("ROLLBACK");
+              return reply.status(400).send({
+                error: { code: "VALIDATION_ERROR", message: "납부 종료 일시가 올바르지 않습니다." },
+              });
+            }
+            setField("payment_end_at", d);
+          }
         }
         if (body.result_announcement_date !== undefined) {
           if (body.result_announcement_date === null || body.result_announcement_date === "") {

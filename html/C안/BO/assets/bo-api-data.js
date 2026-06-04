@@ -55,6 +55,7 @@
       status: r.registration_status === "open" ? "open"
         : r.registration_status === "closed" ? "closed" : "planned",
       registration_status: r.registration_status,
+      active: r.is_active !== false,
       examVisibleAt: r.exam_number_visible_at || "",
       applicants: (r.stats && r.stats.active) || 0,
       stats: r.stats || { active: 0, paid: 0, assigned: 0 },
@@ -237,6 +238,7 @@
     if (/publish|marketing/.test(s)) return "게시";
     if (/reset/.test(s)) return "비밀번호초기화";
     if (/exam_number/.test(s)) return "수험번호부여";
+    if (/memo/.test(s)) return "메모";
     if (/update|status|reply|comment/.test(s)) return "수정";
     return s || "수정";
   }
@@ -263,16 +265,31 @@
     };
   }
 
+  function mapConsent(c) {
+    return {
+      id: String(c.id),
+      ts: tsDash(c.agreed_at) || "",
+      memberId: c.user_id != null ? String(c.user_id) : "",
+      name: c.name_ko || "",
+      termsKind: TERM_C2L[c.term_type] || c.term_type || "",
+      version: c.version || "",
+      ip: c.ip_address || "—",
+      method: "온라인",
+    };
+  }
+
   // ---------- raw loaders (fetch + map + write + notify) -------------------
-  function loadRoundsRaw() {
-    return Api().listExamRounds().then(function (res) {
+  function loadRoundsRaw(opts) {
+    var params = opts && opts.includeInactive ? { include_inactive: 1 } : undefined;
+    return Api().listExamRounds(params).then(function (res) {
       if (!res.ok) return fail(res);
       var rounds = (res.body.rounds || []).map(mapRound);
       DS().state.sessions = rounds;
       var active = DS().state.activeSessionId;
       if (!active || !rounds.some(function (s) { return s.id === active; })) {
-        var open = rounds.filter(function (s) { return s.status === "open"; })[0];
-        DS().state.activeSessionId = (open || rounds[0] || {}).id || null;
+        var pickable = rounds.filter(function (s) { return s.active !== false; });
+        var open = pickable.filter(function (s) { return s.status === "open"; })[0];
+        DS().state.activeSessionId = (open || pickable[0] || rounds[0] || {}).id || null;
       }
       DS().notify();
       return { ok: true };
@@ -403,6 +420,18 @@
     });
   }
 
+  function loadConsentsRaw() {
+    return Api().listTermAgreements({ page_size: 500 }).then(function (res) {
+      if (!res.ok) return fail(res);
+      DS().state.consents = (res.body.items || []).map(mapConsent);
+      // 회원 필터 드롭다운을 위해 회원 목록도 함께 로드(실패는 무시).
+      return loadMembersRaw().then(
+        function () { DS().notify(); return { ok: true }; },
+        function () { DS().notify(); return { ok: true }; }
+      );
+    });
+  }
+
   // ---------- once() cache for shared context (rounds / venues) ------------
   var loadedOnce = {};
   function once(key, fn) {
@@ -430,9 +459,9 @@
   // Ensure venues are available for panels that need them but aren't round-gated
   function ensureVenues() { return once("venues", loadVenuesRaw); }
   function loadVenuesPanel() { invalidate("venues"); return loadVenuesRaw(); }
-  function loadSessionsPanel() {
+  function loadSessionsPanel(includeInactive) {
     invalidate("rounds");
-    return loadRoundsRaw().then(function (r) {
+    return loadRoundsRaw({ includeInactive: includeInactive }).then(function (r) {
       if (r && r.error) return r;
       return once("venues", loadVenuesRaw); // sessions edit picks from active venues
     });
@@ -444,7 +473,7 @@
     faq: loadFaqRaw,
     terms: loadTermsRaw,
     venues: loadVenuesPanel,
-    sessions: function () { invalidate("rounds"); return loadRoundsRaw(); },
+    sessions: function (includeInactive) { invalidate("rounds"); return loadRoundsRaw({ includeInactive: includeInactive }); },
     apps: function () {
       var rid = DS().state.activeSessionId;
       return rid ? loadAppsRaw(rid) : Promise.resolve({ ok: true });
@@ -454,10 +483,11 @@
     inquiries: loadInquiriesRaw,
     refunds: loadRefundsRaw,
     audit: loadAuditRaw,
+    consents: loadConsentsRaw,
   };
-  function reload(name) {
+  function reload(name, arg) {
     var fn = RELOADERS[name];
-    return fn ? Promise.resolve(fn()) : Promise.resolve({ ok: true });
+    return fn ? Promise.resolve(fn(arg)) : Promise.resolve({ ok: true });
   }
 
   // ---------- hook + gate UI ----------------------------------------------
@@ -518,28 +548,12 @@
     return h(props.inner, props.innerProps || null);
   }
 
-  // ---------- demo-data banner (mock-only panels) -------------------------
-  function DemoNote(props) {
-    var h = global.h;
-    return h("div", {
-      style: {
-        display: "flex", alignItems: "center", gap: 8,
-        padding: "8px 12px", marginBottom: 14, borderRadius: 6,
-        background: "var(--st-photo-bg, #fff7e6)", color: "var(--st-photo, #9a6b00)",
-        border: "1px solid var(--st-photo, #f0c36d)", fontSize: 12.5,
-      },
-    },
-      h("b", null, "데모 데이터"),
-      h("span", null, props.message || "이 화면은 백엔드 관리자 목록 API가 아직 없어 샘플 데이터로 표시됩니다.")
-    );
-  }
-
   global.BoData = {
     // adapters (exposed for clarity/testing)
     mapRound: mapRound, mapVenue: mapVenue, mapRegion: mapRegion,
     mapNotice: mapNotice, mapFaq: mapFaq, mapTerm: mapTerm, mapApplication: mapApplication,
     mapMember: mapMember, mapAdmin: mapAdmin, mapInquiry: mapInquiry,
-    mapRefund: mapRefund, mapAuditLog: mapAuditLog,
+    mapRefund: mapRefund, mapAuditLog: mapAuditLog, mapConsent: mapConsent,
     // code/label maps
     NOTICE_L2C: NOTICE_L2C, NOTICE_C2L: NOTICE_C2L,
     FAQ_L2C: FAQ_L2C, FAQ_C2L: FAQ_C2L,
@@ -557,6 +571,7 @@
     loadInquiries: loadInquiriesRaw,
     loadRefunds: loadRefundsRaw,
     loadAudit: loadAuditRaw,
+    loadConsents: loadConsentsRaw,
     ensureVenues: ensureVenues,
     invalidate: invalidate,
     reload: reload,
@@ -565,5 +580,4 @@
   global.ResourceGate = ResourceGate;
   global.LoadingState = LoadingState;
   global.ErrorState = ErrorState;
-  global.DemoNote = DemoNote;
 })(typeof window !== "undefined" ? window : this);

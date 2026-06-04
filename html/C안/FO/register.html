@@ -483,6 +483,9 @@
     set('profJob', codeLabel('job', u.job_code));
     set('profMotive', codeLabel('motive', u.motive_code));
     set('profPurpose', codeLabel('purpose', u.purpose_code));
+    var photoUrl = (u.photo_file_id && window.TopikApi && TopikApi.fileUrl)
+      ? TopikApi.fileUrl(u.photo_file_id) : '';
+    if (typeof renderPortrait === 'function') renderPortrait(photoUrl);
   }
 
   function loadRegisterMasters() {
@@ -565,16 +568,18 @@
     document.getElementById('btnGoStep4').disabled = !all;
   }));
 
-  (function showDummyPortrait() {
-    const url = 'assets/dummy-portrait.jpg';
-    document.querySelectorAll('.photo-frame .pf').forEach((pf) => {
+  var DUMMY_PORTRAIT = 'assets/dummy-portrait.jpg';
+  function renderPortrait(url) {
+    var src = url || DUMMY_PORTRAIT;
+    document.querySelectorAll('.photo-frame .pf').forEach(function (pf) {
       pf.classList.add('has-photo');
       pf.style.padding = '0';
       pf.style.overflow = 'hidden';
       pf.innerHTML =
-        '<img src="' + url + '" alt="증명사진" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">';
+        '<img src="' + src + '" alt="증명사진" onerror="this.onerror=null;this.src=\'' + DUMMY_PORTRAIT + '\';" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">';
     });
-  })();
+  }
+  renderPortrait(DUMMY_PORTRAIT);
 
   // STEP 4 — summary
   function updateSummary() {

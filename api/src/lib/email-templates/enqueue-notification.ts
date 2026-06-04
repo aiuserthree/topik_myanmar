@@ -46,5 +46,5 @@ export async function enqueueEmail(
 }
 
 export { renderEmail, TEMPLATE_KEYS } from "./render-html.js";
-export { buildEmailDefaults, formatVerificationCode, maskEmail, passwordResetLink } from "./defaults.js";
+export { buildEmailDefaults, formatVerificationCode, maskEmail } from "./defaults.js";
 export type { TemplateKey, EmailVariables, EmailLocale } from "./types.js";

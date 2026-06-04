@@ -10,8 +10,16 @@ function SessionsPanelInner() {
   const state = useStore();
   const [edit, setEdit] = useState(null); // {id} | {copy} | {new:true}
   const [delId, setDelId] = useState(null);
+  const [showAbolished, setShowAbolished] = useState(false);
 
-  const sessions = state.sessions.slice().sort((a,b) => (b.examDate || '').localeCompare(a.examDate || ''));
+  const sessions = state.sessions
+    .filter(s => showAbolished || s.active !== false)
+    .sort((a,b) => (b.examDate || '').localeCompare(a.examDate || ''));
+
+  const toggleAbolished = (v) => {
+    setShowAbolished(v);
+    BoData.reload('sessions', v);
+  };
 
   const save = (data) => {
     const venueIds = (data.venues || []).map(Number).filter(function (n) { return n > 0; });
@@ -22,6 +30,8 @@ function SessionsPanelInner() {
       registration_start_at: data.applyStart,
       registration_end_at: data.applyEnd,
       result_announcement_date: data.resultDate || null,
+      payment_start_at: data.payStart || null,
+      payment_end_at: data.payEnd || null,
       fee_level_i: parseInt(data.feeI, 10),
       fee_level_ii: parseInt(data.feeII, 10),
       capacity: parseInt(data.cap, 10),
@@ -33,7 +43,7 @@ function SessionsPanelInner() {
       : TopikBoApi.createExamRound(body);
     return run.then(res => {
       if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
-      return BoData.reload('sessions').then(() => {
+      return BoData.reload('sessions', showAbolished).then(() => {
         toastOk(data.apiId ? `${data.name} 정보가 수정되었습니다.` : `${data.name} 회차가 등록되었습니다.`);
         setEdit(null);
       });
@@ -52,6 +62,8 @@ function SessionsPanelInner() {
         applyStart: (r.registration_start_at || '').slice(0, 10),
         applyEnd: (r.registration_end_at || '').slice(0, 10),
         resultDate: (r.result_announcement_date || '').slice(0, 10),
+        payStart: (r.payment_start_at || '').slice(0, 10),
+        payEnd: (r.payment_end_at || '').slice(0, 10),
         cap: r.capacity != null ? Number(r.capacity) : s.cap,
         feeI: r.fee_level_i != null ? Number(r.fee_level_i) : 0,
         feeII: r.fee_level_ii != null ? Number(r.fee_level_ii) : 0,
@@ -67,7 +79,15 @@ function SessionsPanelInner() {
     if (!s) return;
     TopikBoApi.updateExamRound(s.apiId, { is_active: false }).then(res => {
       if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
-      BoData.reload('sessions').then(() => { setDelId(null); toastOk('회차가 비공개(soft-delete) 처리되었습니다. FO 노출이 중단됩니다.'); });
+      BoData.reload('sessions', showAbolished).then(() => { setDelId(null); toastOk('회차가 폐지(비공개) 처리되었습니다. 기본 목록에서 제외되며 FO 노출이 중단됩니다.'); });
+    });
+  };
+
+  // 복원: 폐지(is_active=false) 회차를 다시 활성화하여 목록·FO 노출을 재개.
+  const restore = (s) => {
+    TopikBoApi.updateExamRound(s.apiId, { is_active: true }).then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      BoData.reload('sessions', showAbolished).then(() => toastOk('회차가 복원되었습니다. FO 노출이 재개됩니다.'));
     });
   };
 
@@ -78,6 +98,10 @@ function SessionsPanelInner() {
         h('div', { className: 'sub' }, '시험 회차를 등록·수정·복제합니다. 모든 변경은 처리 이력에 자동 기록됩니다.')
       ),
       h('div', { className: 'actions' },
+        h('label', { style: { display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--text-2)', cursor: 'pointer' } },
+          h('input', { type: 'checkbox', checked: showAbolished, onChange: e => toggleAbolished(e.target.checked) }),
+          '폐지 포함 보기'
+        ),
         h('button', { className: 'btn btn-primary', onClick: () => setEdit({ new: true }) },
           h(I.Plus, { style: { width: 14, height: 14 } }), ' 회차 등록'
         )
@@ -95,8 +119,9 @@ function SessionsPanelInner() {
           ),
           h('tbody', null,
             sessions.map(s => {
+              const abolished = s.active === false;
               const isOpen = s.status === 'open', isClosed = s.status === 'closed';
-              return h('tr', { key: s.id },
+              return h('tr', { key: s.id, style: abolished ? { opacity: 0.5 } : null },
                 h('td', { className: 'code-id' }, s.no, '회'),
                 h('td', null, h('b', null, s.name)),
                 h('td', { className: 'code' }, s.applyStart, ' ~ ', s.applyEnd),
@@ -106,12 +131,18 @@ function SessionsPanelInner() {
                 h('td', { className: 'num' }, DataStore.fmtNum(s.applicants || 0)),
                 h('td', { className: 'code' }, DataStore.fmtNum(s.feeI), '/', DataStore.fmtNum(s.feeII)),
                 h('td', null, s.venues.length, '개소'),
-                h('td', null, h(Pill, { kind: isOpen ? 'approved' : isClosed ? 'cancel' : 'applied' }, isOpen ? '접수중' : isClosed ? '마감' : '예정')),
+                h('td', null, abolished
+                  ? h(Pill, { kind: 'inactive' }, '폐지')
+                  : h(Pill, { kind: isOpen ? 'approved' : isClosed ? 'cancel' : 'applied' }, isOpen ? '접수중' : isClosed ? '마감' : '예정')),
                 h('td', null,
                   h('div', { className: 'row-actions' },
-                    h('button', { className: 'ibtn', onClick: () => setEdit({ id: s.id }) }, h(I.Edit, { style: { width: 12, height: 12 } }), ' 수정'),
-                    h('button', { className: 'ibtn', onClick: () => duplicate(s) }, h(I.Copy, { style: { width: 12, height: 12 } }), ' 복제'),
-                    h('button', { className: 'ibtn danger', onClick: () => setDelId(s.id) }, h(I.Trash, { style: { width: 12, height: 12 } }))
+                    abolished
+                      ? h('button', { className: 'ibtn', onClick: () => restore(s) }, '복원')
+                      : h(Fragment, null,
+                          h('button', { className: 'ibtn', onClick: () => setEdit({ id: s.id }) }, h(I.Edit, { style: { width: 12, height: 12 } }), ' 수정'),
+                          h('button', { className: 'ibtn', onClick: () => duplicate(s) }, h(I.Copy, { style: { width: 12, height: 12 } }), ' 복제'),
+                          h('button', { className: 'ibtn danger', onClick: () => setDelId(s.id) }, h(I.Trash, { style: { width: 12, height: 12 } }))
+                        )
                   )
                 )
               );
@@ -141,6 +172,7 @@ function SessionEditLP({ edit, onClose, onSave }) {
     no: (state.sessions.length ? Math.max.apply(null, state.sessions.map(s => s.no)) : 0) + 1,
     name: '',
     applyStart: '', applyEnd: '', examDate: '', resultDate: '',
+    payStart: '', payEnd: '',
     cap: 1000, feeI: 12000, feeII: 15000, venues: [], status: 'planned'
   };
   const [f, setF] = useState(existing ? { ...existing } : (edit.copy ? Object.assign({}, blank, edit.copy) : blank));
@@ -159,6 +191,8 @@ function SessionEditLP({ edit, onClose, onSave }) {
             applyStart: (r.registration_start_at || '').slice(0, 10),
             applyEnd: (r.registration_end_at || '').slice(0, 10),
             resultDate: (r.result_announcement_date || '').slice(0, 10),
+            payStart: (r.payment_start_at || '').slice(0, 10),
+            payEnd: (r.payment_end_at || '').slice(0, 10),
             cap: r.capacity != null ? Number(r.capacity) : s.cap,
             feeI: r.fee_level_i != null ? Number(r.fee_level_i) : 0,
             feeII: r.fee_level_ii != null ? Number(r.fee_level_ii) : 0,
@@ -172,8 +206,8 @@ function SessionEditLP({ edit, onClose, onSave }) {
 
   const set = (k, v) => setF(s => ({ ...s, [k]: v }));
   const toggleVenue = (vid) => set('venues', f.venues.includes(vid) ? f.venues.filter(x => x !== vid) : [...f.venues, vid]);
-  const valid = f.name && f.applyStart && f.applyEnd && f.examDate && f.resultDate && f.cap > 0 && f.feeI > 0 && f.feeII > 0 && f.venues.length > 0
-    && f.applyStart < f.applyEnd && f.applyEnd < f.examDate && f.examDate < f.resultDate;
+  const valid = f.name && f.applyStart && f.applyEnd && f.examDate && f.cap > 0 && f.feeI > 0 && f.feeII > 0 && f.venues.length > 0
+    && f.applyStart < f.applyEnd && f.applyEnd < f.examDate && (!f.resultDate || f.examDate < f.resultDate);
 
   return h(LP, {
     open: true, title: existing ? `회차 수정 — ${existing.name}` : '회차 등록', sub: existing ? `회차 ID ${existing.id}` : '신규 회차',
@@ -206,7 +240,12 @@ function SessionEditLP({ edit, onClose, onSave }) {
       h(FormRow, { label: '접수 시작일', required: true }, h('input', { type: 'date', className: 'input', value: f.applyStart, onChange: e => set('applyStart', e.target.value) })),
       h(FormRow, { label: '접수 마감일', required: true }, h('input', { type: 'date', className: 'input', value: f.applyEnd, onChange: e => set('applyEnd', e.target.value) })),
       h(FormRow, { label: '시험일', required: true }, h('input', { type: 'date', className: 'input', value: f.examDate, onChange: e => set('examDate', e.target.value) })),
-      h(FormRow, { label: '합격발표일', required: true }, h('input', { type: 'date', className: 'input', value: f.resultDate, onChange: e => set('resultDate', e.target.value) }))
+      h(FormRow, { label: '합격발표일', hint: '미입력 가능합니다.' }, h('input', { type: 'date', className: 'input', value: f.resultDate, onChange: e => set('resultDate', e.target.value) }))
+    ),
+
+    h(FieldSet, { legend: '응시료 납부 기간 (FO 메인 D-day 위젯 표기)', cols: 2 },
+      h(FormRow, { label: '납부 시작일', hint: '미입력 시 FO는 기본 표기를 사용합니다.' }, h('input', { type: 'date', className: 'input', value: f.payStart || '', onChange: e => set('payStart', e.target.value) })),
+      h(FormRow, { label: '납부 마감일' }, h('input', { type: 'date', className: 'input', value: f.payEnd || '', onChange: e => set('payEnd', e.target.value) }))
     ),
 
     h(FieldSet, { legend: '응시료(MMK)', cols: 2 },
@@ -230,7 +269,7 @@ function SessionEditLP({ edit, onClose, onSave }) {
     ),
 
     !valid && h('div', { style: { padding: 10, background: 'var(--st-photo-bg)', color: 'var(--st-photo)', borderRadius: 6, fontSize: 12.5 } },
-      '※ 모든 필수 항목 입력 + 일정 순서(접수시작 < 접수마감 < 시험일 < 발표일) + 시험장 1개 이상 선택이 필요합니다.'
+      '※ 모든 필수 항목 입력 + 일정 순서(접수시작 < 접수마감 < 시험일) + 시험장 1개 이상 선택이 필요합니다. (합격발표일 입력 시 시험일 이후여야 합니다.)'
     )
   );
 }

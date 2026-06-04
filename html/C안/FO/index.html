@@ -474,7 +474,7 @@
       regStart: '2026-07-17T00:00:00+06:30',
       regEnd: '2026-07-21T23:59:59+06:30',
       resultDate: null,
-      payPeriod: '2026.07.24 ~ 07.26', // 응시료 납부 기간은 회차 데이터에 없어 고정 표기
+      payPeriod: '2026.07.24 ~ 07.26', // BO 회차에 납부 기간 미설정 시 사용하는 정적 폴백
     };
 
     function pad(n) { return String(Math.max(0, n)).padStart(2, '0'); }
@@ -658,6 +658,9 @@
         SCHED.regStart = r.registration_start_at;
         SCHED.regEnd = r.registration_end_at;
         SCHED.resultDate = r.result_announcement_date || null;
+        if (r.payment_start_at && r.payment_end_at) {
+          SCHED.payPeriod = ymdDot(r.payment_start_at) + ' ~ ' + mdDot(r.payment_end_at);
+        }
         render();
       }).catch(function () { /* 정적 폴백 유지 */ });
     }

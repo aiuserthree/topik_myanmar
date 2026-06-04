@@ -8,7 +8,6 @@ import {
   enqueueEmail,
   formatVerificationCode,
   maskEmail,
-  passwordResetLink,
 } from "../lib/email-templates/enqueue-notification.js";
 import { isValidEmail, isValidPassword, normalizeBirthDate } from "../lib/validation.js";
 
@@ -86,19 +85,30 @@ export async function authPasswordRoutes(app: FastifyInstance) {
           [email]
         );
 
-        // Generic response to avoid account enumeration; dev_code only when a
-        // resettable account actually exists.
-        const genericPayload: Record<string, unknown> = {
+        const user = userRes.rows[0];
+        const exists = !!user;
+        const provider = exists
+          ? user.signup_provider === "google"
+            ? "google"
+            : "email"
+          : null;
+        const resettable = exists && !!user.password_hash;
+
+        // SECURITY TRADEOFF: `registered`/`provider` let the FO 비밀번호 찾기 popup
+        // alert on unknown / Google-only emails (spec docs/07_account.md), at the
+        // cost of account enumeration. The route's IP rate limit (5/min) bounds abuse.
+        const payload: Record<string, unknown> = {
           message:
             "입력하신 이메일이 가입되어 있다면 비밀번호 재설정 인증코드를 발송했습니다.",
           expires_in_seconds: RESET_TTL_SECONDS,
+          registered: exists,
+          provider,
+          sent: false,
         };
 
-        const user = userRes.rows[0];
-        const resettable = !!user && !!user.password_hash;
         if (!resettable) {
-          // Google / non-existent: still return generic success.
-          return genericPayload;
+          // Google (no password) / non-existent: nothing to send.
+          return payload;
         }
 
         const userId = Number(user.id);
@@ -139,14 +149,14 @@ export async function authPasswordRoutes(app: FastifyInstance) {
             email: maskEmail(email),
             verificationCode: formatVerificationCode(code),
             expiresMinutes: "30",
-            resetLink: passwordResetLink(email),
           }),
         });
 
+        payload.sent = true;
         if (config.appEnv === "development") {
-          genericPayload.dev_code = code;
+          payload.dev_code = code;
         }
-        return genericPayload;
+        return payload;
       } catch (err) {
         app.log.error(err);
         return reply.status(503).send({

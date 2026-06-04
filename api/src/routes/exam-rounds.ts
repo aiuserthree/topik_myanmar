@@ -16,6 +16,7 @@ export async function examRoundsRoutes(app: FastifyInstance) {
       const { rows } = await pool.query(
         `SELECT id, round_no, title, exam_date,
                 registration_start_at, registration_end_at,
+                payment_start_at, payment_end_at,
                 result_announcement_date,
                 fee_level_i, fee_level_ii, capacity,
                 registration_status, exam_number_visible_at,

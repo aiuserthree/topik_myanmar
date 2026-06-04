@@ -51,8 +51,3 @@ export function maskEmail(email: string): string {
   const stars = "*".repeat(Math.max(2, local.length - visible.length));
   return `${visible}${stars}@${domain}`;
 }
-
-export function passwordResetLink(email: string): string {
-  const base = config.publicFoBase;
-  return `${base}/password-reset.html?email=${encodeURIComponent(email)}`;
-}

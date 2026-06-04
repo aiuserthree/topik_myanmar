@@ -232,7 +232,7 @@
     </div>
     <div class="modal-foot">
       <button class="btn btn-secondary" onclick="TPKM.closeModal('modalFindPw'); resetFindPw();">닫기</button>
-      <button class="btn btn-primary" id="btnFindPw">비밀번호 재설정</button>
+      <button class="btn btn-primary" id="btnFindPw">인증코드 발송</button>
     </div>
   </div>
 </div>
@@ -505,14 +505,56 @@
     btn.onclick = null;
   }
 
-  // Find PW flow — hand off to the email/code reset page, which sends the code.
-  // (We don't send here, to avoid double-sending + the 60s rate limit.)
+  // Find PW flow — send the verification code here, then hand the email to the
+  // reset page (which lands straight on the code-entry step).
   document.getElementById('btnFindPw').addEventListener('click', function () {
+    var btn = this;
     var errEl = document.getElementById('findPwErr');
     if (errEl) errEl.style.display = 'none';
     var e = document.getElementById('fp-email').value.trim();
     if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) { alert('유효한 이메일을 입력해 주세요.'); return; }
-    location.href = './password-reset.html?email=' + encodeURIComponent(e);
+
+    function goReset() {
+      location.href = './password-reset.html?email=' + encodeURIComponent(e);
+    }
+
+    // Demo / static preview (no API): keep the old hand-off behaviour.
+    if (!window.TopikApi || !TopikApi.canUseApi()) { goReset(); return; }
+
+    var prev = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '발송 중…';
+    TopikApi.forgotPassword(e).then(function (res) {
+      btn.disabled = false;
+      btn.textContent = prev;
+      if (!res.ok) {
+        var body = res.body || {};
+        // Per-user 60s limit means a fresh code was just sent → account exists.
+        if (res.status === 429 && body.error && body.error.code === 'RATE_LIMITED') {
+          goReset();
+          return;
+        }
+        alert(TopikApi.parseError(res));
+        return;
+      }
+      var b = res.body || {};
+      if (b.registered === false) {
+        alert('입력하신 이메일로 가입된 계정이 없습니다.');
+        return;
+      }
+      if (b.provider === 'google') {
+        alert('입력하신 이메일은 Google 계정으로 가입된 계정입니다. 구글 로그인을 이용해 주세요.');
+        return;
+      }
+      if (b.dev_code) {
+        try { sessionStorage.setItem('tpkm_pw_reset_devcode', b.dev_code); } catch (e2) {}
+      }
+      goReset();
+    }).catch(function () {
+      btn.disabled = false;
+      btn.textContent = prev;
+      alert('네트워크 오류입니다.');
+    });
   });
   function resetFindPw() {
     document.getElementById('findPwForm').classList.remove('hidden');

@@ -82,6 +82,99 @@ export async function adminTermsRoutes(app: FastifyInstance) {
   );
 
   // -------------------------------------------------------------------------
+  // GET /api/v1/admin/term-agreements — 약관 동의 이력 (감사 자료)
+  //   term_agreements(가입·접수 시 기록) + terms + users 조인. 회원/약관종류 필터.
+  // -------------------------------------------------------------------------
+  app.get<{
+    Querystring: {
+      term_type?: string;
+      user_id?: string;
+      q?: string;
+      page?: string;
+      page_size?: string;
+    };
+  }>(
+    "/api/v1/admin/term-agreements",
+    { preHandler: requireAnyAdmin },
+    async (req, reply) => {
+      const page = Math.max(1, Number(req.query.page) || 1);
+      const pageSize = Math.min(500, Math.max(1, Number(req.query.page_size) || 200));
+      const offset = (page - 1) * pageSize;
+
+      const conditions: string[] = [];
+      const params: unknown[] = [];
+      let idx = 1;
+
+      const termType = req.query.term_type?.trim();
+      if (termType && TERM_TYPES.has(termType)) {
+        conditions.push(`t.term_type = $${idx++}`);
+        params.push(termType);
+      }
+      if (req.query.user_id && Number.isFinite(Number(req.query.user_id))) {
+        conditions.push(`ta.user_id = $${idx++}`);
+        params.push(Number(req.query.user_id));
+      }
+      const q = req.query.q?.trim();
+      if (q) {
+        conditions.push(
+          `(u.name_ko ILIKE $${idx} OR u.email ILIKE $${idx} OR CAST(ta.user_id AS TEXT) ILIKE $${idx})`
+        );
+        params.push(`%${q}%`);
+        idx++;
+      }
+      const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+
+      try {
+        const countRes = await pool.query(
+          `SELECT COUNT(*)::int AS total
+           FROM term_agreements ta
+           INNER JOIN terms t ON t.id = ta.term_id
+           INNER JOIN users u ON u.id = ta.user_id
+           ${where}`,
+          params
+        );
+        const total = countRes.rows[0]?.total ?? 0;
+        const listRes = await pool.query(
+          `SELECT ta.id, ta.user_id, ta.agreed_at, ta.ip_address, ta.user_agent,
+                  u.name_ko, u.email,
+                  t.term_type, t.version
+           FROM term_agreements ta
+           INNER JOIN terms t ON t.id = ta.term_id
+           INNER JOIN users u ON u.id = ta.user_id
+           ${where}
+           ORDER BY ta.agreed_at DESC, ta.id DESC
+           LIMIT $${idx++} OFFSET $${idx++}`,
+          [...params, pageSize, offset]
+        );
+        return {
+          items: listRes.rows.map((r) => ({
+            id: Number(r.id),
+            user_id: Number(r.user_id),
+            name_ko: r.name_ko,
+            email: r.email,
+            term_type: r.term_type,
+            term_type_label: TERM_TYPE_LABEL[r.term_type] ?? r.term_type,
+            version: r.version,
+            agreed_at: r.agreed_at,
+            ip_address: r.ip_address ? String(r.ip_address) : "",
+          })),
+          pagination: {
+            page,
+            page_size: pageSize,
+            total_items: total,
+            total_pages: Math.ceil(total / pageSize) || 1,
+          },
+        };
+      } catch (err) {
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
+        });
+      }
+    }
+  );
+
+  // -------------------------------------------------------------------------
   // GET /api/v1/admin/terms/:id — 상세 (본문 포함)
   // -------------------------------------------------------------------------
   app.get<{ Params: { id: string } }>(

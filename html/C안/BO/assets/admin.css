@@ -218,11 +218,6 @@ body.admin {
 }
 .tb-iconbtn:hover { background: var(--bg-2); color: var(--text); }
 .tb-iconbtn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.7; }
-.tb-iconbtn .dot {
-  position: absolute; top: 7px; right: 7px;
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--accent); border: 2px solid #fff;
-}
 .tb-user {
   display: inline-flex; align-items: center; gap: 8px;
   height: 36px; padding: 0 12px 0 4px;

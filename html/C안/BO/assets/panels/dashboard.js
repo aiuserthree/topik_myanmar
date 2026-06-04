@@ -67,8 +67,6 @@ function DashboardPanelInner() {
       )
     ),
 
-    h(DemoNote, { message: '접수 KPI·분포·최근 접수자·회차 정보·최근 공지는 실데이터입니다. 처리 이력·환불/문의 위젯은 관리자 목록 API가 없어 샘플로 표시됩니다.' }),
-
     // KPI Grid
     h('div', { className: 'kpi-grid' },
       h(Kpi, { color: '#0F1B2D', label: '전체 접수자', val: cnt.total, hint: `회차 ${session?.no}` }),
@@ -175,7 +173,8 @@ function DashboardPanelInner() {
                   h('td', null, l.type, ' · ', h('span', { className: 'code-id' }, l.targetId)),
                   h('td', null, h('span', { className: 'pill', style: { background: 'var(--bg-3)' } }, l.action)),
                   h('td', { className: 'muted' }, l.memo || '—')
-                ))
+                )),
+                !recentLog.length && h('tr', null, h('td', { colSpan: '5' }, h('div', { className: 'empty' }, '데이터 없음')))
               )
             )
           )
@@ -259,7 +258,17 @@ function Kpi({ color, label, val, hint }) {
 
 function DashboardPanel() {
   return h(ResourceGate, {
-    loader: () => BoData.loadRoundContext().then(r => (r && r.error) ? r : BoData.loadNotices()),
+    loader: () => BoData.loadRoundContext().then(r => {
+      if (r && r.error) return r;
+      // 보조 위젯(공지·환불·문의·처리이력)은 독립적으로 로드한다. 실패 시 해당
+      // state는 비어 있으므로 '데이터 없음'으로 표시될 뿐 시드 데이터로 대체되지 않는다.
+      return Promise.all([
+        BoData.loadNotices().catch(() => null),
+        BoData.loadRefunds().catch(() => null),
+        BoData.loadInquiries().catch(() => null),
+        BoData.loadAudit().catch(() => null),
+      ]).then(() => ({ ok: true }));
+    }),
     deps: [DataStore.state.activeSessionId],
     inner: DashboardPanelInner,
   });

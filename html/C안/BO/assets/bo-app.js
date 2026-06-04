@@ -187,16 +187,12 @@ function App() {
             value: state.activeSessionId,
             onChange: e => DataStore.setSession(e.target.value)
           },
-            state.sessions.map(s => h('option', { key: s.id, value: s.id },
+            state.sessions.filter(s => s.active !== false).map(s => h('option', { key: s.id, value: s.id },
               s.name, ' (', s.status === 'open' ? '진행중' : s.status === 'planned' ? '예정' : '종료', ')'
             ))
           ),
           h('a', { className: 'tb-iconbtn', href: 'https://topik-myanmar.vercel.app/', target: '_blank', rel: 'noopener', title: '사이트 보기(새 창)' },
             h(I.ExternalLink)
-          ),
-          h('button', { className: 'tb-iconbtn', title: '알림' },
-            h(I.Bell),
-            (badges.unreviewed + badges.photoWait + badges.refundNew + badges.inquiryWait) > 0 && h('span', { className: 'dot' })
           ),
           h('div', { className: 'tb-user', title: me?.id },
             h('div', { className: 'avatar' }, me?.name?.slice(0, 1) || 'A'),

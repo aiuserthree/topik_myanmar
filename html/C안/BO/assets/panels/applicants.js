@@ -489,6 +489,7 @@ function ApplicantDetailLP({ id, onClose, onApprove, onReject, onPay, onPhotoApp
   const a = state.applicants.find(x => x.id === id);
   const [tab, setTab] = useState('profile');
   const [memo, setMemo] = useState('');
+  const [memoSaving, setMemoSaving] = useState(false);
   const [detail, setDetail] = useState(null);
   // 상세(처리 이력·연락처·반려 사유)는 상세 API에서 로드
   useEffect(() => {
@@ -503,6 +504,7 @@ function ApplicantDetailLP({ id, onClose, onApprove, onReject, onPay, onPhotoApp
   const phoneVal = dUser.phone || a.tel || '—';
   const rejectReason = dApp.reject_note || a.rejectReason || '—';
   const paymentMemo = dApp.payment_memo || '';
+  const memos = (detail && detail.memos) || [];
   const log = ((detail && detail.audit_logs) || []).map((l, i) => ({
     id: 'al' + i, ts: l.created_at_label || '', type: '접수자',
     action: APP_ACTION_LABEL[l.action] || l.action,
@@ -511,7 +513,16 @@ function ApplicantDetailLP({ id, onClose, onApprove, onReject, onPay, onPhotoApp
   }));
 
   const addMemo = () => {
-    toast('접수 건 관리자 메모 저장 API가 아직 제공되지 않습니다. (데모)', { title: '메모', type: 'success' });
+    const body = memo.trim();
+    if (!body || !a.apiId) return;
+    setMemoSaving(true);
+    TopikBoApi.addApplicationMemo(a.apiId, body).then(res => {
+      setMemoSaving(false);
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      setMemo('');
+      TopikBoApi.getApplication(a.apiId).then(r2 => { if (r2.ok) setDetail(r2.body); });
+      toastOk('메모가 저장되었습니다.');
+    }).catch(() => { setMemoSaving(false); toastErr('네트워크 오류로 메모를 저장하지 못했습니다.'); });
   };
 
   return h(LP, {
@@ -572,11 +583,22 @@ function ApplicantDetailLP({ id, onClose, onApprove, onReject, onPay, onPhotoApp
     ),
 
     tab === 'memo' && h('div', null,
-      h(DemoNote, { message: '접수 건 관리자 메모 저장 API가 아직 없어, 입력 메모는 저장되지 않습니다. 수납 메모는 아래에 표시됩니다.' }),
       h(FormRow, { label: '새 메모 추가' },
         h('textarea', { className: 'textarea', rows: '3', value: memo, onChange: e => setMemo(e.target.value), placeholder: '이 응시자에 대한 관리자 메모를 입력하세요' })
       ),
-      h('button', { className: 'btn btn-primary', onClick: addMemo, disabled: !memo.trim() }, '메모 추가'),
+      h('button', { className: 'btn btn-primary', onClick: addMemo, disabled: !memo.trim() || memoSaving }, memoSaving ? '저장 중…' : '메모 추가'),
+      h('hr', { style: { margin: '20px 0', border: 'none', borderTop: '1px solid var(--border)' } }),
+      h('div', null,
+        h('div', { className: 'label', style: { fontWeight: 600, color: 'var(--text-2)', marginBottom: 6 } }, '관리자 메모 이력 (', memos.length, ')'),
+        memos.length === 0 && h('div', { className: 'empty', style: { padding: '12px 0' } }, '등록된 메모가 없습니다.'),
+        memos.map(m => h('div', { key: m.id, style: { border: '1px solid var(--border)', borderRadius: 6, padding: '10px 12px', marginBottom: 8, background: 'var(--bg)' } },
+          h('div', { style: { display: 'flex', justifyContent: 'space-between', gap: 10, fontSize: 11.5, color: 'var(--text-3)', marginBottom: 4 } },
+            h('span', null, m.admin_name || m.admin_email || '관리자'),
+            h('span', { className: 'code' }, m.created_at_label || '')
+          ),
+          h('div', { style: { fontSize: 13, color: 'var(--text-2)', whiteSpace: 'pre-wrap' } }, m.body)
+        ))
+      ),
       h('hr', { style: { margin: '20px 0', border: 'none', borderTop: '1px solid var(--border)' } }),
       h('div', null,
         h('div', { className: 'label', style: { fontWeight: 600, color: 'var(--text-2)', marginBottom: 6 } }, '수납 메모'),
