@@ -9,7 +9,6 @@ const NAV = [
 
   { section: '접수' },
   { id: 'applicants',  label: '접수자 목록',     icon: 'Users',  badge: 'unreviewed' },
-  { id: 'photos',      label: '사진 심사',       icon: 'Image',  badge: 'photoWait' },
 
   { section: '시험 운영' },
   { id: 'sessions',    label: '회차 관리',       icon: 'Calendar' },
@@ -35,7 +34,6 @@ const PANEL_TITLE = Object.fromEntries(NAV.filter(n => n.id).map(n => [n.id, n.l
 const CRUMB = {
   dashboard:  ['메인', '대시보드'],
   applicants: ['접수 관리', '접수자 목록'],
-  photos:     ['접수 관리', '사진 심사'],
   sessions:   ['시험 관리', '회차 관리'],
   venues:     ['시험 관리', '시험장 관리'],
   notices:    ['콘텐츠 관리', '공지사항'],
@@ -49,9 +47,12 @@ const CRUMB = {
   audit:      ['시스템', '처리 이력'],
 };
 
+// '사진 심사' 메뉴는 제거됨 — 접수자 상세에서 처리. 옛 해시는 접수자 목록으로 보냄.
+const normalizeRoute = (r) => (r === 'photos' ? 'applicants' : r);
+
 function App() {
   // hash-based router (?#applicants)
-  const initial = () => (location.hash.replace('#', '') || 'dashboard');
+  const initial = () => normalizeRoute(location.hash.replace('#', '') || 'dashboard');
   const [route, setRoute] = useState(initial);
   const [sbOpen, setSbOpen] = useState(false);
   const state = useStore();
@@ -68,8 +69,15 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const fn = () => setRoute(location.hash.replace('#', '') || 'dashboard');
+    const fn = () => {
+      const raw = location.hash.replace('#', '') || 'dashboard';
+      // 사진 심사 메뉴 제거 — 옛 해시(#photos)는 접수자 목록으로 리다이렉트
+      if (raw === 'photos') { location.replace('#applicants'); return; }
+      setRoute(raw);
+    };
     window.addEventListener('hashchange', fn);
+    // 최초 진입 시 #photos 해시 보정
+    if (location.hash.replace('#', '') === 'photos') location.replace('#applicants');
     return () => window.removeEventListener('hashchange', fn);
   }, []);
 
@@ -93,7 +101,6 @@ function App() {
   const PanelByRoute = {
     dashboard:  window.DashboardPanel,
     applicants: window.ApplicantsPanel,
-    photos:     window.PhotosPanel,
     sessions:   window.SessionsPanel,
     venues:     window.VenuesPanel,
     notices:    window.NoticesPanel,
@@ -156,7 +163,7 @@ function App() {
         h('div', { className: 'tb-spacer' }),
         h('div', { className: 'tb-actions' },
           // Session switcher — context for applicant/exam panels
-          ['dashboard', 'applicants', 'photos'].includes(route) && h('select', {
+          ['dashboard', 'applicants'].includes(route) && h('select', {
             className: 'select',
             style: { height: 36, fontSize: 13, minWidth: 200 },
             value: state.activeSessionId,

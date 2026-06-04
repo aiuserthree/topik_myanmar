@@ -56,7 +56,7 @@ function ApplicantsPanel() {
     return r;
   }, [apps, statusF, venueF, levelF, q, sort]);
 
-  useEffect(() => { setPage(1); setSelected(new Set()); }, [statusF, venueF, levelF, q, sessionId]);
+  useEffect(() => { setPage(1); }, [statusF, venueF, levelF, q, sessionId]);
   const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
   const pageRows = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
@@ -68,22 +68,8 @@ function ApplicantsPanel() {
     return c;
   }, [apps]);
 
-  // ---- Selection ----
-  const [selected, setSelected] = useState(() => new Set());
-  const allOnPage = pageRows.every(r => selected.has(r.id)) && pageRows.length > 0;
-  const toggleAllOnPage = () => {
-    const next = new Set(selected);
-    if (allOnPage) pageRows.forEach(r => next.delete(r.id));
-    else pageRows.forEach(r => next.add(r.id));
-    setSelected(next);
-  };
-  const toggleOne = (id) => {
-    const next = new Set(selected);
-    next.has(id) ? next.delete(id) : next.add(id);
-    setSelected(next);
-  };
-
   // ---- Modals ----
+  // 모든 처리(사진심사·수납·승인·반려)는 접수자 상세(상세보기)에서 수행한다.
   const [detailId, setDetailId] = useState(null);
   const [payModal, setPayModal] = useState(null);          // { ids:[], mode:'pay'|'cancel' }
   const [approveModal, setApproveModal] = useState(null);  // { ids:[] }
@@ -91,7 +77,6 @@ function ApplicantsPanel() {
   const [examModal, setExamModal] = useState(false);
   const [excelModal, setExcelModal] = useState(false);
   const [zipModal, setZipModal] = useState(false);
-  const [photoLP, setPhotoLP] = useState(null);   // 사진 심사 인라인 패널 id (TPKM_BO_2_1_3)
 
   // expose detail open to other panels (Dashboard 'Recent')
   useEffect(() => { window.openApplicantDetail = (id) => setDetailId(id); }, []);
@@ -122,23 +107,6 @@ function ApplicantsPanel() {
     DataStore.notify();
     toastOk('사진이 반려되었습니다. 응시자에게 이메일이 발송됩니다.', { title: '사진 심사', type: 'success' });
   };
-  const doBulkPhotoApprove = (ids) => {
-    let n = 0;
-    ids.forEach(id => {
-      const a = state.applicants.find(x => x.id === id);
-      if (!a || a.photoStatus === 'approved') return;
-      const before = { photoStatus: a.photoStatus, status: a.status };
-      a.photoStatus = 'approved';
-      a.photoOk = true;
-      if (a.status === 'photo') a.status = a.paid ? 'approved' : 'pay';
-      n++;
-      DataStore.addAudit({ type: '사진', targetId: id, action: '승인', before, after: { photoStatus: 'approved', status: a.status }, memo: '일괄 사진 승인' });
-    });
-    DataStore.notify();
-    if (n) toastOk(`${n}건의 사진을 일괄 승인했습니다.`, { title: '사진 심사', type: 'success' });
-    else toastErr('이미 모두 승인된 상태입니다.');
-    setSelected(new Set());
-  };
   const doApprove = (ids) => {
     // 사진 미심사 행 가드 — 사진 승인 완료 건만 승인 가능
     const blocked = ids.filter(id => {
@@ -161,7 +129,6 @@ function ApplicantsPanel() {
     DataStore.notify();
     toastOk(`${n}건이 승인되었습니다. (이메일 통지 전송)`, { title: '승인 완료', type: 'success' });
     setApproveModal(null);
-    setSelected(new Set());
   };
 
   const doReject = (ids, reason) => {
@@ -179,7 +146,6 @@ function ApplicantsPanel() {
     DataStore.notify();
     toastOk(`${n}건이 반려되었습니다. (이메일 통지)`, { title: '반려 완료', type: 'success' });
     setRejectModal(null);
-    setSelected(new Set());
   };
 
   const doPay = (ids, info) => {
@@ -201,26 +167,27 @@ function ApplicantsPanel() {
     DataStore.notify();
     toastOk(`${n}건 수납 처리되었습니다.`, { title: '수납 완료', type: 'success' });
     setPayModal(null);
-    setSelected(new Set());
   };
 
+  // 수납취소 — 수납을 취소하고 미수납(수납대기) 상태로 되돌린다(토글). 수험번호는 유지.
   const doCancelPay = (ids, reason) => {
-    if (!reason || !reason.trim()) { toastErr('수납 취소(환불) 사유를 입력해주세요.'); return; }
     let n = 0;
     ids.forEach(id => {
       const a = state.applicants.find(x => x.id === id);
       if (!a || !a.paid) return;
-      const before = { paid: a.paid, status: a.status };
+      const before = { paid: a.paid, status: a.status, paidAt: a.paidAt, receipt: a.receipt };
       a.paid = false;
-      a.status = 'refund';                 // 환불자 상태로 분류 (수험번호는 유지)
-      a.memo = (a.memo || '') + `[환불] ${reason}\n`;
+      a.paidAt = '';
+      a.receipt = '';
+      a.status = 'pay';                    // 미수납(수납대기)로 되돌림
+      if (reason && reason.trim()) a.memo = (a.memo || '') + `[수납취소] ${reason}\n`;
       n++;
-      DataStore.addAudit({ type: '접수자', targetId: id, action: '수납취소', before, after: { paid: false, status: 'refund' }, memo: reason });
+      DataStore.addAudit({ type: '접수자', targetId: id, action: '수납취소', before, after: { paid: false, status: 'pay' }, memo: reason || '' });
     });
     DataStore.notify();
-    toastOk(`${n}건 수납 취소(환불자 분류) 처리되었습니다.`, { title: '수납 취소', type: 'success' });
+    if (n) toastOk(`${n}건 수납이 취소되어 미수납(수납대기)으로 변경되었습니다.`, { title: '수납 취소', type: 'success' });
+    else toastErr('수납 취소할 대상이 없습니다.');
     setPayModal(null);
-    setSelected(new Set());
   };
 
   // 수험번호 13자리 일괄 부여
@@ -268,9 +235,6 @@ function ApplicantsPanel() {
   const myRole = state.me?.role || 'super';
   const canAssignExam = myRole === 'super';                 // 슈퍼 관리자만
   const canDownload = myRole !== 'viewer';                  // 조회자는 불가
-
-  // bulk action helpers
-  const bulkIds = Array.from(selected);
 
   // sort helper
   const sortBy = (k) => setSort(s => s.k === k ? { k, dir: s.dir === 'asc' ? 'desc' : 'asc' } : { k, dir: 'asc' });
@@ -326,75 +290,44 @@ function ApplicantsPanel() {
       )
     ),
 
-    // Bulk action bar
-    h(BulkBar, { count: bulkIds.length, onClear: () => setSelected(new Set()) },
-      h('button', { className: 'ibtn', onClick: () => doBulkPhotoApprove(bulkIds) }, '사진 일괄 승인'),
-      h('button', { className: 'ibtn', onClick: () => setPayModal({ ids: bulkIds, mode: 'pay' }) }, '오프라인 수납'),
-      h('button', { className: 'ibtn', onClick: () => setApproveModal({ ids: bulkIds }) }, '승인'),
-      h('button', { className: 'ibtn danger', onClick: () => setRejectModal({ ids: bulkIds }) }, '반려'),
-      h('button', { className: 'ibtn', onClick: () => setPayModal({ ids: bulkIds.filter(id => state.applicants.find(a => a.id === id)?.paid), mode: 'cancel' }) }, '수납 취소(환불)')
-    ),
-
     // Data grid — TPKM_BO_2_1_2 연명부 컬럼 정합
     h('div', { className: 'dg-wrap' },
       h('div', { className: 'dg-scroll' },
         h('table', { className: 'dg', id: 'applicants-grid' },
           h('thead', null,
             h('tr', null,
-              h('th', { className: 'cb' }, h('input', { type: 'checkbox', checked: allOnPage, onChange: toggleAllOnPage })),
               h('th', { className: 'sortable num', onClick: () => sortBy('no') }, '번호'),
               h('th', null, '사진'),
               h('th', { className: 'sortable', onClick: () => sortBy('nameKo') }, '한글성명'),
               h('th', { className: 'sortable', onClick: () => sortBy('nameEn') }, '영문성명'),
-              h('th', null, '생년월일'),
-              h('th', null, '성별'),
-              h('th', null, '국적'),
-              h('th', null, '제1언어'),
-              h('th', null, '직업'),
-              h('th', null, '응시동기'),
-              h('th', null, '응시목적'),
               h('th', null, '급수'),
-              h('th', null, '시험장'),
               h('th', { className: 'sortable', onClick: () => sortBy('appliedAt') }, '접수일'),
+              h('th', null, '수험번호'),
               h('th', null, '사진심사'),
               h('th', null, '수납'),
-              h('th', null, '수험번호'),
               h('th', null, '상태'),
               h('th', { className: 'no-print' }, '관리')
             )
           ),
           h('tbody', null,
-            pageRows.map(a => h('tr', { key: a.id, className: selected.has(a.id) ? 'sel' : '' },
-              h('td', { className: 'cb' }, h('input', { type: 'checkbox', checked: selected.has(a.id), onChange: () => toggleOne(a.id) })),
+            pageRows.map(a => h('tr', { key: a.id },
               h('td', { className: 'num' }, a.no),
               h('td', null, h(PhotoThumb, { status: a.photoStatus, name: a.nameKo, seed: a.id })),
               h('td', null, h('a', { style: { color: 'var(--primary)', fontWeight: 600, cursor: 'pointer' }, onClick: () => setDetailId(a.id) }, a.nameKo)),
               h('td', null, a.nameEn),
-              h('td', { className: 'code' }, a.dob),
-              h('td', { className: 'num' }, a.sx),
-              h('td', null, a.nation),
-              h('td', null, a.l1),
-              h('td', null, a.job),
-              h('td', null, a.motive),
-              h('td', null, a.purpose),
-              h('td', null, h('span', { className: 'code-id' }, a.level)),
-              h('td', null, DataStore.venueName(a.venueId)),
+              h('td', null, h('span', { className: 'code-id' }, 'TOPIK ', a.level)),
               h('td', { className: 'code muted' }, a.appliedAt),
+              h('td', { className: 'code' }, h('b', { style: { color: a.exam ? 'var(--st-number)' : 'var(--text-4)' } }, a.exam || '미부여')),
               h('td', null, h(PhotoStatusPill, { status: a.photoStatus })),
               h('td', null, a.paid ? h(Pill, { kind: 'approved' }, '수납완료') : h(Pill, { kind: 'pay' }, '미수납')),
-              h('td', { className: 'code' }, h('b', { style: { color: a.exam ? 'var(--st-number)' : 'var(--text-4)' } }, a.exam || '—')),
               h('td', null, h(Pill, { kind: a.status }, DataStore.statusLabel(a.status))),
               h('td', { className: 'no-print' },
-                h('div', { className: 'row-actions' },
-                  h('button', { className: 'ibtn', title: '사진 심사', onClick: () => setPhotoLP(a.id) }, h(I.Image, { style: { width: 13, height: 13 } }), ' 사진심사'),
-                  h('button', { className: 'ibtn', title: '수납', onClick: () => setPayModal({ ids: [a.id], mode: a.paid ? 'cancel' : 'pay' }) }, a.paid ? '취소' : '수납'),
-                  h('button', { className: 'ibtn primary', title: '승인', disabled: a.status === 'approved', onClick: () => setApproveModal({ ids: [a.id] }) }, '승인'),
-                  h('button', { className: 'ibtn danger', title: '반려', disabled: a.status === 'rejected', onClick: () => setRejectModal({ ids: [a.id] }) }, '반려'),
-                  h('button', { className: 'ibtn ghost', title: '상세 보기', onClick: () => setDetailId(a.id) }, h(I.Eye, { style: { width: 14, height: 14 } }))
+                h('button', { className: 'ibtn primary', title: '접수자 상세 보기', onClick: () => setDetailId(a.id) },
+                  h(I.Eye, { style: { width: 14, height: 14 } }), ' 상세보기'
                 )
               )
             )),
-            !pageRows.length && h('tr', null, h('td', { colSpan: '20' },
+            !pageRows.length && h('tr', null, h('td', { colSpan: '11' },
               h('div', { className: 'empty' },
                 h('div', { className: 'icon' }, h(I.Search)),
                 h('div', { className: 'ttl' }, '조건에 맞는 접수자가 없습니다'),
@@ -416,27 +349,32 @@ function ApplicantsPanel() {
         h('h3', null, '수험번호 / 수험표 노출 시점 설정 (FO 접수확인)'),
         h('div', { className: 'meta' }, '고객사 수정 0527 — 부여 즉시 노출 안 함, 정해진 날짜에 FO에서 노출')
       ),
-      h('div', { className: 'acard-body', style: { display: 'flex', gap: 12, alignItems: 'flex-end', flexWrap: 'wrap' } },
+      h('div', { className: 'acard-body', style: { display: 'flex', gap: 12, alignItems: 'flex-start', flexWrap: 'wrap' } },
         h(FormRow, { label: '노출 시작일', hint: '이 날짜 이전에는 FO에서 수험번호 미노출' },
           h('input', { type: 'date', className: 'input', style: { height: 38, width: 200 }, defaultValue: '2026-08-15' })
         ),
         h(FormRow, { label: '노출 시작 시각' },
           h('input', { type: 'time', className: 'input', style: { height: 38, width: 140 }, defaultValue: '09:00' })
         ),
-        h('button', { className: 'btn btn-primary', onClick: () => { DataStore.addAudit({ type: '회차', targetId: sessionId, action: '수정', memo: '수험번호 노출 시점 변경' }); toastOk('노출 시점이 저장되었습니다.'); } }, '노출 시점 저장')
+        // 버튼을 form-row 컬럼으로 감싸고, 빈 라벨로 라벨 높이만큼 자리만 차지시켜 입력칸과 같은 줄에 맞춤
+        h('div', { className: 'form-row', style: { marginBottom: 0 } },
+          h('label', { className: 'label', style: { visibility: 'hidden' } }, '\u00A0'),
+          h('button', { className: 'btn btn-primary', style: { height: 38 }, onClick: () => { DataStore.addAudit({ type: '회차', targetId: sessionId, action: '수정', memo: '수험번호 노출 시점 변경' }); toastOk('노출 시점이 저장되었습니다.'); } }, '노출 시점 저장')
+        )
       )
     ),
 
-    // Detail LP (TPKM_BO_2_1_6)
+    // Detail LP (TPKM_BO_2_1_6) — 사진심사·수납(취소)·반려·승인을 모두 상세에서 처리
     detailId && h(ApplicantDetailLP, {
       id: detailId, onClose: () => setDetailId(null),
       onApprove: () => { setApproveModal({ ids: [detailId] }); },
       onReject: () => { setRejectModal({ ids: [detailId] }); },
-      onPay: () => { const a = state.applicants.find(x => x.id === detailId); setPayModal({ ids: [detailId], mode: a?.paid ? 'cancel' : 'pay' }); }
+      onPay: () => { const a = state.applicants.find(x => x.id === detailId); setPayModal({ ids: [detailId], mode: a?.paid ? 'cancel' : 'pay' }); },
+      onPhotoApprove: doPhotoApprove,
+      onPhotoReject: doPhotoReject
     }),
 
     // Modals
-    photoLP && h(PhotoReviewLP, { id: photoLP, onClose: () => setPhotoLP(null), onApprove: doPhotoApprove, onReject: doPhotoReject }),
     payModal && h(PayModal, { modal: payModal, onClose: () => setPayModal(null), onPay: doPay, onCancel: doCancelPay, onPhotoApprove: doPhotoApprove }),
     approveModal && h(ApproveModal, { modal: approveModal, onClose: () => setApproveModal(null), onConfirm: () => doApprove(approveModal.ids) }),
     rejectModal && h(RejectModal, { modal: rejectModal, onClose: () => setRejectModal(null), onConfirm: (reason) => doReject(rejectModal.ids, reason) }),
@@ -551,7 +489,7 @@ function PhotoReviewLP({ id, onClose, onApprove, onReject }) {
 }
 
 // ===== Detail LP =====
-function ApplicantDetailLP({ id, onClose, onApprove, onReject, onPay }) {
+function ApplicantDetailLP({ id, onClose, onApprove, onReject, onPay, onPhotoApprove, onPhotoReject }) {
   const state = useStore();
   const a = state.applicants.find(x => x.id === id);
   const [tab, setTab] = useState('profile');
@@ -575,9 +513,9 @@ function ApplicantDetailLP({ id, onClose, onApprove, onReject, onPay }) {
     sub: h('span', null, '회차 컨텍스트 · 접수ID ', h('code', { className: 'code-id' }, a.id), ' · 상태 ', h(Pill, { kind: a.status }, DataStore.statusLabel(a.status))),
     footer: h(Fragment, null,
       h('button', { className: 'btn btn-secondary', onClick: onClose }, '닫기'),
-      h('button', { className: 'btn btn-secondary', onClick: onReject }, '반려'),
-      h('button', { className: 'btn btn-secondary', onClick: onPay }, a.paid ? '수납 취소' : '수납'),
-      h('button', { className: 'btn btn-primary', onClick: onApprove }, '승인')
+      h('button', { className: 'btn btn-secondary', onClick: onPay }, a.paid ? '수납 취소' : '수납 처리'),
+      h('button', { className: 'btn btn-danger', onClick: onReject, disabled: a.status === 'rejected' }, '반려'),
+      h('button', { className: 'btn btn-primary', onClick: onApprove, disabled: a.status === 'approved' }, '승인')
     )
   },
     h('div', { className: 'lp-tabs' },
@@ -593,7 +531,8 @@ function ApplicantDetailLP({ id, onClose, onApprove, onReject, onPay }) {
           h('button', { className: 'ibtn', style: { flex: 1 } }, h(I.Download, { style: { width: 12, height: 12 } }), ' 원본 받기'),
           h('button', { className: 'ibtn', style: { flex: 1 } }, '회전 보정')
         ),
-        a.photoStatus !== 'approved' && h('div', { style: { marginTop: 8, padding: 8, background: 'var(--st-photo-bg)', color: 'var(--st-photo)', borderRadius: 6, fontSize: 12 } }, '사진 ', a.photoStatus === 'rejected' ? '반려' : '미심사', ' 상태입니다. ‘사진심사’ 버튼으로 처리하세요.')
+        // 사진 심사 — photos.js 로직을 상세에 병합 (승인 / 반려+사유)
+        h(DetailPhotoReview, { a: a, onApprove: onPhotoApprove, onReject: onPhotoReject })
       ),
       h('div', null,
         h(FieldSet, { legend: '응시자 정보', cols: 2 },
@@ -649,6 +588,46 @@ function ApplicantDetailLP({ id, onClose, onApprove, onReject, onPay }) {
   );
 }
 
+// ===== 상세 내 사진 심사 (photos.js 로직 병합) — 승인 / 반려+사유 =====
+function DetailPhotoReview({ a, onApprove, onReject }) {
+  const [mode, setMode] = useState(null);   // null | 'reject'
+  const [reason, setReason] = useState(PHOTO_REJECT_REASONS[0]);
+  const [other, setOther] = useState('');
+  // 대상이 바뀌면 입력 상태 초기화
+  useEffect(() => { setMode(null); setReason(PHOTO_REJECT_REASONS[0]); setOther(''); }, [a.id]);
+  const finalReason = reason === '기타' ? other : (other ? `${reason} — ${other}` : reason);
+  const doReject = () => {
+    if (reason === '기타' && !other.trim()) { toastErr('상세 사유를 입력해주세요.'); return; }
+    onReject(a.id, finalReason);
+    setMode(null); setOther('');
+  };
+  return h('div', { className: 'detail-photo-review', style: { marginTop: 10, padding: 12, border: '1px solid var(--border)', borderRadius: 8, background: 'var(--bg-2)' } },
+    h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 } },
+      h('div', { style: { fontWeight: 700, fontSize: 13, color: 'var(--text-2)' } }, '사진 심사'),
+      h(PhotoStatusPill, { status: a.photoStatus })
+    ),
+    mode === 'reject'
+      ? h(Fragment, null,
+          h(FormRow, { label: '반려 사유', required: true, hint: '사유는 응시자 이메일·마이페이지에 안내됩니다(사진 재등록 요청).' },
+            h('select', { className: 'select', value: reason, onChange: e => setReason(e.target.value) },
+              PHOTO_REJECT_REASONS.map(r => h('option', { key: r }, r))
+            )
+          ),
+          (reason === '기타') && h(FormRow, { label: '상세 사유', required: true },
+            h('input', { className: 'input', value: other, onChange: e => setOther(e.target.value), placeholder: '상세 사유 입력' })
+          ),
+          h('div', { style: { display: 'flex', gap: 6, marginTop: 2 } },
+            h('button', { className: 'btn btn-secondary', style: { flex: 1 }, onClick: () => setMode(null) }, '뒤로'),
+            h('button', { className: 'btn btn-danger', style: { flex: 1 }, onClick: doReject }, '반려 처리')
+          )
+        )
+      : h('div', { style: { display: 'flex', gap: 6 } },
+          h('button', { className: 'btn btn-secondary', style: { flex: 1 }, disabled: a.photoStatus === 'rejected', onClick: () => setMode('reject') }, '반려'),
+          h('button', { className: 'btn btn-primary', style: { flex: 1 }, disabled: a.photoStatus === 'approved', onClick: () => onApprove(a.id) }, '승인')
+        )
+  );
+}
+
 function KV({ k, v }) {
   return h('div', { className: 'form-row', style: { marginBottom: 0 } },
     h('div', { className: 'label', style: { fontSize: 11.5, color: 'var(--text-3)', marginBottom: 2 } }, k),
@@ -690,7 +669,7 @@ function PayModal({ modal, onClose, onPay, onCancel, onPhotoApprove }) {
   const finalReason = reason === '기타' ? reasonOther : reason;
 
   return h(Modal, {
-    open: true, onClose: onClose, title: cancelMode ? '수납 취소(환불자 분류)' : '오프라인 수납 처리', danger: cancelMode,
+    open: true, onClose: onClose, title: cancelMode ? '수납 취소' : '오프라인 수납 처리', danger: cancelMode,
     footer: h(Fragment, null,
       h('button', { className: 'btn btn-secondary', onClick: onClose }, '취소'),
       cancelMode
@@ -702,7 +681,7 @@ function PayModal({ modal, onClose, onPay, onCancel, onPhotoApprove }) {
       '대상 ', h('b', null, rows.length), '건 · 합계 응시료 ', h('b', { style: { color: 'var(--primary)' } }, DataStore.fmtCurrency(totalFee)),
       h('div', { style: { fontSize: 12, color: 'var(--text-3)', marginTop: 2 } },
         cancelMode
-          ? '※ 수납 취소 시 응시자는 환불자로 분류되며, 수험번호는 유지됩니다.'
+          ? '※ 수납을 취소하면 미수납(수납대기) 상태로 되돌아갑니다. 수험번호는 유지됩니다.'
           : '※ 행 단위 낙관적 잠금 · 처리 즉시 관리자 처리 이력에 기록됩니다.'
       )
     ),

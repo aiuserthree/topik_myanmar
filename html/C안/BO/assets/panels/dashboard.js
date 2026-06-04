@@ -63,8 +63,7 @@ function DashboardPanel() {
         )
       ),
       h('div', { className: 'actions' },
-        h('a', { className: 'btn btn-secondary', href: '#applicants' }, h(I.Users, { style: { width: 14, height: 14 } }), ' 접수자 목록'),
-        h('a', { className: 'btn btn-primary', href: '#applicants' }, h(I.Image, { style: { width: 14, height: 14 } }), ' 사진 심사')
+        h('a', { className: 'btn btn-primary', href: '#applicants' }, h(I.Users, { style: { width: 14, height: 14 } }), ' 접수자 목록')
       )
     ),
 
