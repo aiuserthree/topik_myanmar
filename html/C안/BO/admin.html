@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>관리자 콘솔 — TOPIK Myanmar</title>
+<link rel="stylesheet" href="assets/fo-styles.css">
+<link rel="stylesheet" href="assets/admin.css">
+</head>
+<body class="admin">
+
+<div id="root"></div>
+
+<!-- Shared client libs (plain JS, no framework) -->
+<script src="../../shared/topik-lib-loader.js"></script>
+<script src="../../shared/topik-mail.js"></script>
+<script src="../../shared/topik-bo-core.js"></script>
+<script src="../../shared/topik-export.js"></script>
+<script src="assets/bo-export-bridge.js"></script>
+
+<!-- Vanilla mini-React runtime (replaces React/ReactDOM/Babel) -->
+<script src="assets/bo-runtime.js"></script>
+
+<!-- Data store (plain JS) -->
+<script src="assets/data.js"></script>
+
+<!-- Common UI primitives (icons, LP, Modal, toasts, form helpers) -->
+<script src="assets/bo-common.js"></script>
+
+<!-- Panels -->
+<script src="assets/panels/dashboard.js"></script>
+<script src="assets/panels/applicants.js"></script>
+<script src="assets/panels/photos.js"></script>
+<script src="assets/panels/sessions.js"></script>
+<script src="assets/panels/venues.js"></script>
+<script src="assets/panels/notices.js"></script>
+<script src="assets/panels/faq.js"></script>
+<script src="assets/panels/refunds.js"></script>
+<script src="assets/panels/inquiries.js"></script>
+<script src="assets/panels/members.js"></script>
+<script src="assets/panels/terms.js"></script>
+<script src="assets/panels/admins.js"></script>
+<script src="assets/panels/permissions.js"></script>
+<script src="assets/panels/audit.js"></script>
+
+<!-- App shell (mounts to #root) -->
+<script src="assets/bo-app.js"></script>
+
+</body>
+</html>
