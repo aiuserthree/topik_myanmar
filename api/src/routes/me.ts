@@ -184,6 +184,8 @@ export async function meRoutes(app: FastifyInstance) {
         began = true;
 
         let newPhotoFileId: number | null = null;
+        let photoError: { code: string; message: string; detail: string } | null =
+          null;
         if (body.photo_base64 && body.photo_base64.length > 100) {
           try {
             const saved = await savePhoto(client, {
@@ -196,6 +198,8 @@ export async function meRoutes(app: FastifyInstance) {
             setField("photo_file_id", saved.fileId);
           } catch (err) {
             if (err instanceof StorageError) {
+              // Client-side validation failure (empty / oversized / bad type) —
+              // the user must fix the file, so abort with a clear 400.
               if (began) {
                 await client.query("ROLLBACK");
                 began = false;
@@ -204,7 +208,40 @@ export async function meRoutes(app: FastifyInstance) {
                 error: { code: err.code, message: err.message },
               });
             }
-            throw err;
+            // Anything else here is an object-storage / infra failure (e.g. S3
+            // PutObject denied, wrong region, missing credentials, network).
+            // Previously this propagated to the outer catch and surfaced as a
+            // misleading 503 "database_unavailable", masking the real cause AND
+            // discarding the user's text edits. Instead: log the real error and
+            // keep going so the non-photo fields still save. The S3 upload throws
+            // before any SQL runs inside savePhoto, so the open transaction stays
+            // usable for the user/applications updates below.
+            const e = err as {
+              name?: string;
+              code?: string;
+              message?: string;
+              $metadata?: { httpStatusCode?: number };
+            };
+            app.log.error(
+              {
+                err,
+                awsErrorName: e?.name,
+                awsErrorCode: e?.code,
+                awsHttpStatus: e?.$metadata?.httpStatusCode,
+                where: "savePhoto",
+                userId,
+              },
+              "profile photo upload to object storage failed"
+            );
+            photoError = {
+              code: "PHOTO_UPLOAD_FAILED",
+              message:
+                "사진 업로드에 실패했습니다. 사진을 제외한 정보는 저장되었습니다. 잠시 후 다시 시도해 주세요.",
+              // AWS/SDK error class name only (e.g. AccessDenied,
+              // AuthorizationHeaderMalformed, PermanentRedirect, NoSuchBucket).
+              // Diagnostic, contains no secrets.
+              detail: String(e?.name || e?.code || "UploadError"),
+            };
           }
         }
 
@@ -212,6 +249,11 @@ export async function meRoutes(app: FastifyInstance) {
           if (began) {
             await client.query("ROLLBACK");
             began = false;
+          }
+          // Photo-only request whose upload failed: surface the storage error
+          // (502 upstream failure) rather than "no changes".
+          if (photoError) {
+            return reply.status(502).send({ error: photoError });
           }
           return reply.status(400).send({
             error: { code: "VALIDATION_ERROR", message: "변경할 내용이 없습니다." },
@@ -275,7 +317,10 @@ export async function meRoutes(app: FastifyInstance) {
             marketing_opt_in: u.marketing_opt_in,
             rev: u.rev,
           },
-          message: "회원정보가 수정되었습니다.",
+          message: photoError
+            ? "기본정보가 저장되었습니다. 다만 사진 업로드에 실패하여 사진은 반영되지 않았습니다."
+            : "회원정보가 수정되었습니다.",
+          ...(photoError ? { photo_error: photoError } : {}),
         };
       } catch (err) {
         if (client && began) {
@@ -285,7 +330,13 @@ export async function meRoutes(app: FastifyInstance) {
             /* connection may already be dead */
           }
         }
-        app.log.error(err);
+        // Log the error class/pg code so a genuine failure here is diagnosable
+        // from Railway logs instead of only ever showing "database_unavailable".
+        const e = err as { name?: string; code?: string };
+        app.log.error(
+          { err, errName: e?.name, pgCode: e?.code, where: "PATCH /api/v1/me" },
+          "profile update failed"
+        );
         return reply.status(503).send({
           error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
         });

@@ -325,16 +325,20 @@
       btn.disabled = false;
       btn.textContent = prev;
       if (!res.ok) { alert(TopikApi.parseError(res)); return; }
-      photoChanged = false;
+      var photoFailed = !!(res.body && res.body.photo_error);
+      // 사진 업로드가 실패한 경우엔 photoChanged를 유지해 다음 저장 시 재전송한다.
+      photoChanged = photoFailed;
       // GNB 사용자 이름 동기화
       if (res.body && res.body.user && TopikApi.syncLegacyUser) {
         TopikApi.syncLegacyUser(res.body.user);
         if (window.__tpkmRebuildNav) __tpkmRebuildNav();
       }
-      if (res.body && res.body.user && res.body.user.photo_file_id) {
+      if (!photoFailed && res.body && res.body.user && res.body.user.photo_file_id) {
         showProfilePhoto(res.body.user.photo_file_id, res.body.user.photo_unavailable);
       }
-      alert((res.body && res.body.message) || '회원정보가 수정되었습니다.');
+      alert((res.body && res.body.message) ||
+        (photoFailed ? '기본정보는 저장되었지만 사진 업로드에 실패했습니다. 잠시 후 다시 시도해 주세요.'
+                     : '회원정보가 수정되었습니다.'));
     }).catch(function () {
       btn.disabled = false;
       btn.textContent = prev;
