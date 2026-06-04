@@ -263,13 +263,13 @@
         <div class="ro-item"><div class="l">제1언어</div><div class="v" id="profLang">—</div></div>
         <div class="ro-item"><div class="l">연락처</div><div class="v" id="profPhone">—</div></div>
         <div class="ro-item"><div class="l">이메일 (아이디)</div><div class="v" id="profEmail">—</div></div>
-        <div class="ro-item"><div class="l">직업 코드</div><div class="v" id="profJob">—</div></div>
+        <div class="ro-item"><div class="l">직업</div><div class="v" id="profJob">—</div></div>
       </div>
 
       <h3 class="h4" style="margin: 24px 0 10px;">응시 정보</h3>
       <div class="ro-grid">
-        <div class="ro-item"><div class="l">응시동기 코드</div><div class="v" id="profMotive">—</div></div>
-        <div class="ro-item"><div class="l">응시목적 코드</div><div class="v" id="profPurpose">—</div></div>
+        <div class="ro-item"><div class="l">응시동기</div><div class="v" id="profMotive">—</div></div>
+        <div class="ro-item"><div class="l">응시목적</div><div class="v" id="profPurpose">—</div></div>
       </div>
 
       <div class="form-actions">
@@ -380,6 +380,7 @@
 </div>
 
 <script src="shared/api-client.js"></script>
+<script src="shared/roster-codes.js"></script>
 <script src="assets/common.js"></script>
 <script>
   // ---- API-backed master data & profile (Phase 1) ----
@@ -463,6 +464,12 @@
     REG_STATE.profile = u;
     if (!u) return;
     function set(id, val) { var el = document.getElementById(id); if (el) el.textContent = val || '—'; }
+    function codeLabel(kind, code) {
+      if (code == null || code === '') return '—';
+      var R = window.TPKM_ROSTER_CODES;
+      var txt = R ? R.label(kind, code) : '';
+      return txt || '—';
+    }
     var birth = u.birth_date;
     if (birth && birth.length === 8) birth = birth.slice(0,4) + '-' + birth.slice(4,6) + '-' + birth.slice(6,8);
     set('profNameKo', u.name_ko);
@@ -473,9 +480,9 @@
     set('profLang', u.first_language);
     set('profPhone', u.phone);
     set('profEmail', u.email);
-    set('profJob', u.job_code != null ? String(u.job_code) : '—');
-    set('profMotive', u.motive_code != null ? String(u.motive_code) : '—');
-    set('profPurpose', u.purpose_code != null ? String(u.purpose_code) : '—');
+    set('profJob', codeLabel('job', u.job_code));
+    set('profMotive', codeLabel('motive', u.motive_code));
+    set('profPurpose', codeLabel('purpose', u.purpose_code));
   }
 
   function loadRegisterMasters() {
