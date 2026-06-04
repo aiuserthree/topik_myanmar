@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import type { FastifyInstance } from "fastify";
 import { config } from "../config.js";
 import { pool } from "../db.js";
@@ -8,6 +7,7 @@ import {
   enqueueEmail,
 } from "../lib/email-templates/enqueue-notification.js";
 import {
+  canReadBoardPost,
   fetchThreadedComments,
   validateParentComment,
 } from "../lib/board-comments.js";
@@ -48,6 +48,14 @@ const BOARD_NAME: Record<string, string> = {
   refund_correction: "환불·정보정정신청",
   inquiry: "문의게시판",
 };
+
+// 목록에 다른 회원 글이 노출되므로 작성자 이름은 첫 글자만 남기고 마스킹한다.
+function maskName(name: string | null | undefined): string {
+  const s = String(name ?? "").trim();
+  if (!s) return "—";
+  if (s.length === 1) return s;
+  return s[0] + "*".repeat(s.length - 1);
+}
 
 function postDetailUrl(boardType: string, postId: number): string {
   const base = config.publicFoBase;
@@ -142,35 +150,55 @@ export async function boardRoutes(app: FastifyInstance) {
       const offset = (page - 1) * pageSize;
 
       try {
+        // 목록은 로그인 필요(requireFoUser)는 유지하되, 범위는 "내 글"에서
+        // "해당 게시판 전체 글"로 넓힌다. 각 행의 열람 가능 여부(locked)는
+        // canReadBoardPost 로 판정한다.
         const countRes = await pool.query(
           `SELECT COUNT(*)::int AS total FROM board_posts
-           WHERE board_type = $1 AND user_id = $2`,
-          [boardType, userId]
+           WHERE board_type = $1`,
+          [boardType]
         );
         const total = countRes.rows[0]?.total ?? 0;
 
         const { rows } = await pool.query(
-          `SELECT id, category, post_type, title, workflow_status,
-                  is_secret, admin_reply, admin_replied_at, created_at
-           FROM board_posts
-           WHERE board_type = $1 AND user_id = $2
-           ORDER BY created_at DESC
-           LIMIT $3 OFFSET $4`,
-          [boardType, userId, pageSize, offset]
+          `SELECT p.id, p.user_id, p.board_type, p.category, p.post_type, p.title,
+                  p.workflow_status, p.is_secret, p.admin_reply, p.admin_replied_at,
+                  p.created_at, u.name_ko AS author_name
+           FROM board_posts p
+           INNER JOIN users u ON u.id = p.user_id
+           WHERE p.board_type = $1
+           ORDER BY p.created_at DESC, p.id DESC
+           LIMIT $2 OFFSET $3`,
+          [boardType, pageSize, offset]
         );
 
-        const items = rows.map((row) => ({
-          id: Number(row.id),
-          category: row.category,
-          post_type: row.post_type,
-          title: row.title,
-          workflow_status: row.workflow_status,
-          status_label: STATUS_LABEL[row.workflow_status] ?? row.workflow_status,
-          is_secret: row.is_secret,
-          has_reply: !!row.admin_reply,
-          admin_replied_at: row.admin_replied_at,
-          date_formatted: formatDate(row.created_at),
-        }));
+        const items = rows.map((row) => {
+          const isMine = Number(row.user_id) === Number(userId);
+          const canRead = canReadBoardPost(
+            {
+              user_id: row.user_id,
+              board_type: row.board_type,
+              is_secret: row.is_secret,
+            },
+            { id: userId }
+          );
+          return {
+            id: Number(row.id),
+            category: row.category,
+            post_type: row.post_type,
+            title: row.title,
+            workflow_status: row.workflow_status,
+            status_label: STATUS_LABEL[row.workflow_status] ?? row.workflow_status,
+            is_secret: row.is_secret,
+            locked: !canRead,
+            is_secret_to_viewer: !canRead,
+            is_mine: isMine,
+            author_name: isMine ? row.author_name : maskName(row.author_name),
+            has_reply: !!row.admin_reply,
+            admin_replied_at: row.admin_replied_at,
+            date_formatted: formatDate(row.created_at),
+          };
+        });
 
         return {
           items,
@@ -207,9 +235,9 @@ export async function boardRoutes(app: FastifyInstance) {
           `SELECT p.*, u.name_ko AS author_name
            FROM board_posts p
            INNER JOIN users u ON u.id = p.user_id
-           WHERE p.id = $1 AND p.user_id = $2
+           WHERE p.id = $1
            LIMIT 1`,
-          [id, userId]
+          [id]
         );
         if (rows.length === 0) {
           return reply.status(404).send({
@@ -217,6 +245,28 @@ export async function boardRoutes(app: FastifyInstance) {
           });
         }
         const row = rows[0];
+        const isMine = Number(row.user_id) === Number(userId);
+        const canRead = canReadBoardPost(
+          {
+            user_id: row.user_id,
+            board_type: row.board_type,
+            is_secret: row.is_secret,
+          },
+          { id: userId }
+        );
+        // 열람 권한이 없으면 본문/관리자답변/댓글을 제외한 잠금 스텁만 반환한다.
+        if (!canRead) {
+          return {
+            id: Number(row.id),
+            board_type: row.board_type,
+            title: row.title,
+            is_secret: true,
+            locked: true,
+            is_mine: false,
+            author_name: maskName(row.author_name),
+            date_formatted: formatDate(row.created_at),
+          };
+        }
         return {
           id: Number(row.id),
           board_type: row.board_type,
@@ -225,6 +275,8 @@ export async function boardRoutes(app: FastifyInstance) {
           title: row.title,
           body: row.body,
           is_secret: row.is_secret,
+          locked: false,
+          is_mine: isMine,
           workflow_status: row.workflow_status,
           status_label: STATUS_LABEL[row.workflow_status] ?? row.workflow_status,
           admin_reply: row.admin_reply,
@@ -242,7 +294,7 @@ export async function boardRoutes(app: FastifyInstance) {
   );
 
   // -------------------------------------------------------------------------
-  // GET /api/v1/board/posts/:id/comments — 댓글/대댓글 (작성자 본인만 열람)
+  // GET /api/v1/board/posts/:id/comments — 댓글/대댓글 (상세 열람 권한과 동일)
   // -------------------------------------------------------------------------
   app.get<{ Params: { id: string } }>(
     "/api/v1/board/posts/:id/comments",
@@ -256,14 +308,22 @@ export async function boardRoutes(app: FastifyInstance) {
         });
       }
       try {
-        // 공개 상세와 동일한 접근 규칙: 본인 글만 조회 가능 (비밀글 보호 포함).
+        // 상세 본문과 동일한 접근 규칙(canReadBoardPost)으로 댓글 열람을 통제한다.
         const postRes = await pool.query(
-          `SELECT id FROM board_posts WHERE id = $1 AND user_id = $2 LIMIT 1`,
-          [id, userId]
+          `SELECT id, user_id, board_type, is_secret FROM board_posts WHERE id = $1 LIMIT 1`,
+          [id]
         );
         if (postRes.rows.length === 0) {
           return reply.status(404).send({
             error: { code: "NOT_FOUND", message: "게시글을 찾을 수 없습니다." },
+          });
+        }
+        if (!canReadBoardPost(postRes.rows[0], { id: userId })) {
+          return reply.status(403).send({
+            error: {
+              code: "FORBIDDEN",
+              message: "비밀글입니다. 작성자와 관리자만 열람할 수 있습니다.",
+            },
           });
         }
         const comments = await fetchThreadedComments(pool, id);
@@ -278,7 +338,7 @@ export async function boardRoutes(app: FastifyInstance) {
   );
 
   // -------------------------------------------------------------------------
-  // POST /api/v1/board/posts/:id/comments — 댓글/대댓글 작성 (작성자 본인)
+  // POST /api/v1/board/posts/:id/comments — 댓글/대댓글 작성 (상세 열람 권한 보유자)
   // -------------------------------------------------------------------------
   app.post<{
     Params: { id: string };
@@ -319,12 +379,21 @@ export async function boardRoutes(app: FastifyInstance) {
 
       try {
         const postRes = await pool.query(
-          `SELECT id, is_secret FROM board_posts WHERE id = $1 AND user_id = $2 LIMIT 1`,
-          [id, userId]
+          `SELECT id, user_id, board_type, is_secret FROM board_posts WHERE id = $1 LIMIT 1`,
+          [id]
         );
         if (postRes.rows.length === 0) {
           return reply.status(404).send({
             error: { code: "NOT_FOUND", message: "게시글을 찾을 수 없습니다." },
+          });
+        }
+        // 상세를 열람할 수 있는 사용자만 댓글을 작성할 수 있다.
+        if (!canReadBoardPost(postRes.rows[0], { id: userId })) {
+          return reply.status(403).send({
+            error: {
+              code: "FORBIDDEN",
+              message: "비밀글입니다. 댓글을 작성할 수 없습니다.",
+            },
           });
         }
 
@@ -337,7 +406,7 @@ export async function boardRoutes(app: FastifyInstance) {
           }
         }
 
-        // 비밀글의 댓글은 자동 비공개 처리(시안 정책).
+        // 댓글 비밀 여부는 게시글의 실제 비밀 여부를 그대로 따른다.
         const isSecret = !!postRes.rows[0].is_secret;
         const ins = await pool.query(
           `INSERT INTO board_comments
@@ -400,26 +469,18 @@ export async function boardRoutes(app: FastifyInstance) {
         });
       }
 
-      let secretHash: string | null = null;
-      if (body.is_secret) {
-        const pw = String(body.secret_password ?? "");
-        if (pw.length < 4) {
-          return reply.status(400).send({
-            error: {
-              code: "VALIDATION_ERROR",
-              message: "비밀글 비밀번호는 4자 이상이어야 합니다.",
-            },
-          });
-        }
-        secretHash = await bcrypt.hash(pw, 10);
-      }
+      // 환불·정보정정 글은 항상 비밀글로 강제(클라이언트 값 신뢰하지 않음).
+      // 문의는 작성자가 선택한 일반/비밀을 따른다. 비밀 여부는 작성자/관리자
+      // 신원 기반으로 통제하므로 별도 비밀번호는 사용하지 않는다.
+      const isSecret =
+        boardType === "refund_correction" ? true : !!body.is_secret;
 
       try {
         const ins = await pool.query(
           `INSERT INTO board_posts (
              board_type, user_id, category, post_type, title, body,
              is_secret, secret_password_hash, workflow_status
-           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'received')
+           ) VALUES ($1, $2, $3, $4, $5, $6, $7, NULL, 'received')
            RETURNING id, created_at`,
           [
             boardType,
@@ -428,8 +489,7 @@ export async function boardRoutes(app: FastifyInstance) {
             body.post_type?.trim() || null,
             title,
             text,
-            !!body.is_secret,
-            secretHash,
+            isSecret,
           ]
         );
 
@@ -441,7 +501,7 @@ export async function boardRoutes(app: FastifyInstance) {
           postId,
           title,
           category: body.category?.trim() || null,
-          isSecret: !!body.is_secret,
+          isSecret,
           submittedAt: createdAt,
           userId,
         });

@@ -262,11 +262,7 @@
           <label class="radio"><input type="radio" name="vis" checked><span class="box"></span><span>일반 (누구나 열람)</span></label>
           <label class="radio"><input type="radio" name="vis" id="visSecret"><span class="box"></span><span>비밀 (작성자·관리자만)</span></label>
         </div>
-      </div>
-
-      <div class="form-row hidden" id="secretPwRow">
-        <label class="label">비밀번호 <span class="req">*</span></label>
-        <input class="input" type="password" id="qnaSecretPw" placeholder="4자리 이상" minlength="4">
+        <span class="hint">비밀글은 작성자 본인과 관리자만 내용·댓글을 열람할 수 있습니다.</span>
       </div>
 
       <div class="form-row">
@@ -354,16 +350,6 @@
     document.getElementById(id).classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  document.getElementById('visSecret')?.addEventListener('change', function () {
-    document.getElementById('secretPwRow').classList.toggle('hidden', !this.checked);
-  });
-  document.querySelectorAll('input[name="vis"]').forEach(r => {
-    r.addEventListener('change', () => {
-      const secret = document.getElementById('visSecret').checked;
-      document.getElementById('secretPwRow').classList.toggle('hidden', !secret);
-    });
-  });
-
   // ---- 목록/상세 (API) ----
   var board = TPKMBoard.initBoard({
     boardType: 'inquiry',
@@ -421,7 +407,6 @@
     bodyEl: document.getElementById('qnaBody'),
     categoryEl: document.getElementById('qnaCategory'),
     secretRadio: document.getElementById('visSecret'),
-    secretPwEl: document.getElementById('qnaSecretPw'),
     onSuccess: function () { show('listPane'); board.load(1); },
   });
 

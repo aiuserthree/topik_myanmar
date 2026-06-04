@@ -188,8 +188,9 @@
       if (!category && typeof opts.resolveCategory === 'function') {
         category = opts.resolveCategory() || '';
       }
-      var isSecret = opts.secretRadio ? opts.secretRadio.checked : false;
-      var secretPw = opts.secretPwEl ? opts.secretPwEl.value : '';
+      var isSecret = opts.forceSecret
+        ? true
+        : (opts.secretRadio ? opts.secretRadio.checked : false);
 
       if (!title || title.length > 100) {
         alert('제목을 100자 이내로 입력해 주세요.');
@@ -197,10 +198,6 @@
       }
       if (!body || body.length < 10) {
         alert('내용을 10자 이상 입력해 주세요.');
-        return;
-      }
-      if (isSecret && (!secretPw || secretPw.length < 4)) {
-        alert('비밀글 비밀번호는 4자 이상이어야 합니다.');
         return;
       }
 
@@ -214,7 +211,6 @@
         body: body,
         category: category || null,
         is_secret: isSecret,
-        secret_password: isSecret ? secretPw : undefined,
       }).then(function (res) {
         btn.disabled = false;
         btn.textContent = prev;
@@ -294,13 +290,14 @@
       var total = (state.pagination && state.pagination.total_items) || items.length;
       var pageSize = (state.pagination && state.pagination.page_size) || items.length;
       var startNo = total - (state.page - 1) * pageSize;
-      var author = currentUserName();
       var typeCell = opts.typeCell || function () { return '<span class="badge badge-outline">-</span>'; };
 
       listBody.innerHTML = items.map(function (p, idx) {
-        var lock = p.is_secret ? '<span class="lock">🔒</span> ' : '';
+        var locked = (p.locked != null) ? p.locked : p.is_secret_to_viewer;
+        var lock = locked ? '<span class="lock">🔒</span> ' : '';
+        var author = p.is_mine ? '본인' : (p.author_name || '—');
         return (
-          '<tr data-id="' + p.id + '">' +
+          '<tr data-id="' + p.id + '"' + (locked ? ' data-locked="1"' : '') + '>' +
           '<td class="col-num">' + esc(startNo - idx) + '</td>' +
           '<td class="' + (opts.typeCellClass || 'col-cat') + '">' + typeCell(p) + '</td>' +
           '<td>' + lock + esc(p.title) + '</td>' +
@@ -387,6 +384,28 @@
           return;
         }
         var p = res.body;
+        // 잠금 스텁: 본문/댓글 없이 "비밀글입니다" 안내만 표시.
+        if (p.locked) {
+          if (d.title) d.title.textContent = p.title || '비밀글';
+          if (d.badge) { d.badge.textContent = ''; d.badge.className = 'badge badge-outline'; }
+          if (d.status) { d.status.textContent = ''; d.status.className = 'status'; }
+          if (d.meta) {
+            d.meta.innerHTML =
+              '<span>' + esc(p.author_name || '—') + '</span>' +
+              '<span>·</span><span>' + esc(p.date_formatted || '') + '</span>' +
+              '<span>·</span><span>🔒 비밀글</span>';
+          }
+          if (d.body) {
+            d.body.innerHTML =
+              '<div class="secret-lock"><div class="ico-lock">🔒</div>' +
+              '<p>비밀글입니다.</p>' +
+              '<p class="body-sm" style="margin-top:6px;color:var(--text-3);">작성자와 관리자만 열람할 수 있습니다.</p></div>';
+          }
+          if (d.reply) d.reply.style.display = 'none';
+          if (d.comments) d.comments.innerHTML = '';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
         if (d.title) d.title.textContent = p.title;
         if (d.badge) {
           var label = p.category || p.post_type || '문의';
@@ -400,7 +419,8 @@
           d.status.textContent = p.status_label || '';
         }
         if (d.meta) {
-          var secret = p.is_secret ? '<span>·</span><span>🔒 비밀글</span>' : '';
+          // 본인 글은 비밀글이어도 잠금 표식을 보이지 않는다.
+          var secret = (p.is_secret && !p.is_mine) ? '<span>·</span><span>🔒 비밀글</span>' : '';
           d.meta.innerHTML =
             '<span>' + esc(p.author_name || currentUserName()) + '</span>' +
             '<span>·</span><span>' + esc(p.date_formatted) + '</span>' + secret;

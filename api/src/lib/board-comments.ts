@@ -26,6 +26,42 @@ function formatDateTime(iso: Date | string | null): string {
   return `${y}.${m}.${day} ${h}:${min}`;
 }
 
+/** Minimal post fields needed to evaluate read access. */
+export interface BoardPostAccess {
+  user_id: number | string;
+  board_type: string;
+  is_secret: boolean;
+}
+
+/** Who is asking — an FO member (`id`) and/or an admin (`isAdmin`). */
+export interface BoardViewer {
+  id?: number | string | null;
+  isAdmin?: boolean;
+}
+
+/**
+ * Single source of truth for "may this viewer read the full post body +
+ * comments?". Used by the public detail, list (per-row lock flag), and both
+ * comment handlers so visibility never drifts between them.
+ *
+ * Readable when: viewer is admin, OR viewer is the author, OR the post is a
+ * public (non-secret) 문의(inquiry). 환불·정보정정(refund_correction) posts are
+ * always secret, so only the author/admin can read them. 문의 비밀글 is
+ * author/admin only.
+ */
+export function canReadBoardPost(post: BoardPostAccess, viewer: BoardViewer): boolean {
+  if (viewer?.isAdmin) return true;
+  if (
+    viewer?.id != null &&
+    post.user_id != null &&
+    Number(post.user_id) === Number(viewer.id)
+  ) {
+    return true;
+  }
+  if (post.board_type === "inquiry" && !post.is_secret) return true;
+  return false;
+}
+
 /**
  * Load a post's comments as a single-level thread: top-level comments first
  * (chronological), each with their 대댓글 in `replies[]`. Soft-deleted rows are

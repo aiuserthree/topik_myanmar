@@ -289,13 +289,10 @@
       </div>
 
       <div class="form-row">
-        <label class="check"><input type="checkbox" id="secretCb"><span class="box"></span><span>비밀글로 작성</span></label>
-        <span class="hint">비밀글 게시물의 댓글·대댓글은 자동으로 비밀글로 처리됩니다.</span>
-      </div>
-
-      <div class="form-row hidden" id="secretPwRow">
-        <label class="label">비밀번호 <span class="req">*</span></label>
-        <input class="input" type="password" id="rfdSecretPw" placeholder="4자리 이상" minlength="4">
+        <div class="file-list" style="text-align:left;">
+          🔒 환불·정보정정 신청 글은 모두 <strong>비밀글</strong>로 등록됩니다.
+          작성자 본인과 관리자만 내용·댓글을 열람할 수 있습니다.
+        </div>
       </div>
 
       <div class="form-row">
@@ -375,10 +372,6 @@
     document.getElementById(id).classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  document.getElementById('secretCb')?.addEventListener('change', function () {
-    document.getElementById('secretPwRow').classList.toggle('hidden', !this.checked);
-  });
-
   // ---- 목록/상세 (API) ----
   function rfdBadge(p) {
     var cat = p.category || '';
@@ -437,8 +430,7 @@
     submitBtn: document.getElementById('btnRefundSubmit'),
     titleEl: document.getElementById('rfdTitle'),
     bodyEl: document.getElementById('rfdBody'),
-    secretRadio: document.getElementById('secretCb'),
-    secretPwEl: document.getElementById('rfdSecretPw'),
+    forceSecret: true,
     resolveCategory: function () {
       var radios = document.getElementsByName('type');
       return (radios[0] && radios[0].checked) ? '환불' : '정보정정';
