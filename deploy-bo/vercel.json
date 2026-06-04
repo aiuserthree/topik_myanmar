@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "python3 ../build-bo.py",
+  "outputDirectory": "../public-bo",
+  "rewrites": [
+    { "source": "/", "destination": "/login.html" }
+  ]
+}
