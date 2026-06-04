@@ -7,62 +7,104 @@
   <link rel="stylesheet" href="assets/bo.css" />
 </head>
 <body>
-  <header class="bo-topbar">
-    <div class="bo-topbar-left">
-      <strong class="bo-brand">TOPIK Myanmar</strong>
-      <span class="bo-page-title">FAQ 관리</span>
-    </div>
-    <div class="bo-topbar-right">
-      <span class="bo-admin-id" id="adminId"></span>
-      <button class="bo-btn bo-btn-ghost" id="logoutBtn" type="button">로그아웃</button>
-    </div>
-  </header>
-
-  <nav class="bo-nav">
-    <a href="applications.html">접수 관리</a>
-    <a href="rounds.html">회차 관리</a>
-    <a href="venues.html">시험장 관리</a>
-    <a href="notices.html">공지 관리</a>
-    <a href="faq.html" class="is-active">FAQ 관리</a>
-    <a href="terms.html">약관 관리</a>
-  </nav>
-
-  <section class="bo-page">
-    <div class="bo-page-head">
-      <h1>자주 묻는 질문</h1>
-      <div class="bo-page-tools">
-        <select id="categoryFilter" class="bo-select">
-          <option value="all">분류 전체</option>
-          <option value="account">계정</option>
-          <option value="apply">접수</option>
-          <option value="exam">시험</option>
-          <option value="result">결과</option>
-          <option value="other">기타</option>
-        </select>
-        <select id="activeFilter" class="bo-select">
-          <option value="">노출 전체</option>
-          <option value="1">노출</option>
-          <option value="0">숨김</option>
-        </select>
-        <button class="bo-btn bo-btn-secondary" id="reorderBtn" type="button">정렬 저장</button>
-        <button class="bo-btn bo-btn-primary" id="newBtn" type="button">+ 새 FAQ</button>
+  <div class="bo-app">
+    <aside class="bo-sb" id="boSidebar">
+      <div class="bo-sb-brand">
+        <span class="mark">T</span>
+        <span class="name">TOPIK Myanmar<small>ADMIN CONSOLE</small></span>
       </div>
-    </div>
-    <div class="bo-field-hint" style="margin-bottom:8px;">정렬 순서(정수) 셀을 수정한 뒤 <b>정렬 저장</b>을 누르면 FO 노출 순서가 반영됩니다. (분류→정렬→ID 순)</div>
+      <nav class="bo-sb-nav">
+        <div class="bo-sb-section">운영</div>
+        <a href="applications.html" class="bo-sb-link">
+          <svg class="ico" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M8 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><path d="M9 12h6M9 16h4"/></svg>
+          <span class="label">접수 관리</span>
+        </a>
+        <a href="rounds.html" class="bo-sb-link">
+          <svg class="ico" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          <span class="label">회차 관리</span>
+        </a>
+        <a href="venues.html" class="bo-sb-link">
+          <svg class="ico" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span class="label">시험장 관리</span>
+        </a>
+        <div class="bo-sb-section">콘텐츠</div>
+        <a href="notices.html" class="bo-sb-link">
+          <svg class="ico" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          <span class="label">공지 관리</span>
+        </a>
+        <a href="faq.html" class="bo-sb-link is-active">
+          <svg class="ico" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+          <span class="label">FAQ 관리</span>
+        </a>
+        <a href="terms.html" class="bo-sb-link">
+          <svg class="ico" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8"/></svg>
+          <span class="label">약관 관리</span>
+        </a>
+      </nav>
+      <div class="bo-sb-foot">
+        <div class="bo-sb-user">
+          <span class="avatar">A</span>
+          <span class="meta"><span class="nm" id="adminId">관리자</span><span class="rl">백오피스 운영자</span></span>
+        </div>
+        <button class="bo-sb-logout" id="logoutBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+          로그아웃
+        </button>
+      </div>
+    </aside>
 
-    <div class="bo-table-wrap">
-      <table class="bo-table">
-        <thead>
-          <tr>
-            <th>번호</th><th>분류</th><th>정렬</th><th>질문(KO)</th><th>다국어</th><th>노출</th><th>관리</th>
-          </tr>
-        </thead>
-        <tbody id="rows">
-          <tr><td colspan="7" class="bo-empty">데이터를 불러오는 중…</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
+    <header class="bo-tb">
+      <button class="bo-tb-ham" id="boHam" type="button" aria-label="메뉴 열기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div>
+        <div class="bo-tb-crumb"><span>백오피스</span><span class="sep">›</span><span>콘텐츠</span></div>
+        <div class="bo-tb-title">FAQ 관리</div>
+      </div>
+      <div class="bo-tb-spacer"></div>
+    </header>
+
+    <main class="bo-mn">
+      <section class="bo-page">
+        <div class="bo-page-head">
+          <h1>자주 묻는 질문</h1>
+          <div class="bo-page-tools">
+            <select id="categoryFilter" class="bo-select">
+              <option value="all">분류 전체</option>
+              <option value="account">계정</option>
+              <option value="apply">접수</option>
+              <option value="exam">시험</option>
+              <option value="result">결과</option>
+              <option value="other">기타</option>
+            </select>
+            <select id="activeFilter" class="bo-select">
+              <option value="">노출 전체</option>
+              <option value="1">노출</option>
+              <option value="0">숨김</option>
+            </select>
+            <button class="bo-btn bo-btn-secondary" id="reorderBtn" type="button">정렬 저장</button>
+            <button class="bo-btn bo-btn-primary" id="newBtn" type="button">+ 새 FAQ</button>
+          </div>
+        </div>
+        <div class="bo-field-hint" style="margin-bottom:12px;">정렬 순서(정수) 셀을 수정한 뒤 <b>정렬 저장</b>을 누르면 FO 노출 순서가 반영됩니다. (분류→정렬→ID 순)</div>
+
+        <div class="bo-table-wrap">
+          <table class="bo-table">
+            <thead>
+              <tr>
+                <th>번호</th><th>분류</th><th>정렬</th><th>질문(KO)</th><th>다국어</th><th>노출</th><th>관리</th>
+              </tr>
+            </thead>
+            <tbody id="rows">
+              <tr><td colspan="7" class="bo-empty">데이터를 불러오는 중…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="bo-sb-backdrop" id="boSbBackdrop"></div>
 
   <div class="bo-overlay" id="overlay" hidden></div>
   <aside class="bo-panel bo-panel-wide" id="formPanel" hidden aria-hidden="true">
@@ -125,6 +167,7 @@
   <div class="bo-toast" id="toast" hidden></div>
 
   <script src="../../shared/bo-api-client.js"></script>
+  <script src="assets/bo-shell.js"></script>
   <script src="assets/bo-common.js"></script>
   <script src="assets/bo-faq.js"></script>
 </body>
