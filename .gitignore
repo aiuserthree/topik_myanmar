@@ -16,3 +16,10 @@ scripts/node_modules/
 public/
 public-bo/
 html/C*/BO/dist/
+
+# AWS / local secrets (keys live in Railway Variables only)
+topik-mm-s3-api_accessKeys.csv
+*_accessKeys.csv
+
+# Personal checklist — never commit
+이것저것체크사항.txt
