@@ -166,6 +166,83 @@ export async function authPasswordRoutes(app: FastifyInstance) {
     }
   );
 
+  // ---- verify-reset-code: check code validity WITHOUT consuming it ----
+  // Lets the FO gate the new-password inputs behind a server-side validity check.
+  // CRITICAL: this performs a read-only check (SELECT + bcrypt.compare) and never
+  // sets consumed_at, so the same code stays usable for the subsequent
+  // reset-password call (which is the step that actually consumes the token).
+  app.post<{ Body: { email?: string; code?: string } }>(
+    "/api/v1/auth/verify-reset-code",
+    { config: { rateLimit: { max: 10, timeWindow: "1 minute" } } },
+    async (req, reply) => {
+      const email = String(req.body?.email ?? "")
+        .trim()
+        .toLowerCase();
+      const code = String(req.body?.code ?? "").trim();
+
+      if (!isValidEmail(email) || code.length !== 6) {
+        return reply.status(400).send({
+          error: {
+            code: "VALIDATION_ERROR",
+            message: "이메일과 6자리 인증코드를 입력해 주세요.",
+          },
+        });
+      }
+
+      try {
+        const userRes = await pool.query(
+          `SELECT id FROM users
+           WHERE email = $1 AND status = 'active'
+           LIMIT 1`,
+          [email]
+        );
+        if (userRes.rows.length === 0) {
+          return reply.status(400).send({
+            error: {
+              code: "INVALID_CODE",
+              message: "인증코드가 올바르지 않거나 만료되었습니다.",
+            },
+          });
+        }
+        const userId = Number(userRes.rows[0].id);
+
+        const tokensRes = await pool.query(
+          `SELECT id, token_hash FROM password_reset_tokens
+           WHERE user_id = $1 AND consumed_at IS NULL AND expires_at > NOW()
+           ORDER BY id DESC
+           LIMIT 5`,
+          [userId]
+        );
+
+        let matched = false;
+        for (const row of tokensRes.rows) {
+          // eslint-disable-next-line no-await-in-loop
+          const ok = await bcrypt.compare(code, row.token_hash);
+          if (ok) {
+            matched = true;
+            break;
+          }
+        }
+
+        if (!matched) {
+          return reply.status(400).send({
+            error: {
+              code: "INVALID_CODE",
+              message: "인증코드가 올바르지 않거나 만료되었습니다.",
+            },
+          });
+        }
+
+        return { verified: true, message: "인증코드가 확인되었습니다." };
+      } catch (err) {
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "서버 오류가 발생했습니다." },
+        });
+      }
+    }
+  );
+
   // ---- reset-password: verify code + set new password ----
   app.post<{
     Body: {

@@ -434,6 +434,14 @@
     });
   }
 
+  function verifyResetCode(email, code) {
+    return apiFetch("/api/v1/auth/verify-reset-code", {
+      method: "POST",
+      auth: false,
+      body: JSON.stringify({ email: email, code: code }),
+    });
+  }
+
   function resetPassword(payload) {
     return apiFetch("/api/v1/auth/reset-password", {
       method: "POST",
@@ -565,6 +573,7 @@
     loginWithGoogle: loginWithGoogle,
     findEmail: findEmail,
     forgotPassword: forgotPassword,
+    verifyResetCode: verifyResetCode,
     resetPassword: resetPassword,
     updateProfile: updateProfile,
     updateMe: updateProfile,
