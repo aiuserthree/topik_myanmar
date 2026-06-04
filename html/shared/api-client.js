@@ -237,15 +237,26 @@
     });
   }
 
-  function imgFileOnError(fileId) {
+  function imgFileOnError(fileId, onGiveUp) {
     return function (ev) {
       var img = ev && ev.target;
-      if (!img || !fileId || img.dataset.fileAuthRetry === "1") return;
+      if (!img || !fileId) return;
+      function giveUp() {
+        markFileUnavailable(fileId);
+        if (typeof onGiveUp === "function") onGiveUp();
+      }
+      if (img.dataset.fileAuthRetry === "1") {
+        giveUp();
+        return;
+      }
       img.dataset.fileAuthRetry = "1";
+      if (!getRefreshToken()) {
+        giveUp();
+        return;
+      }
       refreshSession().then(function (ok) {
-        if (!ok) return;
-        delete img.dataset.fileAuthRetry;
-        img.src = fileUrl(fileId);
+        if (ok) img.src = fileUrl(fileId);
+        else giveUp();
       });
     };
   }

@@ -239,14 +239,19 @@
       if (profilePhotoCtrl.reset) profilePhotoCtrl.reset();
       return;
     }
-    if (!TopikApi.fileObjectUrl || TopikApi.isFileUnavailable && TopikApi.isFileUnavailable(fileId)) {
+    if (!TopikApi.fileUrl || (TopikApi.isFileUnavailable && TopikApi.isFileUnavailable(fileId))) {
       if (profilePhotoCtrl.reset) profilePhotoCtrl.reset();
       return;
     }
-    TopikApi.fileObjectUrl(fileId).then(function (url) {
-      if (url && profilePhotoCtrl.setDataUrl) profilePhotoCtrl.setDataUrl(url);
-      else if (profilePhotoCtrl.reset) profilePhotoCtrl.reset();
-    });
+    var url = TopikApi.fileUrl(fileId);
+    if (!url) { if (profilePhotoCtrl.reset) profilePhotoCtrl.reset(); return; }
+    if (profilePhotoCtrl.setDataUrl) profilePhotoCtrl.setDataUrl(url);
+    var img = document.querySelector('#profilePhotoZone .ph-prev img');
+    if (img && TopikApi.imgFileOnError) {
+      img.onerror = TopikApi.imgFileOnError(fileId, function () {
+        if (profilePhotoCtrl.reset) profilePhotoCtrl.reset();
+      });
+    }
   }
 
   document.querySelectorAll('.profile-tabs button').forEach(b => {

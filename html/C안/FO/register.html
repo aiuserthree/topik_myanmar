@@ -487,10 +487,12 @@
       if (u.photo_unavailable && TopikApi.markFileUnavailable) {
         TopikApi.markFileUnavailable(u.photo_file_id);
         if (typeof renderPortrait === 'function') renderPortrait('');
-      } else if (TopikApi.fileObjectUrl) {
-        TopikApi.fileObjectUrl(u.photo_file_id).then(function (url) {
-          if (typeof renderPortrait === 'function') renderPortrait(url || '');
-        });
+      } else if (TopikApi.fileUrl) {
+        var purl = TopikApi.fileUrl(u.photo_file_id);
+        if (typeof renderPortrait === 'function') {
+          if (purl) renderPortrait(purl, u.photo_file_id);
+          else renderPortrait('');
+        }
       }
     } else if (typeof renderPortrait === 'function') {
       renderPortrait('');
@@ -578,14 +580,24 @@
   }));
 
   var DUMMY_PORTRAIT = 'assets/dummy-portrait.jpg';
-  function renderPortrait(url) {
+  function renderPortrait(url, fileId) {
     var src = url || DUMMY_PORTRAIT;
     document.querySelectorAll('.photo-frame .pf').forEach(function (pf) {
       pf.classList.add('has-photo');
       pf.style.padding = '0';
       pf.style.overflow = 'hidden';
-      pf.innerHTML =
-        '<img src="' + src + '" alt="증명사진" onerror="this.onerror=null;this.src=\'' + DUMMY_PORTRAIT + '\';" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">';
+      var img = document.createElement('img');
+      img.alt = '증명사진';
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:8px;';
+      function fallback() { img.onerror = null; img.src = DUMMY_PORTRAIT; }
+      if (fileId && window.TopikApi && TopikApi.imgFileOnError) {
+        img.onerror = TopikApi.imgFileOnError(fileId, fallback);
+      } else {
+        img.onerror = fallback;
+      }
+      img.src = src;
+      pf.innerHTML = '';
+      pf.appendChild(img);
     });
   }
   renderPortrait(DUMMY_PORTRAIT);
