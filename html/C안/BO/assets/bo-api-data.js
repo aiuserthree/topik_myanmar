@@ -79,7 +79,7 @@
 
   function mapNotice(n) {
     return {
-      id: String(n.id), apiId: n.id, no: n.id,
+      id: String(n.id), apiId: n.id,
       cat: NOTICE_C2L[n.category] || n.category, catCode: n.category,
       title: n.title, author: n.author_email || "—",
       createdAt: n.created_at_label || dateOnly(n.created_at),

@@ -48,7 +48,7 @@
   const TAB = [
     { href: 'index.html',   key: 'home',  label: '홈',
       svg: '<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>' },
-    { href: 'apply-howto.html', key: 'apply', label: '접수',
+    { href: 'register.html', key: 'apply', label: '접수',
       svg: '<svg viewBox="0 0 24 24"><path d="M9 4h6a2 2 0 0 1 2 2v14l-5-3-5 3V6a2 2 0 0 1 2-2z"/></svg>' },
     { href: 'notice.html',  key: 'board', label: '게시판',
       svg: '<svg viewBox="0 0 24 24"><path d="M5 5h14v14H5z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>' },

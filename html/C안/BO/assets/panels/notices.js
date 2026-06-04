@@ -249,8 +249,10 @@ function NoticesPanelInner() {
             )
           ),
           h('tbody', null,
-            filtered.map(n => h('tr', { key: n.id },
-              h('td', { className: 'num' }, n.no),
+            filtered.map((n, idx) => {
+              const no = n.pin ? '—' : String(filtered.length - idx);
+              return h('tr', { key: n.id },
+              h('td', { className: 'num' }, no),
               h('td', null, h('span', { className: `pill pill-${n.cat === '중요' ? 'rejected' : 'applied'}` }, n.cat)),
               h('td', null, n.pin && h(I.Bookmark, { style: { width: 12, height: 12, color: 'var(--accent)', display: 'inline', verticalAlign: '-2px', marginRight: 4 } }), h('b', null, n.title)),
               h('td', { className: 'muted' }, n.author),
@@ -263,7 +265,8 @@ function NoticesPanelInner() {
                   h('button', { className: 'ibtn danger', onClick: () => setDelId(n.id) }, h(I.Trash, { style: { width: 12, height: 12 } }))
                 )
               )
-            ))
+            );
+            })
           )
         )
       )
