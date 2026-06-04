@@ -231,10 +231,20 @@
     placeholder: '현재 사진',
     onChange: function () { photoChanged = true; }
   });
-  function showProfilePhoto(fileId) {
-    if (!fileId || !window.TopikApi || !TopikApi.fileObjectUrl || !profilePhotoCtrl) return;
+  function showProfilePhoto(fileId, photoUnavailable) {
+    if (!fileId || !window.TopikApi || !profilePhotoCtrl) return;
+    if (photoUnavailable && TopikApi.markFileUnavailable) {
+      TopikApi.markFileUnavailable(fileId);
+      if (profilePhotoCtrl.reset) profilePhotoCtrl.reset();
+      return;
+    }
+    if (!TopikApi.fileObjectUrl || TopikApi.isFileUnavailable && TopikApi.isFileUnavailable(fileId)) {
+      if (profilePhotoCtrl.reset) profilePhotoCtrl.reset();
+      return;
+    }
     TopikApi.fileObjectUrl(fileId).then(function (url) {
       if (url && profilePhotoCtrl.setDataUrl) profilePhotoCtrl.setDataUrl(url);
+      else if (profilePhotoCtrl.reset) profilePhotoCtrl.reset();
     });
   }
 
@@ -277,7 +287,7 @@
       setSelectValue($('pf-motive'), u.motive_code);
       setSelectValue($('pf-purpose'), u.purpose_code);
       $('pf-email').value = u.email || '';
-      if (u.photo_file_id) showProfilePhoto(u.photo_file_id);
+      if (u.photo_file_id) showProfilePhoto(u.photo_file_id, u.photo_unavailable);
     });
   }
   loadProfile();
@@ -322,7 +332,7 @@
         if (window.__tpkmRebuildNav) __tpkmRebuildNav();
       }
       if (res.body && res.body.user && res.body.user.photo_file_id) {
-        showProfilePhoto(res.body.user.photo_file_id);
+        showProfilePhoto(res.body.user.photo_file_id, res.body.user.photo_unavailable);
       }
       alert((res.body && res.body.message) || '회원정보가 수정되었습니다.');
     }).catch(function () {

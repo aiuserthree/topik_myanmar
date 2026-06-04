@@ -181,16 +181,30 @@
    * Token rides in the query string because <img> can't set an Authorization
    * header; the files route accepts ?token= for exactly this case.
    */
+  /** fileIds known missing (stub/legacy blob) — skip repeat GET /files/:id. */
+  var unavailableFileIds = {};
+
+  function markFileUnavailable(fileId) {
+    if (fileId) unavailableFileIds[String(fileId)] = true;
+  }
+
+  function isFileUnavailable(fileId) {
+    return !!fileId && !!unavailableFileIds[String(fileId)];
+  }
+
   function fileUrl(fileId) {
     if (!fileId || !USE_API || !API_BASE_URL) return "";
+    if (isFileUnavailable(fileId)) return "";
     var token = getAccessToken();
     return apiUrl("/api/v1/files/" + encodeURIComponent(fileId)) +
       (token ? "?token=" + encodeURIComponent(token) : "");
   }
 
   function fetchFileBlob(fileId, isRetry) {
-    if (!fileId || !USE_API || !API_BASE_URL) return Promise.resolve(null);
-    var headers = {};
+    if (!fileId || !USE_API || !API_BASE_URL || isFileUnavailable(fileId)) {
+      return Promise.resolve(null);
+    }
+    var headers = { Accept: "application/json" };
     var token = getAccessToken();
     if (token) headers.Authorization = "Bearer " + token;
     return fetch(apiUrl("/api/v1/files/" + encodeURIComponent(fileId)), { headers: headers })
@@ -200,7 +214,18 @@
             return ok ? fetchFileBlob(fileId, true) : null;
           });
         }
-        if (!res.ok) return null;
+        if (!res.ok) {
+          if (res.status === 404) {
+            return res.json().catch(function () { return {}; }).then(function (body) {
+              var code = body && body.error && body.error.code;
+              if (!code || code === "FILE_UNAVAILABLE" || code === "NOT_FOUND") {
+                markFileUnavailable(fileId);
+              }
+              return null;
+            });
+          }
+          return null;
+        }
         return res.blob();
       })
       .catch(function () { return null; });
@@ -619,6 +644,8 @@
     fetchFileBlob: fetchFileBlob,
     fileObjectUrl: fileObjectUrl,
     imgFileOnError: imgFileOnError,
+    markFileUnavailable: markFileUnavailable,
+    isFileUnavailable: isFileUnavailable,
     getUser: getUser,
     syncLegacyUser: syncLegacyUser,
     apiFetch: apiFetch,

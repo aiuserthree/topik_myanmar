@@ -1,8 +1,9 @@
 import bcrypt from "bcrypt";
 import type { FastifyInstance } from "fastify";
+import type { PoolClient } from "pg";
 import { pool } from "../db.js";
 import { requireFoUser } from "../lib/auth.js";
-import { savePhoto, StorageError } from "../lib/storage.js";
+import { resolveFile, savePhoto, StorageError, type FileRow } from "../lib/storage.js";
 import {
   buildEmailDefaults,
   enqueueEmail,
@@ -28,6 +29,20 @@ interface UpdateMeBody {
   photo_base64?: string | null;
 }
 
+/** True when users.photo_file_id points at a missing/stub/unreachable blob. */
+async function isPhotoUnavailable(photoFileId: number | null): Promise<boolean> {
+  if (!photoFileId) return false;
+  const { rows } = await pool.query(
+    `SELECT id, owner_type, owner_id, storage_key, original_filename,
+            mime_type, size_bytes
+     FROM file_attachments WHERE id = $1 LIMIT 1`,
+    [photoFileId]
+  );
+  if (rows.length === 0) return true;
+  const resolved = await resolveFile(rows[0] as unknown as FileRow);
+  return !resolved;
+}
+
 export async function meRoutes(app: FastifyInstance) {
   app.get(
     "/api/v1/me",
@@ -51,6 +66,9 @@ export async function meRoutes(app: FastifyInstance) {
           });
         }
         const u = rows[0];
+        const photoUnavailable = await isPhotoUnavailable(
+          u.photo_file_id != null ? Number(u.photo_file_id) : null
+        );
         return {
           user: {
             id: u.id,
@@ -67,6 +85,7 @@ export async function meRoutes(app: FastifyInstance) {
             motive_code: u.motive_code,
             purpose_code: u.purpose_code,
             photo_file_id: u.photo_file_id,
+            photo_unavailable: photoUnavailable,
             preferred_lang: u.preferred_lang,
             marketing_opt_in: u.marketing_opt_in,
             rev: u.rev,
@@ -157,9 +176,12 @@ export async function meRoutes(app: FastifyInstance) {
         setField("marketing_opt_in", !!body.marketing_opt_in);
       }
 
-      const client = await pool.connect();
+      let client: PoolClient | null = null;
+      let began = false;
       try {
+        client = await pool.connect();
         await client.query("BEGIN");
+        began = true;
 
         let newPhotoFileId: number | null = null;
         if (body.photo_base64 && body.photo_base64.length > 100) {
@@ -173,8 +195,11 @@ export async function meRoutes(app: FastifyInstance) {
             newPhotoFileId = saved.fileId;
             setField("photo_file_id", saved.fileId);
           } catch (err) {
-            await client.query("ROLLBACK");
             if (err instanceof StorageError) {
+              if (began) {
+                await client.query("ROLLBACK");
+                began = false;
+              }
               return reply.status(400).send({
                 error: { code: err.code, message: err.message },
               });
@@ -184,7 +209,10 @@ export async function meRoutes(app: FastifyInstance) {
         }
 
         if (sets.length === 0) {
-          await client.query("ROLLBACK");
+          if (began) {
+            await client.query("ROLLBACK");
+            began = false;
+          }
           return reply.status(400).send({
             error: { code: "VALIDATION_ERROR", message: "변경할 내용이 없습니다." },
           });
@@ -220,8 +248,12 @@ export async function meRoutes(app: FastifyInstance) {
           [userId]
         );
         await client.query("COMMIT");
+        began = false;
 
         const u = rows[0];
+        const photoUnavailable = await isPhotoUnavailable(
+          u.photo_file_id != null ? Number(u.photo_file_id) : null
+        );
         return {
           user: {
             id: u.id,
@@ -238,6 +270,7 @@ export async function meRoutes(app: FastifyInstance) {
             motive_code: u.motive_code,
             purpose_code: u.purpose_code,
             photo_file_id: u.photo_file_id,
+            photo_unavailable: photoUnavailable,
             preferred_lang: u.preferred_lang,
             marketing_opt_in: u.marketing_opt_in,
             rev: u.rev,
@@ -245,13 +278,19 @@ export async function meRoutes(app: FastifyInstance) {
           message: "회원정보가 수정되었습니다.",
         };
       } catch (err) {
-        await client.query("ROLLBACK");
+        if (client && began) {
+          try {
+            await client.query("ROLLBACK");
+          } catch {
+            /* connection may already be dead */
+          }
+        }
         app.log.error(err);
         return reply.status(503).send({
           error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
         });
       } finally {
-        client.release();
+        client?.release();
       }
     }
   );

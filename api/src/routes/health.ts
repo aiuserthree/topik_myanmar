@@ -1,10 +1,12 @@
 import type { FastifyInstance } from "fastify";
 import { pingDb } from "../db.js";
+import { storageMode } from "../lib/storage.js";
 
 export async function healthRoutes(app: FastifyInstance) {
   app.get("/health", async () => ({
     status: "ok",
     env: process.env.APP_ENV ?? "development",
+    storage_mode: storageMode(),
     timestamp: new Date().toISOString(),
   }));
 
