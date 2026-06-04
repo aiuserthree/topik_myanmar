@@ -161,7 +161,7 @@ export async function meRoutes(app: FastifyInstance) {
       try {
         await client.query("BEGIN");
 
-        // Optional new photo → file_attachments, then point users.photo_file_id at it.
+        let newPhotoFileId: number | null = null;
         if (body.photo_base64 && body.photo_base64.length > 100) {
           try {
             const saved = await savePhoto(client, {
@@ -170,6 +170,7 @@ export async function meRoutes(app: FastifyInstance) {
               base64: body.photo_base64,
               filename: "profile-photo.jpg",
             });
+            newPhotoFileId = saved.fileId;
             setField("photo_file_id", saved.fileId);
           } catch (err) {
             await client.query("ROLLBACK");
@@ -195,6 +196,21 @@ export async function meRoutes(app: FastifyInstance) {
            WHERE id = $${idx} AND status = 'active'`,
           params
         );
+
+        if (newPhotoFileId) {
+          await client.query(
+            `UPDATE applications
+             SET photo_file_id = $1,
+                 photo_review_status = 'pending',
+                 photo_reject_code = NULL,
+                 photo_reject_note = NULL,
+                 updated_at = NOW(),
+                 rev = rev + 1
+             WHERE user_id = $2
+               AND status NOT IN ('cancelled', 'rejected')`,
+            [newPhotoFileId, userId]
+          );
+        }
 
         const { rows } = await client.query(
           `SELECT id, email, name_ko, name_en, birth_date, gender, nationality,

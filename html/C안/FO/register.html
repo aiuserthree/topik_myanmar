@@ -483,9 +483,13 @@
     set('profJob', codeLabel('job', u.job_code));
     set('profMotive', codeLabel('motive', u.motive_code));
     set('profPurpose', codeLabel('purpose', u.purpose_code));
-    var photoUrl = (u.photo_file_id && window.TopikApi && TopikApi.fileUrl)
-      ? TopikApi.fileUrl(u.photo_file_id) : '';
-    if (typeof renderPortrait === 'function') renderPortrait(photoUrl);
+    if (u.photo_file_id && window.TopikApi && TopikApi.fileObjectUrl) {
+      TopikApi.fileObjectUrl(u.photo_file_id).then(function (url) {
+        if (typeof renderPortrait === 'function') renderPortrait(url);
+      });
+    } else if (typeof renderPortrait === 'function') {
+      renderPortrait('');
+    }
   }
 
   function loadRegisterMasters() {

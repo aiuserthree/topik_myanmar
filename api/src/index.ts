@@ -23,8 +23,16 @@ import { adminRoutes } from "./routes/admin/index.js";
 import { runPasswordExpiryBatch } from "./lib/password-expiry-reminder.js";
 import { startEmailWorker } from "./lib/email-worker.js";
 import { pool } from "./db.js";
+import { storageMode } from "./lib/storage.js";
 
 const app = Fastify({ logger: true });
+
+if (config.appEnv === "production" && storageMode() === "local") {
+  app.log.warn(
+    "STORAGE_PROVIDER=local in production — uploads are stored on ephemeral disk and are lost on redeploy. " +
+      "Set STORAGE_PROVIDER=s3 and S3_BUCKET/S3_REGION/S3_ACCESS_KEY/S3_SECRET for durable photos."
+  );
+}
 
 // Security headers (helmet). CSP is intentionally relaxed/off: this process is a
 // JSON + file-download API consumed by a SEPARATE FO origin, so a strict

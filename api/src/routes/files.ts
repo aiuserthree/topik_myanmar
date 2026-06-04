@@ -60,6 +60,24 @@ async function resolveViewer(
   return null;
 }
 
+async function foUserMayAccessPhoto(
+  userId: number,
+  fileId: number,
+  row: FileRow
+): Promise<boolean> {
+  if (row.owner_type === "user_photo" && Number(row.owner_id) === userId) {
+    return true;
+  }
+  const { rows } = await pool.query(
+    `SELECT 1 AS ok FROM users WHERE id = $1 AND photo_file_id = $2
+     UNION ALL
+     SELECT 1 FROM applications WHERE user_id = $1 AND photo_file_id = $2
+     LIMIT 1`,
+    [userId, fileId]
+  );
+  return rows.length > 0;
+}
+
 async function serveFile(
   req: FastifyRequest,
   reply: FastifyReply,
@@ -80,8 +98,13 @@ async function serveFile(
   const row = rows[0] as unknown as FileRow;
 
   if (!viewer.isAdmin) {
-    // FO user may only access their own photo.
-    if (row.owner_type !== "user_photo" || Number(row.owner_id) !== viewer.userId) {
+    const uid = viewer.userId;
+    if (!uid || row.owner_type !== "user_photo") {
+      return reply.status(403).send({
+        error: { code: "FORBIDDEN", message: "접근 권한이 없습니다." },
+      });
+    }
+    if (!(await foUserMayAccessPhoto(uid, fileId, row))) {
       return reply.status(403).send({
         error: { code: "FORBIDDEN", message: "접근 권한이 없습니다." },
       });

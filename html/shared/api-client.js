@@ -182,10 +182,47 @@
    * header; the files route accepts ?token= for exactly this case.
    */
   function fileUrl(fileId) {
-    if (!fileId) return "";
+    if (!fileId || !USE_API || !API_BASE_URL) return "";
     var token = getAccessToken();
     return apiUrl("/api/v1/files/" + encodeURIComponent(fileId)) +
       (token ? "?token=" + encodeURIComponent(token) : "");
+  }
+
+  function fetchFileBlob(fileId, isRetry) {
+    if (!fileId || !USE_API || !API_BASE_URL) return Promise.resolve(null);
+    var headers = {};
+    var token = getAccessToken();
+    if (token) headers.Authorization = "Bearer " + token;
+    return fetch(apiUrl("/api/v1/files/" + encodeURIComponent(fileId)), { headers: headers })
+      .then(function (res) {
+        if (res.status === 401 && !isRetry && getRefreshToken()) {
+          return refreshSession().then(function (ok) {
+            return ok ? fetchFileBlob(fileId, true) : null;
+          });
+        }
+        if (!res.ok) return null;
+        return res.blob();
+      })
+      .catch(function () { return null; });
+  }
+
+  function fileObjectUrl(fileId) {
+    return fetchFileBlob(fileId, false).then(function (blob) {
+      return blob ? URL.createObjectURL(blob) : "";
+    });
+  }
+
+  function imgFileOnError(fileId) {
+    return function (ev) {
+      var img = ev && ev.target;
+      if (!img || !fileId || img.dataset.fileAuthRetry === "1") return;
+      img.dataset.fileAuthRetry = "1";
+      refreshSession().then(function (ok) {
+        if (!ok) return;
+        delete img.dataset.fileAuthRetry;
+        img.src = fileUrl(fileId);
+      });
+    };
   }
 
   function login(email, password, options) {
@@ -577,7 +614,11 @@
     logout: logout,
     isLoggedIn: isLoggedIn,
     getAccessToken: getAccessToken,
+    refreshSession: refreshSession,
     fileUrl: fileUrl,
+    fetchFileBlob: fetchFileBlob,
+    fileObjectUrl: fileObjectUrl,
+    imgFileOnError: imgFileOnError,
     getUser: getUser,
     syncLegacyUser: syncLegacyUser,
     apiFetch: apiFetch,

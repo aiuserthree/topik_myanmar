@@ -231,9 +231,11 @@
     placeholder: '현재 사진',
     onChange: function () { photoChanged = true; }
   });
-  var DUMMY_PORTRAIT = 'assets/dummy-portrait.jpg';
-  if (profilePhotoCtrl && profilePhotoCtrl.setDataUrl) {
-    profilePhotoCtrl.setDataUrl(DUMMY_PORTRAIT);
+  function showProfilePhoto(fileId) {
+    if (!fileId || !window.TopikApi || !TopikApi.fileObjectUrl || !profilePhotoCtrl) return;
+    TopikApi.fileObjectUrl(fileId).then(function (url) {
+      if (url && profilePhotoCtrl.setDataUrl) profilePhotoCtrl.setDataUrl(url);
+    });
   }
 
   document.querySelectorAll('.profile-tabs button').forEach(b => {
@@ -275,9 +277,7 @@
       setSelectValue($('pf-motive'), u.motive_code);
       setSelectValue($('pf-purpose'), u.purpose_code);
       $('pf-email').value = u.email || '';
-      if (u.photo_file_id && TopikApi.fileUrl && profilePhotoCtrl && profilePhotoCtrl.setDataUrl) {
-        profilePhotoCtrl.setDataUrl(TopikApi.fileUrl(u.photo_file_id));
-      }
+      if (u.photo_file_id) showProfilePhoto(u.photo_file_id);
     });
   }
   loadProfile();
@@ -320,6 +320,9 @@
       if (res.body && res.body.user && TopikApi.syncLegacyUser) {
         TopikApi.syncLegacyUser(res.body.user);
         if (window.__tpkmRebuildNav) __tpkmRebuildNav();
+      }
+      if (res.body && res.body.user && res.body.user.photo_file_id) {
+        showProfilePhoto(res.body.user.photo_file_id);
       }
       alert((res.body && res.body.message) || '회원정보가 수정되었습니다.');
     }).catch(function () {

@@ -382,10 +382,20 @@ function ApplicantsPanelInner() {
   );
 }
 
+function boFileImgProps(fileId, props) {
+  if (!fileId || !window.TopikBoApi) return props;
+  return Object.assign({}, props, {
+    src: TopikBoApi.fileUrl(fileId),
+    onError: TopikBoApi.imgFileOnError(fileId)
+  });
+}
+
 // ---- thumb: real photo via authenticated fileUrl, else initial-based avatar ----
 function PhotoThumb({ status, name, seed, fileId }) {
   if (fileId && window.TopikBoApi) {
-    return h('img', { className: 'photo', src: TopikBoApi.fileUrl(fileId), alt: name || '증명사진', style: { objectFit: 'cover' } });
+    return h('img', boFileImgProps(fileId, {
+      className: 'photo', alt: name || '증명사진', style: { objectFit: 'cover' }
+    }));
   }
   if (status === 'pending') return h('div', { className: 'photo', style: { background: 'var(--st-photo-bg)', color: 'var(--st-photo)' } }, '미심사');
   if (status === 'rejected') return h('div', { className: 'photo', style: { background: 'var(--st-rejected-bg)', color: 'var(--st-rejected)' } }, '반려');
@@ -438,7 +448,10 @@ function PhotoReviewLP({ id, onClose, onApprove, onReject }) {
     h('div', { style: { display: 'flex', gap: 16 } },
       h('div', { style: { flex: '0 0 150px' } },
         a.photoFileId && window.TopikBoApi
-          ? h('img', { className: 'photo-lg', onClick: () => setZoom(true), src: TopikBoApi.fileUrl(a.photoFileId), alt: a.nameKo, style: { cursor: 'zoom-in', objectFit: 'cover' } })
+          ? h('img', boFileImgProps(a.photoFileId, {
+            className: 'photo-lg', onClick: () => setZoom(true), alt: a.nameKo,
+            style: { cursor: 'zoom-in', objectFit: 'cover' }
+          }))
           : a.photoStatus === 'rejected'
             ? h('div', { className: 'photo-lg', style: { background: 'var(--st-rejected-bg)', color: 'var(--st-rejected)' } }, '반려된 사진')
             : h('div', { className: 'photo-lg', onClick: () => setZoom(true), style: { cursor: 'zoom-in', background: `linear-gradient(160deg, hsl(${hue} 40% 84%), hsl(${hue} 35% 58%))`, color: '#fff', fontSize: 64, fontWeight: 700 } }, a.nameKo.slice(0, 1)),
@@ -477,7 +490,9 @@ function PhotoReviewLP({ id, onClose, onApprove, onReject }) {
 
     zoom && h('div', { className: 'modal-backdrop open', style: { zIndex: 340 }, onClick: () => setZoom(false) },
       a.photoFileId && window.TopikBoApi
-        ? h('img', { src: TopikBoApi.fileUrl(a.photoFileId), alt: a.nameKo, style: { width: 'min(420px, 90vw)', borderRadius: 10, objectFit: 'contain' } })
+        ? h('img', boFileImgProps(a.photoFileId, {
+          alt: a.nameKo, style: { width: 'min(420px, 90vw)', borderRadius: 10, objectFit: 'contain' }
+        }))
         : h('div', { style: { width: 'min(420px, 90vw)', aspectRatio: '3/4', borderRadius: 10, background: `linear-gradient(160deg, hsl(${hue} 40% 80%), hsl(${hue} 35% 48%))`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 160, fontWeight: 700 } }, a.nameKo.slice(0, 1))
     )
   );
@@ -667,7 +682,9 @@ function KV({ k, v }) {
 
 function PhotoLarge({ status, name, seed, fileId }) {
   if (fileId && window.TopikBoApi) {
-    return h('img', { className: 'photo-lg', src: TopikBoApi.fileUrl(fileId), alt: name || '증명사진', style: { objectFit: 'cover' } });
+    return h('img', boFileImgProps(fileId, {
+      className: 'photo-lg', alt: name || '증명사진', style: { objectFit: 'cover' }
+    }));
   }
   if (status === 'pending') return h('div', { className: 'photo-lg', style: { background: 'var(--st-photo-bg)', color: 'var(--st-photo)' } }, '사진 미심사');
   if (status === 'rejected') return h('div', { className: 'photo-lg', style: { background: 'var(--st-rejected-bg)', color: 'var(--st-rejected)' } }, '사진 반려');

@@ -273,10 +273,23 @@
 
   /** Authenticated <img src> URL for an admin-viewable file (token in query). */
   function fileUrl(fileId) {
-    if (!fileId) return "";
+    if (!fileId || !USE_API || !API_BASE_URL) return "";
     var token = getAccessToken();
     return apiUrl("/api/v1/admin/files/" + encodeURIComponent(fileId)) +
       (token ? "?token=" + encodeURIComponent(token) : "");
+  }
+
+  function imgFileOnError(fileId) {
+    return function (ev) {
+      var img = ev && ev.target;
+      if (!img || !fileId || img.dataset.fileAuthRetry === "1") return;
+      img.dataset.fileAuthRetry = "1";
+      refreshSession().then(function (ok) {
+        if (!ok) return;
+        delete img.dataset.fileAuthRetry;
+        img.src = fileUrl(fileId);
+      });
+    };
   }
 
   /** Fetch a binary export with auth and trigger a browser download. */
@@ -478,6 +491,7 @@
     cancelPayment: cancelPayment,
     assignExamNumbers: assignExamNumbers,
     fileUrl: fileUrl,
+    imgFileOnError: imgFileOnError,
     downloadRoster: downloadRoster,
     downloadPhotosZip: downloadPhotosZip,
     boardReply: boardReply,
