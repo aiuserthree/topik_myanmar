@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import type { FastifyInstance } from "fastify";
 import { config } from "../../config.js";
 import { pool } from "../../db.js";
-import { requireAdmin, type AuthenticatedAdmin } from "../../lib/auth.js";
+import { requireAdmin, requireAnyAdmin, type AuthenticatedAdmin } from "../../lib/auth.js";
 import {
   adminDisplayName,
   formatDateTime,
@@ -94,7 +94,103 @@ async function notifyMemberInfoChanged(
   });
 }
 
+const MEMBER_STATUSES = new Set(["active", "suspended", "withdrawn"]);
+
 export async function adminUsersRoutes(app: FastifyInstance) {
+  // -------------------------------------------------------------------------
+  // GET /api/v1/admin/users — 회원 목록 (검색·상태·국적 필터 + 페이지네이션)
+  // 마지막 로그인은 user_sessions.last_seen_at 의 최대값에서 유도.
+  // -------------------------------------------------------------------------
+  app.get<{
+    Querystring: {
+      status?: string;
+      nationality?: string;
+      q?: string;
+      page?: string;
+      page_size?: string;
+    };
+  }>(
+    "/api/v1/admin/users",
+    { preHandler: requireAnyAdmin },
+    async (req, reply) => {
+      const page = Math.max(1, Number(req.query.page) || 1);
+      const pageSize = Math.min(200, Math.max(1, Number(req.query.page_size) || 50));
+      const offset = (page - 1) * pageSize;
+      const conditions: string[] = [];
+      const params: unknown[] = [];
+      let idx = 1;
+
+      const status = req.query.status?.trim();
+      if (status && MEMBER_STATUSES.has(status)) {
+        conditions.push(`u.status = $${idx++}`);
+        params.push(status);
+      }
+      const nationality = req.query.nationality?.trim();
+      if (nationality && nationality !== "all") {
+        conditions.push(`u.nationality = $${idx++}`);
+        params.push(nationality);
+      }
+      const q = req.query.q?.trim();
+      if (q) {
+        conditions.push(
+          `(u.name_ko ILIKE $${idx} OR u.name_en ILIKE $${idx} OR u.email ILIKE $${idx} OR u.phone ILIKE $${idx})`
+        );
+        params.push(`%${q}%`);
+        idx++;
+      }
+      const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+
+      try {
+        const countRes = await pool.query(
+          `SELECT COUNT(*)::int AS total FROM users u ${where}`,
+          params
+        );
+        const total = countRes.rows[0]?.total ?? 0;
+        const listRes = await pool.query(
+          `SELECT u.id, u.name_ko, u.name_en, u.email, u.phone, u.nationality,
+                  u.status, u.marketing_opt_in, u.preferred_lang, u.created_at,
+                  u.withdrawn_at,
+                  (SELECT MAX(s.last_seen_at) FROM user_sessions s WHERE s.user_id = u.id)
+                    AS last_login_at
+           FROM users u
+           ${where}
+           ORDER BY u.created_at DESC, u.id DESC
+           LIMIT $${idx++} OFFSET $${idx++}`,
+          [...params, pageSize, offset]
+        );
+        return {
+          items: listRes.rows.map((r) => ({
+            id: Number(r.id),
+            name_ko: r.name_ko,
+            name_en: r.name_en,
+            email: r.email,
+            phone: r.phone,
+            nationality: r.nationality,
+            status: r.status,
+            marketing_opt_in: r.marketing_opt_in,
+            preferred_lang: r.preferred_lang,
+            created_at: r.created_at,
+            created_at_label: formatDateTime(r.created_at),
+            last_login_at: r.last_login_at,
+            last_login_label: r.last_login_at ? formatDateTime(r.last_login_at) : "",
+            withdrawn_at: r.withdrawn_at,
+          })),
+          pagination: {
+            page,
+            page_size: pageSize,
+            total_items: total,
+            total_pages: Math.ceil(total / pageSize) || 1,
+          },
+        };
+      } catch (err) {
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
+        });
+      }
+    }
+  );
+
   app.patch<{ Params: { id: string }; Body: PatchUserBody }>(
     "/api/v1/admin/users/:id",
     { preHandler: requireAdmin },

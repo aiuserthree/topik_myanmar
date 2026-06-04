@@ -9,6 +9,7 @@ import { adminNoticesRoutes } from "./notices.js";
 import { adminFaqRoutes } from "./faq.js";
 import { adminTermsRoutes } from "./terms.js";
 import { adminUsersRoutes } from "./users.js";
+import { adminAuditLogsRoutes } from "./audit-logs.js";
 
 export async function adminRoutes(app: FastifyInstance) {
   await app.register(adminApplicationsRoutes);
@@ -21,4 +22,5 @@ export async function adminRoutes(app: FastifyInstance) {
   await app.register(adminTermsRoutes);
   await app.register(adminUsersRoutes);
   await app.register(adminAdminUsersRoutes);
+  await app.register(adminAuditLogsRoutes);
 }

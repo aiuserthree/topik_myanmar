@@ -403,6 +403,31 @@
   function publishTerm(id) { return send("POST", "/api/v1/admin/terms/" + encodeURIComponent(id) + "/publish", {}); }
   function deleteTerm(id) { return send("DELETE", "/api/v1/admin/terms/" + encodeURIComponent(id)); }
 
+  // --- 회원(members/users) 관리 -------------------------------------------
+  function listMembers(params) { return apiFetch("/api/v1/admin/users" + buildQuery(params)); }
+  function updateMember(id, body) { return send("PATCH", "/api/v1/admin/users/" + encodeURIComponent(id), body); }
+  function resetMemberPassword(id) { return send("POST", "/api/v1/admin/users/" + encodeURIComponent(id) + "/reset-password", {}); }
+
+  // --- 관리자 계정(admin-users) 관리 --------------------------------------
+  function listAdminUsers(params) { return apiFetch("/api/v1/admin/admin-users" + buildQuery(params)); }
+  function createAdminUser(body) { return send("POST", "/api/v1/admin/admin-users", body); }
+  function updateAdminUser(id, body) { return send("PATCH", "/api/v1/admin/admin-users/" + encodeURIComponent(id), body); }
+  function resetAdminPassword(id) { return send("POST", "/api/v1/admin/admin-users/" + encodeURIComponent(id) + "/reset-password", {}); }
+
+  // --- 문의/환불·정정(board_posts) 관리 -----------------------------------
+  function listBoardPosts(params) { return apiFetch("/api/v1/admin/board/posts" + buildQuery(params)); }
+  function getBoardPost(id) { return apiFetch("/api/v1/admin/board/posts/" + encodeURIComponent(id)); }
+  function replyBoardPost(postId, payload) {
+    return send("POST", "/api/v1/admin/board/posts/" + encodeURIComponent(postId) + "/reply", payload || {});
+  }
+  function addBoardComment(postId, body) {
+    return send("POST", "/api/v1/admin/board/posts/" + encodeURIComponent(postId) + "/comments", body || {});
+  }
+  function deleteBoardPost(id) { return send("DELETE", "/api/v1/admin/board/posts/" + encodeURIComponent(id)); }
+
+  // --- 처리 이력(admin_audit_logs) 조회 -----------------------------------
+  function listAuditLogs(params) { return apiFetch("/api/v1/admin/audit-logs" + buildQuery(params)); }
+
   function parseError(res) {
     if (!res) return "요청을 처리할 수 없습니다.";
     var b = res.body || {};
@@ -472,6 +497,19 @@
     updateTerm: updateTerm,
     publishTerm: publishTerm,
     deleteTerm: deleteTerm,
+    listMembers: listMembers,
+    updateMember: updateMember,
+    resetMemberPassword: resetMemberPassword,
+    listAdminUsers: listAdminUsers,
+    createAdminUser: createAdminUser,
+    updateAdminUser: updateAdminUser,
+    resetAdminPassword: resetAdminPassword,
+    listBoardPosts: listBoardPosts,
+    getBoardPost: getBoardPost,
+    replyBoardPost: replyBoardPost,
+    addBoardComment: addBoardComment,
+    deleteBoardPost: deleteBoardPost,
+    listAuditLogs: listAuditLogs,
     parseError: parseError,
     canUseApi: function () {
       return USE_API && !!getAccessToken();

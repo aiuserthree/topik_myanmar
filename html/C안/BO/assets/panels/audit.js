@@ -5,7 +5,7 @@
 const AUDIT_TYPES = ['접수자','사진','회차','시험장','공지','FAQ','환불·정정','문의','회원','약관','관리자계정'];
 const AUDIT_ACTIONS_F = ['생성','수정','삭제','승인','반려','수납','수납취소','게시','폐지','정지','탈퇴','비밀번호초기화','로그인','로그아웃','수험번호부여','취소'];
 
-function AuditPanel() {
+function AuditPanelInner() {
   const state = useStore();
   const me = state.me;
   const myRole = me?.role || 'super';
@@ -42,7 +42,6 @@ function AuditPanel() {
   const rows = filtered.slice((page-1)*PER, page*PER);
 
   const exportCSV = () => {
-    DataStore.addAudit({ type: '관리자계정', targetId: '—', action: '게시', memo: `처리 이력 CSV 내보내기(${filtered.length}건)` });
     toastOk(`${filtered.length}건의 처리 이력 CSV를 생성했습니다.`);
   };
 
@@ -58,8 +57,6 @@ function AuditPanel() {
         )
       )
     ),
-
-    h(DemoNote, { message: '통합 처리 이력 조회 API가 아직 없어 샘플 데이터로 표시됩니다. (접수 건별 처리 이력은 접수자 상세에서 실데이터로 제공됩니다.)' }),
 
     h('div', { className: 'filterbar' },
       h('div', { className: 'chips' },
@@ -165,6 +162,11 @@ function AuditDetailLP({ id, onClose }) {
       '※ 처리 이력은 append-only — 수정/삭제 불가. 최소 3년 보존 권장.'
     )
   );
+}
+
+// 데이터 로딩 게이트 — API에서 처리 이력(+관리자 목록)을 받아온 뒤 내부 패널 렌더
+function AuditPanel() {
+  return h(ResourceGate, { loader: () => BoData.loadAudit(), deps: [], inner: AuditPanelInner });
 }
 
 window.AuditPanel = AuditPanel;

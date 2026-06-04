@@ -51,7 +51,11 @@ export const config = {
   // Pluggable mailer. provider = console (dev, logs only) | smtp | resend
   mail: {
     provider: (process.env.MAIL_PROVIDER ?? "console").toLowerCase(),
-    from: process.env.MAIL_FROM ?? "TOPIK Myanmar <no-reply@topik-mm.local>",
+    // Default sender uses the Resend-verified domain (chodrum.com) so a missing
+    // MAIL_FROM env var still produces a deliverable From: rather than a domain
+    // Resend would reject. Production should still set MAIL_FROM explicitly
+    // (and swap to the customer's final domain once that is verified).
+    from: process.env.MAIL_FROM ?? "TOPIK Myanmar <no-reply@chodrum.com>",
     supportEmail: process.env.MAIL_SUPPORT ?? "topik.myanmar@koica.go.kr",
     /** Operator inbox for board_admin_new_post and similar BO alerts */
     adminNotifyTo: process.env.MAIL_ADMIN_TO ?? "",

@@ -23,7 +23,7 @@ function TriCheck({ checked, indeterminate, disabled, onChange, label }) {
   );
 }
 
-function PermissionsPanel() {
+function PermissionsPanelInner() {
   const state = useStore();
   const myRole = state.me?.role || 'super';
   const canManage = myRole === 'super';
@@ -114,7 +114,11 @@ function PermissionsPanel() {
       )
     ),
 
-    h(DemoNote, { message: '권한 매트릭스 저장 API가 아직 없어 화면 내 편집만 가능한 데모입니다. 실제 권한은 백엔드 역할(super/standard/readonly)로 적용됩니다.' }),
+    h('div', { style: { padding: 12, background: 'var(--st-applied-bg)', color: 'var(--st-applied)', borderRadius: 8, marginBottom: 14, fontSize: 12.5, lineHeight: 1.6 } },
+      'ⓘ 아래 등급별 인원수는 ', h('b', null, '실제 관리자 계정'), ' 기준입니다. 권한 매트릭스는 운영 가이드용 편집 도구이며, 실제 접근 제어는 백엔드 역할(super/standard/readonly)로 서버에서 강제됩니다. 계정별 등급 변경은 ',
+      h('a', { href: '#admins', style: { color: 'var(--primary)' } }, '관리자 계정 관리'),
+      '에서 적용하세요.'
+    ),
 
     !canManage && h('div', { style: { padding: 14, background: 'var(--st-photo-bg)', color: 'var(--st-photo)', borderRadius: 8, marginBottom: 14, fontSize: 13 } },
       'ⓘ 최고관리자(super)만 권한을 편집할 수 있습니다. 현재 권한: ', h('b', null, DataStore.roleLabel(myRole)), ' (조회 전용)'
@@ -222,6 +226,11 @@ function PermissionsPanel() {
         @media (max-width: 700px) { .perm-row { grid-template-columns: 1fr !important; } }
       `)
   );
+}
+
+// 데이터 로딩 게이트 — 실제 관리자 계정(등급별 인원수)을 받아온 뒤 내부 패널 렌더
+function PermissionsPanel() {
+  return h(ResourceGate, { loader: () => BoData.loadAdmins(), deps: [], inner: PermissionsPanelInner });
 }
 
 window.PermissionsPanel = PermissionsPanel;

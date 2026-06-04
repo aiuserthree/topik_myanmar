@@ -4,7 +4,7 @@
    - 고객사 수정 0526: 탈퇴 시 진행 중 접수 자동 취소 안내
    ============================================================ */
 
-function MembersPanel() {
+function MembersPanelInner() {
   const state = useStore();
   const [stF, setStF] = useState('all');
   const [natF, setNatF] = useState('all');
@@ -43,7 +43,6 @@ function MembersPanel() {
   }), [state.members]);
 
   const exportCSV = () => {
-    DataStore.addAudit({ type: '회원', targetId: '—', action: '게시', memo: `회원 CSV 내보내기(${filtered.length}건) · 개인정보 마스킹 적용` });
     toastOk(`${filtered.length}건의 회원 CSV가 생성되었습니다.`);
   };
 
@@ -57,8 +56,6 @@ function MembersPanel() {
         h('button', { className: 'btn btn-secondary', onClick: exportCSV }, h(I.Download, { style: { width: 14, height: 14 } }), ' CSV 다운로드')
       )
     ),
-
-    h(DemoNote, { message: '회원 목록 조회 API가 아직 없어 샘플 데이터로 표시됩니다. 표시·수정·정지/탈퇴/PW초기화는 데모이며 실제 회원 데이터에 반영되지 않습니다.' }),
 
     h('div', { className: 'filterbar' },
       h('div', { className: 'chips' },
@@ -105,11 +102,10 @@ function MembersPanel() {
                   h('button', { className: 'ibtn', onClick: () => setResetId(m.id), disabled: m.status === 'withdrawn' }, 'PW'),
                   m.status === 'active' && h('button', { className: 'ibtn danger', onClick: () => setSuspendId(m.id) }, '정지'),
                   m.status === 'inactive' && h('button', { className: 'ibtn', onClick: () => {
-                    const x = state.members.find(y => y.id === m.id);
-                    x.status = 'active';
-                    DataStore.addAudit({ type: '회원', targetId: m.id, action: '수정', before: { status: 'inactive' }, after: { status: 'active' }, memo: '정지 해제' });
-                    DataStore.notify();
-                    toastOk('정지가 해제되었습니다.');
+                    TopikBoApi.updateMember(m.apiId, { status: 'active' }).then(res => {
+                      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+                      BoData.reload('members').then(() => toastOk('정지가 해제되었습니다.'));
+                    });
                   } }, '해제'),
                   m.status !== 'withdrawn' && h('button', { className: 'ibtn danger', onClick: () => setWithdrawId(m.id) }, '탈퇴')
                 )
@@ -200,12 +196,17 @@ function MemberEditLP({ id, onClose }) {
   const set = (k, v) => setF(s => ({ ...s, [k]: v }));
   const save = () => {
     if (!reason.trim()) { toastErr('수정 사유를 입력해주세요.'); return; }
-    const before = { ...m };
-    Object.assign(m, f);
-    DataStore.addAudit({ type: '회원', targetId: id, action: '수정', before, after: { ...m }, memo: reason });
-    DataStore.notify();
-    toastOk('회원 정보가 수정되었습니다. 회원에게 이메일 통지가 발송됩니다.');
-    onClose();
+    const payload = {
+      name_ko: f.nameKo, name_en: f.nameEn, phone: f.tel,
+      nationality: f.nation, marketing_opt_in: !!f.marketing, notify_member: true,
+    };
+    TopikBoApi.updateMember(m.apiId, payload).then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      BoData.reload('members').then(() => {
+        toastOk('회원 정보가 수정되었습니다. 회원에게 이메일 통지가 발송됩니다.');
+        onClose();
+      });
+    });
   };
   return h(LP, {
     open: true, title: `회원 정보 수정 — ${m.nameKo}`, sub: '신원 식별 정보 직접 수정 · 사유 필수 · 처리 이력 자동 기록', onClose: onClose,
@@ -243,13 +244,13 @@ function SuspendModal({ id, onClose }) {
   const final = reason === '기타' ? other : reason;
   const submit = () => {
     if (!final.trim()) { toastErr('사유를 입력해주세요.'); return; }
-    const before = { status: m.status };
-    m.status = 'inactive';
-    m.reason = final;
-    DataStore.addAudit({ type: '회원', targetId: id, action: '정지', before, after: { status: 'inactive' }, memo: final });
-    DataStore.notify();
-    toastOk('회원이 정지되었습니다. 활성 세션은 즉시 무효화됩니다.');
-    onClose();
+    TopikBoApi.updateMember(m.apiId, { status: 'suspended', notify_member: false }).then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      BoData.reload('members').then(() => {
+        toastOk('회원이 정지되었습니다. 활성 세션은 즉시 무효화됩니다.');
+        onClose();
+      });
+    });
   };
   return h(Modal, {
     open: true, onClose: onClose, title: `회원 정지 — ${m.nameKo}`, danger: true,
@@ -276,19 +277,13 @@ function WithdrawModal({ id, onClose }) {
   const myApplies = state.applicants.filter(a => a.email === m.email && !['cancel','rejected'].includes(a.status));
   const submit = () => {
     if (!reason.trim()) { toastErr('사유를 입력해주세요.'); return; }
-    const before = { status: m.status };
-    m.status = 'withdrawn';
-    m.reason = reason;
-    // 진행 중 접수 자동 취소 (고객사 수정 0526)
-    myApplies.forEach(a => {
-      const ab = { status: a.status };
-      a.status = 'cancel';
-      DataStore.addAudit({ type: '접수자', targetId: a.id, action: '취소', before: ab, after: { status: 'cancel' }, memo: `회원 탈퇴(${id})에 따른 자동 취소` });
+    TopikBoApi.updateMember(m.apiId, { status: 'withdrawn', notify_member: false }).then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      BoData.reload('members').then(() => {
+        toastOk('회원이 탈퇴 처리되었습니다.');
+        onClose();
+      });
     });
-    DataStore.addAudit({ type: '회원', targetId: id, action: '탈퇴', before, after: { status: 'withdrawn' }, memo: `${reason} · 진행 중 접수 ${myApplies.length}건 자동 취소` });
-    DataStore.notify();
-    toastOk(`회원이 탈퇴 처리되었습니다. 진행 중 접수 ${myApplies.length}건이 자동 취소되었습니다.`);
-    onClose();
   };
   return h(Modal, {
     open: true, onClose: onClose, title: `회원 탈퇴 — ${m.nameKo}`, danger: true,
@@ -321,12 +316,14 @@ function PwResetLP({ id, onClose }) {
   const state = useStore();
   const m = state.members.find(x => x.id === id);
   const [issued, setIssued] = useState(false);
-  const tempPw = useMemo(() => 'tpkm' + Math.random().toString(36).slice(2, 8), [id]);
+  const [tempPw, setTempPw] = useState('');
   const issue = () => {
-    DataStore.addAudit({ type: '회원', targetId: id, action: '비밀번호초기화', memo: `임시 비밀번호 발급 · 이메일 전송(${m.email}) · 첫 로그인 시 변경 강제` });
-    DataStore.notify();
-    setIssued(true);
-    toastOk('임시 비밀번호가 이메일로 전송되었습니다.');
+    TopikBoApi.resetMemberPassword(m.apiId).then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      setTempPw((res.body && res.body.temporary_password) || '');
+      setIssued(true);
+      toastOk('임시 비밀번호가 이메일로 전송되었습니다.');
+    });
   };
   return h(LP, {
     open: true, size: 'sm', title: `비밀번호 초기화 — ${m.nameKo}`, sub: m.email, onClose: onClose,
@@ -338,11 +335,20 @@ function PwResetLP({ id, onClose }) {
     h('div', { style: { fontSize: 13, color: 'var(--text-2)', marginBottom: 12 } },
       '임시 비밀번호는 회원 이메일로 발송됩니다. 다음 로그인 시 변경이 강제됩니다.'
     ),
-    issued && h('div', { className: 'kv', style: { background: 'var(--st-approved-bg)', borderColor: '#c8e5cd' } },
+    issued && tempPw && h('div', { className: 'kv', style: { background: 'var(--st-approved-bg)', borderColor: '#c8e5cd' } },
       h('span', { className: 'k' }, '발급된 임시 비밀번호 (1회 노출)'),
       h('span', { className: 'v', style: { fontFamily: 'Inter, monospace', color: 'var(--success)', letterSpacing: '0.04em' } }, tempPw)
+    ),
+    issued && !tempPw && h('div', { className: 'kv', style: { background: 'var(--st-approved-bg)', borderColor: '#c8e5cd' } },
+      h('span', { className: 'k' }, '발급 완료'),
+      h('span', { className: 'v' }, '임시 비밀번호가 회원 이메일로 발송되었습니다.')
     )
   );
+}
+
+// 데이터 로딩 게이트 — API에서 회원 목록을 받아온 뒤 내부 패널을 렌더
+function MembersPanel() {
+  return h(ResourceGate, { loader: () => BoData.loadMembers(), deps: [], inner: MembersPanelInner });
 }
 
 window.MembersPanel = MembersPanel;

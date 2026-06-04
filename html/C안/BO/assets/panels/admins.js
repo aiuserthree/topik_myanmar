@@ -4,7 +4,7 @@
    - 권한 매트릭스(TPKM_BO_6_5)는 별도 메뉴(panels/permissions.jsx)
    ============================================================ */
 
-function AdminsPanel() {
+function AdminsPanelInner() {
   const state = useStore();
   const myRole = state.me?.role || 'super';
   const canManage = myRole === 'super';
@@ -16,8 +16,6 @@ function AdminsPanel() {
         h('div', { className: 'sub' }, '여러 명이 별도 아이디로 동시 접속 · 최고관리자만 관리 · 모든 변경은 처리 이력에 기록됩니다.')
       )
     ),
-
-    h(DemoNote, { message: '관리자 계정 목록 조회 API가 아직 없어 샘플 데이터로 표시됩니다. 계정 등록·수정·비활성화는 데모입니다. (비밀번호 초기화 API는 별도 존재)' }),
 
     !canManage && h('div', { style: { padding: 14, background: 'var(--st-photo-bg)', color: 'var(--st-photo)', borderRadius: 8, marginBottom: 14, fontSize: 13 } },
       'ⓘ 최고관리자(super)만 계정을 관리할 수 있습니다. 현재 권한: ', h('b', null, DataStore.roleLabel(myRole)), ' (조회 전용)'
@@ -36,45 +34,55 @@ function AdminAccounts({ canManage }) {
   const list = state.admins.slice().sort((a,b) => a.id.localeCompare(b.id));
 
   const save = (data) => {
-    if (data.id && state.admins.find(a => a.id === data.id && a !== state.admins.find(x => x.id === data.id) && data._isNew)) {
-      toastErr('이미 사용 중인 아이디입니다.'); return;
-    }
     if (data._isNew) {
-      // unique id
-      if (state.admins.some(a => a.id === data.id)) { toastErr('이미 사용 중인 아이디입니다.'); return; }
-      const nw = { id: data.id, name: data.name, email: data.email, role: data.role, status: 'active', lastLogin: '—', lastIp: '—', note: data.note || '' };
-      state.admins.push(nw);
-      DataStore.addAudit({ type: '관리자계정', targetId: nw.id, action: '생성', after: { ...nw }, memo: '계정 신규 등록 · 초기 비밀번호 첫 로그인 시 변경 강제' });
-      toastOk('관리자 계정이 등록되었습니다. 초기 비밀번호가 이메일로 전송됩니다.');
+      TopikBoApi.createAdminUser({
+        name: data.name, email: data.email, password: data.pw, role: data.role,
+      }).then(res => {
+        if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+        BoData.reload('admins').then(() => {
+          setEdit(null);
+          toastOk('관리자 계정이 등록되었습니다. 초기 비밀번호로 로그인 후 변경하세요.');
+        });
+      });
     } else {
       const a = state.admins.find(x => x.id === data.id);
-      const before = { ...a };
-      Object.assign(a, data);
-      DataStore.addAudit({ type: '관리자계정', targetId: a.id, action: '수정', before, after: { ...a }, memo: '계정 수정' });
-      toastOk('관리자 계정이 수정되었습니다.');
+      if (!a) { toastErr('계정을 찾을 수 없습니다.'); return; }
+      TopikBoApi.updateAdminUser(a.apiId, {
+        name: data.name, email: data.email, role: data.role,
+      }).then(res => {
+        if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+        BoData.reload('admins').then(() => {
+          setEdit(null);
+          toastOk('관리자 계정이 수정되었습니다.');
+        });
+      });
     }
-    DataStore.notify();
-    setEdit(null);
   };
 
   const doReset = () => {
     const a = state.admins.find(x => x.id === resetId);
-    const temp = 'tpkm' + Math.random().toString(36).slice(2,8);
-    DataStore.addAudit({ type: '관리자계정', targetId: a.id, action: '비밀번호초기화', memo: `임시 비밀번호 발급 · 이메일 ${a.email} · 첫 로그인 시 변경 강제` });
-    DataStore.notify();
-    setResetId(null);
-    toast(`임시 비밀번호 ${temp} · 이메일 전송 완료`, { type: 'success', title: '비밀번호 초기화', duration: 5000 });
+    if (!a) { setResetId(null); return; }
+    TopikBoApi.resetAdminPassword(a.apiId).then(res => {
+      setResetId(null);
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      const temp = res.body && res.body.temporary_password;
+      if (temp) toast(`임시 비밀번호 ${temp} · 이메일 전송 완료`, { type: 'success', title: '비밀번호 초기화', duration: 6000 });
+      else toast('임시 비밀번호를 이메일로 전송했습니다.', { type: 'success', title: '비밀번호 초기화', duration: 5000 });
+    });
   };
 
-  const doToggle = (reason) => {
+  const doToggle = () => {
     const a = state.admins.find(x => x.id === toggleId);
+    if (!a) { setToggleId(null); return; }
     if (a.id === state.me?.id) { toastErr('본인 계정은 비활성화할 수 없습니다.'); setToggleId(null); return; }
-    const before = { status: a.status };
-    a.status = a.status === 'active' ? 'inactive' : 'active';
-    DataStore.addAudit({ type: '관리자계정', targetId: a.id, action: '수정', before, after: { status: a.status }, memo: `${a.status === 'inactive' ? '비활성화' : '활성화'} · 사유: ${reason}` });
-    DataStore.notify();
-    setToggleId(null);
-    toastOk(`계정이 ${a.status === 'active' ? '활성화' : '비활성화'}되었습니다. 활성 세션은 즉시 무효화됩니다.`);
+    const next = a.status !== 'active';
+    TopikBoApi.updateAdminUser(a.apiId, { is_active: next }).then(res => {
+      setToggleId(null);
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      BoData.reload('admins').then(() =>
+        toastOk(`계정이 ${next ? '활성화' : '비활성화'}되었습니다. 활성 세션은 즉시 무효화됩니다.`)
+      );
+    });
   };
 
   return h(Fragment, null,
@@ -149,7 +157,8 @@ function AdminEditLP({ edit, onClose, onSave }) {
     _isNew: true,
   });
   const set = (k, v) => setF(s => ({ ...s, [k]: v }));
-  const valid = /^[A-Za-z0-9]{4,30}$/.test(f.id) && f.name && /^.+@.+\..+$/.test(f.email) && (!f._isNew || (f.pw && f.pw.length >= 8));
+  // 로그인 식별자는 이메일. (별도 아이디 컬럼 없음 — 백엔드는 이메일 기준)
+  const valid = f.name && /^.+@.+\..+$/.test(f.email) && (!f._isNew || (f.pw && f.pw.length >= 8));
   return h(LP, {
     open: true, size: 'sm', title: a0 ? `계정 수정 — ${a0.name}` : '관리자 계정 등록', onClose: onClose,
     footer: h(Fragment, null,
@@ -158,8 +167,8 @@ function AdminEditLP({ edit, onClose, onSave }) {
     )
   },
     h(FieldSet, { legend: '계정', cols: 2 },
-      h(FormRow, { label: '아이디', required: true, hint: '4~30자 영숫자, unique' },
-        h('input', { className: 'input', value: f.id, disabled: !!a0, onChange: e => set('id', e.target.value), maxLength: 30 })
+      a0 && h(FormRow, { label: '아이디(로그인)', hint: '로그인은 이메일로 합니다' },
+        h('input', { className: 'input', value: a0.id, disabled: true })
       ),
       h(FormRow, { label: '이름', required: true },
         h('input', { className: 'input', value: f.name, onChange: e => set('name', e.target.value) })
@@ -182,6 +191,11 @@ function AdminEditLP({ edit, onClose, onSave }) {
       )
     )
   );
+}
+
+// 데이터 로딩 게이트 — API에서 관리자 계정 목록을 받아온 뒤 내부 패널을 렌더
+function AdminsPanel() {
+  return h(ResourceGate, { loader: () => BoData.loadAdmins(), deps: [], inner: AdminsPanelInner });
 }
 
 window.AdminsPanel = AdminsPanel;

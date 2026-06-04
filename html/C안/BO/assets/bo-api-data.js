@@ -149,6 +149,120 @@
     };
   }
 
+  // ---- 6대 관리 패널 어댑터 (회원/관리자/문의/환불/처리이력) -------------
+  var ADMIN_ROLE_C2UI = { super: "super", standard: "general", readonly: "viewer" };
+  var REFUND_ST_C2L = {
+    received: "접수", in_review: "검토중", completed: "처리완료",
+    rejected: "반려", answered: "처리완료", awaiting_reply: "접수",
+  };
+  // admin_audit_logs.target_table → 처리 이력 패널의 한국어 유형
+  var AUDIT_TYPE_C2L = {
+    users: "회원", admin_users: "관리자계정", notices: "공지", faq_items: "FAQ",
+    exam_rounds: "회차", exam_venues: "시험장", applications: "접수자",
+    board_posts: "문의", terms: "약관", file_attachments: "공지",
+  };
+
+  function memberStatus(s) { return s === "suspended" ? "inactive" : String(s || ""); }
+
+  function mapMember(u) {
+    return {
+      id: String(u.id), apiId: u.id, no: u.id,
+      nameKo: u.name_ko || "", nameEn: u.name_en || "",
+      email: u.email || "", tel: u.phone || "",
+      nation: u.nationality || "",
+      joinedAt: u.created_at_label || dateOnly(u.created_at),
+      lastLogin: u.last_login_label || "—",
+      status: memberStatus(u.status),
+      marketing: !!u.marketing_opt_in,
+      preferredLang: u.preferred_lang || "ko",
+      reason: "",
+    };
+  }
+
+  function mapAdmin(a) {
+    return {
+      id: a.email || String(a.id), apiId: a.id,
+      name: a.name || "", email: a.email || "",
+      role: ADMIN_ROLE_C2UI[a.role] || a.role,
+      lastLogin: a.last_login_label || "—", lastIp: "—",
+      status: a.is_active ? "active" : "inactive",
+      note: "",
+    };
+  }
+
+  function mapInquiry(p) {
+    var done = p.workflow_status === "answered" || p.workflow_status === "completed";
+    return {
+      id: String(p.id), apiId: p.id, no: p.id,
+      cat: p.category || "기타", secret: !!p.is_secret,
+      title: p.title || "", author: p.author_name || p.author_email || "—",
+      createdAt: p.created_at_label || dateOnly(p.created_at),
+      status: done ? "done" : "wait",
+      assignee: p.assignee_name || p.assignee_email || "",
+      workflowStatus: p.workflow_status,
+      body: "", comments: [],
+    };
+  }
+
+  function mapRefund(r) {
+    return {
+      id: String(r.id), apiId: r.id, no: r.id,
+      type: r.category || "환불",
+      title: r.title || "", author: r.author_name || r.author_email || "—",
+      createdAt: r.created_at_label || dateOnly(r.created_at),
+      status: REFUND_ST_C2L[r.workflow_status] || "접수",
+      workflowStatus: r.workflow_status,
+      hasAnswer: !!r.has_reply,
+      assignee: r.assignee_name || r.assignee_email || "",
+      body: "", attachments: [], comments: [],
+    };
+  }
+
+  // ISO → "YYYY-MM-DD HH:MM:SS" (dashes) so the 처리이력 기간 필터 비교가 동작.
+  function tsDash(iso) {
+    var s = String(iso || "");
+    if (!s) return "";
+    return s.replace("T", " ").slice(0, 19);
+  }
+
+  function auditAction(a) {
+    var s = String(a || "");
+    if (/create/.test(s)) return "생성";
+    if (/delete/.test(s)) return "삭제";
+    if (/approve/.test(s)) return "승인";
+    if (/reject/.test(s)) return "반려";
+    if (/payment.*cancel|cancel.*payment/.test(s)) return "수납취소";
+    if (/payment|mark_paid/.test(s)) return "수납";
+    if (/unpublish/.test(s)) return "폐지";
+    if (/publish|marketing/.test(s)) return "게시";
+    if (/reset/.test(s)) return "비밀번호초기화";
+    if (/exam_number/.test(s)) return "수험번호부여";
+    if (/update|status|reply|comment/.test(s)) return "수정";
+    return s || "수정";
+  }
+
+  function mapAuditLog(l) {
+    var before = l.status_before != null ? { status: l.status_before } : null;
+    var after = null;
+    if (l.status_after != null || (l.payload && typeof l.payload === "object")) {
+      after = {};
+      if (l.status_after != null) after.status = l.status_after;
+      if (l.payload && typeof l.payload === "object") Object.assign(after, l.payload);
+    }
+    return {
+      id: String(l.id),
+      ts: tsDash(l.created_at) || l.created_at_label || "",
+      actor: l.actor_email || ("#" + l.admin_user_id),
+      ip: "—",
+      type: AUDIT_TYPE_C2L[l.target_table] || l.target_table || "—",
+      targetId: l.target_id != null ? String(l.target_id) : "—",
+      action: auditAction(l.action),
+      rawAction: l.action,
+      before: before, after: after,
+      memo: l.memo || "",
+    };
+  }
+
   // ---------- raw loaders (fetch + map + write + notify) -------------------
   function loadRoundsRaw() {
     return Api().listExamRounds().then(function (res) {
@@ -243,6 +357,52 @@
     });
   }
 
+  function loadMembersRaw() {
+    return Api().listMembers({ page_size: 200 }).then(function (res) {
+      if (!res.ok) return fail(res);
+      DS().state.members = (res.body.items || []).map(mapMember);
+      DS().notify();
+      return { ok: true };
+    });
+  }
+
+  function loadAdminsRaw() {
+    return Api().listAdminUsers().then(function (res) {
+      if (!res.ok) return fail(res);
+      DS().state.admins = (res.body.items || []).map(mapAdmin);
+      DS().notify();
+      return { ok: true };
+    });
+  }
+
+  function loadInquiriesRaw() {
+    return Api().listBoardPosts({ board_type: "inquiry", page_size: 100 }).then(function (res) {
+      if (!res.ok) return fail(res);
+      DS().state.inquiries = (res.body.items || []).map(mapInquiry);
+      DS().notify();
+      return { ok: true };
+    });
+  }
+
+  function loadRefundsRaw() {
+    return Api().listBoardPosts({ board_type: "refund_correction", page_size: 100 }).then(function (res) {
+      if (!res.ok) return fail(res);
+      DS().state.refunds = (res.body.items || []).map(mapRefund);
+      DS().notify();
+      return { ok: true };
+    });
+  }
+
+  function loadAuditRaw() {
+    return Api().listAuditLogs({ page_size: 200 }).then(function (res) {
+      if (!res.ok) return fail(res);
+      DS().state.audit = (res.body.items || []).map(mapAuditLog);
+      DS().notify();
+      // 처리자 드롭다운/표시를 위해 관리자 목록도 함께 로드(실패는 무시).
+      return loadAdminsRaw().then(function () { return { ok: true }; }, function () { return { ok: true }; });
+    });
+  }
+
   // ---------- once() cache for shared context (rounds / venues) ------------
   var loadedOnce = {};
   function once(key, fn) {
@@ -289,6 +449,11 @@
       var rid = DS().state.activeSessionId;
       return rid ? loadAppsRaw(rid) : Promise.resolve({ ok: true });
     },
+    members: loadMembersRaw,
+    admins: loadAdminsRaw,
+    inquiries: loadInquiriesRaw,
+    refunds: loadRefundsRaw,
+    audit: loadAuditRaw,
   };
   function reload(name) {
     var fn = RELOADERS[name];
@@ -373,10 +538,13 @@
     // adapters (exposed for clarity/testing)
     mapRound: mapRound, mapVenue: mapVenue, mapRegion: mapRegion,
     mapNotice: mapNotice, mapFaq: mapFaq, mapTerm: mapTerm, mapApplication: mapApplication,
+    mapMember: mapMember, mapAdmin: mapAdmin, mapInquiry: mapInquiry,
+    mapRefund: mapRefund, mapAuditLog: mapAuditLog,
     // code/label maps
     NOTICE_L2C: NOTICE_L2C, NOTICE_C2L: NOTICE_C2L,
     FAQ_L2C: FAQ_L2C, FAQ_C2L: FAQ_C2L,
     TERM_L2C: TERM_L2C, TERM_C2L: TERM_C2L,
+    REFUND_ST_C2L: REFUND_ST_C2L,
     // loaders
     loadRoundContext: loadRoundContext,
     loadNotices: loadNoticesRaw,
@@ -384,6 +552,11 @@
     loadTerms: loadTermsRaw,
     loadVenuesPanel: loadVenuesPanel,
     loadSessionsPanel: loadSessionsPanel,
+    loadMembers: loadMembersRaw,
+    loadAdmins: loadAdminsRaw,
+    loadInquiries: loadInquiriesRaw,
+    loadRefunds: loadRefundsRaw,
+    loadAudit: loadAuditRaw,
     ensureVenues: ensureVenues,
     invalidate: invalidate,
     reload: reload,

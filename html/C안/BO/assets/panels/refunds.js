@@ -6,8 +6,9 @@
    ============================================================ */
 
 const REF_STATUS = ['접수','검토중','처리완료','반려'];
+const REF_L2C = { '접수': 'received', '검토중': 'in_review', '처리완료': 'completed', '반려': 'rejected' };
 
-function RefundsPanel() {
+function RefundsPanelInner() {
   const state = useStore();
   const [typeF, setTypeF] = useState('all');
   const [stF, setStF] = useState('all');
@@ -35,11 +36,11 @@ function RefundsPanel() {
 
   const remove = () => {
     const r = state.refunds.find(x => x.id === delId);
-    state.refunds.splice(state.refunds.indexOf(r), 1);
-    DataStore.addAudit({ type: '환불·정정', targetId: r.id, action: '삭제', before: { ...r }, memo: '' });
-    DataStore.notify();
-    setDelId(null);
-    toastOk('삭제되었습니다.');
+    if (!r) { setDelId(null); return; }
+    TopikBoApi.deleteBoardPost(r.apiId).then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      BoData.reload('refunds').then(() => { setDelId(null); toastOk('삭제되었습니다.'); });
+    });
   };
 
   return h(Fragment, null,
@@ -49,8 +50,6 @@ function RefundsPanel() {
         h('div', { className: 'sub' }, '전 게시글이 ', h('b', null, '비밀글'), '입니다. 관리자 열람 시 처리 이력에 자동 기록됩니다.')
       )
     ),
-
-    h(DemoNote, { message: '환불·정보정정 목록 조회 API(관리자)가 아직 없어 샘플 데이터로 표시됩니다. (답변 등록 API는 존재) 표시·답변·삭제는 데모입니다.' }),
 
     h('div', { className: 'filterbar' },
       h('div', { className: 'chips' },
@@ -126,46 +125,56 @@ function RefundsPanel() {
 function RefundDetailLP({ id, onClose }) {
   const state = useStore();
   const r = state.refunds.find(x => x.id === id);
-  const [status, setStatus] = useState(r.status);
+  const [status, setStatus] = useState(r ? r.status : '접수');
   const [reply, setReply] = useState('');
   const [replyPublic, setReplyPublic] = useState(false);
   const [comment, setComment] = useState('');
   const [refundAmount, setRefundAmount] = useState('');
   const [refundMethod, setRefundMethod] = useState('계좌이체');
+  const [detail, setDetail] = useState(null);
+  const [busy, setBusy] = useState(false);
 
-  // 열람 이력 기록 (비밀글)
-  useEffect(() => {
-    DataStore.addAudit({ type: '환불·정정', targetId: id, action: '수정', memo: '비밀글 열람' });
-    DataStore.notify();
-  }, [id]);
+  const loadDetail = () => {
+    if (!r) return Promise.resolve();
+    return TopikBoApi.getBoardPost(r.apiId).then(res => {
+      if (res.ok && res.body) setDetail(res.body);
+    });
+  };
+  useEffect(() => { loadDetail(); }, [id]);
 
   if (!r) return null;
 
+  const body = detail ? (detail.body || '') : '불러오는 중…';
+  const comments = (detail && detail.comments) || [];
+
   const submitReply = () => {
     if (!reply.trim()) { toastErr('답변 내용을 입력해주세요.'); return; }
-    const before = { hasAnswer: r.hasAnswer, status: r.status };
-    r.hasAnswer = true;
-    r.assignee = state.me?.id || 'admin01';
-    r.status = status;
-    r.comments.push({ author: state.me?.id, body: reply, public: replyPublic, ts: new Date().toISOString().slice(0,16).replace('T',' '), kind: 'reply' });
-    DataStore.addAudit({ type: '환불·정정', targetId: id, action: '수정', before, after: { hasAnswer: true, status }, memo: `답변 등록(${replyPublic ? '공개' : '비공개'})` });
-    DataStore.notify();
-    setReply('');
-    toastOk('답변이 등록되었습니다. 작성자에게 이메일이 발송됩니다.');
+    setBusy(true);
+    TopikBoApi.replyBoardPost(r.apiId, {
+      reply: reply, activity_type: '공식 답변',
+      workflow_status: REF_L2C[status] || 'in_review',
+    }).then(res => {
+      setBusy(false);
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      setReply('');
+      BoData.reload('refunds');
+      loadDetail();
+      toastOk('답변이 등록되었습니다. 작성자에게 이메일이 발송됩니다.');
+    });
   };
 
   const addComment = () => {
     if (!comment.trim()) return;
-    r.comments.push({ author: state.me?.id, body: comment, public: false, ts: new Date().toISOString().slice(0,16).replace('T',' '), kind: 'comment' });
-    DataStore.addAudit({ type: '환불·정정', targetId: id, action: '수정', memo: '댓글 등록(비밀글—자동 비공개)' });
-    DataStore.notify();
-    setComment('');
-    toastOk('댓글이 등록되었습니다.');
+    TopikBoApi.addBoardComment(r.apiId, { body: comment, is_secret: true }).then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      setComment('');
+      loadDetail();
+      toastOk('댓글이 등록되었습니다.');
+    });
   };
 
   const applyMemberFix = () => {
-    DataStore.addAudit({ type: '회원', targetId: '—', action: '수정', memo: `정보정정 신청 ${id} 기반 회원 정보 반영(데모)` });
-    toastOk('회원 정보 정정 패널이 열립니다(데모).');
+    toastOk('회원 관리 화면으로 이동합니다.');
     location.hash = 'members';
   };
 
@@ -173,13 +182,17 @@ function RefundDetailLP({ id, onClose }) {
     open: true, size: 'wide', title: r.title, sub: `작성자 ${r.author} · 작성일 ${r.createdAt} · 비밀글`, onClose: onClose,
     footer: h(Fragment, null,
       h('button', { className: 'btn btn-secondary', onClick: onClose }, '닫기'),
-      h('button', { className: 'btn btn-primary', onClick: submitReply, disabled: !reply.trim() }, '답변 등록 · 상태 저장')
+      h('button', { className: 'btn btn-primary', onClick: submitReply, disabled: !reply.trim() || busy }, '답변 등록 · 상태 저장')
     )
   },
     h(FieldSet, { legend: '신청 내용', cols: 1 },
       h(KV, { k: '유형', v: h('span', { className: `pill ${r.type === '환불' ? 'pill-pay' : 'pill-applied'}` }, r.type) }),
-      h(KV, { k: '본문', v: h('pre', { style: { background: 'var(--bg-2)', padding: 10, borderRadius: 6, fontSize: 13, whiteSpace: 'pre-wrap', fontFamily: 'inherit', color: 'var(--text)' } }, r.body) }),
-      h(KV, { k: '첨부', v: r.attachments.map(a => h('span', { key: a, className: 'tag', style: { marginRight: 6 } }, '📎 ', a)) })
+      h(KV, { k: '본문', v: h('pre', { style: { background: 'var(--bg-2)', padding: 10, borderRadius: 6, fontSize: 13, whiteSpace: 'pre-wrap', fontFamily: 'inherit', color: 'var(--text)' } }, body) })
+    ),
+
+    detail && detail.admin_reply && h(FieldSet, { legend: '등록된 답변', cols: 1 },
+      h(KV, { k: '담당자', v: detail.assignee_name || detail.assignee_email || '—' }),
+      h(KV, { k: '답변', v: h('pre', { style: { background: 'var(--st-approved-bg)', padding: 10, borderRadius: 6, fontSize: 13, whiteSpace: 'pre-wrap', fontFamily: 'inherit', color: 'var(--text)' } }, detail.admin_reply) })
     ),
 
     h(FieldSet, { legend: '처리', cols: 2 },
@@ -218,16 +231,16 @@ function RefundDetailLP({ id, onClose }) {
       )
     ),
 
-    h(FieldSet, { legend: `댓글/대댓글 (${r.comments.length})`, cols: 1 },
+    h(FieldSet, { legend: `댓글/대댓글 (${comments.length})`, cols: 1 },
       h('div', { style: { display: 'flex', flexDirection: 'column', gap: 10 } },
-        r.comments.map((c, idx) => h('div', { key: idx, style: { padding: 10, background: 'var(--bg-2)', borderRadius: 6, fontSize: 13 } },
+        comments.map((c, idx) => h('div', { key: c.id || idx, style: { padding: 10, background: 'var(--bg-2)', borderRadius: 6, fontSize: 13 } },
           h('div', { style: { display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-3)', marginBottom: 4 } },
-            h('span', null, h('b', null, c.author), ' · ', h('span', { className: 'code-id' }, c.kind === 'reply' ? '답변' : '댓글'), ' · ', c.public ? '공개' : '비공개'),
-            h('span', { className: 'code-id' }, c.ts)
+            h('span', null, h('b', null, c.author), ' · ', h('span', { className: 'code-id' }, c.is_admin ? '관리자' : '회원'), ' · ', c.is_secret ? '비공개' : '공개'),
+            h('span', { className: 'code-id' }, c.created_at_label)
           ),
           h('div', null, c.body)
         )),
-        !r.comments.length && h('div', { className: 'empty', style: { padding: '20px 0' } }, '등록된 댓글이 없습니다'),
+        !comments.length && h('div', { className: 'empty', style: { padding: '20px 0' } }, '등록된 댓글이 없습니다'),
         h('div', { style: { display: 'flex', gap: 8 } },
           h('input', { className: 'input', placeholder: '댓글 추가(비밀글—자동 비공개)', value: comment, onChange: e => setComment(e.target.value) }),
           h('button', { className: 'btn btn-secondary', onClick: addComment, disabled: !comment.trim() }, '등록')
@@ -235,6 +248,11 @@ function RefundDetailLP({ id, onClose }) {
       )
     )
   );
+}
+
+// 데이터 로딩 게이트 — API에서 환불·정정 목록을 받아온 뒤 내부 패널을 렌더
+function RefundsPanel() {
+  return h(ResourceGate, { loader: () => BoData.loadRefunds(), deps: [], inner: RefundsPanelInner });
 }
 
 window.RefundsPanel = RefundsPanel;
