@@ -86,6 +86,15 @@ function App() {
     if (window.TOPIKBoCore) TOPIKBoCore.startSessionHeartbeat(me.id, me.name);
   }, []);
 
+  // Sidebar badges (환불·정보정정 / 문의) need refunds/inquiries in store before panels open.
+  useEffect(() => {
+    if (!window.TopikBoApi || !TopikBoApi.getAccessToken() || !window.BoData) return;
+    Promise.all([
+      BoData.loadRefunds().catch(() => null),
+      BoData.loadInquiries().catch(() => null),
+    ]);
+  }, []);
+
   useEffect(() => {
     const fn = () => {
       const raw = location.hash.replace('#', '') || 'dashboard';

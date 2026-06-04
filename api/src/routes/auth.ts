@@ -75,6 +75,10 @@ export async function authRoutes(app: FastifyInstance) {
             return fail();
           }
           recordSuccess(email, clientIp);
+          await pool.query(
+            `UPDATE users SET last_login_at = NOW(), updated_at = NOW() WHERE id = $1`,
+            [user.id]
+          );
           const tokens = signTokens({
             sub: String(user.id),
             email: user.email,

@@ -169,6 +169,11 @@ export async function authGoogleRoutes(app: FastifyInstance) {
         };
       }
 
+      await client.query(
+        `UPDATE users SET last_login_at = NOW(), updated_at = NOW() WHERE id = $1`,
+        [user.id]
+      );
+
       await client.query("COMMIT");
 
       const tokens = signAuthTokens({

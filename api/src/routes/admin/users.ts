@@ -99,7 +99,7 @@ const MEMBER_STATUSES = new Set(["active", "suspended", "withdrawn"]);
 export async function adminUsersRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   // GET /api/v1/admin/users — 회원 목록 (검색·상태·국적 필터 + 페이지네이션)
-  // 마지막 로그인은 user_sessions.last_seen_at 의 최대값에서 유도.
+  // 마지막 로그인은 users.last_login_at (FO 로그인·Google 로그인 시 갱신).
   // -------------------------------------------------------------------------
   app.get<{
     Querystring: {
@@ -149,9 +149,7 @@ export async function adminUsersRoutes(app: FastifyInstance) {
         const listRes = await pool.query(
           `SELECT u.id, u.name_ko, u.name_en, u.email, u.phone, u.nationality,
                   u.status, u.marketing_opt_in, u.preferred_lang, u.created_at,
-                  u.withdrawn_at,
-                  (SELECT MAX(s.last_seen_at) FROM user_sessions s WHERE s.user_id = u.id)
-                    AS last_login_at
+                  u.withdrawn_at, u.last_login_at
            FROM users u
            ${where}
            ORDER BY u.created_at DESC, u.id DESC
