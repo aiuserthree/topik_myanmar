@@ -232,6 +232,39 @@
     });
   }
 
+  var LOCKED_ALERT_MSG = '비밀글입니다. 작성자만 열람할 수 있습니다.';
+
+  function isPostLocked(p) {
+    if (!p) return false;
+    return (p.locked != null) ? !!p.locked : !!p.is_secret_to_viewer;
+  }
+
+  function getDeepLinkPostId() {
+    try {
+      var id = new URLSearchParams(location.search).get('id');
+      if (id) return String(id);
+      var hash = (location.hash || '').replace(/^#/, '');
+      if (!hash) return null;
+      if (/^\d+$/.test(hash)) return hash;
+      var m = hash.match(/^(?:post-)?(\d+)$/i);
+      return m ? m[1] : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function clearDetailDeepLink() {
+    try {
+      if (history.replaceState) {
+        var u = new URL(location.href);
+        u.searchParams.delete('id');
+        var h = u.hash.replace(/^#/, '');
+        if (h && (/^\d+$/.test(h) || /^(?:post-)?\d+$/i.test(h))) u.hash = '';
+        history.replaceState(null, '', u.pathname + u.search + u.hash);
+      }
+    } catch (e) { /* ignore */ }
+  }
+
   // -------------------------------------------------------------------------
   // 목록 + 상세
   // -------------------------------------------------------------------------
@@ -243,6 +276,26 @@
     var show = opts.show || window.show || function () {};
 
     var state = { page: 1, items: [], pagination: null, filter: null };
+    var deepLinkConsumed = false;
+    var listPaneId = opts.listPaneId || 'listPane';
+
+    function findListItem(id) {
+      var sid = String(id);
+      for (var i = 0; i < state.items.length; i++) {
+        if (String(state.items[i].id) === sid) return state.items[i];
+      }
+      return null;
+    }
+
+    function showListPane() {
+      show(listPaneId);
+    }
+
+    function alertLockedAndStayOnList() {
+      alert(LOCKED_ALERT_MSG);
+      showListPane();
+      clearDetailDeepLink();
+    }
 
     function renderComments(postId) {
       var box = d.comments;
@@ -311,6 +364,10 @@
 
       listBody.querySelectorAll('tr[data-id]').forEach(function (tr) {
         tr.addEventListener('click', function () {
+          if (tr.getAttribute('data-locked') === '1') {
+            alert(LOCKED_ALERT_MSG);
+            return;
+          }
           openDetail(tr.getAttribute('data-id'));
         });
       });
@@ -362,12 +419,22 @@
         state.pagination = (res.body && res.body.pagination) || null;
         renderList();
         renderPager();
+        if (!deepLinkConsumed) {
+          deepLinkConsumed = true;
+          var deepId = getDeepLinkPostId();
+          if (deepId) openDetail(deepId);
+        }
       }).catch(function () {
         listBody.innerHTML = emptyRow('네트워크 오류입니다.');
       });
     }
 
     function openDetail(id) {
+      var cached = findListItem(id);
+      if (cached && isPostLocked(cached)) {
+        alertLockedAndStayOnList();
+        return;
+      }
       show(opts.detailPaneId || 'detailPane');
       if (d.title) d.title.textContent = '불러오는 중…';
       if (d.body) d.body.innerHTML = '<p style="color:var(--text-3);">로딩 중입니다.</p>';
@@ -384,26 +451,8 @@
           return;
         }
         var p = res.body;
-        // 잠금 스텁: 본문/댓글 없이 "비밀글입니다" 안내만 표시.
         if (p.locked) {
-          if (d.title) d.title.textContent = p.title || '비밀글';
-          if (d.badge) { d.badge.textContent = ''; d.badge.className = 'badge badge-outline'; }
-          if (d.status) { d.status.textContent = ''; d.status.className = 'status'; }
-          if (d.meta) {
-            d.meta.innerHTML =
-              '<span>' + esc(p.author_name || '—') + '</span>' +
-              '<span>·</span><span>' + esc(p.date_formatted || '') + '</span>' +
-              '<span>·</span><span>🔒 비밀글</span>';
-          }
-          if (d.body) {
-            d.body.innerHTML =
-              '<div class="secret-lock"><div class="ico-lock">🔒</div>' +
-              '<p>비밀글입니다.</p>' +
-              '<p class="body-sm" style="margin-top:6px;color:var(--text-3);">작성자와 관리자만 열람할 수 있습니다.</p></div>';
-          }
-          if (d.reply) d.reply.style.display = 'none';
-          if (d.comments) d.comments.innerHTML = '';
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          alertLockedAndStayOnList();
           return;
         }
         if (d.title) d.title.textContent = p.title;
