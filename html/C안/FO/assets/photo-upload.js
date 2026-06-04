@@ -2,7 +2,6 @@
 (function () {
   'use strict';
 
-  var MIN_BYTES = 200 * 1024;
   var MAX_BYTES = 2 * 1024 * 1024;
   var ACCEPT = ['image/jpeg', 'image/jpg', 'image/png'];
   var SPEC_MODAL_ID = 'modalPhotoSpec';
@@ -10,7 +9,7 @@
   var SPEC_HTML =
     '<ul class="photo-spec-list">' +
       '<li>여권용 · 정면 촬영 · JPG·PNG 형식</li>' +
-      '<li>3:4 비율 (35×45mm 권장), 200KB ~ 2MB</li>' +
+      '<li>3:4 비율 (35×45mm 권장), 최대 2MB</li>' +
       '<li>6개월 이내 촬영한 컬러 사진 (흑백 불가)</li>' +
       '<li>흰 배경, 표정 자연스럽게, 상반신 정면</li>' +
       '<li>모자·선글라스·앞머리로 얼굴이 가려지지 않음</li>' +
@@ -51,7 +50,6 @@
     if (ACCEPT.indexOf(type) === -1 && !/\.(jpe?g|png)$/i.test(file.name || '')) {
       return 'JPG·PNG 형식만 업로드할 수 있습니다.';
     }
-    if (file.size < MIN_BYTES) return '파일 크기는 200KB 이상이어야 합니다.';
     if (file.size > MAX_BYTES) return '파일 크기는 2MB 이하여야 합니다.';
     return '';
   }
