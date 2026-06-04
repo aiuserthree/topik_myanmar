@@ -7,6 +7,10 @@ import {
   buildEmailDefaults,
   enqueueEmail,
 } from "../lib/email-templates/enqueue-notification.js";
+import {
+  fetchThreadedComments,
+  validateParentComment,
+} from "../lib/board-comments.js";
 
 const BOARD_TYPES = new Set(["refund_correction", "inquiry"]);
 const STATUS_LABEL: Record<string, string> = {
@@ -228,6 +232,126 @@ export async function boardRoutes(app: FastifyInstance) {
           author_name: row.author_name,
           date_formatted: formatDate(row.created_at),
         };
+      } catch (err) {
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
+        });
+      }
+    }
+  );
+
+  // -------------------------------------------------------------------------
+  // GET /api/v1/board/posts/:id/comments — 댓글/대댓글 (작성자 본인만 열람)
+  // -------------------------------------------------------------------------
+  app.get<{ Params: { id: string } }>(
+    "/api/v1/board/posts/:id/comments",
+    { preHandler: requireFoUser },
+    async (req, reply) => {
+      const id = Number(req.params.id);
+      const userId = req.authUser!.id;
+      if (!Number.isFinite(id)) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "잘못된 요청입니다." },
+        });
+      }
+      try {
+        // 공개 상세와 동일한 접근 규칙: 본인 글만 조회 가능 (비밀글 보호 포함).
+        const postRes = await pool.query(
+          `SELECT id FROM board_posts WHERE id = $1 AND user_id = $2 LIMIT 1`,
+          [id, userId]
+        );
+        if (postRes.rows.length === 0) {
+          return reply.status(404).send({
+            error: { code: "NOT_FOUND", message: "게시글을 찾을 수 없습니다." },
+          });
+        }
+        const comments = await fetchThreadedComments(pool, id);
+        return { comments };
+      } catch (err) {
+        app.log.error(err);
+        return reply.status(503).send({
+          error: { code: "INTERNAL_ERROR", message: "database_unavailable" },
+        });
+      }
+    }
+  );
+
+  // -------------------------------------------------------------------------
+  // POST /api/v1/board/posts/:id/comments — 댓글/대댓글 작성 (작성자 본인)
+  // -------------------------------------------------------------------------
+  app.post<{
+    Params: { id: string };
+    Body: { body?: string; parent_comment_id?: number | string | null };
+  }>(
+    "/api/v1/board/posts/:id/comments",
+    { preHandler: requireFoUser },
+    async (req, reply) => {
+      const id = Number(req.params.id);
+      const userId = req.authUser!.id;
+      const text = String(req.body?.body ?? "").trim();
+      const rawParent = req.body?.parent_comment_id;
+      const parentId =
+        rawParent === null || rawParent === undefined || rawParent === ""
+          ? null
+          : Number(rawParent);
+
+      if (!Number.isFinite(id)) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "잘못된 요청입니다." },
+        });
+      }
+      if (!text) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "댓글 내용을 입력해 주세요." },
+        });
+      }
+      if (text.length > 1000) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "댓글은 1000자 이내로 입력해 주세요." },
+        });
+      }
+      if (parentId !== null && !Number.isFinite(parentId)) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "잘못된 요청입니다." },
+        });
+      }
+
+      try {
+        const postRes = await pool.query(
+          `SELECT id, is_secret FROM board_posts WHERE id = $1 AND user_id = $2 LIMIT 1`,
+          [id, userId]
+        );
+        if (postRes.rows.length === 0) {
+          return reply.status(404).send({
+            error: { code: "NOT_FOUND", message: "게시글을 찾을 수 없습니다." },
+          });
+        }
+
+        if (parentId !== null) {
+          const check = await validateParentComment(pool, id, parentId);
+          if (!check.ok) {
+            return reply.status(400).send({
+              error: { code: check.code, message: check.message },
+            });
+          }
+        }
+
+        // 비밀글의 댓글은 자동 비공개 처리(시안 정책).
+        const isSecret = !!postRes.rows[0].is_secret;
+        const ins = await pool.query(
+          `INSERT INTO board_comments
+             (board_post_id, parent_comment_id, author_user_id, body, is_secret)
+           VALUES ($1, $2, $3, $4, $5)
+           RETURNING id, created_at`,
+          [id, parentId, userId, text, isSecret]
+        );
+
+        return reply.status(201).send({
+          id: Number(ins.rows[0].id),
+          parent_comment_id: parentId,
+          created: true,
+        });
       } catch (err) {
         app.log.error(err);
         return reply.status(503).send({

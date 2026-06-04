@@ -432,8 +432,14 @@
   function replyBoardPost(postId, payload) {
     return send("POST", "/api/v1/admin/board/posts/" + encodeURIComponent(postId) + "/reply", payload || {});
   }
-  function addBoardComment(postId, body) {
-    return send("POST", "/api/v1/admin/board/posts/" + encodeURIComponent(postId) + "/comments", body || {});
+  function addBoardComment(postId, payload) {
+    payload = payload || {};
+    return send("POST", "/api/v1/admin/board/posts/" + encodeURIComponent(postId) + "/comments", {
+      body: payload.body || "",
+      is_secret: !!payload.is_secret,
+      parent_comment_id:
+        payload.parent_comment_id != null ? payload.parent_comment_id : null,
+    });
   }
   function deleteBoardPost(id) { return send("DELETE", "/api/v1/admin/board/posts/" + encodeURIComponent(id)); }
 

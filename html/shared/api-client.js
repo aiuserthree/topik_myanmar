@@ -519,6 +519,27 @@
     });
   }
 
+  function getBoardComments(postId) {
+    return apiFetch(
+      "/api/v1/board/posts/" + encodeURIComponent(postId) + "/comments"
+    );
+  }
+
+  function createBoardComment(postId, payload) {
+    payload = payload || {};
+    return apiFetch(
+      "/api/v1/board/posts/" + encodeURIComponent(postId) + "/comments",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          body: payload.body || "",
+          parent_comment_id:
+            payload.parent_comment_id != null ? payload.parent_comment_id : null,
+        }),
+      }
+    );
+  }
+
   function parseError(res) {
     if (!res) return "요청을 처리할 수 없습니다.";
     var b = res.body || {};
@@ -585,6 +606,8 @@
     getBoardPosts: getBoardPosts,
     getBoardPost: getBoardPost,
     createBoardPost: createBoardPost,
+    getBoardComments: getBoardComments,
+    createBoardComment: createBoardComment,
     parseError: parseError,
     canUseApi: canUseApi,
     persistSession: persistSession,

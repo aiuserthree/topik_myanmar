@@ -7,6 +7,10 @@ import {
   buildEmailDefaults,
   enqueueEmail,
 } from "../../lib/email-templates/enqueue-notification.js";
+import {
+  fetchThreadedComments,
+  validateParentComment,
+} from "../../lib/board-comments.js";
 
 const BOARD_NAME: Record<string, string> = {
   refund_correction: "환불·정보정정신청",
@@ -193,16 +197,7 @@ export async function adminBoardRoutes(app: FastifyInstance) {
           });
         }
         const r = rows[0];
-        const commentsRes = await pool.query(
-          `SELECT c.id, c.body, c.is_secret, c.is_deleted, c.created_at,
-                  cu.name_ko AS user_name, ca.email AS admin_email, ca.name AS admin_name
-           FROM board_comments c
-           LEFT JOIN users cu ON cu.id = c.author_user_id
-           LEFT JOIN admin_users ca ON ca.id = c.author_admin_id
-           WHERE c.board_post_id = $1
-           ORDER BY c.created_at ASC, c.id ASC`,
-          [id]
-        );
+        const comments = await fetchThreadedComments(pool, id);
         return {
           id: Number(r.id),
           board_type: r.board_type,
@@ -221,17 +216,7 @@ export async function adminBoardRoutes(app: FastifyInstance) {
           assignee_name: r.assignee_name,
           created_at: r.created_at,
           created_at_label: formatDateTime(r.created_at),
-          comments: commentsRes.rows
-            .filter((c) => !c.is_deleted)
-            .map((c) => ({
-              id: Number(c.id),
-              body: c.body,
-              is_secret: c.is_secret,
-              is_admin: !!c.admin_email,
-              author: c.admin_name || c.admin_email || c.user_name || "—",
-              created_at: c.created_at,
-              created_at_label: formatDateTime(c.created_at),
-            })),
+          comments,
         };
       } catch (err) {
         app.log.error(err);
@@ -245,12 +230,24 @@ export async function adminBoardRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   // POST /api/v1/admin/board/posts/:id/comments — 관리자 댓글/대댓글 등록
   // -------------------------------------------------------------------------
-  app.post<{ Params: { id: string }; Body: { body?: string; is_secret?: boolean } }>(
+  app.post<{
+    Params: { id: string };
+    Body: {
+      body?: string;
+      is_secret?: boolean;
+      parent_comment_id?: number | string | null;
+    };
+  }>(
     "/api/v1/admin/board/posts/:id/comments",
     { preHandler: requireAdmin },
     async (req, reply) => {
       const postId = Number(req.params.id);
       const text = String(req.body?.body ?? "").trim();
+      const rawParent = req.body?.parent_comment_id;
+      const parentId =
+        rawParent === null || rawParent === undefined || rawParent === ""
+          ? null
+          : Number(rawParent);
       if (!Number.isFinite(postId)) {
         return reply.status(400).send({
           error: { code: "VALIDATION_ERROR", message: "잘못된 요청입니다." },
@@ -261,9 +258,19 @@ export async function adminBoardRoutes(app: FastifyInstance) {
           error: { code: "VALIDATION_ERROR", message: "댓글 내용을 입력해 주세요." },
         });
       }
+      if (parentId !== null && !Number.isFinite(parentId)) {
+        return reply.status(400).send({
+          error: { code: "VALIDATION_ERROR", message: "잘못된 요청입니다." },
+        });
+      }
       try {
         const postRes = await pool.query(
-          `SELECT id, is_secret FROM board_posts WHERE id = $1 LIMIT 1`,
+          `SELECT p.id, p.board_type, p.title, p.is_secret, p.user_id,
+                  u.email, u.name_ko, u.preferred_lang
+           FROM board_posts p
+           INNER JOIN users u ON u.id = p.user_id
+           WHERE p.id = $1
+           LIMIT 1`,
           [postId]
         );
         if (postRes.rows.length === 0) {
@@ -271,13 +278,25 @@ export async function adminBoardRoutes(app: FastifyInstance) {
             error: { code: "NOT_FOUND", message: "게시글을 찾을 수 없습니다." },
           });
         }
+        const post = postRes.rows[0];
+
+        if (parentId !== null) {
+          const check = await validateParentComment(pool, postId, parentId);
+          if (!check.ok) {
+            return reply.status(400).send({
+              error: { code: check.code, message: check.message },
+            });
+          }
+        }
+
         // 비밀글 게시글의 댓글은 항상 비공개(비밀) 처리.
-        const isSecret = postRes.rows[0].is_secret ? true : !!req.body?.is_secret;
+        const isSecret = post.is_secret ? true : !!req.body?.is_secret;
         const ins = await pool.query(
-          `INSERT INTO board_comments (board_post_id, author_admin_id, body, is_secret)
-           VALUES ($1, $2, $3, $4)
+          `INSERT INTO board_comments
+             (board_post_id, parent_comment_id, author_admin_id, body, is_secret)
+           VALUES ($1, $2, $3, $4, $5)
            RETURNING id, created_at`,
-          [postId, req.authAdmin!.id, text, isSecret]
+          [postId, parentId, req.authAdmin!.id, text, isSecret]
         );
         await insertAuditLog(pool, {
           adminId: req.authAdmin!.id,
@@ -285,10 +304,31 @@ export async function adminBoardRoutes(app: FastifyInstance) {
           targetId: postId,
           action: "board_comment",
         });
+
+        // 관리자 댓글/대댓글 → 작성자(회원)에게 활동 알림 (기존 board_reply 템플릿 재사용).
+        const locale = String(post.preferred_lang ?? "ko");
+        const boardName = BOARD_NAME[post.board_type] ?? post.board_type;
+        const activityType = parentId !== null ? "대댓글" : "댓글";
+        void enqueueEmail(pool, {
+          templateKey: "board_reply",
+          toEmail: String(post.email),
+          userId: Number(post.user_id),
+          locale,
+          variables: buildEmailDefaults({
+            userName: String(post.name_ko ?? post.email),
+            boardName,
+            postTitle: String(post.title),
+            activityType,
+            postUrl: postDetailUrl(String(post.board_type), postId),
+          }),
+        }).catch((err) => app.log.error(err));
+
         return reply.status(201).send({
           id: Number(ins.rows[0].id),
+          parent_comment_id: parentId,
           created: true,
           is_secret: isSecret,
+          email_queued: true,
         });
       } catch (err) {
         app.log.error(err);

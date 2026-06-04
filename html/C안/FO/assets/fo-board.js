@@ -37,6 +37,133 @@
   }
 
   // -------------------------------------------------------------------------
+  // 댓글/대댓글 (스레드)
+  // -------------------------------------------------------------------------
+  function adminBadge(isAdmin) {
+    return isAdmin
+      ? ' <span class="badge badge-info" style="height:18px; padding:0 6px; font-size:10px;">관리자</span>'
+      : '';
+  }
+
+  function countComments(list) {
+    var n = 0;
+    (list || []).forEach(function (c) {
+      n += 1 + ((c.replies && c.replies.length) || 0);
+    });
+    return n;
+  }
+
+  function commentNodeHtml(c, isReply) {
+    var lock = c.is_secret ? '<span class="lock">🔒</span> ' : '';
+    var head =
+      '<div class="c-head">' + lock +
+        '<span class="author">' + esc(c.author) + '</span>' + adminBadge(c.is_admin) +
+        '<span>·</span><span>' + esc(c.created_at_label || '') + '</span>' +
+      '</div>';
+    var bodyHtml = '<div class="c-body">' + nl2br(c.body) + '</div>';
+    if (isReply) {
+      return '<div class="comment reply" data-id="' + c.id + '">' + head + bodyHtml + '</div>';
+    }
+    var actions =
+      '<div class="c-actions"><a href="javascript:void(0)" data-reply-toggle="' + c.id + '">답글</a></div>';
+    var html = '<div class="comment" data-id="' + c.id + '">' + head + bodyHtml + actions + '</div>';
+    (c.replies || []).forEach(function (r) {
+      html += commentNodeHtml(r, true);
+    });
+    html +=
+      '<div class="reply-form-wrap" data-for="' + c.id + '">' +
+        '<div class="reply-form-inner">' +
+          '<textarea placeholder="답글을 입력하세요"></textarea>' +
+          '<div class="btn-wrap">' +
+            '<button class="btn btn-primary btn-sm" data-reply-submit="' + c.id + '">등록</button>' +
+            '<button class="btn btn-secondary btn-sm" data-reply-cancel="' + c.id + '">취소</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    return html;
+  }
+
+  function buildCommentsHtml(list) {
+    var canWrite = !!(window.TopikApi && TopikApi.isLoggedIn && TopikApi.isLoggedIn());
+    var html =
+      '<h4>댓글 <span style="color:var(--text-3);font-weight:500;">' +
+      countComments(list) + '</span></h4>';
+    if (!list || !list.length) {
+      html += '<p style="color:var(--text-3);font-size:13px;padding:8px 0 4px;">아직 등록된 댓글이 없습니다.</p>';
+    } else {
+      list.forEach(function (c) { html += commentNodeHtml(c, false); });
+    }
+    if (canWrite) {
+      html +=
+        '<div class="comment-write">' +
+          '<textarea placeholder="댓글을 입력하세요" data-comment-input></textarea>' +
+          '<button class="btn btn-primary" data-comment-submit>등록</button>' +
+        '</div>';
+    } else {
+      html +=
+        '<p style="color:var(--text-3);font-size:13px;padding:8px 0;">댓글을 작성하려면 로그인이 필요합니다.</p>';
+    }
+    return html;
+  }
+
+  function postComment(postId, body, parentId, btn, reload) {
+    var text = (body || '').trim();
+    if (!text) { alert('댓글 내용을 입력해 주세요.'); return; }
+    if (!window.TopikApi || !TopikApi.createBoardComment) return;
+    var prev = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = '등록 중…'; }
+    TopikApi.createBoardComment(postId, {
+      body: text,
+      parent_comment_id: parentId != null ? parentId : null,
+    }).then(function (res) {
+      if (btn) { btn.disabled = false; btn.textContent = prev; }
+      if (!res.ok) { alert(TopikApi.parseError(res)); return; }
+      reload();
+    }).catch(function () {
+      if (btn) { btn.disabled = false; btn.textContent = prev; }
+      alert('네트워크 오류입니다.');
+    });
+  }
+
+  function wireComments(box, postId, reload) {
+    var submitBtn = box.querySelector('[data-comment-submit]');
+    if (submitBtn) {
+      submitBtn.addEventListener('click', function () {
+        var ta = box.querySelector('[data-comment-input]');
+        postComment(postId, ta ? ta.value : '', null, submitBtn, reload);
+      });
+    }
+    box.querySelectorAll('[data-reply-toggle]').forEach(function (a) {
+      a.addEventListener('click', function () {
+        var id = a.getAttribute('data-reply-toggle');
+        var wrap = box.querySelector('.reply-form-wrap[data-for="' + id + '"]');
+        if (!wrap) return;
+        var opening = !wrap.classList.contains('open');
+        box.querySelectorAll('.reply-form-wrap.open').forEach(function (w) { w.classList.remove('open'); });
+        if (opening) {
+          wrap.classList.add('open');
+          var ta = wrap.querySelector('textarea');
+          if (ta) ta.focus();
+        }
+      });
+    });
+    box.querySelectorAll('[data-reply-cancel]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var wrap = b.closest('.reply-form-wrap');
+        if (wrap) wrap.classList.remove('open');
+      });
+    });
+    box.querySelectorAll('[data-reply-submit]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var id = Number(b.getAttribute('data-reply-submit'));
+        var wrap = b.closest('.reply-form-wrap');
+        var ta = wrap ? wrap.querySelector('textarea') : null;
+        postComment(postId, ta ? ta.value : '', id, b, reload);
+      });
+    });
+  }
+
+  // -------------------------------------------------------------------------
   // 작성(공통)
   // -------------------------------------------------------------------------
   function wireSubmit(opts) {
@@ -120,6 +247,28 @@
     var show = opts.show || window.show || function () {};
 
     var state = { page: 1, items: [], pagination: null, filter: null };
+
+    function renderComments(postId) {
+      var box = d.comments;
+      if (!box) return;
+      box.innerHTML =
+        '<h4>댓글</h4><p style="color:var(--text-3);font-size:13px;padding:8px 0;">불러오는 중…</p>';
+      if (!window.TopikApi || !TopikApi.getBoardComments) { box.innerHTML = ''; return; }
+      TopikApi.getBoardComments(postId).then(function (res) {
+        if (!res.ok) {
+          box.innerHTML =
+            '<h4>댓글</h4><p style="color:var(--text-3);font-size:13px;padding:8px 0;">' +
+            esc(TopikApi.parseError(res)) + '</p>';
+          return;
+        }
+        var list = (res.body && res.body.comments) || [];
+        box.innerHTML = buildCommentsHtml(list);
+        wireComments(box, postId, function () { renderComments(postId); });
+      }).catch(function () {
+        box.innerHTML =
+          '<h4>댓글</h4><p style="color:var(--text-3);font-size:13px;padding:8px 0;">네트워크 오류입니다.</p>';
+      });
+    }
 
     function emptyRow(msg) {
       return (
@@ -229,6 +378,7 @@
       if (d.badge) d.badge.textContent = '';
       if (d.status) { d.status.textContent = ''; d.status.className = 'status'; }
       if (d.meta) d.meta.innerHTML = '';
+      if (d.comments) d.comments.innerHTML = '';
 
       TopikApi.getBoardPost(id).then(function (res) {
         if (!res.ok) {
@@ -269,6 +419,7 @@
             d.reply.style.display = 'none';
           }
         }
+        if (d.comments) renderComments(id);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }).catch(function () {
         if (d.title) d.title.textContent = '게시글을 불러올 수 없습니다';

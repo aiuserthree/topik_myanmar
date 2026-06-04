@@ -129,6 +129,8 @@ function RefundDetailLP({ id, onClose }) {
   const [reply, setReply] = useState('');
   const [replyPublic, setReplyPublic] = useState(false);
   const [comment, setComment] = useState('');
+  const [replyTo, setReplyTo] = useState(null);
+  const [replyText, setReplyText] = useState('');
   const [refundAmount, setRefundAmount] = useState('');
   const [refundMethod, setRefundMethod] = useState('계좌이체');
   const [detail, setDetail] = useState(null);
@@ -165,13 +167,46 @@ function RefundDetailLP({ id, onClose }) {
 
   const addComment = () => {
     if (!comment.trim()) return;
-    TopikBoApi.addBoardComment(r.apiId, { body: comment, is_secret: true }).then(res => {
+    TopikBoApi.addBoardComment(r.apiId, { body: comment, is_secret: true, parent_comment_id: null }).then(res => {
       if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
       setComment('');
       loadDetail();
-      toastOk('댓글이 등록되었습니다.');
+      toastOk('댓글이 등록되었습니다. 작성자에게 이메일이 발송됩니다.');
     });
   };
+
+  const addReplyComment = (parentId) => {
+    if (!replyText.trim()) return;
+    TopikBoApi.addBoardComment(r.apiId, { body: replyText, is_secret: true, parent_comment_id: parentId }).then(res => {
+      if (!res.ok) { toastErr(TopikBoApi.parseError(res)); return; }
+      setReplyTo(null); setReplyText('');
+      loadDetail();
+      toastOk('대댓글이 등록되었습니다. 작성자에게 이메일이 발송됩니다.');
+    });
+  };
+
+  const commentCount = comments.reduce((n, c) => n + 1 + ((c.replies && c.replies.length) || 0), 0);
+
+  const commentCard = (c, isReply) => h('div', {
+    key: (isReply ? 'r' : 'c') + (c.id || ''),
+    style: {
+      padding: 10, background: isReply ? '#fff' : 'var(--bg-2)', borderRadius: 6, fontSize: 13,
+      marginLeft: isReply ? 20 : 0, border: isReply ? '1px solid var(--line, #e6e9ef)' : 'none',
+    },
+  },
+    h('div', { style: { display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-3)', marginBottom: 4 } },
+      h('span', null, h('b', null, c.author), ' · ', h('span', { className: 'code-id' }, c.is_admin ? '관리자' : '회원'), ' · ', c.is_secret ? '비공개' : '공개'),
+      h('span', { className: 'code-id' }, c.created_at_label)
+    ),
+    h('div', { style: { whiteSpace: 'pre-wrap' } }, c.body),
+    !isReply && (replyTo === c.id
+      ? h('div', { style: { display: 'flex', gap: 6, marginTop: 8 } },
+          h('input', { className: 'input', placeholder: '대댓글 입력(비밀글—자동 비공개)', value: replyText, onChange: e => setReplyText(e.target.value) }),
+          h('button', { className: 'btn btn-secondary', onClick: () => addReplyComment(c.id), disabled: !replyText.trim() }, '등록'),
+          h('button', { className: 'btn btn-text', onClick: () => { setReplyTo(null); setReplyText(''); } }, '취소')
+        )
+      : h('a', { style: { display: 'inline-block', marginTop: 6, fontSize: 12, color: 'var(--primary)', cursor: 'pointer' }, onClick: () => { setReplyTo(c.id); setReplyText(''); } }, '답글'))
+  );
 
   const applyMemberFix = () => {
     toastOk('회원 관리 화면으로 이동합니다.');
@@ -231,14 +266,11 @@ function RefundDetailLP({ id, onClose }) {
       )
     ),
 
-    h(FieldSet, { legend: `댓글/대댓글 (${comments.length})`, cols: 1 },
+    h(FieldSet, { legend: `댓글/대댓글 (${commentCount})`, cols: 1 },
       h('div', { style: { display: 'flex', flexDirection: 'column', gap: 10 } },
-        comments.map((c, idx) => h('div', { key: c.id || idx, style: { padding: 10, background: 'var(--bg-2)', borderRadius: 6, fontSize: 13 } },
-          h('div', { style: { display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-3)', marginBottom: 4 } },
-            h('span', null, h('b', null, c.author), ' · ', h('span', { className: 'code-id' }, c.is_admin ? '관리자' : '회원'), ' · ', c.is_secret ? '비공개' : '공개'),
-            h('span', { className: 'code-id' }, c.created_at_label)
-          ),
-          h('div', null, c.body)
+        comments.map(c => h(Fragment, { key: 'g' + (c.id || '') },
+          commentCard(c, false),
+          (c.replies || []).map(rr => commentCard(rr, true))
         )),
         !comments.length && h('div', { className: 'empty', style: { padding: '20px 0' } }, '등록된 댓글이 없습니다'),
         h('div', { style: { display: 'flex', gap: 8 } },
