@@ -14,7 +14,7 @@
 | 수험번호 | **급수(`applications`) 단위** 13자리 `CHAR(13)`. 동시 접수 시 ④ 시험장 코드 동일, ③ 수준코드만 7/8 상이. |
 | FO 노출 상태 | `applications.status` 7종 + `photo_review_status` + `payment_status` 분리(집계는 API에서 배지 매핑). |
 | 낙관적 잠금 | `applications.rev`, `users.rev`, `admin_users.rev` — BO 동시 수납/승인 시 409. |
-| 개인정보 | 비밀번호 `password_hash`만 DB. 여권번호 등 민감 필드 **암호화 여부는 운영 합의** (`[-]`). |
+| 개인정보 | 비밀번호 `password_hash`만 DB. **여권번호(`passport_no`) FO 미수집** — 컬럼은 V001 레거시·nullable 미사용. 생년월일 등 암호화는 운영 합의 (`[-]`). |
 
 ---
 
@@ -108,7 +108,7 @@ erDiagram
 | `nationality` | `VARCHAR(50)` | NOT NULL | |
 | `first_language` | `VARCHAR(50)` | NOT NULL | |
 | `phone` | `VARCHAR(32)` | NOT NULL | |
-| `passport_no` | `VARCHAR(32)` | NULL | ⚠️ 암호화 합의 |
+| `passport_no` | `VARCHAR(32)` | NULL | **미사용(미수집 확정)** — V001 레거시. 신규 INSERT/API 미포함 |
 | `job_code` | `SMALLINT` | NOT NULL | 1–12 (`html/shared/roster-codes.js`) |
 | `motive_code` | `SMALLINT` | NOT NULL | 1–11 |
 | `purpose_code` | `SMALLINT` | NOT NULL | 1–15 |

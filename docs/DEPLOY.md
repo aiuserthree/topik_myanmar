@@ -1,5 +1,7 @@
 # TOPIK Myanmar — 배포 준비 체크리스트
 
+> **운영 DNS·고객사 IT 요청:** Vercel/Railway/Resend는 **현재 dev/UAT 임시** 구성입니다. 고객사 발송용 레코드 표는 스택 중립 [`고객사_DNS_요청_템플릿.md`](고객사_DNS_요청_템플릿.md) (임시 URL은 템플릿 **부록**).
+
 DNS·이메일 도메인 검증 대기 중에도 아래 순서로 FO/API를 맞춰 두면, 검증 완료 후 바로 스모크 테스트할 수 있습니다.
 
 ---
@@ -154,4 +156,6 @@ curl -s -X POST http://localhost:3000/api/v1/auth/request-password-reset \
 - `README.md` — 저장소 개요
 - `docs/기능정의서/배포_아키텍처.md`
 - `docs/기능정의서/API_배포_가이드_Railway.md`
+- `docs/기능정의서/정책_합의_워크시트.md` §2.0 — 고객사 도메인·이메일 결정 사항
+- `docs/고객사_DNS_요청_템플릿.md` — 고객사 IT에 보낼 DNS 레코드 요청서(복사용)
 - `api/README.md` — 엔드포인트 요약

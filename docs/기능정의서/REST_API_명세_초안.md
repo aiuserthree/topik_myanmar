@@ -211,7 +211,6 @@ HTTP 상태 + JSON 본문 (스택 트레이스·내부 SQL 미노출).
     "nationality": "Myanmar",
     "first_language": "Burmese",
     "phone": "+959...",
-    "passport_no": null,
     "job_code": 3,
     "motive_code": 2,
     "purpose_code": 5,
@@ -226,7 +225,7 @@ HTTP 상태 + JSON 본문 (스택 트레이스·내부 SQL 미노출).
 }
 ```
 
-**`GET /me` 응답 예시** — `password_hash`, `passport_no` 원문 미포함(정책에 따라 마스킹).
+**`GET /me` 응답 예시** — `password_hash` 미포함. **여권번호(`passport_no`) FO 미수집** — 요청·응답 모두 제외.
 
 ```json
 {
@@ -504,7 +503,7 @@ HTML 템플릿: `시안/email/` (C안 에디토리얼). 목록: `시안/email/RE
 | **IDOR** | `/applications/{id}`, `/board/posts/{id}`, `/files/{id}` — `user_id` 서버 매칭 필수 |
 | **Rate limit** | 로그인 5회/15분/IP, 인증코드 발송 3회/10분/이메일, `429` |
 | **BO 격리** | `/admin/*` 별도 미들웨어·role 검사 (283) |
-| **민감 필드** | 응답에서 `password_hash`, `secret_password_hash`, `passport_no` 제외·마스킹 (275) |
+| **민감 필드** | 응답에서 `password_hash`, `secret_password_hash` 제외. **여권번호 미수집** — `passport_no` API 계약 없음 (275) |
 | **OAuth** | Google `id_token` 서버 검증, nonce (282) |
 | **감사** | 수험번호 부여·관리자 계정 변경 → `admin_audit_logs` (285) |
 

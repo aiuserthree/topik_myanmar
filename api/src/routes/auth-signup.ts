@@ -56,7 +56,6 @@ interface RegisterBody {
   nationality?: string;
   first_language?: string;
   phone?: string;
-  passport_no?: string;
   job_code?: number;
   motive_code?: number;
   purpose_code?: number;
@@ -321,14 +320,14 @@ export async function authSignupRoutes(app: FastifyInstance) {
         `INSERT INTO users (
            email, password_hash, signup_provider, name_ko, name_en,
            birth_date, gender, nationality, first_language, phone,
-           passport_no, job_code, motive_code, purpose_code,
+           job_code, motive_code, purpose_code,
            photo_file_id, preferred_lang, marketing_opt_in, status,
            password_changed_at
          ) VALUES (
            $1, $2, 'email', $3, $4,
            $5, $6, $7, $8, $9,
-           $10, $11, $12, $13,
-           $14, $15, $16, 'active', NOW()
+           $10, $11, $12,
+           $13, $14, $15, 'active', NOW()
          )
          RETURNING id, email, name_ko, name_en`,
         [
@@ -341,7 +340,6 @@ export async function authSignupRoutes(app: FastifyInstance) {
           body.nationality.trim(),
           body.first_language.trim(),
           body.phone.trim(),
-          body.passport_no?.trim() || null,
           jobCode,
           motiveCode,
           purposeCode,

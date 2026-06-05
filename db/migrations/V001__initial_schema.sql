@@ -25,7 +25,7 @@ CREATE TABLE users (
     nationality         VARCHAR(50) NOT NULL,
     first_language      VARCHAR(50) NOT NULL,
     phone               VARCHAR(32) NOT NULL,
-    passport_no         VARCHAR(32),
+    passport_no         VARCHAR(32),  -- legacy; FO 미수집 — nullable, API/INSERT 미사용
     job_code            SMALLINT NOT NULL,
     motive_code         SMALLINT NOT NULL,
     purpose_code        SMALLINT NOT NULL,

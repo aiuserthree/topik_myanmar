@@ -249,7 +249,7 @@ export async function adminApplicationsOpsRoutes(app: FastifyInstance) {
              a.*, 
              u.name_ko, u.name_en, u.birth_date, u.gender, u.nationality,
              u.first_language, u.phone, u.email, u.job_code, u.motive_code,
-             u.purpose_code, u.passport_no, u.preferred_lang,
+             u.purpose_code, u.preferred_lang,
              r.round_no, r.title AS round_title, r.exam_date, r.exam_number_visible_at,
              v.id AS venue_id, v.venue_code, v.name_ko AS venue_name,
              s.submitted_at, s.terms_snapshot
@@ -326,7 +326,6 @@ export async function adminApplicationsOpsRoutes(app: FastifyInstance) {
             first_language: a.first_language,
             phone: a.phone,
             email: a.email,
-            passport_no: a.passport_no,
             job_label: jobLabel(a.job_code as number),
             motive_label: motiveLabel(a.motive_code as number),
             purpose_label: purposeLabel(a.purpose_code as number),

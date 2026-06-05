@@ -52,7 +52,7 @@ export async function meRoutes(app: FastifyInstance) {
       try {
         const { rows } = await pool.query(
           `SELECT id, email, name_ko, name_en, birth_date, gender, nationality,
-                  first_language, phone, passport_no, job_code, motive_code,
+                  first_language, phone, job_code, motive_code,
                   purpose_code, photo_file_id, preferred_lang, marketing_opt_in,
                   status, rev, created_at, updated_at
            FROM users
@@ -80,7 +80,6 @@ export async function meRoutes(app: FastifyInstance) {
             nationality: u.nationality,
             first_language: u.first_language,
             phone: u.phone,
-            passport_no: u.passport_no,
             job_code: u.job_code,
             motive_code: u.motive_code,
             purpose_code: u.purpose_code,
@@ -284,7 +283,7 @@ export async function meRoutes(app: FastifyInstance) {
 
         const { rows } = await client.query(
           `SELECT id, email, name_ko, name_en, birth_date, gender, nationality,
-                  first_language, phone, passport_no, job_code, motive_code,
+                  first_language, phone, job_code, motive_code,
                   purpose_code, photo_file_id, preferred_lang, marketing_opt_in, rev
            FROM users WHERE id = $1`,
           [userId]
@@ -309,7 +308,6 @@ export async function meRoutes(app: FastifyInstance) {
             nationality: u.nationality,
             first_language: u.first_language,
             phone: u.phone,
-            passport_no: u.passport_no,
             job_code: u.job_code,
             motive_code: u.motive_code,
             purpose_code: u.purpose_code,
